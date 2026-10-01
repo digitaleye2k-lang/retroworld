@@ -1,0 +1,115 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#151813" />
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' fill='%23150c0b'/%3E%3Cpath d='M10 42h44L32 15z' fill='%23d98746'/%3E%3Cpath d='M25 23h14v24H25z' fill='%23f0cf83'/%3E%3Cpath d='M18 45h28' stroke='%23f0cf83' stroke-width='4'/%3E%3C/svg%3E" />
+    <title>Dust &amp; Iron — Tactical Western Demo</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <main class="cabinet" aria-label="Dust and Iron playable tactical western demo">
+      <header class="masthead">
+        <div class="brand-lockup">
+          <span class="eyebrow">1888 / SANTA LUZ COUNTY</span>
+          <h1>DUST <i>&amp;</i> IRON</h1>
+          <span class="subtitle">TOP-DOWN TACTICAL WESTERN // YARD DISTRICT</span>
+        </div>
+        <div class="masthead-actions">
+          <div class="mission-stamp">
+            <span>CONTRACT 08</span>
+            <strong>THE SILENT LEDGER</strong>
+            <small>DISABLE THE RELAY · LIFT THE LEDGER · EXIT WEST GATE</small>
+          </div>
+          <button id="audioToggle" class="audio-toggle" type="button" aria-pressed="true" aria-label="Toggle music and sound effects">
+            <span class="audio-led" aria-hidden="true"></span><span id="audioLabel">SOUND ON</span><span class="audio-key">M</span>
+          </button>
+        </div>
+      </header>
+
+      <section class="game-shell" aria-label="Playable game area">
+        <div class="corner corner-tl"></div>
+        <div class="corner corner-tr"></div>
+        <div class="corner corner-bl"></div>
+        <div class="corner corner-br"></div>
+        <canvas id="gameCanvas" width="1280" height="720" tabindex="0" aria-label="Dust and Iron scrollable top-down tactical game map"></canvas>
+        <div class="crt-overlay" aria-hidden="true"></div>
+
+        <section id="introPanel" class="intro-panel" aria-label="Mission briefing">
+          <div class="intro-topline">DUST &amp; IRON PRESENTS</div>
+          <h2>THE SILENT LEDGER</h2>
+          <p>Mesa Junction is a guarded overhead yard. Slip through cover, break the relay, lift the ledger, and make the west gate before the call-out arrives.</p>
+          <div class="briefing-grid">
+            <div><b>1</b><span>Disable relay</span></div>
+            <div><b>2</b><span>Lift ledger</span></div>
+            <div><b>3</b><span>Exit west</span></div>
+          </div>
+          <div class="menu-panels" aria-label="Mission at a glance">
+            <div><b>CREW</b><span>June / Silas / Tomás</span></div>
+            <div><b>THREAT</b><span>Eight armed patrols</span></div>
+            <div><b>SUPPLIES</b><span>Hidden caches in brush</span></div>
+          </div>
+          <div id="difficultyPicker" class="difficulty-picker" role="group" aria-label="Enemy difficulty">
+            <span class="difficulty-heading">ENEMY DIFFICULTY</span>
+            <div class="difficulty-options">
+              <button class="difficulty-option" type="button" data-difficulty="low" aria-pressed="false">TRAIL <small>LOW</small></button>
+              <button class="difficulty-option active" type="button" data-difficulty="standard" aria-pressed="true">DUST <small>STANDARD</small></button>
+              <button class="difficulty-option" type="button" data-difficulty="high" aria-pressed="false">IRON <small>HIGH</small></button>
+            </div>
+          </div>
+          <div class="start-actions">
+            <button id="startButton" type="button">TAKE THE JOB <span>↵</span></button>
+            <button id="briefingButton" class="secondary-button" type="button" aria-expanded="false">FIELD GUIDE</button>
+          </div>
+          <div id="fieldGuide" class="field-guide hidden">
+            <strong>FIELD GUIDE</strong>
+            <div><b>MOVE</b><span>Move the pointer to a map edge to scroll. Left-click ground to walk; double-left or right-click ground to run.</span></div>
+            <div><b>CREW</b><span>Use the bottom crew cards or click a hand. Shift-drag a box, or choose All Hands.</span></div>
+            <div><b>TOOLS</b><span>Click a bottom card to arm gear. Right-click a guard for a quick shot; right-click a hand to crouch or stand.</span></div>
+            <div><b>CACHES</b><span>Bandoliers refill normal rounds. Rare Whisper Rounds load with C and silently stun a guard.</span></div>
+          </div>
+          <small>Mouse-first: left click orders · right click runs / crouches / fires · map edges scroll</small>
+        </section>
+
+        <section id="outcomePanel" class="outcome-panel hidden" aria-live="polite">
+          <div id="outcomeKicker">CONTRACT COMPLETE</div>
+          <h2 id="outcomeTitle">LEDGER ACQUIRED</h2>
+          <p id="outcomeText"></p>
+          <button id="restartButton" type="button">RUN IT AGAIN <span>R</span></button>
+        </section>
+      </section>
+
+      <section class="deck" aria-label="Team roster and controls">
+        <div id="roster" class="roster" role="group" aria-label="Select character"></div>
+        <aside class="controls-panel">
+          <div class="controls-head"><span>FIELD NOTES</span><span id="pauseLabel">LIVE</span></div>
+          <p id="instruction">Use the bottom crew cards or click a hand. Move the pointer to a map edge to scroll.</p>
+          <div class="key-row">
+            <span><kbd>LMB</kbd> select / walk</span>
+            <span><kbd>RMB</kbd> run / crouch / fire</span>
+            <span><kbd>EDGE</kbd> scroll map</span>
+            <span><kbd>SHIFT+DRAG</kbd> box select</span>
+            <span><kbd>WHEEL</kbd> zoom</span>
+            <span><kbd>F/Q/C</kbd> arm cards</span>
+            <span><kbd>X</kbd> crouch</span>
+            <span><kbd>SPACE</kbd> plan</span>
+            <span><kbd>A</kbd> all crew</span>
+            <span><kbd>R</kbd> reset</span>
+            <span><kbd>M</kbd> audio</span>
+          </div>
+        </aside>
+      </section>
+
+      <footer>
+        <span>ORIGINAL TACTICAL-WESTERN PROTOTYPE</span>
+        <span>FULL TOP-DOWN PLAYSPACE · RUNS OFFLINE</span>
+        <span id="statusText">MAP: MESA JUNCTION / OVERHEAD</span>
+      </footer>
+    </main>
+    <audio id="musicTrack" preload="metadata" loop>
+      <source src="assets/dust-and-brass.mp3" type="audio/mpeg" />
+    </audio>
+    <script src="command-game.js"></script>
+  </body>
+</html>
