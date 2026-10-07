@@ -1,53 +1,14 @@
-RETRO WORLD by Digital EYE
-DUST & IRON NEWS + INTEGRATED DEMO UPDATE
+RETRO WORLD · EPIC & 3D
 
-NEW NEWS FEATURE
-- Added Dust & Iron as a featured OTHER PROJECT / PLAYABLE DEMO update.
-- Uses the supplied Dust & Iron screenshot.
-- Introduces the real-time tactics western project and Mesa Junction objective.
-- Includes the three playable crew members:
-  June Mercer
-  Silas Rook
-  Tomás Garza
-- Includes the quick guide and requested testing/feedback areas.
-- States the goal of continuing toward a full game by the end of 2026.
+Upload index.html and the entire games folder to your existing GitHub Pages publishing folder. Preserve your existing CNAME and Pages settings. The latest 58-game site is retained with its device categories, TV mode, profiles, news and other projects. Popshot is game 59 under EPIC & 3D and SHOOTERS. Keyboard and mouse are recommended; it is not labelled TV/controller compatible. No server or build is needed to publish.
 
-INTEGRATED DEMO
-- PLAY DEMO INSIDE RETRO WORLD opens a full-screen in-site iframe.
-- It loads: Dust and Iron DEMO.html
-- This is a relative same-repository path, so it is designed for the GitHub-hosted
-  RETRO WORLD deployment where that demo file is already in the repository.
-- OPEN DEMO IN NEW TAB is included as a fallback.
-- VIEW ON GITHUB links to the provided source page.
+Popshot: 10 worlds, 3 bosses, 8 weapons, building, saved progress and fullscreen. Controls: WASD move, mouse aim, click attack, Space double jump, Shift sprint, 1-8 weapons, Q cycle, R reload, B build. Building: 1-4 pieces and R rotate. Escape pause.
 
-IMPORTANT DUST & IRON DEPENDENCIES
-The GitHub demo currently references:
-- styles.css
-- command-game.js
-- assets/dust-and-brass.mp3
+PHONE CONTROLS / SEPARATE WINDOW
+The Popshot card includes a six-second preview made from three moments in the supplied recording. Choose OPEN IN NEW TAB on the card or NEW TAB in the game to open the standalone game outside the embedded player. Use FULLSCREEN there; browser support varies, especially on phones. Phone controls: left analog stick moves, drag the game view to look, FIRE / THROW attacks, JUMP double jumps, RELOAD refills. Aim and movement use separate touch pointers so they work together.
 
-Those files need to remain available alongside the demo in the hosted repository.
-This ZIP does not replace those existing Dust & Iron project files.
+PIXEL BLAST MUSIC
+The supplied Pixel Blast track starts/restarts only when a level begins, at 12% volume. It loops during play, pauses with the game, resumes on Continue and stops on defeat, world completion or returning to the menu. SOUND OFF mutes music and effects. Synthesized background music is disabled to avoid overlapping tracks.
 
-FEEDBACK INTEGRATION
-- Report form now includes DUST & IRON DEMO as an area.
-- Added dedicated:
-  DUST & IRON DEMO / BUG
-  DUST & IRON DEMO / FEEDBACK
-- News feature has REPORT DEMO BUG and SEND DEMO FEEDBACK buttons.
-- Bug placeholders ask for character, expected behaviour and reproduction steps.
-
-PRESERVED
-- News remains below the full 55-game library.
-- All 55 game cartridges.
-- Deterministic level/score HUD fixes.
-- Profile chooser and first-run guide.
-- Admin submission/viewer.
-- Per-profile music/background.
-- Brave compatibility.
-- Trophies, challenges and premium rewards.
-- Ads and report system.
-
-VALIDATION
-- 55/55 embedded game scripts retained and syntax-checked.
-- Main RETRO WORLD JavaScript syntax-checked.
+CRIMSON FANG
+Added as game 60 in EPIC & 3D, FIGHTING / BRAWLER and PLATFORM / RUNNER. Original self-contained supplied game preserved. Use its game card to launch or OPEN IN NEW TAB. Controls and stages are in games/crimson-fang/READ-ME.txt. Preview is taken from the supplied recording.

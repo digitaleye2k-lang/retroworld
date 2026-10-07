@@ -1,0 +1,43 @@
+CRIMSON FANG — OFFLINE EDITION
+
+PLAY
+1. Extract the ZIP (do not open the game from inside the ZIP preview).
+2. Open Crimson-Fang.html in your desktop web browser.
+3. Click START GAME. Enable SOUND ON for arcade audio.
+
+No installation, account, internet connection, or server required.
+The HTML file contains the whole game and can be moved on its own.
+Offline typography uses fonts available on your computer.
+
+CONTROLS
+WASD / arrow keys: Move
+Shift (hold): Sprint
+Space: Ninja leap
+J (hold): Sword combos
+K: Invincible dash
+U (hold): Throw shuriken
+L: Spirit burst (100 spirit)
+P / Escape: Pause
+Enter: Start / continue
+Touch buttons are available on touch devices.
+
+SPECIAL MOVES
+1: Rising Dragon — unlock at 5 kills; costs 40 spirit
+2: Shadow Clones — unlock at 15 kills; costs 65 spirit
+3: Star Tempest — unlock at 30 kills; costs 100 spirit
+Specials share a short cooldown. Spirit regenerates over time and from sword hits.
+
+TEN SCROLLING STAGES
+Advance right, fight enemies along the road, and defeat the boss in the final arena.
+Stage Select lets you start at any of the ten stages.
+
+SAVES
+Best score and kill unlocks use your browser's local storage when available.
+Offline saves are separate from the online game's saves. Use the same browser
+and file location to retain them. Private browsing, storage restrictions, moving
+the file, or clearing browser data may reset saves. Gameplay still works if
+storage is unavailable.
+
+VERSION
+Offline snapshot: 7 October 2026.
+Includes sprint, leap, shuriken, special unlocks, and all ten scrolling stages.

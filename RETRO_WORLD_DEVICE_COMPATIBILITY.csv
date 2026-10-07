@@ -1,0 +1,61 @@
+Game,File,Touch Friendly,Mobile Friendly,TV Friendly,Notes
+SKY RAID '92,sky-raid-92.html,YES,YES,YES,D-pad / keyboard / controller compatible.
+NEON SNAKE,neon-snake.html,YES,YES,YES,D-pad / keyboard / controller compatible.
+BLOCK DROP,block-drop.html,YES,YES,YES,D-pad / keyboard / controller compatible.
+ASTRO BREAKER,astro-breaker.html,YES,YES,YES,D-pad / keyboard / controller compatible.
+ALIEN SIEGE,alien-siege.html,YES,YES,YES,D-pad / keyboard / controller compatible.
+PIXEL RACER,pixel-racer.html,YES,YES,YES,D-pad / keyboard / controller compatible.
+DUNGEON DASH,dungeon-dash.html,YES,YES,YES,D-pad / keyboard / controller compatible.
+METEOR DODGE,meteor-dodge.html,YES,YES,YES,D-pad / keyboard / controller compatible.
+RETRO PONG,retro-pong.html,YES,YES,YES,D-pad / keyboard / controller compatible.
+MOON LANDER,moon-lander.html,YES,YES,YES,D-pad / keyboard / controller compatible.
+FROG HOP,frog-hop.html,YES,YES,YES,D-pad / keyboard / controller compatible.
+GALAXY DEFENDER,galaxy-defender.html,YES,YES,YES,D-pad / keyboard / controller compatible.
+MINEFIELD 86,minefield-86.html,YES,YES,NO,Pointer/click is required to reveal and flag cells.
+MEMORY MATRIX,memory-matrix.html,YES,YES,NO,Pointer/touch is required to choose cards.
+TANK DUEL,tank-duel.html,YES,YES,YES,D-pad / keyboard / controller compatible.
+ROBOT RUNNER,robot-runner.html,YES,YES,YES,D-pad / keyboard / controller compatible.
+STAR MINER,star-miner.html,YES,YES,YES,D-pad / keyboard / controller compatible.
+SUB HUNTER,sub-hunter.html,YES,YES,YES,D-pad / keyboard / controller compatible.
+CASTLE CLIMB,castle-climb.html,YES,YES,YES,D-pad / keyboard / controller compatible.
+CYBER MAZE,cyber-maze.html,YES,YES,YES,D-pad / keyboard / controller compatible.
+BOMB BLASTER,bomb-blaster.html,YES,YES,YES,D-pad / keyboard / controller compatible.
+COMET CATCHER,comet-catcher.html,YES,YES,YES,D-pad / keyboard / controller compatible.
+RIVER ESCAPE,river-escape.html,YES,YES,YES,D-pad / keyboard / controller compatible.
+LASER ARENA,laser-arena.html,YES,YES,YES,D-pad / keyboard / controller compatible.
+SPACE COURIER,space-courier.html,YES,YES,YES,D-pad / keyboard / controller compatible.
+BUG BLASTER,bug-blaster.html,YES,YES,YES,D-pad / keyboard / controller compatible.
+GHOST PATROL,ghost-patrol.html,YES,YES,YES,D-pad / keyboard / controller compatible.
+KEY QUEST,key-quest.html,YES,YES,YES,D-pad / keyboard / controller compatible.
+HOVER BIKE,hover-bike.html,YES,YES,YES,D-pad / keyboard / controller compatible.
+PEARL DIVER,pearl-diver.html,YES,YES,YES,D-pad / keyboard / controller compatible.
+NINJA TOWER,ninja-tower.html,YES,YES,YES,D-pad / keyboard / controller compatible.
+FISHING QUEST,fishing-quest.html,YES,YES,YES,D-pad / keyboard / controller compatible.
+PIXEL GOLF,pixel-golf.html,YES,YES,YES,D-pad / keyboard / controller compatible.
+SPACE DOCK,space-dock.html,YES,YES,YES,D-pad / keyboard / controller compatible.
+REACTOR CORE,reactor-core.html,YES,YES,YES,D-pad / keyboard / controller compatible.
+MISSILE GUARD,missile-guard.html,YES,YES,NO,Pointer/touch is required to place defense blasts.
+CASTLE CANNON,castle-cannon.html,YES,YES,YES,D-pad / keyboard / controller compatible.
+NEON RANGER,neon-ranger.html,YES,YES,YES,D-pad / keyboard / controller compatible.
+METRO BRAWLER,metro-brawler.html,YES,YES,YES,D-pad / keyboard / controller compatible.
+NEBULA WING,nebula-wing.html,YES,YES,YES,D-pad / keyboard / controller compatible.
+SHADOW DUEL,shadow-duel.html,YES,YES,YES,D-pad / keyboard / controller compatible.
+MECH TITAN,mech-titan.html,YES,YES,YES,D-pad / keyboard / controller compatible.
+ROAD BLASTER '99,road-blaster-99.html,YES,YES,YES,D-pad / keyboard / controller compatible.
+SKY FLAPPER,sky-flapper.html,YES,YES,YES,D-pad / keyboard / controller compatible.
+CATAPULT CRASH,catapult-crash.html,YES,YES,YES,D-pad / keyboard / controller compatible.
+PADDLE CLASH,paddle-clash.html,YES,YES,YES,D-pad / keyboard / controller compatible.
+JEWEL MATRIX,jewel-matrix.html,YES,YES,YES,D-pad / keyboard / controller compatible.
+MARBLE SPIRAL,marble-spiral.html,YES,YES,YES,D-pad / keyboard / controller compatible.
+WORD TILES MINI,word-tiles-mini.html,YES,YES,YES,D-pad / keyboard / controller compatible.
+PIXEL SOLITAIRE,pixel-solitaire.html,YES,YES,YES,D-pad / keyboard / controller compatible.
+SPIDER STACK,spider-stack.html,YES,YES,YES,D-pad / keyboard / controller compatible.
+NEON PINBALL,neon-pinball.html,YES,YES,YES,D-pad / keyboard / controller compatible.
+GALACTIC GOLF,galactic-golf.html,YES,YES,YES,D-pad / keyboard / controller compatible.
+HELLBYTE '93,hellbyte-93.html,YES,YES,YES,D-pad / keyboard / controller compatible.
+NEON POD RUSH,neon-pod-rush.html,YES,YES,YES,D-pad / keyboard / controller compatible.
+NEON LUDO RALLY,neon-ludo-rally.html,YES,YES,NO,"Rolling works by key, but choosing a pawn requires pointer/touch."
+PIXEL CHESS,pixel-chess.html,YES,YES,NO,Selecting pieces and destinations requires pointer/touch.
+NEON SNAKES &amp; LADDERS,neon-snakes-ladders.html,YES,YES,YES,D-pad / keyboard / controller compatible.
+POPSHOT: COLOR QUEST,games/popshot/index.html,Partial,Partial,No,"3D WebGL; touch controls included, keyboard and mouse recommended; fullscreen depends on browser support."
+CRIMSON FANG,games/crimson-fang/Crimson-Fang.html,Yes,Yes,Not verified,Keyboard movement and combat; touch buttons included.
