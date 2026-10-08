@@ -1,0 +1,162 @@
+<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>PIXEL CHESS • RETRO WORLD</title><style>
+html,body{height:100%;margin:0;background:#03050c;color:#fff;font-family:"Courier New",monospace}
+body{display:grid;place-items:center;background:radial-gradient(circle at 50% 35%,#151735,#03050c 68%);overflow:hidden}
+.wrap{width:min(96vw,900px);text-align:center}
+.top{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:7px;min-height:34px}
+.title{color:#4deaff;font-size:clamp(14px,3vw,20px);font-weight:900;letter-spacing:2px;text-shadow:2px 2px #4c165d}
+.diff{display:flex;gap:5px;align-items:center;color:#949abc;font-size:8px}
+.diff select{background:#0b0d1d;color:#fff;border:1px solid #4deaff;padding:5px;font:700 9px "Courier New",monospace}
+.frame{position:relative;border:3px solid #4deaff;box-shadow:0 0 0 3px #181a36,0 0 28px #00eaff29;background:#050714}
+canvas{display:block;width:100%;height:auto;max-height:calc(100dvh - 115px);object-fit:contain;touch-action:none;user-select:none;-webkit-user-select:none}
+.help{margin-top:7px;color:#858bad;font-size:9px;line-height:1.45}
+.help b{color:#e6d36f}
+@media(max-width:650px){.wrap{width:99vw}.top{margin:2px 5px 4px}.help{font-size:7px;margin-top:4px}.diff span{display:none}}
+</style><script>addEventListener('keydown',function(e){if((e.keyCode||e.which)===461&&window.parent!==window){e.preventDefault();window.parent.postMessage({type:'retroworld-tv-back'},'*');}},true);</script></head>
+<body><div class="wrap"><div class="top"><div class="title">PIXEL CHESS</div><div class="diff"><span>CPU</span><select id="difficultySelect"><option value="easy">EASY</option><option value="normal" selected>NORMAL</option><option value="hard">HARD</option></select></div></div>
+<div class="frame"><canvas id="g" width="640" height="650"></canvas></div><div class="help"><b>CLICK / TAP</b> A WHITE PIECE → HIGHLIGHTED DESTINATION • PROMOTION = QUEEN • NO CASTLING / EN PASSANT</div></div>
+<script>
+const c=document.getElementById('g'),x=c.getContext('2d');x.imageSmoothingEnabled=false;
+const W=c.width,H=c.height,S=72,OX=32,OY=38;
+let board,state='title',turn='w',sel=null,legal=[],difficulty='normal',score=0,msg='WHITE TO MOVE',cpuBusy=false;
+const VAL={P:100,N:320,B:330,R:500,Q:900,K:20000};
+const GLYPH={wK:'♔',wQ:'♕',wR:'♖',wB:'♗',wN:'♘',wP:'♙',bK:'♚',bQ:'♛',bR:'♜',bB:'♝',bN:'♞',bP:'♟'};
+function clone(b){return b.map(r=>r.slice())}
+function resetBoard(){return[
+ ['bR','bN','bB','bQ','bK','bB','bN','bR'],
+ ['bP','bP','bP','bP','bP','bP','bP','bP'],
+ [null,null,null,null,null,null,null,null],
+ [null,null,null,null,null,null,null,null],
+ [null,null,null,null,null,null,null,null],
+ [null,null,null,null,null,null,null,null],
+ ['wP','wP','wP','wP','wP','wP','wP','wP'],
+ ['wR','wN','wB','wQ','wK','wB','wN','wR']
+]}
+function reset(){board=resetBoard();state='play';turn='w';sel=null;legal=[];score=0;msg='YOUR MOVE — WHITE';cpuBusy=false;difficulty=document.getElementById('difficultySelect').value}
+function inside(r,q){return r>=0&&r<8&&q>=0&&q<8}
+function color(p){return p&&p[0]}
+function enemy(col){return col==='w'?'b':'w'}
+function pseudo(b,r,q,attacks=false){
+ const p=b[r][q];if(!p)return[];const col=p[0],t=p[1],a=[];
+ const add=(rr,cc)=>{if(!inside(rr,cc))return false;if(!b[rr][cc]){a.push([rr,cc]);return true}if(color(b[rr][cc])!==col)a.push([rr,cc]);return false};
+ if(t==='P'){
+   const d=col==='w'?-1:1,start=col==='w'?6:1;
+   if(attacks){for(const dc of [-1,1])if(inside(r+d,q+dc))a.push([r+d,q+dc]);return a}
+   if(inside(r+d,q)&&!b[r+d][q]){a.push([r+d,q]);if(r===start&&!b[r+2*d][q])a.push([r+2*d,q])}
+   for(const dc of [-1,1])if(inside(r+d,q+dc)&&b[r+d][q+dc]&&color(b[r+d][q+dc])!==col)a.push([r+d,q+dc])
+ }else if(t==='N'){
+   [[-2,-1],[-2,1],[-1,-2],[-1,2],[1,-2],[1,2],[2,-1],[2,1]].forEach(v=>{const rr=r+v[0],cc=q+v[1];if(inside(rr,cc)&&(!b[rr][cc]||color(b[rr][cc])!==col))a.push([rr,cc])})
+ }else if(t==='K'){
+   for(let dr=-1;dr<=1;dr++)for(let dc=-1;dc<=1;dc++)if(dr||dc){const rr=r+dr,cc=q+dc;if(inside(rr,cc)&&(!b[rr][cc]||color(b[rr][cc])!==col))a.push([rr,cc])}
+ }else{
+   const dirs=t==='B'?[[1,1],[1,-1],[-1,1],[-1,-1]]:t==='R'?[[1,0],[-1,0],[0,1],[0,-1]]:[[1,1],[1,-1],[-1,1],[-1,-1],[1,0],[-1,0],[0,1],[0,-1]];
+   dirs.forEach(d=>{let rr=r+d[0],cc=q+d[1];while(inside(rr,cc)){if(!add(rr,cc))break;rr+=d[0];cc+=d[1]}})
+ }
+ return a
+}
+function findKing(b,col){for(let r=0;r<8;r++)for(let q=0;q<8;q++)if(b[r][q]===col+'K')return[r,q];return null}
+function attacked(b,r,q,by){
+ for(let rr=0;rr<8;rr++)for(let cc=0;cc<8;cc++){const p=b[rr][cc];if(!p||p[0]!==by)continue;const moves=pseudo(b,rr,cc,p[1]==='P');if(moves.some(m=>m[0]===r&&m[1]===q))return true}
+ return false
+}
+function inCheck(b,col){const k=findKing(b,col);return !k||attacked(b,k[0],k[1],enemy(col))}
+function make(b,m){
+ const n=clone(b),p=n[m.fr][m.fc],cap=n[m.tr][m.tc];n[m.tr][m.tc]=p;n[m.fr][m.fc]=null;
+ if(p&&p[1]==='P'&&(m.tr===0||m.tr===7))n[m.tr][m.tc]=p[0]+'Q';
+ return{b:n,cap}
+}
+function movesFor(b,r,q){
+ const p=b[r][q];if(!p)return[];
+ return pseudo(b,r,q).map(v=>({fr:r,fc:q,tr:v[0],tc:v[1]})).filter(m=>!inCheck(make(b,m).b,p[0]))
+}
+function allMoves(b,col){const a=[];for(let r=0;r<8;r++)for(let q=0;q<8;q++)if(b[r][q]&&b[r][q][0]===col)a.push(...movesFor(b,r,q));return a}
+function evalBoard(b){
+ let v=0;for(let r=0;r<8;r++)for(let q=0;q<8;q++){const p=b[r][q];if(p)v+=(p[0]==='b'?1:-1)*(VAL[p[1]]||0)}
+ return v
+}
+function gameStatus(){
+ const ms=allMoves(board,turn);if(ms.length)return false;
+ if(inCheck(board,turn)){if(turn==='b'){state='win';score+=2000;msg='CHECKMATE — YOU WIN!'}else{state='over';msg='CHECKMATE — CPU WINS'}}else{state='over';msg='STALEMATE — DRAW'}
+ return true
+}
+function playMove(m){
+ const p=board[m.fr][m.fc],captured=board[m.tr][m.tc];
+ board=make(board,m).b;
+ if(p&&p[0]==='w'&&captured)score+=VAL[captured[1]]||0;
+ turn=enemy(turn);sel=null;legal=[];
+ if(gameStatus())return;
+ if(turn==='b'){msg='CPU THINKING...';cpuBusy=true;setTimeout(cpuMove,difficulty==='hard'?420:300)}
+ else msg=inCheck(board,'w')?'CHECK — YOUR MOVE':'YOUR MOVE — WHITE'
+}
+function chooseCpu(ms){
+ if(difficulty==='easy')return ms[Math.floor(Math.random()*ms.length)];
+ let best=-1e9,cands=[];
+ for(const m of ms){
+   const a=make(board,m),cap=a.cap;let v=(cap?VAL[cap[1]]:0)+(4-Math.abs(3.5-m.tr))+(4-Math.abs(3.5-m.tc));
+   if(difficulty==='hard'){
+     const replies=allMoves(a.b,'w');let worst=1e9;
+     if(!replies.length)worst=inCheck(a.b,'w')?50000:0;
+     else for(const r of replies){const rb=make(a.b,r).b;worst=Math.min(worst,evalBoard(rb))}
+     v+=worst*.02;
+   }
+   if(v>best+0.01){best=v;cands=[m]}else if(Math.abs(v-best)<.01)cands.push(m)
+ }
+ return cands[Math.floor(Math.random()*cands.length)]
+}
+function cpuMove(){
+ if(state!=='play'||turn!=='b')return;
+ const ms=allMoves(board,'b');if(!ms.length){gameStatus();return}
+ playMove(chooseCpu(ms));cpuBusy=false
+}
+function clickSquare(r,q){
+ if(state!=='play'){reset();return}
+ if(turn!=='w'||cpuBusy)return;
+ if(sel&&legal.some(m=>m.tr===r&&m.tc===q)){playMove(legal.find(m=>m.tr===r&&m.tc===q));return}
+ const p=board[r][q];
+ if(p&&p[0]==='w'){sel=[r,q];legal=movesFor(board,r,q);msg=legal.length?'CHOOSE DESTINATION':'NO LEGAL MOVE'}
+ else{sel=null;legal=[]}
+}
+function draw(){
+ x.fillStyle='#07101d';x.fillRect(0,0,W,H);
+ if(state==='title'){
+   x.fillStyle='#090b18';x.fillRect(70,110,500,340);x.strokeStyle='#4deaff';x.strokeRect(70,110,500,340);
+   x.textAlign='center';x.fillStyle='#4deaff';x.font='bold 36px Courier New';x.fillText('PIXEL CHESS',320,175);
+   x.fillStyle='#fff';x.font='bold 13px Courier New';x.fillText('WHITE VS CPU • LEGAL MOVES • CHECK / CHECKMATE',320,225);
+   x.fillStyle='#ffe35b';x.fillText('EASY RANDOM • NORMAL TACTICAL • HARD LOOK-AHEAD',320,255);
+   x.fillStyle='#aab0ca';x.font='11px Courier New';x.fillText('CLICK A WHITE PIECE, THEN CLICK A HIGHLIGHTED SQUARE',320,305);
+   x.fillStyle='#73ff8b';x.font='bold 17px Courier New';x.fillText('CLICK / ENTER TO START',320,375);return
+ }
+ for(let r=0;r<8;r++)for(let q=0;q<8;q++){
+   const xx=OX+q*S,yy=OY+r*S,dark=(r+q)%2;
+   x.fillStyle=dark?'#27314e':'#9ba4bd';x.fillRect(xx,yy,S,S);
+   if(sel&&sel[0]===r&&sel[1]===q){x.fillStyle='#00eaff55';x.fillRect(xx,yy,S,S)}
+   if(legal.some(m=>m.tr===r&&m.tc===q)){x.fillStyle=board[r][q]?'#ff4d7055':'#6cff8a55';x.beginPath();x.arc(xx+S/2,yy+S/2,board[r][q]?28:11,0,6.28);x.fill()}
+   const p=board[r][q];if(p){x.font='54px Arial';x.textAlign='center';x.textBaseline='middle';x.fillStyle=p[0]==='w'?'#f8f8f0':'#0d1020';x.strokeStyle=p[0]==='w'?'#111':'#d9dcff';x.lineWidth=1;x.strokeText(GLYPH[p],xx+S/2,yy+S/2+1);x.fillText(GLYPH[p],xx+S/2,yy+S/2+1)}
+ }
+ x.textBaseline='alphabetic';x.fillStyle='#050713df';x.fillRect(0,0,W,32);x.font='bold 11px Courier New';x.textAlign='left';x.fillStyle='#4deaff';x.fillText('PIXEL CHESS',8,21);x.textAlign='right';x.fillStyle='#ffe35b';x.fillText('SCORE '+score,W-8,21);
+ x.textAlign='center';x.fillStyle=turn==='w'?'#fff':'#ff6b80';x.font='bold 11px Courier New';x.fillText(msg,320,632);
+ if(state==='win'||state==='over'){
+   x.fillStyle='#000d';x.fillRect(95,190,450,230);x.textAlign='center';x.fillStyle=state==='win'?'#73ff8b':'#ff667d';x.font='bold 28px Courier New';x.fillText(msg,320,255);x.fillStyle='#ffe35b';x.font='bold 14px Courier New';x.fillText('FINAL SCORE '+score,320,305);x.fillStyle='#fff';x.fillText('CLICK / ENTER TO PLAY AGAIN',320,355)
+ }
+}
+c.addEventListener('pointerdown',e=>{const r=c.getBoundingClientRect(),mx=(e.clientX-r.left)*W/r.width,my=(e.clientY-r.top)*H/r.height;if(state!=='play'){reset();return}const q=Math.floor((mx-OX)/S),rr=Math.floor((my-OY)/S);if(inside(rr,q))clickSquare(rr,q)});
+addEventListener('keydown',e=>{if(e.key==='Enter'&&state!=='play')reset()});
+document.getElementById('difficultySelect').addEventListener('change',e=>{difficulty=e.target.value});
+board=resetBoard();setInterval(draw,33);draw();
+
+const RETRO_LOCAL_STATS=(()=>{
+  const GAME_ID="pixel-chess.html", GAME_TITLE="PIXEL CHESS";
+  let active=false,lastProgress=0;
+  function mode(){try{return String(state||'').toLowerCase()}catch(e){return ''}}
+  function metric(){try{return {name:'score',value:Math.round(Number(score)||0),higher:true}}catch(e){return {name:'score',value:0,higher:true}}}
+  function send(type,extra={}){try{parent.postMessage(Object.assign({source:'retro-world-game',type,gameId:GAME_ID,title:GAME_TITLE},extra),'*')}catch(e){}}
+  function snapshot(){const m=metric();send('progress',{metric:m.name,value:m.value,higherBetter:m.higher})}
+  setInterval(()=>{const now=Date.now(),md=mode(),playing=md==='play'||md==='playing'||md==='running',won=md==='win'||md==='won'||md==='victory'||md==='complete',lost=md==='over'||md==='gameover'||md==='lost'||md==='dead'||md==='fail'||md==='failed';
+    if(playing&&!active){active=true;send('start');snapshot();lastProgress=now}
+    if(active&&playing&&now-lastProgress>1200){snapshot();lastProgress=now}
+    if(active&&(won||lost)){const m=metric();snapshot();send('finish',{result:won?'win':'loss',metric:m.name,value:m.value,higherBetter:m.higher});active=false}
+  },250);
+  addEventListener('pagehide',()=>{if(active)snapshot()});
+  return{snapshot};
+})();
+</script></body></html>

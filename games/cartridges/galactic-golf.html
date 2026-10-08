@@ -1,0 +1,1085 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>GALACTIC GOLF • RETRO WORLD</title><style>
+html,body{height:100%;margin:0;background:#020208;color:#fff;font-family:"Courier New",monospace}
+body{display:grid;place-items:center;background:radial-gradient(circle,#161633,#020208 65%)}
+.wrap{width:min(94vw,860px);text-align:center}
+.top{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;gap:10px}
+a{color:#00ffff;text-decoration:none}.title{color:#00ffff;letter-spacing:3px;text-shadow:3px 3px #53195f}
+.frame{border:4px solid #00ffff;box-shadow:0 0 0 4px #15152d,0 0 25px #00ffff33;position:relative;background:#000}
+canvas{display:block;width:100%;aspect-ratio:4/3;image-rendering:pixelated}
+.frame:after{content:"";position:absolute;inset:0;pointer-events:none;background:repeating-linear-gradient(to bottom,#fff0 0 3px,#ffffff10 4px)}
+.help{color:#a7a7cf;font-size:12px;margin-top:9px;line-height:1.5}
+kbd{border:1px solid #66669a;background:#16162a;padding:1px 5px}
+
+.sfxbtn{
+  font:inherit;font-size:11px;background:#111124;color:#66ff66;
+  border:1px solid #66ff66;padding:6px 8px;cursor:pointer;white-space:nowrap
+}
+.sfxbtn.off{color:#8888aa;border-color:#666688}
+
+.game-brand{color:#777;font-size:11px;letter-spacing:1px}
+.touch-controls{display:none}
+.touch-hint{display:none}
+@media (hover:none), (pointer:coarse), (max-width:900px){
+  html,body{min-height:100%;height:100%;overflow:hidden}
+  body{display:flex;align-items:center;justify-content:center;min-height:100dvh}
+  .wrap{width:min(98vw,860px);max-height:100dvh;padding:4px;text-align:center}
+  .top{min-height:32px;margin-bottom:4px}
+  .title{font-size:clamp(12px,4vw,18px);letter-spacing:1px}
+  .game-brand{font-size:9px}
+  .sfxbtn{padding:5px 7px;font-size:10px}
+  .help{display:none}
+  .frame{border-width:2px;box-shadow:0 0 0 2px #15152d,0 0 16px #00ffff22}
+  canvas{width:100%;height:auto;max-height:calc(100dvh - 225px);object-fit:contain;margin:auto;touch-action:none}
+  .touch-controls{
+    display:flex;justify-content:space-between;align-items:center;gap:16px;
+    width:min(100%,620px);margin:7px auto 0;padding:4px 8px;
+    user-select:none;-webkit-user-select:none;touch-action:none
+  }
+  .dpad{display:grid;grid-template-columns:repeat(3,52px);grid-template-rows:repeat(3,52px);gap:4px}
+  .dpad .up{grid-column:2;grid-row:1}.dpad .left{grid-column:1;grid-row:2}
+  .dpad .right{grid-column:3;grid-row:2}.dpad .down{grid-column:2;grid-row:3}
+  .touch-btn{
+    min-width:52px;min-height:52px;border:2px solid #00ffff;background:#0c0c22;color:#fff;
+    font:700 21px "Courier New",monospace;border-radius:10px;box-shadow:0 4px 0 #173d4a;
+    touch-action:none;-webkit-tap-highlight-color:transparent
+  }
+  .touch-btn.pressed{transform:translateY(3px);box-shadow:0 1px 0 #173d4a;background:#12364a}
+  .action-pad{display:flex;align-items:center;gap:10px}
+  .action{
+    width:74px;height:74px;border-radius:50%;border-color:#ff2bd6;font-size:26px;
+    box-shadow:0 4px 0 #5b1850
+  }
+  .start{min-width:70px;min-height:44px;font-size:11px;border-color:#ffff55;color:#ffff55}
+  .touch-hint{display:block;color:#7777a8;font-size:9px;margin-top:2px}
+}
+@media (hover:none) and (orientation:landscape) and (max-height:600px){
+  body{align-items:stretch}
+  .wrap{
+    width:100vw;max-width:none;height:100dvh;padding:3px 8px;
+    display:grid;grid-template-columns:minmax(0,1fr) 188px;grid-template-rows:34px minmax(0,1fr);
+    grid-template-areas:"top top" "game controls";gap:4px 10px
+  }
+  .top{grid-area:top;margin:0}
+  .frame{grid-area:game;align-self:center;justify-self:center;width:min(100%,calc((100dvh - 42px)*4/3))}
+  canvas{max-height:calc(100dvh - 42px);width:100%;height:auto}
+  .touch-controls{grid-area:controls;margin:0;padding:0;align-self:center;flex-direction:column;justify-content:center;gap:5px}
+  .dpad{grid-template-columns:repeat(3,45px);grid-template-rows:repeat(3,45px);gap:3px}
+  .touch-btn{min-width:45px;min-height:45px;font-size:18px}
+  .action{width:62px;height:62px}
+  .start{min-width:66px;min-height:38px}
+  .touch-hint{display:none}
+}
+
+
+/* RETRO WORLD mobile-landscape control layout
+   D-pad LEFT | GAME SCREEN CENTER | A + START RIGHT */
+@media (orientation:landscape) and (max-height:760px) and (max-width:1200px){
+  html,body{
+    width:100%;height:100%;min-height:100%;overflow:hidden
+  }
+  body{
+    display:flex!important;align-items:stretch!important;justify-content:stretch!important;
+    min-height:100dvh!important;padding:0!important
+  }
+  .wrap{
+    --land-btn:clamp(34px,11vh,46px);
+    box-sizing:border-box!important;
+    width:100vw!important;max-width:none!important;
+    height:100dvh!important;max-height:100dvh!important;
+    margin:0!important;
+    padding:max(2px,env(safe-area-inset-top))
+            max(7px,env(safe-area-inset-right))
+            max(2px,env(safe-area-inset-bottom))
+            max(7px,env(safe-area-inset-left))!important;
+    display:grid!important;
+    grid-template-columns:clamp(108px,18vw,154px) minmax(0,1fr) clamp(100px,17vw,146px)!important;
+    grid-template-rows:28px minmax(0,1fr)!important;
+    grid-template-areas:"top top top" "left game right"!important;
+    column-gap:clamp(4px,1.2vw,12px)!important;
+    row-gap:2px!important;
+    align-items:center!important;
+    overflow:hidden!important
+  }
+  .top{
+    grid-area:top!important;
+    min-height:26px!important;height:26px!important;
+    margin:0!important;padding:0 2px!important;
+    align-self:center!important
+  }
+  .title{
+    font-size:clamp(10px,2.4vw,15px)!important;
+    letter-spacing:1px!important;
+    white-space:nowrap!important;overflow:hidden!important;text-overflow:ellipsis!important
+  }
+  .game-brand{font-size:8px!important;white-space:nowrap!important}
+  .sfxbtn{font-size:8px!important;padding:3px 5px!important;min-height:24px!important}
+
+  .frame{
+    grid-area:game!important;
+    align-self:center!important;justify-self:center!important;
+    box-sizing:border-box!important;
+    width:min(100%,calc((100dvh - 34px)*1.333333))!important;
+    max-width:100%!important;
+    max-height:calc(100dvh - 34px)!important;
+    margin:0!important;
+    border-width:2px!important
+  }
+  canvas{
+    display:block!important;
+    width:100%!important;height:auto!important;
+    max-width:100%!important;
+    max-height:calc(100dvh - 38px)!important;
+    aspect-ratio:4/3!important;
+    object-fit:contain!important;
+    margin:auto!important;
+    touch-action:none!important
+  }
+
+  .touch-controls{display:contents!important}
+
+  .dpad{
+    grid-area:left!important;
+    justify-self:center!important;align-self:center!important;
+    display:grid!important;
+    grid-template-columns:repeat(3,var(--land-btn))!important;
+    grid-template-rows:repeat(3,var(--land-btn))!important;
+    gap:2px!important;
+    margin:0!important;padding:0!important
+  }
+  .dpad .up{grid-column:2!important;grid-row:1!important}
+  .dpad .left{grid-column:1!important;grid-row:2!important}
+  .dpad .right{grid-column:3!important;grid-row:2!important}
+  .dpad .down{grid-column:2!important;grid-row:3!important}
+
+  .touch-btn{
+    min-width:var(--land-btn)!important;
+    min-height:var(--land-btn)!important;
+    width:var(--land-btn)!important;
+    height:var(--land-btn)!important;
+    padding:0!important;
+    font-size:clamp(15px,5vh,20px)!important;
+    border-radius:9px!important
+  }
+
+  .action-pad{
+    grid-area:right!important;
+    justify-self:center!important;align-self:center!important;
+    display:flex!important;
+    flex-direction:column!important;
+    align-items:center!important;justify-content:center!important;
+    gap:clamp(7px,2.2vh,12px)!important;
+    margin:0!important;padding:0!important
+  }
+  .action{
+    width:clamp(54px,18vh,70px)!important;
+    height:clamp(54px,18vh,70px)!important;
+    min-width:clamp(54px,18vh,70px)!important;
+    min-height:clamp(54px,18vh,70px)!important;
+    font-size:clamp(21px,7vh,28px)!important
+  }
+  .start{
+    width:clamp(68px,19vw,92px)!important;
+    height:clamp(34px,10vh,42px)!important;
+    min-width:0!important;min-height:0!important;
+    font-size:clamp(8px,2.7vh,11px)!important
+  }
+
+  .help,.touch-hint,.fps-note{display:none!important}
+}
+
+@media (orientation:landscape) and (max-height:390px) and (max-width:780px){
+  .wrap{
+    --land-btn:clamp(31px,10.5vh,39px);
+    grid-template-columns:clamp(104px,18vw,122px) minmax(0,1fr) clamp(88px,16vw,108px)!important;
+    grid-template-rows:24px minmax(0,1fr)!important;
+    column-gap:3px!important;
+    padding:1px max(4px,env(safe-area-inset-right)) 1px max(4px,env(safe-area-inset-left))!important
+  }
+  .top{height:23px!important;min-height:23px!important}
+  .game-brand{display:none!important}
+  .title{font-size:10px!important}
+  .sfxbtn{min-height:21px!important;font-size:7px!important;padding:2px 4px!important}
+  .frame{
+    width:min(100%,calc((100dvh - 28px)*1.333333))!important;
+    max-height:calc(100dvh - 28px)!important
+  }
+  canvas{max-height:calc(100dvh - 31px)!important}
+  .action{
+    width:clamp(48px,17vh,59px)!important;
+    height:clamp(48px,17vh,59px)!important;
+    min-width:clamp(48px,17vh,59px)!important;
+    min-height:clamp(48px,17vh,59px)!important
+  }
+  .start{
+    width:clamp(62px,18vw,76px)!important;
+    height:clamp(30px,9vh,35px)!important
+  }
+}
+
+
+/* Prevent browser long-press selection/callouts on game controls. */
+.touch-controls,.dpad,.action-pad,.touch-btn,
+.touch-controls *,.dpad *,.action-pad *{
+  -webkit-user-select:none!important;
+  -moz-user-select:none!important;
+  -ms-user-select:none!important;
+  user-select:none!important;
+  -webkit-touch-callout:none!important;
+  -webkit-tap-highlight-color:transparent!important;
+  touch-action:none!important;
+}
+.touch-btn{
+  cursor:pointer;
+  -webkit-user-drag:none!important;
+  user-drag:none!important;
+  text-decoration:none!important;
+}
+
+
+/* Bigger directional buttons for easier mobile play */
+@media (hover:none), (pointer:coarse), (max-width:900px){
+  .touch-controls{
+    width:min(100%,720px)!important;
+    gap:18px!important;
+    padding:6px 10px!important;
+  }
+  .dpad{
+    gap:6px!important;
+  }
+  .dpad .touch-btn{
+    width:60px!important;
+    height:60px!important;
+    min-width:60px!important;
+    min-height:60px!important;
+    font-size:24px!important;
+    border-radius:12px!important;
+  }
+}
+
+@media (orientation:landscape) and (max-height:760px) and (max-width:1200px){
+  .wrap{
+    --land-btn:clamp(40px,12.5vh,54px)!important;
+    grid-template-columns:clamp(118px,20vw,166px) minmax(0,1fr) clamp(100px,17vw,146px)!important;
+  }
+  .dpad{gap:3px!important}
+  .dpad .touch-btn{
+    font-size:clamp(17px,5.4vh,22px)!important;
+    border-radius:10px!important;
+  }
+}
+
+@media (orientation:landscape) and (max-height:390px) and (max-width:780px){
+  .wrap{
+    --land-btn:clamp(35px,11.5vh,46px)!important;
+    grid-template-columns:clamp(110px,19vw,132px) minmax(0,1fr) clamp(88px,16vw,108px)!important;
+  }
+  .dpad{gap:2px!important}
+  .dpad .touch-btn{
+    font-size:clamp(16px,5vh,20px)!important;
+  }
+}
+
+
+/* Universal difficulty selector + level HUD */
+.rw-diffbox{margin-left:auto;display:flex;align-items:center;gap:5px;color:#8eeeff;font:700 9px "Courier New",monospace;letter-spacing:.6px;white-space:nowrap}
+.rw-diffbox select{height:26px;border:1px solid #676b98;background:#101025;color:#fff;font:700 10px "Courier New",monospace;padding:2px 5px;outline:none}
+.rw-diffbox select:focus{border-color:#00eaff;box-shadow:0 0 8px #00eaff55}
+.rw-level-hud{position:static;z-index:auto;pointer-events:none;display:flex;gap:4px;align-items:center;font:700 8px "Courier New",monospace;letter-spacing:.45px;text-shadow:1px 1px #000;white-space:nowrap;flex:0 0 auto}
+.rw-level-hud span{padding:4px 6px;border:1px solid #00ddeb;background:#030718dd;color:#8ffaff;box-shadow:0 0 8px #00ddeb22}
+.rw-level-hud .rw-diff{border-color:#ff3bd4;color:#ffd0f6}
+.rw-level-hud .rw-next{border-color:#5f668e;color:#b8bdd7;background:#090b19dd}
+.rw-level-hud .rw-boss{display:none;border-color:#ff4058;color:#ffe173;background:#25050bdd;animation:rwBossPulse .55s steps(2,end) infinite}
+.rw-level-hud.boss .rw-boss{display:inline-block}
+.rw-level-banner{position:absolute;z-index:41;left:50%;top:20%;transform:translateX(-50%);pointer-events:none;opacity:0;padding:8px 14px;border:2px solid #ffe15c;background:#05040de8;color:#ffe15c;font:900 16px "Courier New",monospace;letter-spacing:2px;text-shadow:2px 2px #000;transition:opacity .15s ease;white-space:nowrap}
+.rw-level-banner.show{opacity:1}
+@keyframes rwBossPulse{50%{filter:brightness(1.6);transform:scale(1.03)}}
+@media(max-width:620px){.rw-diffbox span{display:none}.rw-diffbox select{width:70px;padding:1px 3px;font-size:9px}.rw-level-hud{gap:2px}.rw-level-hud .rw-next{display:none}.rw-level-hud span{padding:3px 4px;font-size:8px}.rw-level-banner{font-size:12px;padding:6px 9px}}
+@media(orientation:landscape) and (max-height:760px){.rw-diffbox{gap:2px;margin-left:3px}.rw-diffbox span{display:none}.rw-diffbox select{height:23px;width:66px;font-size:8px;padding:0 2px}.rw-level-hud{gap:2px}.rw-level-hud .rw-next{display:none}.rw-level-hud span{font-size:7px;padding:2px 3px}.rw-level-banner{top:13%;font-size:11px}}
+
+</style>
+<script>addEventListener('keydown',function(e){if((e.keyCode||e.which)===461&&window.parent!==window){e.preventDefault();window.parent.postMessage({type:'retroworld-tv-back'},'*');}},true);</script></head><body><div class="wrap"><div class="top"><span class="game-brand">DIGITAL EYE</span><div class="title">GALACTIC GOLF</div><div class="rw-diffbox"><span>DIFFICULTY</span><select id="difficultySelect" aria-label="Game difficulty"><option value="easy">EASY</option><option value="normal" selected>NORMAL</option><option value="hard">HARD</option></select></div><button id="sfxToggle" class="sfxbtn" type="button" onclick="SFX.toggle()">SFX: ON</button></div>
+<div class="frame"><canvas id="g" width="640" height="480"></canvas></div><div class="help"><kbd>LEFT/RIGHT</kbd> aim &nbsp; hold <kbd>A/SPACE</kbd> for power and release to shoot &nbsp; <kbd>UP/DOWN</kbd> fine power</div><div class="touch-controls" id="touchControls" aria-label="Mobile game controls">
+  <div class="dpad">
+    <button class="touch-btn up" data-touch-key="ArrowUp" aria-label="Up">▲</button>
+    <button class="touch-btn left" data-touch-key="ArrowLeft" aria-label="Left">◀</button>
+    <button class="touch-btn right" data-touch-key="ArrowRight" aria-label="Right">▶</button>
+    <button class="touch-btn down" data-touch-key="ArrowDown" aria-label="Down">▼</button>
+  </div>
+  <div class="action-pad">
+    <button class="touch-btn action" data-touch-key="SPACE" aria-label="Action">A</button>
+    <button class="touch-btn start" data-touch-key="ENTER" aria-label="Start or restart">START</button>
+  </div>
+</div>
+<div class="touch-hint">TOUCH: D-PAD + A • TAP CANVAS • HOLD CANVAS = SECONDARY ACTION</div></div><script>
+
+const MOBILE_TOUCH=(()=>{
+  const keyValue=v=>v==='SPACE'?' ':v==='ENTER'?'Enter':v;
+  function fire(type,key){
+    const ev=new KeyboardEvent(type,{key:keyValue(key),bubbles:true,cancelable:true});
+    window.dispatchEvent(ev);
+  }
+  document.querySelectorAll('[data-touch-key]').forEach(btn=>{
+    const key=btn.dataset.touchKey;
+    const down=e=>{
+      e.preventDefault();
+      try{btn.setPointerCapture(e.pointerId)}catch(_){}
+      btn.classList.add('pressed');
+      fire('keydown',key);
+    };
+    const up=e=>{
+      e.preventDefault();
+      btn.classList.remove('pressed');
+      fire('keyup',key);
+    };
+    btn.addEventListener('pointerdown',down,{passive:false});
+    btn.addEventListener('pointerup',up,{passive:false});
+    btn.addEventListener('pointercancel',up,{passive:false});
+    btn.addEventListener('pointerleave',e=>{if(btn.classList.contains('pressed'))up(e)},{passive:false});
+  });
+
+  // Makes mouse-driven games work on phones too.
+  // Tap = normal click, long-press = secondary/right click.
+  const canvas=document.getElementById('g');
+  if(canvas){
+    let holdTimer=null,held=false,startX=0,startY=0;
+    const mouse=(button,cx,cy)=>{
+      canvas.dispatchEvent(new MouseEvent('mousedown',{
+        bubbles:true,cancelable:true,button,
+        clientX:cx,clientY:cy,view:window
+      }));
+    };
+    canvas.addEventListener('pointerdown',e=>{
+      if(e.pointerType!=='touch')return;
+      e.preventDefault(); held=false; startX=e.clientX; startY=e.clientY;
+      holdTimer=setTimeout(()=>{held=true;mouse(2,startX,startY)},520);
+    },{passive:false});
+    canvas.addEventListener('pointermove',e=>{
+      if(e.pointerType!=='touch'||!holdTimer)return;
+      if(Math.hypot(e.clientX-startX,e.clientY-startY)>16){clearTimeout(holdTimer);holdTimer=null}
+    },{passive:false});
+    canvas.addEventListener('pointerup',e=>{
+      if(e.pointerType!=='touch')return;
+      e.preventDefault();
+      if(holdTimer){clearTimeout(holdTimer);holdTimer=null}
+      if(!held)mouse(0,e.clientX,e.clientY);
+      held=false;
+    },{passive:false});
+    canvas.addEventListener('pointercancel',()=>{
+      if(holdTimer)clearTimeout(holdTimer);holdTimer=null;held=false;
+    },{passive:false});
+  }
+
+  // Block long-press browser UI (Select / Select All / copy callout / drag)
+  // only inside the on-screen game controls.
+  const touchRoot=document.getElementById('touchControls');
+  if(touchRoot){
+    ['contextmenu','selectstart','dragstart'].forEach(type=>{
+      touchRoot.addEventListener(type,e=>e.preventDefault(),{capture:true});
+    });
+    touchRoot.addEventListener('touchstart',e=>e.preventDefault(),{passive:false,capture:true});
+    touchRoot.addEventListener('touchmove',e=>e.preventDefault(),{passive:false,capture:true});
+
+    // Some mobile browsers can still create a Selection during a long hold.
+    document.addEventListener('selectionchange',()=>{
+      const sel=window.getSelection&&window.getSelection();
+      if(!sel||sel.rangeCount===0)return;
+      const node=sel.anchorNode;
+      const el=node&&(node.nodeType===1?node:node.parentElement);
+      if(el&&touchRoot.contains(el)){
+        try{sel.removeAllRanges()}catch(_){}
+      }
+    });
+  }
+
+  return {};
+})();
+
+
+
+const SFX=(()=>{
+  let ac=null, master=null, engineOsc=null, engineGain=null;
+  let enabled=true;
+  try{ enabled=localStorage.getItem('retroWorldSFX')!=='off'; }catch(e){}
+  function ensure(){
+    if(!ac){
+      ac=new (window.AudioContext||window.webkitAudioContext)();
+      master=ac.createGain(); master.gain.value=0.7; master.connect(ac.destination);
+    }
+    if(ac.state==='suspended') ac.resume();
+    return ac;
+  }
+  function tone(freq=440,dur=.06,type='square',vol=.05,endFreq=null){
+    if(!enabled) return;
+    ensure();
+    const o=ac.createOscillator(), g=ac.createGain();
+    o.type=type; o.frequency.setValueAtTime(Math.max(20,freq),ac.currentTime);
+    if(endFreq) o.frequency.exponentialRampToValueAtTime(Math.max(20,endFreq),ac.currentTime+dur);
+    g.gain.setValueAtTime(Math.max(.0001,vol),ac.currentTime);
+    g.gain.exponentialRampToValueAtTime(.0001,ac.currentTime+dur);
+    o.connect(g); g.connect(master); o.start(); o.stop(ac.currentTime+dur+.01);
+  }
+  function noise(dur=.12,vol=.05){
+    if(!enabled) return;
+    ensure();
+    const len=Math.max(1,Math.floor(ac.sampleRate*dur));
+    const buf=ac.createBuffer(1,len,ac.sampleRate), data=buf.getChannelData(0);
+    for(let i=0;i<len;i++) data[i]=(Math.random()*2-1)*(1-i/len);
+    const s=ac.createBufferSource(), g=ac.createGain();
+    s.buffer=buf; g.gain.value=vol; s.connect(g); g.connect(master); s.start();
+  }
+  function laser(){ tone(980,.09,'square',.045,260); }
+  function enemyLaser(){ tone(330,.08,'sawtooth',.035,140); }
+  function hit(){ tone(240,.045,'square',.045,125); }
+  function paddle(){ tone(520,.035,'square',.04,620); }
+  function wall(){ tone(300,.025,'square',.025); }
+  function boom(big=false){ noise(big?.28:.15,big?.09:.055); tone(big?70:110,big?.25:.13,'sawtooth',big?.07:.045,big?30:55); }
+  function pickup(){ tone(660,.055,'square',.04,880); setTimeout(()=>tone(990,.07,'square',.035,1320),45); }
+  function success(){ tone(523,.08,'square',.04); setTimeout(()=>tone(659,.08,'square',.04),90); setTimeout(()=>tone(784,.14,'square',.04),180); }
+  function fail(){ tone(180,.12,'sawtooth',.05,90); setTimeout(()=>tone(90,.18,'sawtooth',.04,45),90); }
+  function jump(){ tone(260,.11,'square',.04,650); }
+  function step(){ tone(115,.025,'square',.018); }
+  function flag(){ tone(760,.04,'square',.025); }
+  function flip(){ tone(420,.035,'square',.025); }
+  function mismatch(){ tone(180,.1,'square',.035,130); }
+  function cannon(){ noise(.07,.055); tone(95,.12,'square',.055,55); }
+  function line(n=1){ tone(400+n*80,.07,'square',.04); setTimeout(()=>tone(650+n*90,.11,'square',.035),60); }
+  function score(){ tone(700,.045,'square',.025,900); }
+  function engine(on=true,freq=95,vol=.018){
+    if(!enabled){ stopEngine(); return; }
+    ensure();
+    if(on){
+      if(!engineOsc){
+        engineOsc=ac.createOscillator(); engineGain=ac.createGain();
+        engineOsc.type='sawtooth'; engineOsc.frequency.value=freq;
+        engineGain.gain.value=vol; engineOsc.connect(engineGain); engineGain.connect(master); engineOsc.start();
+      }
+      engineOsc.frequency.setTargetAtTime(Math.max(35,freq),ac.currentTime,.04);
+      engineGain.gain.setTargetAtTime(vol,ac.currentTime,.04);
+    } else stopEngine();
+  }
+  function stopEngine(){
+    if(engineOsc){try{engineOsc.stop()}catch(e){} engineOsc=null;engineGain=null;}
+  }
+  function toggle(){
+    enabled=!enabled;
+    try{localStorage.setItem('retroWorldSFX',enabled?'on':'off')}catch(e){}
+    if(!enabled) stopEngine();
+    updateButton();
+    if(enabled) tone(660,.05,'square',.025);
+  }
+  function updateButton(){
+    const b=document.getElementById('sfxToggle');
+    if(b){b.textContent=enabled?'SFX: ON':'SFX: OFF';b.classList.toggle('off',!enabled);}
+  }
+  addEventListener('pointerdown',()=>{if(enabled)ensure()},{once:true});
+  addEventListener('keydown',()=>{if(enabled)ensure()},{once:true});
+  addEventListener('load',updateButton);
+  return {tone,noise,laser,enemyLaser,hit,paddle,wall,boom,pickup,success,fail,jump,step,flag,flip,mismatch,cannon,line,score,engine,stopEngine,toggle,updateButton};
+})();
+
+
+
+const ARCADE_AUDIO_POLISH=(()=>{
+  addEventListener('keydown',e=>{
+    if(e.repeat)return;
+    if(e.key==='Enter')SFX.tone(540,.045,'square',.018,720);
+    else if(['ArrowLeft','ArrowRight','ArrowUp','ArrowDown'].includes(e.key))SFX.tone(125,.022,'square',.008);
+  });
+  return {};
+})();
+
+
+const PORTABLE_GAMEPAD=(()=>{
+  const state={ArrowUp:false,ArrowDown:false,ArrowLeft:false,ArrowRight:false,' ':false,Enter:false};
+  let raf=0,connected=false;
+
+  function emit(key,down){
+    if(state[key]===down)return;
+    state[key]=down;
+    window.dispatchEvent(new KeyboardEvent(down?'keydown':'keyup',{
+      key,bubbles:true,cancelable:true
+    }));
+  }
+
+  function readButton(gp,i){return !!(gp&&gp.buttons&&gp.buttons[i]&&gp.buttons[i].pressed)}
+
+  function loop(){
+    const pads=navigator.getGamepads?navigator.getGamepads():[];
+    let gp=null;
+    for(const p of pads){if(p&&p.connected){gp=p;break}}
+
+    if(gp){
+      connected=true;
+      const ax0=gp.axes&&gp.axes.length>0?gp.axes[0]:0;
+      const ax1=gp.axes&&gp.axes.length>1?gp.axes[1]:0;
+      const dead=.38;
+
+      emit('ArrowLeft', ax0<-dead || readButton(gp,14));
+      emit('ArrowRight',ax0> dead || readButton(gp,15));
+      emit('ArrowUp',   ax1<-dead || readButton(gp,12));
+      emit('ArrowDown', ax1> dead || readButton(gp,13));
+      emit(' ',readButton(gp,0));
+      emit('Enter',readButton(gp,9));
+    }else if(connected){
+      connected=false;
+      Object.keys(state).forEach(k=>emit(k,false));
+    }
+    raf=requestAnimationFrame(loop);
+  }
+
+  addEventListener('gamepadconnected',()=>{
+    if(!raf)raf=requestAnimationFrame(loop);
+    try{SFX.tone(620,.05,'square',.02,820)}catch(e){}
+  });
+
+  if(navigator.getGamepads)raf=requestAnimationFrame(loop);
+  return {};
+})();
+
+
+const c=document.getElementById('g'),x=c.getContext('2d');x.imageSmoothingEnabled=false;
+const W=c.width,H=c.height,K={};
+addEventListener('keydown',e=>{K[e.key.toLowerCase()]=1;if([' ','arrowup','arrowdown','arrowleft','arrowright'].includes(e.key.toLowerCase()))e.preventDefault()});
+addEventListener('keyup',e=>K[e.key.toLowerCase()]=0);
+let last=0;
+function txt(s,a,b,z=16,col='#fff',al='left'){x.fillStyle=col;x.font=`bold ${z}px Courier New`;x.textAlign=al;x.textBaseline='top';x.fillText(s,a,b)}
+function R(a,b){return Math.random()*(b-a)+a}
+function C(v,a,b){return Math.max(a,Math.min(b,v))}
+
+const PLANETS=[
+ {name:'EARTH',subtitle:'BLUE FAIRWAY',g:420,friction:.955,bounce:.24,par:4,wind:0,sky:'#09213f',ground:'#3f8c45',soil:'#604927',accent:'#86dcff',tee:70,hole:560,terrain:[[0,385],[105,385],[175,360],[255,380],[335,355],[420,382],[510,370],[640,370]],water:[{x1:270,x2:330,y:363}],rocks:[{x:430,y:342,w:22,h:40}],lasers:[]},
+ {name:'MARS',subtitle:'LOW-G DUNES',g:245,friction:.968,bounce:.30,par:4,wind:7,sky:'#35100a',ground:'#c56739',soil:'#71351f',accent:'#ffd25a',tee:72,hole:568,terrain:[[0,390],[110,390],[175,355],[245,330],[315,360],[385,335],[475,375],[640,375]],water:[],rocks:[{x:285,y:304,w:34,h:44},{x:450,y:345,w:26,h:34}],lasers:[]},
+ {name:'JUPITER',subtitle:'HEAVY-G RIDGE',g:710,friction:.925,bounce:.15,par:5,wind:3,sky:'#362112',ground:'#d2a464',soil:'#79562e',accent:'#ffb356',tee:64,hole:565,terrain:[[0,388],[120,388],[190,350],[250,305],[330,345],[400,300],[470,350],[530,365],[640,365]],water:[],rocks:[{x:218,y:282,w:30,h:50},{x:405,y:270,w:30,h:42}],lasers:[]},
+ {name:'NEPTUNE',subtitle:'METHANE ICE',g:465,friction:.993,bounce:.20,par:5,wind:10,sky:'#071b47',ground:'#7ed7e6',soil:'#244b70',accent:'#9df8ff',tee:72,hole:560,terrain:[[0,386],[135,386],[205,365],[275,378],[345,350],[420,350],[500,370],[640,370]],water:[],rocks:[{x:238,y:338,w:22,h:40}],lasers:[{x:390,y1:225,y2:350,phase:0,min:1}]},
+ {name:'KEPLER',subtitle:'ALIEN GREEN',g:355,friction:.965,bounce:.34,par:5,wind:9,sky:'#161035',ground:'#6dca62',soil:'#3f3d5d',accent:'#d2ff74',tee:65,hole:575,terrain:[[0,390],[105,390],[160,350],[220,370],[285,320],[355,365],[425,330],[505,370],[640,360]],water:[{x1:330,x2:372,y:350}],rocks:[{x:245,y:288,w:28,h:32},{x:470,y:334,w:22,h:36}],lasers:[]},
+ {name:'VENUS',subtitle:'ACID CLOUDS',g:390,friction:.952,bounce:.28,par:5,wind:14,sky:'#39220b',ground:'#b9953d',soil:'#70501f',accent:'#fff07a',tee:68,hole:570,terrain:[[0,390],[95,390],[150,340],[220,365],[285,310],[355,350],[425,305],[500,365],[640,365]],water:[{x1:175,x2:218,y:350}],rocks:[{x:325,y:320,w:24,h:45}],lasers:[{x:455,y1:220,y2:355,phase:.8,min:1}]},
+ {name:'TITAN',subtitle:'FROZEN METHANE',g:295,friction:.988,bounce:.24,par:5,wind:16,sky:'#19182b',ground:'#abcbd0',soil:'#45545f',accent:'#d5ffff',tee:70,hole:566,terrain:[[0,388],[100,388],[180,370],[240,325],[310,365],[390,318],[465,355],[535,370],[640,370]],water:[],rocks:[{x:270,y:300,w:28,h:34},{x:470,y:330,w:25,h:38}],lasers:[{x:365,y1:210,y2:350,phase:1.6,min:2}]},
+ {name:'IO',subtitle:'VOLCANIC SLINGSHOT',g:520,friction:.948,bounce:.38,par:6,wind:11,sky:'#31100d',ground:'#d57534',soil:'#6c2f1e',accent:'#ffcf5d',tee:64,hole:580,terrain:[[0,390],[105,390],[165,345],[225,305],[295,360],[355,285],[425,350],[500,320],[640,365]],water:[{x1:305,x2:345,y:350}],rocks:[{x:205,y:285,w:28,h:45},{x:505,y:292,w:26,h:45}],lasers:[{x:405,y1:185,y2:335,phase:.4,min:1}]},
+ {name:'EUROPA',subtitle:'CRACKED ICE',g:315,friction:.994,bounce:.18,par:6,wind:18,sky:'#0c1831',ground:'#9ce3ef',soil:'#33516c',accent:'#c7fbff',tee:65,hole:575,terrain:[[0,390],[105,390],[155,360],[220,375],[285,330],[350,370],[410,320],[475,365],[545,345],[640,365]],water:[{x1:240,x2:285,y:360},{x1:455,x2:490,y:350}],rocks:[{x:365,y:305,w:25,h:35}],lasers:[{x:520,y1:215,y2:345,phase:1.1,min:1}]},
+ {name:'UMBRA',subtitle:'DARK STAR FINAL',g:445,friction:.958,bounce:.31,par:6,wind:22,sky:'#070612',ground:'#7f5b9c',soil:'#382e4d',accent:'#ff65e1',tee:62,hole:582,terrain:[[0,392],[95,392],[145,345],[210,300],[275,355],[335,292],[400,345],[455,285],[520,350],[640,360]],water:[{x1:235,x2:275,y:350}],rocks:[{x:170,y:280,w:28,h:48},{x:485,y:320,w:26,h:42}],lasers:[{x:315,y1:175,y2:340,phase:0,min:1},{x:435,y1:170,y2:330,phase:1.9,min:2}]}
+];
+
+const GOLF_DIFF={easy:{label:'EASY',rank:0,g:.96,wind:.35,cup:16,laser:.72},normal:{label:'NORMAL',rank:1,g:1,wind:1,cup:12,laser:1},hard:{label:'HARD',rank:2,g:1.05,wind:1.45,cup:9,laser:1.28}};
+let state='title',course=0,level=1,difficulty='normal',gdiff=GOLF_DIFF.normal,ball,angle=-42*Math.PI/180,power=.58,charging=false,chargeDir=1;
+let strokes=0,totalStrokes=0,score=0,holeDone=false,message='',messageT=0,aimLatch=false;
+let resetTimer=0,lastSafe=null,stars=[];
+
+for(let i=0;i<80;i++)stars.push({x:R(0,W),y:R(0,260),s:R(1,2.5),p:R(0,6.28)});
+
+function readGolfDifficulty(){const e=document.getElementById('difficultySelect');difficulty=e&&GOLF_DIFF[e.value]?e.value:'normal';gdiff=GOLF_DIFF[difficulty]}
+document.getElementById('difficultySelect')?.addEventListener('change',()=>{if(state==='title'||holeDone)readGolfDifficulty()});
+function rawCfg(){return PLANETS[course]}
+function cfg(){
+ const q=rawCfg();
+ return {...q,g:q.g*gdiff.g,wind:q.wind*gdiff.wind,
+   rocks:q.rocks.filter(o=>(o.min||0)<=gdiff.rank),
+   lasers:q.lasers.filter(o=>(o.min||0)<=gdiff.rank)}
+}
+function groundY(px){
+  const pts=cfg().terrain;
+  if(px<=pts[0][0])return pts[0][1];
+  for(let i=0;i<pts.length-1;i++){
+    let a=pts[i],b=pts[i+1];
+    if(px<=b[0]){
+      let t=(px-a[0])/(b[0]-a[0]);
+      return a[1]+(b[1]-a[1])*t;
+    }
+  }
+  return pts[pts.length-1][1];
+}
+function slopeAt(px){
+  let a=groundY(C(px-3,0,W)),b=groundY(C(px+3,0,W));
+  return Math.atan2(b-a,6);
+}
+function teePoint(){
+  let px=cfg().tee;
+  return{x:px,y:groundY(px)-9};
+}
+function holePoint(){
+  let px=cfg().hole;
+  return{x:px,y:groundY(px)};
+}
+function resetBall(penalty=false){
+  let p=lastSafe||teePoint();
+  ball={x:p.x,y:p.y,vx:0,vy:0,r:7,moving:false,onGround:true};
+  angle=-42*Math.PI/180;
+  power=.58;charging=false;chargeDir=1;
+  if(penalty){strokes++;totalStrokes++;message='PENALTY +1';messageT=1.2;SFX.fail()}
+}
+function beginHole(){
+  level=course+1;readGolfDifficulty();strokes=0;holeDone=false;message='';messageT=0;resetTimer=0;
+  lastSafe=teePoint();resetBall(false);state='play';
+}
+function resetGame(){
+  readGolfDifficulty();course=0;level=1;totalStrokes=0;score=0;beginHole();
+}
+function nextHole(){
+  if(!holeDone)return;
+  if(course>=PLANETS.length-1){state='win';SFX.success();return}
+  course++;beginHole();SFX.success();
+}
+function shoot(p=power){
+  if(state!=='play'||holeDone||ball.moving||resetTimer>0)return false;
+  let speed=180+p*470;
+  ball.vx=Math.cos(angle)*speed;
+  ball.vy=Math.sin(angle)*speed;
+  ball.moving=true;ball.onGround=false;
+  strokes++;totalStrokes++;
+  SFX.cannon();
+  return true;
+}
+function sink(){
+  if(holeDone)return;
+  holeDone=true;ball.moving=false;ball.vx=ball.vy=0;
+  let delta=cfg().par-strokes;
+  score+=500+Math.max(-3,delta)*150;
+  message=delta>1?'EAGLE!':delta===1?'BIRDIE!':delta===0?'PAR':delta===-1?'BOGEY':'HOLE COMPLETE';
+  messageT=999;
+  SFX.success();
+}
+function hazardPenalty(){
+  if(resetTimer>0)return;
+  resetTimer=.8;ball.moving=false;ball.vx=ball.vy=0;message='HAZARD!';messageT=.8;SFX.boom(true);
+}
+function laserActive(l,t){return Math.sin(t*3.2*gdiff.laser+l.phase)>-.15}
+function rectBall(o){
+  let px=C(ball.x,o.x,o.x+o.w),py=C(ball.y,o.y,o.y+o.h);
+  return Math.hypot(ball.x-px,ball.y-py)<ball.r;
+}
+function bounceRock(o){
+  let px=C(ball.x,o.x,o.x+o.w),py=C(ball.y,o.y,o.y+o.h),dx=ball.x-px,dy=ball.y-py,d=Math.hypot(dx,dy)||1;
+  if(d>=ball.r)return;
+  let nx=dx/d,ny=dy/d,dot=ball.vx*nx+ball.vy*ny;
+  ball.x=px+nx*(ball.r+1);ball.y=py+ny*(ball.r+1);
+  if(dot<0){ball.vx-=1.7*dot*nx;ball.vy-=1.7*dot*ny}
+  ball.vx*=.78;ball.vy*=.78;SFX.wall();
+}
+function trajectory(){
+  let pts=[],p=power,sp=180+p*470,px=ball.x,py=ball.y,vx=Math.cos(angle)*sp,vy=Math.sin(angle)*sp,g=cfg().g;
+  for(let i=0;i<26;i++){
+    let dt=.055;vy+=g*dt;px+=vx*dt;py+=vy*dt;
+    if(px<0||px>W)break;
+    let gy=groundY(px);
+    if(py>=gy-4)break;
+    pts.push({x:px,y:py});
+  }
+  return pts;
+}
+function chargeUpdate(dt){
+  if(!charging)return;
+  power+=chargeDir*dt*.75;
+  if(power>=1){power=1;chargeDir=-1}
+  if(power<=.18){power=.18;chargeDir=1}
+}
+function releaseCharge(){
+  if(!charging)return;
+  charging=false;shoot(power);
+}
+addEventListener('keydown',e=>{
+  if(e.key==='Enter'){
+    if(state==='title'||state==='win')resetGame();
+    else if(holeDone)nextHole();
+  }
+  if(e.key===' '&&state==='play'&&!holeDone&&!ball.moving&&!charging){
+    charging=true;chargeDir=1;SFX.tone(250,.03,'square',.015);
+  }
+});
+addEventListener('keyup',e=>{
+  if(e.key===' ')releaseCharge();
+});
+
+c.addEventListener('pointerdown',e=>{
+  if(e.pointerType==='touch')return;
+  if(state==='title'||state==='win'){resetGame();return}
+  if(holeDone){nextHole();return}
+  if(ball.moving)return;
+  let r=c.getBoundingClientRect(),mx=(e.clientX-r.left)*W/r.width,my=(e.clientY-r.top)*H/r.height;
+  angle=C(Math.atan2(my-ball.y,mx-ball.x),-1.48,-.08);
+  charging=true;chargeDir=1;
+});
+c.addEventListener('pointerup',e=>{
+  if(e.pointerType==='touch')return;
+  releaseCharge();
+});
+
+function up(dt,t){
+  for(let s of stars)s.p+=dt;
+  messageT=Math.max(0,messageT-dt);
+
+  if(state!=='play')return;
+
+  if(holeDone){
+    if(K[' ']&&!aimLatch){aimLatch=true;nextHole()}
+    if(!K[' '])aimLatch=false;
+    return;
+  }
+
+  if(resetTimer>0){
+    resetTimer-=dt;
+    if(resetTimer<=0)resetBall(true);
+    return;
+  }
+
+  if(!ball.moving){
+    let left=K.arrowleft||K.a,right=K.arrowright||K.d,upk=K.arrowup||K.w,down=K.arrowdown||K.s;
+    if(left)angle-=1.15*dt;
+    if(right)angle+=1.15*dt;
+    if(upk)power=C(power+.5*dt,.18,1);
+    if(down&&!charging)power=C(power-.5*dt,.18,1);
+    angle=C(angle,-1.48,-.08);
+
+    if(K[' ']&&!charging){
+      charging=true;chargeDir=1;
+    }
+    chargeUpdate(dt);
+    return;
+  }
+
+  // Ball physics.
+  const q=cfg();
+  ball.vx+=Math.sin(t/1150+course*.73)*q.wind*dt;
+  ball.vy+=q.g*dt;
+  ball.x+=ball.vx*dt;ball.y+=ball.vy*dt;
+
+  // Screen sides.
+  if(ball.x<8){ball.x=8;ball.vx=Math.abs(ball.vx)*.55}
+  if(ball.x>W-8){ball.x=W-8;ball.vx=-Math.abs(ball.vx)*.55}
+
+  // Rock collisions.
+  for(let o of cfg().rocks)if(rectBall(o))bounceRock(o);
+
+  // Laser hazard.
+  for(let l of cfg().lasers){
+    if(laserActive(l,t/1000) && Math.abs(ball.x-l.x)<ball.r+4 && ball.y>l.y1 && ball.y<l.y2){
+      hazardPenalty();return;
+    }
+  }
+
+  // Water / liquid hazard.
+  for(let w of cfg().water){
+    if(ball.x>w.x1&&ball.x<w.x2&&ball.y>w.y){
+      hazardPenalty();return;
+    }
+  }
+
+  // Ground collision. Approximate normal from terrain slope.
+  let gy=groundY(ball.x);
+  if(ball.y+ball.r>=gy){
+    let sl=slopeAt(ball.x),nx=Math.sin(sl),ny=-Math.cos(sl);
+    ball.y=gy-ball.r;
+    let dot=ball.vx*nx+ball.vy*ny;
+    if(dot<0){
+      ball.vx-=1.55*dot*nx;
+      ball.vy-=1.55*dot*ny;
+    }
+    ball.vx*=cfg().friction;
+    ball.vy*=cfg().bounce;
+    ball.onGround=true;
+
+    // Safe respawn position when rolling on solid terrain.
+    let inHaz=cfg().water.some(w=>ball.x>w.x1&&ball.x<w.x2);
+    if(!inHaz)lastSafe={x:ball.x,y:gy-ball.r};
+
+    // Hole capture: cup magnet when ball is slow and very close.
+    let h=holePoint();
+    if(Math.abs(ball.x-h.x)<gdiff.cup && Math.abs(ball.y-(h.y-ball.r))<gdiff.cup*.82 && Math.hypot(ball.vx,ball.vy)<150){
+      ball.x=h.x;ball.y=h.y+3; sink();return;
+    }
+
+    if(Math.abs(ball.vy)<20)ball.vy=0;
+    if(Math.abs(ball.vx)<9&&ball.vy===0){
+      ball.vx=0;ball.moving=false;
+    }
+  } else {
+    ball.onGround=false;
+  }
+
+  // Fell below course.
+  if(ball.y>H+35){hazardPenalty();return}
+}
+function drawTerrain(){
+  let p=cfg().terrain;
+  x.fillStyle=cfg().soil;x.beginPath();x.moveTo(0,H);x.lineTo(p[0][0],p[0][1]);
+  for(let i=1;i<p.length;i++)x.lineTo(p[i][0],p[i][1]);
+  x.lineTo(W,H);x.closePath();x.fill();
+  x.strokeStyle=cfg().ground;x.lineWidth=10;x.lineJoin='round';x.beginPath();x.moveTo(p[0][0],p[0][1]);
+  for(let i=1;i<p.length;i++)x.lineTo(p[i][0],p[i][1]);x.stroke();
+}
+function drawPlanetBackdrop(t){
+  let q=cfg();x.fillStyle=q.sky;x.fillRect(0,0,W,H);
+  for(let s of stars){
+    let a=.28+.25*Math.sin(s.p+s.x);x.fillStyle=`rgba(255,255,255,${a})`;x.fillRect(s.x,s.y,s.s,s.s);
+  }
+  if(q.name==='EARTH'){x.fillStyle='#d8f4ff';x.beginPath();x.arc(520,75,40,0,6.28);x.fill()}
+  if(q.name==='MARS'){x.fillStyle='#e16a40';x.beginPath();x.arc(535,72,48,0,6.28);x.fill()}
+  if(q.name==='JUPITER'){x.fillStyle='#d6a96c';x.beginPath();x.arc(535,76,63,0,6.28);x.fill();x.strokeStyle='#8f6237';x.lineWidth=7;x.beginPath();x.moveTo(480,70);x.lineTo(588,70);x.stroke()}
+  if(q.name==='NEPTUNE'){x.fillStyle='#3978e6';x.beginPath();x.arc(530,78,55,0,6.28);x.fill()}
+  if(q.name==='KEPLER'){x.fillStyle='#85f075';x.beginPath();x.arc(530,78,48,0,6.28);x.fill();x.fillStyle='#1d7b52';x.fillRect(500,65,20,8)}
+  if(['VENUS','TITAN','IO','EUROPA','UMBRA'].includes(q.name)){x.fillStyle=q.accent+'99';x.beginPath();x.arc(530,78,46+(course%3)*6,0,6.28);x.fill()}
+}
+function drawHazards(t){
+  for(let w of cfg().water){
+    x.fillStyle=cfg().name==='NEPTUNE'?'#214d87':'#1557a4';
+    x.fillRect(w.x1,w.y,w.x2-w.x1,H-w.y);
+    for(let xx=w.x1;xx<w.x2;xx+=14){x.fillStyle='#86dcff88';x.fillRect(xx,w.y+3,8,2)}
+  }
+  for(let o of cfg().rocks){
+    x.fillStyle='#3a3541';x.fillRect(o.x,o.y,o.w,o.h);
+    x.fillStyle='#716773';x.fillRect(o.x+4,o.y+4,o.w-8,7);
+  }
+  for(let l of cfg().lasers){
+    let on=laserActive(l,t/1000);
+    x.fillStyle=on?'#ff2bd6':'#552255';x.fillRect(l.x-3,l.y1,6,l.y2-l.y1);
+    x.fillStyle='#fff';x.fillRect(l.x-6,l.y1-5,12,8);x.fillRect(l.x-6,l.y2-3,12,8);
+  }
+}
+function drawHole(){
+  let h=holePoint();
+  x.fillStyle='#080808';x.beginPath();x.ellipse(h.x,h.y+1,12,4,0,0,6.28);x.fill();
+  x.fillStyle='#ddd';x.fillRect(h.x+5,h.y-58,3,58);
+  x.fillStyle=cfg().accent;x.beginPath();x.moveTo(h.x+8,h.y-58);x.lineTo(h.x+38,h.y-48);x.lineTo(h.x+8,h.y-38);x.closePath();x.fill();
+}
+function drawBall(){
+  x.fillStyle='#0007';x.beginPath();x.arc(ball.x+2,ball.y+2,ball.r+1,0,6.28);x.fill();
+  x.fillStyle='#fff';x.beginPath();x.arc(ball.x,ball.y,ball.r,0,6.28);x.fill();
+  x.fillStyle='#aaa';x.fillRect(ball.x-2,ball.y-3,1,1);x.fillRect(ball.x+2,ball.y+1,1,1);
+}
+function drawAim(){
+  if(ball.moving||holeDone)return;
+  let pts=trajectory();
+  x.fillStyle='#ffffff88';for(let i=0;i<pts.length;i+=2)x.fillRect(pts[i].x-2,pts[i].y-2,4,4);
+  let len=55;x.strokeStyle='#ffff55';x.lineWidth=2;x.beginPath();x.moveTo(ball.x,ball.y);x.lineTo(ball.x+Math.cos(angle)*len,ball.y+Math.sin(angle)*len);x.stroke();
+}
+function draw(){
+  drawPlanetBackdrop(performance.now());drawTerrain();drawHazards(performance.now());drawHole();
+
+  if(state==='title'){
+    txt('GALACTIC GOLF',W/2,92,38,'#00ffff','center');
+    txt('10 WORLDS • 10 COURSES • REAL DIFFICULTY',W/2,150,14,'#ff2bd6','center');
+    txt('LEFT / RIGHT = AIM',W/2,200,13,'#ffff55','center');
+    txt('HOLD A / SPACE = POWER • RELEASE = SHOT',W/2,226,12,'#ffff55','center');
+    txt('UP / DOWN = FINE POWER',W/2,252,12,'#66ff67','center');
+    txt('PRESS ENTER / START',W/2,292,17,'#fff','center');
+    return;
+  }
+
+  drawAim();drawBall();
+
+  let q=cfg();
+  txt('GALACTIC GOLF',10,8,12,'#00ffff');
+  txt('HOLE '+level+'/10  PAR '+q.par,10,27,12,'#ffff55');
+  txt(q.name+' // '+q.subtitle,W/2,8,13,q.accent,'center');
+  txt('GRAVITY '+Math.round(q.g/42)/10+'G • WIND '+Math.round(q.wind),W/2,28,10,'#aaaacc','center');
+  txt('STROKES '+strokes,W-10,8,12,'#fff','right');
+  txt('TOTAL '+totalStrokes,W-10,27,11,'#aaaacc','right');
+
+  // Power meter.
+  x.fillStyle='#16162a';x.fillRect(170,445,300,14);
+  x.fillStyle=charging?'#ff2bd6':'#66ff67';x.fillRect(172,447,296*power,10);
+  txt(charging?'CHARGING':'POWER',W/2,426,10,'#aaaacc','center');
+
+  if(messageT>0&&message){
+    x.fillStyle='#000a';x.fillRect(145,188,350,68);
+    txt(message,W/2,205,24,message.includes('HAZARD')||message.includes('PENALTY')?'#ff4b64':'#66ff67','center');
+  }
+  if(holeDone){
+    x.fillStyle='#000d';x.fillRect(110,155,420,150);
+    txt(message,W/2,174,30,'#66ff67','center');
+    txt('HOLE '+(course+1)+'  '+strokes+' STROKES  /  PAR '+q.par,W/2,220,13,'#ffff55','center');
+    txt(course===9?'PRESS A / ENTER FOR RESULTS':'PRESS A / ENTER FOR NEXT PLANET',W/2,258,12,'#00ffff','center');
+  }
+  if(state==='win'){
+    x.fillStyle='#000e';x.fillRect(75,125,490,220);
+    txt('GALACTIC TOUR COMPLETE!',W/2,150,29,'#66ff67','center');
+    txt('TOTAL STROKES '+totalStrokes,W/2,205,17,'#ffff55','center');
+    txt('SCORE '+score,W/2,235,15,'#00ffff','center');
+    txt('PRESS ENTER TO PLAY AGAIN',W/2,288,12,'#ff2bd6','center');
+  }
+}
+function loop(t){let d=Math.min(.03,(t-last)/1000||0);last=t;up(d,t);draw();requestAnimationFrame(loop)}
+requestAnimationFrame(loop);
+
+window.__gameDebug=()=>({
+ state,course,level,difficulty,planet:cfg().name,strokes,totalStrokes,score,holeDone,
+ ball:{...ball},angle,power,gravity:cfg().g
+});
+window.__gameTest={
+ start:()=>resetGame(),
+ shoot:(p=.7,a=-.72)=>{if(state!=='play')resetGame();angle=a;power=p;return shoot(p)},
+ forceSink:()=>{if(state!=='play')resetGame();sink();},
+ next:()=>nextHole(),
+ setBall:(px,py,vx=0,vy=0)=>{ball={x:px,y:py,vx,vy,r:7,moving:Math.abs(vx)+Math.abs(vy)>0,onGround:false};}
+};
+
+
+const RW_LEVEL_SYSTEM=(()=>{
+  const GAME_ID="galactic-golf.html", KIND="sports", NATIVE_LEVEL=true, SCALE_ENABLED=false;
+  const MAX_LEVEL=10, MODE="native", PER_LEVEL=1, PROGRESS_LABEL="NATIVE";
+  const sel=document.getElementById('difficultySelect');
+  const DIFF={
+    easy:{label:'EASY',base:.90,step:.042,challenge:.08},
+    normal:{label:'NORMAL',base:1.00,step:.070,challenge:.15},
+    hard:{label:'HARD',base:1.16,step:.098,challenge:.23}
+  };
+  let difficulty='normal',rwLevel=1,active=false,lastMode='',bannerTimer=0,challengeUntil=0;
+  let baseMetric=0,peakMetric=0,completed=0,lastCompletionMode='',metricName=PROGRESS_LABEL;
+  const frame=document.querySelector('.frame'),topbar=document.querySelector('.top');
+  let hud=null,banner=null;
+
+  function readMode(){
+    try{if(typeof state!=='undefined')return String(state).toLowerCase()}catch(e){}
+    try{if(typeof st!=='undefined')return String(st).toLowerCase()}catch(e){}
+    return ''
+  }
+  function readNativeStage(){
+    if(!NATIVE_LEVEL)return 1;
+    try{const v=(course+1);if(Number.isFinite(v))return Math.max(1,Math.floor(v))}catch(e){}
+    return 1
+  }
+  function readMetric(){
+    try{
+      if(MODE==='metric'){
+        const v=(score);
+        return Number.isFinite(v)?Number(v):null
+      }
+      if(MODE==='minefield'){
+        if(!Array.isArray(reveal)||!Array.isArray(board))return null;
+        let shown=0;
+        for(let y=0;y<reveal.length;y++)for(let z=0;z<(reveal[y]||[]).length;z++)
+          if(reveal[y][z]&&board[y]&&board[y][z]!==-1)shown++;
+        return shown
+      }
+    }catch(e){}
+    return null
+  }
+  function loadDifficulty(){
+    let v='normal';try{v=localStorage.getItem('rwDifficulty:'+GAME_ID)||'normal'}catch(e){}
+    if(!DIFF[v])v='normal';difficulty=v;if(sel)sel.value=v
+  }
+  function saveDifficulty(){
+    if(sel&&DIFF[sel.value])difficulty=sel.value;
+    try{localStorage.setItem('rwDifficulty:'+GAME_ID,difficulty)}catch(e){}
+    updateHud()
+  }
+  loadDifficulty();if(sel)sel.addEventListener('change',saveDifficulty);
+  function cfg(){return DIFF[difficulty]||DIFF.normal}
+  function currentStage(){return NATIVE_LEVEL?Math.min(MAX_LEVEL,readNativeStage()):rwLevel}
+  function challengeActive(){return Date.now()<challengeUntil}
+  function speedScale(){
+    if(!SCALE_ENABLED)return 1;
+    const lv=currentStage();
+    let s=cfg().base+(lv-1)*cfg().step+(challengeActive()?cfg().challenge:0);
+    if(KIND==='cards')s=1+(s-1)*.48;
+    if(KIND==='puzzle')s=1+(s-1)*.72;
+    return Math.max(.78,Math.min(2.25,s))
+  }
+
+  if(!NATIVE_LEVEL&&topbar){
+    hud=document.createElement('div');hud.className='rw-level-hud';
+    hud.innerHTML='<span class="rw-level">LV 1/'+MAX_LEVEL+'</span><span class="rw-diff">NORMAL</span><span class="rw-next"></span><span class="rw-boss">CHALLENGE</span>';
+    const diff=topbar.querySelector('.rw-diffbox');topbar.insertBefore(hud,diff||null)
+  }
+  if(!NATIVE_LEVEL&&frame){
+    banner=document.createElement('div');banner.className='rw-level-banner';banner.textContent='LEVEL 1';frame.appendChild(banner)
+  }
+  function nextThreshold(){
+    if(MODE==='metric'||MODE==='minefield')return PER_LEVEL*rwLevel;
+    return null
+  }
+  function progressValue(){
+    if(MODE==='metric'||MODE==='minefield')return Math.max(0,peakMetric-baseMetric);
+    if(MODE==='completion')return completed;
+    return 0
+  }
+  function updateHud(){
+    if(!hud)return;
+    const a=hud.querySelector('.rw-level'),d=hud.querySelector('.rw-diff'),n=hud.querySelector('.rw-next');
+    if(a)a.textContent='LV '+rwLevel+'/'+MAX_LEVEL;
+    if(d)d.textContent=cfg().label;
+    if(n){
+      if(rwLevel>=MAX_LEVEL)n.textContent='MAX';
+      else if(MODE==='metric'||MODE==='minefield')n.textContent='NEXT '+Math.ceil(nextThreshold());
+      else if(MODE==='completion')n.textContent='NEXT '+PROGRESS_LABEL;
+      else n.textContent=''
+    }
+    hud.classList.toggle('boss',challengeActive())
+  }
+  function flash(text,challenge=false){
+    if(!banner)return;
+    banner.textContent=text;banner.classList.add('show');bannerTimer=Date.now()+1350;
+    if(challenge){
+      challengeUntil=Date.now()+7000;
+      try{SFX.tone(150,.15,'sawtooth',.03,90)}catch(e){}
+    }else try{SFX.tone(720,.06,'square',.025,960)}catch(e){}
+  }
+  function startSession(){
+    active=true;rwLevel=1;completed=0;challengeUntil=0;
+    const m=readMetric();baseMetric=m===null?0:m;peakMetric=baseMetric;
+    flash('LEVEL 1 • '+cfg().label);updateHud()
+  }
+  function levelUp(){
+    if(rwLevel>=MAX_LEVEL)return;
+    rwLevel++;
+    const challenge=(rwLevel===4||rwLevel===7||rwLevel===10);
+    flash(challenge?'CHALLENGE LEVEL '+rwLevel:'LEVEL '+rwLevel,challenge);
+    updateHud()
+  }
+  function syncMetricLevel(){
+    const m=readMetric();if(m===null)return;
+    peakMetric=Math.max(peakMetric,m);
+    const progress=Math.max(0,peakMetric-baseMetric);
+    while(rwLevel<MAX_LEVEL&&progress>=PER_LEVEL*rwLevel)levelUp()
+  }
+  function update(){
+    const md=readMode(),playing=(md==='play'||md==='playing'||md==='running');
+    if(NATIVE_LEVEL){
+      rwLevel=Math.min(MAX_LEVEL,readNativeStage());
+      if(banner&&bannerTimer&&Date.now()>bannerTimer){banner.classList.remove('show');bannerTimer=0}
+      lastMode=md;return
+    }
+    if(playing&&!active)startSession();
+    if(active){
+      if(MODE==='metric'||MODE==='minefield'){
+        if(playing)syncMetricLevel()
+      }else if(MODE==='completion'){
+        const won=(md==='win'||md==='won'||md==='complete'||md==='completed'||md==='victory');
+        const wasWon=(lastMode==='win'||lastMode==='won'||lastMode==='complete'||lastMode==='completed'||lastMode==='victory');
+        if(won&&!wasWon){completed++;if(rwLevel<MAX_LEVEL)levelUp()}
+        if(md==='over'||md==='gameover'||md==='dead'||md==='lose'||md==='lost')active=false
+      }
+      if((MODE==='metric'||MODE==='minefield')&&(md==='over'||md==='gameover'||md==='win'||md==='won'||md==='complete'||md==='completed'))active=false
+    }
+    if(banner&&bannerTimer&&Date.now()>bannerTimer){banner.classList.remove('show');bannerTimer=0}
+    updateHud();lastMode=md
+  }
+
+  if(SCALE_ENABLED){
+    const nativeRAF=window.requestAnimationFrame.bind(window),clocks=new WeakMap();
+    window.requestAnimationFrame=function(cb){
+      return nativeRAF(real=>{
+        let q=clocks.get(cb);
+        if(!q){q={real,sim:real};clocks.set(cb,q)}
+        else{const dr=Math.max(0,Math.min(50,real-q.real));q.real=real;q.sim+=dr*speedScale()}
+        cb(q.sim)
+      })
+    }
+  }
+  setInterval(update,120);updateHud();
+  window.__rwLevels=()=>({
+    gameId:GAME_ID,native:NATIVE_LEVEL,mode:MODE,difficulty,level:currentStage(),maxLevel:MAX_LEVEL,
+    scale:speedScale(),progress:progressValue(),perLevel:PER_LEVEL,nextAt:rwLevel>=MAX_LEVEL?null:nextThreshold(),
+    metric:metricName,challenge:challengeActive()
+  });
+  return{get level(){return currentStage()},get difficulty(){return difficulty},scale:speedScale}
+})();
+
+const RETRO_LOCAL_STATS=(()=>{
+ const GAME_ID="galactic-golf.html",GAME_TITLE="GALACTIC GOLF";let active=false,lastProgress=0;
+ function mode(){try{if(typeof state!=='undefined')return String(state).toLowerCase()}catch(e){}return ''}
+ function metric(){try{if(typeof score==='number'&&Number.isFinite(score))return{name:'score',value:Math.round(score),higher:true}}catch(e){}return{name:'score',value:0,higher:true}}
+ function send(type,extra={}){try{parent.postMessage(Object.assign({source:'retro-world-game',type,gameId:GAME_ID,title:GAME_TITLE},extra),'*')}catch(e){}}
+ function snap(){const q=metric();send('progress',{metric:q.name,value:q.value,higherBetter:q.higher})}
+ setInterval(()=>{const now=Date.now(),md=mode(),playing=md==='play',won=['win','won','victory','complete'].includes(md),lost=['over','gameover','lost','dead','fail','failed'].includes(md);if(playing&&!active){active=true;send('start');snap();lastProgress=now}if(active&&playing&&now-lastProgress>1200){snap();lastProgress=now}if(active&&(won||lost)){const q=metric();snap();send('finish',{result:won?'win':'loss',metric:q.name,value:q.value,higherBetter:q.higher});active=false}},250);
+ addEventListener('pagehide',()=>{if(active)snap()});return{snapshot:snap};
+})();
+</script></body></html>

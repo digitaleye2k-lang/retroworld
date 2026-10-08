@@ -1,0 +1,179 @@
+<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>NEON LUDO RALLY • RETRO WORLD</title><style>
+html,body{height:100%;margin:0;background:#03050c;color:#fff;font-family:"Courier New",monospace}
+body{display:grid;place-items:center;background:radial-gradient(circle at 50% 35%,#151735,#03050c 68%);overflow:hidden}
+.wrap{width:min(96vw,900px);text-align:center}
+.top{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:7px;min-height:34px}
+.title{color:#4deaff;font-size:clamp(14px,3vw,20px);font-weight:900;letter-spacing:2px;text-shadow:2px 2px #4c165d}
+.diff{display:flex;gap:5px;align-items:center;color:#949abc;font-size:8px}
+.diff select{background:#0b0d1d;color:#fff;border:1px solid #4deaff;padding:5px;font:700 9px "Courier New",monospace}
+.frame{position:relative;border:3px solid #4deaff;box-shadow:0 0 0 3px #181a36,0 0 28px #00eaff29;background:#050714}
+canvas{display:block;width:100%;height:auto;max-height:calc(100dvh - 115px);object-fit:contain;touch-action:none;user-select:none;-webkit-user-select:none}
+.help{margin-top:7px;color:#858bad;font-size:9px;line-height:1.45}
+.help b{color:#e6d36f}
+@media(max-width:650px){.wrap{width:99vw}.top{margin:2px 5px 4px}.help{font-size:7px;margin-top:4px}.diff span{display:none}}
+</style><script>addEventListener('keydown',function(e){if((e.keyCode||e.which)===461&&window.parent!==window){e.preventDefault();window.parent.postMessage({type:'retroworld-tv-back'},'*');}},true);</script></head>
+<body><div class="wrap"><div class="top"><div class="title">NEON LUDO RALLY</div><div class="diff"><span>DIFFICULTY</span><select id="difficultySelect"><option value="easy">EASY</option><option value="normal" selected>NORMAL</option><option value="hard">HARD</option></select></div></div>
+<div class="frame"><canvas id="g" width="640" height="580"></canvas></div><div class="help"><b>CLICK / TAP</b> ROLL DICE • CHOOSE A CYAN PAWN WHEN ASKED • <b>SPACE</b> ALSO ROLLS</div></div>
+<script>
+const c=document.getElementById('g'),x=c.getContext('2d');x.imageSmoothingEnabled=false;
+const W=c.width,H=c.height;
+const COLORS=['#38e8ff','#ff5a79','#ffe05a','#78ff83'],NAMES=['YOU','RUBY CPU','GOLD CPU','LIME CPU'];
+const START=[0,10,20,30],SAFE=new Set([0,5,10,15,20,25,30,35]);
+let state='title',difficulty='normal',players=[],turn=0,dice=0,rolling=false,waiting=false,valid=[],score=0,msg='',winner=-1;
+const path=[];
+function makePath(){
+  const left=120,right=520,top=80,bottom=470;
+  for(let i=0;i<10;i++)path.push({x:left+i*(right-left)/9,y:top});
+  for(let i=1;i<10;i++)path.push({x:right,y:top+i*(bottom-top)/9});
+  for(let i=1;i<10;i++)path.push({x:right-i*(right-left)/9,y:bottom});
+  for(let i=1;i<10;i++)path.push({x:left,y:bottom-i*(bottom-top)/9});
+}
+makePath();
+function diff(){const e=document.getElementById('difficultySelect');difficulty=e?e.value:'normal';return difficulty}
+function cpuCount(){return difficulty==='easy'?1:difficulty==='hard'?3:2}
+function reset(){
+  diff();players=Array.from({length:4},(_,p)=>({active:p===0||p<=cpuCount(),pieces:[-1,-1,-1],home:0,captures:0}));
+  turn=0;dice=0;rolling=false;waiting=false;valid=[];score=0;msg='YOUR TURN — ROLL THE DICE';winner=-1;state='play'
+}
+function globalCell(p,prog){return prog<0||prog>=40?-1:(START[p]+prog)%40}
+function canMove(p,i,roll){
+  const q=players[p].pieces[i];
+  if(q===44)return false;
+  if(q<0)return roll===6;
+  return q+roll<=44
+}
+function options(p,roll){const a=[];for(let i=0;i<3;i++)if(canMove(p,i,roll))a.push(i);return a}
+function captureAt(p,i){
+  const prog=players[p].pieces[i],cell=globalCell(p,prog);if(cell<0||SAFE.has(cell))return 0;
+  let cap=0;
+  players.forEach((op,oi)=>{if(oi===p||!op.active)return;op.pieces.forEach((v,j)=>{if(globalCell(oi,v)===cell){op.pieces[j]=-1;cap++}})});
+  if(cap){players[p].captures+=cap;if(p===0)score+=cap*120;msg=NAMES[p]+' CAPTURED '+cap+' PAWN'+(cap>1?'S':'')}
+  return cap
+}
+function movePiece(p,i){
+  waiting=false;valid=[];
+  let v=players[p].pieces[i];
+  players[p].pieces[i]=v<0?0:v+dice;
+  if(players[p].pieces[i]===44){
+    players[p].home++;
+    if(p===0)score+=500;
+    msg=NAMES[p]+' BROUGHT A PAWN HOME!';
+  }else captureAt(p,i);
+  if(players[p].home===3){
+    winner=p;state=p===0?'win':'over';msg=p===0?'YOU WIN THE RALLY!':NAMES[p]+' WINS';
+    if(p===0)score+=1500;return
+  }
+  const extra=dice===6;
+  setTimeout(()=>endTurn(extra),420)
+}
+function endTurn(extra){
+  if(state!=='play')return;
+  if(extra){msg=NAMES[turn]+' ROLLED 6 — EXTRA TURN';dice=0;if(turn!==0)setTimeout(cpuRoll,550);return}
+  let n=turn;do{n=(n+1)%4}while(!players[n].active);turn=n;dice=0;
+  msg=turn===0?'YOUR TURN — ROLL THE DICE':NAMES[turn]+' IS THINKING...';
+  if(turn!==0)setTimeout(cpuRoll,650)
+}
+function roll(){
+  if(state!=='play'||turn!==0||rolling||waiting||dice)return;
+  rolling=true;let ticks=0;
+  const t=setInterval(()=>{dice=1+Math.floor(Math.random()*6);ticks++;if(ticks>8){clearInterval(t);rolling=false;afterRoll()}},55)
+}
+function afterRoll(){
+  valid=options(turn,dice);
+  if(!valid.length){msg=NAMES[turn]+' ROLLED '+dice+' — NO MOVE';setTimeout(()=>endTurn(dice===6),550);return}
+  if(turn===0){
+    if(valid.length===1)movePiece(0,valid[0]);
+    else{waiting=true;msg='ROLLED '+dice+' — CHOOSE A CYAN PAWN'}
+  }else cpuChoose()
+}
+function cpuRoll(){
+  if(state!=='play'||turn===0)return;
+  dice=1+Math.floor(Math.random()*6);msg=NAMES[turn]+' ROLLED '+dice;setTimeout(afterRoll,420)
+}
+function cpuChoose(){
+  let opts=valid.slice(),pick=opts[Math.floor(Math.random()*opts.length)];
+  if(difficulty!=='easy'){
+    let best=-999;
+    for(const i of opts){
+      const old=players[turn].pieces[i],np=old<0?0:old+dice,cell=globalCell(turn,np);
+      let val=np+(np===44?80:0)+(old<0?8:0);
+      if(cell>=0&&!SAFE.has(cell)){
+        players.forEach((op,oi)=>{if(oi!==turn&&op.active)op.pieces.forEach(v=>{if(globalCell(oi,v)===cell)val+=difficulty==='hard'?70:35})})
+      }
+      if(val>best){best=val;pick=i}
+    }
+  }
+  setTimeout(()=>movePiece(turn,pick),400)
+}
+function piecePos(p,v,idx){
+  if(v<0){
+    const bases=[[70,110],[570,110],[570,430],[70,430]],b=bases[p];
+    return{x:b[0]+(idx%2)*28,y:b[1]+Math.floor(idx/2)*28}
+  }
+  if(v>=40){
+    const center={x:320,y:275},edge=path[(START[p]+39)%40],t=(v-39)/5;
+    return{x:edge.x+(center.x-edge.x)*t,y:edge.y+(center.y-edge.y)*t}
+  }
+  return path[globalCell(p,v)]
+}
+function draw(){
+  x.fillStyle='#07101c';x.fillRect(0,0,W,H);
+  x.fillStyle='#0e1830';x.fillRect(105,65,430,420);
+  // track
+  path.forEach((q,i)=>{x.fillStyle=SAFE.has(i)?'#26395a':'#151f37';x.strokeStyle=SAFE.has(i)?'#ffe25f':'#435070';x.lineWidth=2;x.beginPath();x.arc(q.x,q.y,15,0,Math.PI*2);x.fill();x.stroke();if(SAFE.has(i)){x.fillStyle='#ffe25f';x.font='9px Courier New';x.textAlign='center';x.fillText('★',q.x,q.y+3)}});
+  // center and homes
+  x.fillStyle='#17152c';x.beginPath();x.arc(320,275,58,0,Math.PI*2);x.fill();x.strokeStyle='#9a7cff';x.stroke();
+  [[70,110],[570,110],[570,430],[70,430]].forEach((b,p)=>{if(!players[p]||!players[p].active)return;x.fillStyle=COLORS[p]+'22';x.strokeStyle=COLORS[p];x.lineWidth=2;x.fillRect(b[0]-22,b[1]-22,72,72);x.strokeRect(b[0]-22,b[1]-22,72,72)});
+  players.forEach((pl,p)=>{if(!pl.active)return;pl.pieces.forEach((v,i)=>{const q=piecePos(p,v,i);x.fillStyle=COLORS[p];x.strokeStyle='#fff';x.lineWidth=(p===0&&waiting&&valid.includes(i))?4:2;x.beginPath();x.arc(q.x,q.y,11,0,Math.PI*2);x.fill();x.stroke();x.fillStyle='#06101a';x.font='bold 9px Courier New';x.textAlign='center';x.fillText(i+1,q.x,q.y+3)})});
+  // HUD
+  x.fillStyle='#050713e8';x.fillRect(0,0,W,48);
+  x.font='bold 13px Courier New';x.textAlign='left';x.fillStyle='#4deaff';x.fillText('NEON LUDO RALLY',10,18);
+  x.textAlign='center';x.fillStyle=COLORS[turn]||'#fff';x.fillText('TURN: '+NAMES[turn],W/2,18);
+  x.textAlign='right';x.fillStyle='#ffe25f';x.fillText('SCORE '+score,W-10,18);
+  // dice/button
+  x.fillStyle='#15172b';x.strokeStyle=turn===0&&!dice?'#4deaff':'#5a5e7d';x.lineWidth=2;x.fillRect(252,500,136,42);x.strokeRect(252,500,136,42);
+  x.textAlign='center';x.fillStyle='#fff';x.font='bold 15px Courier New';x.fillText(dice?'DICE: '+dice:'ROLL DICE',320,526);
+  x.font='bold 10px Courier New';x.fillStyle='#b5bad2';x.fillText(msg,320,560);
+  if(state==='title'||state==='win'||state==='over'){
+    x.fillStyle='#000d';x.fillRect(70,130,500,280);x.textAlign='center';
+    x.fillStyle=state==='win'?'#73ff8a':state==='over'?'#ff657d':'#4deaff';x.font='bold 31px Courier New';x.fillText(state==='title'?'NEON LUDO RALLY':msg,320,190);
+    x.font='bold 12px Courier New';x.fillStyle='#fff';
+    if(state==='title'){
+      x.fillText('GET ALL 3 CYAN PAWNS HOME BEFORE THE CPU',320,235);
+      x.fillText('ROLL 6 TO ENTER • CAPTURE RIVALS • SAFE STARS',320,260);
+      x.fillStyle='#ffe25f';x.fillText('EASY: 1 CPU  •  NORMAL: 2 CPU  •  HARD: 3 CPU',320,292);
+      x.fillStyle='#73ff8a';x.font='bold 16px Courier New';x.fillText('CLICK / ENTER TO START',320,345)
+    }else{
+      x.fillText('FINAL SCORE '+score,320,250);x.fillStyle='#73ff8a';x.fillText('CLICK / ENTER TO PLAY AGAIN',320,315)
+    }
+  }
+}
+function clickAt(mx,my){
+  if(state!=='play'){reset();return}
+  if(turn===0&&!dice&&mx>=252&&mx<=388&&my>=500&&my<=542){roll();return}
+  if(waiting){
+    for(const i of valid){const q=piecePos(0,players[0].pieces[i],i);if(Math.hypot(mx-q.x,my-q.y)<24){movePiece(0,i);return}}
+  }
+}
+c.addEventListener('pointerdown',e=>{const r=c.getBoundingClientRect();clickAt((e.clientX-r.left)*W/r.width,(e.clientY-r.top)*H/r.height)});
+addEventListener('keydown',e=>{if(e.key==='Enter'&&state!=='play')reset();if((e.key===' '||e.key==='Enter')&&state==='play'&&turn===0&&!dice){e.preventDefault();roll()}});
+document.getElementById('difficultySelect').addEventListener('change',()=>{if(state==='title'||state==='win'||state==='over')diff()});
+draw();setInterval(draw,33);
+
+const RETRO_LOCAL_STATS=(()=>{
+  const GAME_ID="neon-ludo-rally.html", GAME_TITLE="NEON LUDO RALLY";
+  let active=false,lastProgress=0;
+  function mode(){try{return String(state||'').toLowerCase()}catch(e){return ''}}
+  function metric(){try{return {name:'score',value:Math.round(Number(score)||0),higher:true}}catch(e){return {name:'score',value:0,higher:true}}}
+  function send(type,extra={}){try{parent.postMessage(Object.assign({source:'retro-world-game',type,gameId:GAME_ID,title:GAME_TITLE},extra),'*')}catch(e){}}
+  function snapshot(){const m=metric();send('progress',{metric:m.name,value:m.value,higherBetter:m.higher})}
+  setInterval(()=>{const now=Date.now(),md=mode(),playing=md==='play'||md==='playing'||md==='running',won=md==='win'||md==='won'||md==='victory'||md==='complete',lost=md==='over'||md==='gameover'||md==='lost'||md==='dead'||md==='fail'||md==='failed';
+    if(playing&&!active){active=true;send('start');snapshot();lastProgress=now}
+    if(active&&playing&&now-lastProgress>1200){snapshot();lastProgress=now}
+    if(active&&(won||lost)){const m=metric();snapshot();send('finish',{result:won?'win':'loss',metric:m.name,value:m.value,higherBetter:m.higher});active=false}
+  },250);
+  addEventListener('pagehide',()=>{if(active)snapshot()});
+  return{snapshot};
+})();
+</script></body></html>

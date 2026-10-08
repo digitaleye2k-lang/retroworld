@@ -1,0 +1,25 @@
+/* TV-only, low GPU work and clear 10-foot focus */
+body.tv-mode { scroll-behavior:auto; }
+body.tv-mode::before { display:none!important; }
+body.tv-mode .card { transition:none!important; content-visibility:auto; contain-intrinsic-size:auto 330px; }
+body.tv-mode .card:hover,body.tv-mode .card:focus-within { transform:none!important; box-shadow:0 0 0 3px #b6e5ff!important; }
+body.tv-mode .blink,body.tv-mode .hero-showcase-slide,body.tv-mode .tv-mode-hint { animation:none!important; }
+body.tv-mode .tv-mode-hint { font-size:14px;letter-spacing:0; }
+body.tv-mode :is(button,a,select,input,textarea,[tabindex]):focus,
+body.tv-mode :is(button,a,select,input,textarea,[tabindex]):focus-visible { outline:4px solid #fff!important;outline-offset:4px!important;box-shadow:0 0 0 7px #078ce9!important; }
+body.tv-mode #arcadeBg { display:none!important; }
+body.tv-mode #player .game-play-layout { grid-template-columns:minmax(0,1fr)!important; }
+body.tv-mode #sideAdFrame,body.tv-mode .player-side-ad { display:none!important; }
+body.tv-mode .onboarding-window,body.tv-mode .profile-chooser-window,body.tv-mode .profile-window { max-width:1100px; }
+body.tv-mode .onboarding-grid { grid-template-columns:1fr!important; }
+body.tv-mode .onboarding-guide { display:none!important; }
+body.tv-mode .onboarding-avatar-grid { max-height:145px;overflow:auto; }
+body.tv-mode .onboarding-create { padding:16px!important; }
+body.tv-mode #onboardingName { font-size:20px; }
+#tvQuickCreate { display:none; }
+body.tv-mode #tvQuickCreate { display:block;width:100%;min-height:70px;margin:12px 0 18px;background:#164f68;color:white;border:3px solid #71ddff;border-radius:10px;font:bold 19px 'Courier New',monospace;cursor:pointer; }
+body.tv-mode #onboardingGuest { min-height:62px;font-size:17px; }
+body.tv-mode #onboardingCreate { min-height:56px;font-size:16px; }
+body.tv-mode #onboardingModal.open .onboarding-window { margin:1vh auto!important;max-height:97vh;overflow-y:auto; }
+body.tv-mode .tv-category-chip { flex-shrink:0; }
+body.tv-mode #gameframe { border-width:2px!important;box-shadow:none!important; }

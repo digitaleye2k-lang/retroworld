@@ -1,0 +1,94 @@
+<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>NEON SNAKES & LADDERS • RETRO WORLD</title><style>
+html,body{height:100%;margin:0;background:#03050c;color:#fff;font-family:"Courier New",monospace}
+body{display:grid;place-items:center;background:radial-gradient(circle at 50% 35%,#151735,#03050c 68%);overflow:hidden}
+.wrap{width:min(96vw,900px);text-align:center}
+.top{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:7px;min-height:34px}
+.title{color:#4deaff;font-size:clamp(14px,3vw,20px);font-weight:900;letter-spacing:2px;text-shadow:2px 2px #4c165d}
+.diff{display:flex;gap:5px;align-items:center;color:#949abc;font-size:8px}
+.diff select{background:#0b0d1d;color:#fff;border:1px solid #4deaff;padding:5px;font:700 9px "Courier New",monospace}
+.frame{position:relative;border:3px solid #4deaff;box-shadow:0 0 0 3px #181a36,0 0 28px #00eaff29;background:#050714}
+canvas{display:block;width:100%;height:auto;max-height:calc(100dvh - 115px);object-fit:contain;touch-action:none;user-select:none;-webkit-user-select:none}
+.help{margin-top:7px;color:#858bad;font-size:9px;line-height:1.45}
+.help b{color:#e6d36f}
+@media(max-width:650px){.wrap{width:99vw}.top{margin:2px 5px 4px}.help{font-size:7px;margin-top:4px}.diff span{display:none}}
+</style><script>addEventListener('keydown',function(e){if((e.keyCode||e.which)===461&&window.parent!==window){e.preventDefault();window.parent.postMessage({type:'retroworld-tv-back'},'*');}},true);</script></head>
+<body><div class="wrap"><div class="top"><div class="title">NEON SNAKES &amp; LADDERS</div><div class="diff"><span>DIFFICULTY</span><select id="difficultySelect"><option value="easy">EASY</option><option value="normal" selected>NORMAL</option><option value="hard">HARD</option></select></div></div>
+<div class="frame"><canvas id="g" width="640" height="630"></canvas></div><div class="help"><b>CLICK / TAP</b> ROLL DICE • <b>SPACE</b> ROLLS • FIRST PLAYER TO SQUARE 100 WINS</div></div>
+<script>
+const c=document.getElementById('g'),x=c.getContext('2d');x.imageSmoothingEnabled=false;
+const W=c.width,H=c.height,COL=['#38e8ff','#ff5a79','#ffe05a','#78ff83'],NAMES=['YOU','RUBY CPU','GOLD CPU','LIME CPU'];
+const LADDERS={3:22,8:30,20:41,28:55,36:57,51:72,71:92,80:99};
+const SNAKES={17:4,33:12,48:26,62:18,69:49,79:58,88:67,95:75,98:78};
+let state='title',difficulty='normal',players=[],turn=0,dice=0,busy=false,score=1,msg='ROLL TO START',winner=-1;
+function diff(){difficulty=document.getElementById('difficultySelect').value}
+function cpuCount(){return difficulty==='easy'?1:difficulty==='hard'?3:2}
+function reset(){diff();players=Array.from({length:4},(_,i)=>({active:i===0||i<=cpuCount(),pos:1}));turn=0;dice=0;busy=false;score=1;winner=-1;msg='YOUR TURN — ROLL';state='play'}
+function cellXY(n){
+ const z=n-1,row=Math.floor(z/10),inrow=z%10,col=row%2===0?inrow:9-inrow;
+ return{x:58+col*52,y:520-row*48}
+}
+function rollHuman(){if(state!=='play'||turn!==0||busy)return;doRoll()}
+function doRoll(){
+ busy=true;let t=0,iv=setInterval(()=>{dice=1+Math.floor(Math.random()*6);t++;if(t>8){clearInterval(iv);moveCurrent()}},55)
+}
+function moveCurrent(){
+ const p=players[turn],exact=difficulty!=='easy';
+ let target=p.pos+dice;
+ if(target>100&&exact){msg=NAMES[turn]+' NEEDS EXACT ROLL';setTimeout(nextTurn,600);return}
+ target=Math.min(100,target);p.pos=target;
+ if(LADDERS[p.pos]){msg=NAMES[turn]+' FOUND A LADDER!';p.pos=LADDERS[p.pos]}
+ else if(SNAKES[p.pos]){msg=NAMES[turn]+' HIT A SNAKE!';p.pos=SNAKES[p.pos]}
+ else msg=NAMES[turn]+' MOVED TO '+p.pos;
+ if(turn===0)score=Math.max(score,p.pos);
+ if(p.pos===100){winner=turn;state=turn===0?'win':'over';if(turn===0)score+=1000;msg=turn===0?'YOU REACHED 100!':NAMES[turn]+' WINS';busy=false;return}
+ setTimeout(nextTurn,650)
+}
+function nextTurn(){
+ if(state!=='play')return;let n=turn;do{n=(n+1)%4}while(!players[n].active);turn=n;dice=0;busy=false;
+ msg=turn===0?'YOUR TURN — ROLL':NAMES[turn]+' IS ROLLING...';
+ if(turn!==0)setTimeout(doRoll,650)
+}
+function drawConnector(a,b,col,w){
+ const A=cellXY(a),B=cellXY(b);x.strokeStyle=col;x.lineWidth=w;x.beginPath();x.moveTo(A.x,A.y);x.lineTo(B.x,B.y);x.stroke()
+}
+function draw(){
+ x.fillStyle='#07101b';x.fillRect(0,0,W,H);
+ // board
+ for(let n=1;n<=100;n++){const q=cellXY(n),row=Math.floor((n-1)/10);x.fillStyle=(n+row)%2?'#142440':'#1c3153';x.fillRect(q.x-25,q.y-22,50,46);x.strokeStyle='#41577b';x.strokeRect(q.x-25,q.y-22,50,46);x.fillStyle='#91a3c5';x.font='9px Courier New';x.textAlign='left';x.fillText(n,q.x-22,q.y-10)}
+ Object.entries(LADDERS).forEach(([a,b])=>drawConnector(+a,+b,'#ffe35b',6));
+ Object.entries(SNAKES).forEach(([a,b])=>{drawConnector(+a,+b,'#ff5577',7);const A=cellXY(+a);x.fillStyle='#ff5577';x.beginPath();x.arc(A.x,A.y,8,0,6.28);x.fill()});
+ players.forEach((p,i)=>{if(!p.active)return;const q=cellXY(p.pos),off=[[-11,-7],[11,-7],[-11,9],[11,9]][i];x.fillStyle=COL[i];x.strokeStyle='#fff';x.lineWidth=1.5;x.beginPath();x.arc(q.x+off[0],q.y+off[1],8,0,6.28);x.fill();x.stroke()});
+ x.fillStyle='#050713e8';x.fillRect(0,0,W,44);x.textAlign='left';x.font='bold 12px Courier New';x.fillStyle='#4deaff';x.fillText('NEON SNAKES & LADDERS',8,18);x.fillStyle='#ffe35b';x.fillText('POS '+players[0]?.pos,8,36);x.textAlign='right';x.fillStyle=COL[turn]||'#fff';x.fillText('TURN '+NAMES[turn],W-8,20);x.fillStyle='#fff';x.fillText('DICE '+(dice||'-'),W-8,37);
+ // roll button
+ x.fillStyle='#14172b';x.strokeStyle=turn===0&&!busy?'#4deaff':'#505572';x.lineWidth=2;x.fillRect(245,548,150,40);x.strokeRect(245,548,150,40);x.textAlign='center';x.fillStyle='#fff';x.font='bold 14px Courier New';x.fillText('ROLL DICE',320,573);x.font='bold 9px Courier New';x.fillStyle='#aeb4cf';x.fillText(msg,320,610);
+ if(state==='title'||state==='win'||state==='over'){
+   x.fillStyle='#000e';x.fillRect(70,130,500,300);x.textAlign='center';x.fillStyle=state==='win'?'#73ff89':state==='over'?'#ff657c':'#4deaff';x.font='bold 31px Courier New';x.fillText(state==='title'?'NEON SNAKES & LADDERS':msg,320,190);
+   x.fillStyle='#fff';x.font='bold 12px Courier New';
+   if(state==='title'){
+     x.fillText('RACE TO SQUARE 100',320,235);x.fillStyle='#ffe35b';x.fillText('LADDERS BOOST YOU • SNAKES DROP YOU',320,265);x.fillStyle='#b5bbd5';x.fillText('EASY: 1 CPU + NO EXACT FINISH',320,300);x.fillText('NORMAL: 2 CPU • HARD: 3 CPU',320,322);x.fillStyle='#73ff89';x.font='bold 16px Courier New';x.fillText('CLICK / ENTER TO START',320,375)
+   }else{x.fillText('FINAL SCORE '+score,320,270);x.fillStyle='#73ff89';x.fillText('CLICK / ENTER TO PLAY AGAIN',320,330)}
+ }
+}
+function clickAt(mx,my){if(state!=='play'){reset();return}if(mx>=245&&mx<=395&&my>=548&&my<=588)rollHuman()}
+c.addEventListener('pointerdown',e=>{const r=c.getBoundingClientRect();clickAt((e.clientX-r.left)*W/r.width,(e.clientY-r.top)*H/r.height)});
+addEventListener('keydown',e=>{if(e.key==='Enter'&&state!=='play')reset();if((e.key===' '||e.key==='Enter')&&state==='play'){e.preventDefault();rollHuman()}});
+document.getElementById('difficultySelect').addEventListener('change',()=>{if(state!=='play')diff()});
+players=Array.from({length:4},(_,i)=>({active:i===0,pos:1}));setInterval(draw,33);draw();
+
+const RETRO_LOCAL_STATS=(()=>{
+  const GAME_ID="neon-snakes-ladders.html", GAME_TITLE="NEON SNAKES & LADDERS";
+  let active=false,lastProgress=0;
+  function mode(){try{return String(state||'').toLowerCase()}catch(e){return ''}}
+  function metric(){try{return {name:'score',value:Math.round(Number(score)||0),higher:true}}catch(e){return {name:'score',value:0,higher:true}}}
+  function send(type,extra={}){try{parent.postMessage(Object.assign({source:'retro-world-game',type,gameId:GAME_ID,title:GAME_TITLE},extra),'*')}catch(e){}}
+  function snapshot(){const m=metric();send('progress',{metric:m.name,value:m.value,higherBetter:m.higher})}
+  setInterval(()=>{const now=Date.now(),md=mode(),playing=md==='play'||md==='playing'||md==='running',won=md==='win'||md==='won'||md==='victory'||md==='complete',lost=md==='over'||md==='gameover'||md==='lost'||md==='dead'||md==='fail'||md==='failed';
+    if(playing&&!active){active=true;send('start');snapshot();lastProgress=now}
+    if(active&&playing&&now-lastProgress>1200){snapshot();lastProgress=now}
+    if(active&&(won||lost)){const m=metric();snapshot();send('finish',{result:won?'win':'loss',metric:m.name,value:m.value,higherBetter:m.higher});active=false}
+  },250);
+  addEventListener('pagehide',()=>{if(active)snapshot()});
+  return{snapshot};
+})();
+</script></body></html>
