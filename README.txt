@@ -12,3 +12,9 @@ The supplied Pixel Blast track starts/restarts only when a level begins, at 12% 
 
 CRIMSON FANG
 Added as game 60 in EPIC & 3D, FIGHTING / BRAWLER and PLATFORM / RUNNER. Original self-contained supplied game preserved. Use its game card to launch or OPEN IN NEW TAB. Controls and stages are in games/crimson-fang/READ-ME.txt. Preview is taken from the supplied recording.
+
+DUST & IRON
+Now listed under EPIC & 3D with the existing in-site demo launcher and separate-tab link. Keep your existing Dust and Iron DEMO.html file in the website root; it was referenced by the supplied site but was not included in its ZIP. This update does not overwrite that file.
+
+CRIMSON FANG MUSIC
+Synth Samurai plays during active stages at 12% volume; Final Boss replaces it only when a living boss is reached, at 15%. Both loop and follow pause, stage completion and the Sound toggle. The old synthesized background tune is disabled; effects remain enabled. Music begins after a player interaction where required by the browser.
