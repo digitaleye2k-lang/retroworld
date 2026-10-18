@@ -1,18 +1,13 @@
-# Dust & Iron — Demo Preview v15
+# RETRO WORLD by Digital EYE
 
-## Play it
+A free browser arcade: 65 retro, mobile and TV-friendly games, trophies, daily challenges, music, gamepad support and a Dust & Iron tactics demo.
+Live site: https://retroworld.eu.cc/
 
-1. Unzip this folder anywhere on your computer.
-2. Open `index.html` in a modern desktop browser.
-3. Choose a difficulty and select **TAKE THE JOB**.
+## v2 highlights
+- New look (`assets/retro-theme.css`)
+- Library search, sort, favourites, recently played, Surprise Me, gameplay thumbnails
+- 4 new games: Neon Connect, Box Bot, Echo Pad, Merge 2048
+- Every game: pause (P), mute (M), CRT effect (C), fullscreen (F), best score, auto-fit to the screen (`games/cartridges/rw-boost.js`)
 
-## Mouse controls
-
-- Move the pointer to a map edge to scroll the camera.
-- Left-click ground to walk or click a crew member to select them.
-- Double-left-click ground to run.
-- Right-click ground to run, a crew member to crouch or stand, and a guard to quick-fire.
-- Shift-drag to select a group; use the bottom crew cards to select individual hands or everyone.
-- Click the bottom inventory cards to arm weapons, tools, and Whisper Rounds.
-
-The preview runs offline. Optional keyboard shortcuts remain available in the in-game Field Notes.
+## Layout
+`index.html` main site · `games/cartridges/` arcade games · `games/dust-iron|crimson-fang|popshot/` epic games · `epic/` guides · `tv/` TV mode · `assets/` media
