@@ -1,0 +1,3 @@
+VERIFICATION — 10 October 2026
+All three guides have verified launch targets, screenshots and local navigation references, checked against the current repository tree. Homepage and guide JavaScript parse successfully. A mocked DOM check verifies launch behavior, loading status and fullscreen fallback.
+Browser layout and live gameplay checks could not be completed in this environment because the required browser could not be installed. Test desktop and phone browsers after uploading, before requesting an AdSense review. No AdSense approval is promised.

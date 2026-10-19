@@ -1,0 +1,103 @@
+<!doctype html><html><head><script src="rw-boost.js"></script><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>NEON CONNECT • RETRO WORLD</title><style>
+html,body{height:100%;margin:0;background:#03050c;color:#fff;font-family:"Courier New",monospace}
+body{display:grid;place-items:center;background:radial-gradient(circle at 50% 35%,#151735,#03050c 68%);overflow:hidden}
+.wrap{width:min(96vw,900px);text-align:center}
+.top{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:7px;min-height:34px}
+.title{color:#4deaff;font-size:clamp(14px,3vw,20px);font-weight:900;letter-spacing:2px;text-shadow:2px 2px #4c165d}
+.diff{display:flex;gap:5px;align-items:center;color:#949abc;font-size:8px}
+.diff select{background:#0b0d1d;color:#fff;border:1px solid #4deaff;padding:5px;font:700 9px "Courier New",monospace}
+.frame{position:relative;border:3px solid #4deaff;box-shadow:0 0 0 3px #181a36,0 0 28px #00eaff29;background:#050714}
+canvas{display:block;width:100%;height:auto;max-height:calc(100dvh - 115px);object-fit:contain;touch-action:none;user-select:none;-webkit-user-select:none}
+.help{margin-top:7px;color:#858bad;font-size:9px;line-height:1.45}
+.help b{color:#e6d36f}
+@media(max-width:650px){.wrap{width:99vw}.top{margin:2px 5px 4px}.help{font-size:7px;margin-top:4px}.diff span{display:none}}
+</style><script>addEventListener('keydown',function(e){if((e.keyCode||e.which)===461&&window.parent!==window){e.preventDefault();window.parent.postMessage({type:'retroworld-tv-back'},'*');}},true);</script></head>
+<body><div class="wrap"><div class="top"><div class="title">NEON CONNECT</div><div class="diff"><span>DIFFICULTY</span><select id="difficultySelect"><option value="easy">EASY</option><option value="normal" selected>NORMAL</option><option value="hard">HARD</option></select></div></div>
+<div class="frame"><canvas id="g" width="640" height="660"></canvas></div><div class="help"><b>CLICK / TAP</b> A COLUMN • <b>← →</b> MOVE • <b>SPACE / ↓</b> DROP • FOUR IN A ROW WINS</div></div>
+<script>
+
+const c=document.getElementById('g'),x=c.getContext('2d');x.imageSmoothingEnabled=false;
+const W=c.width,H=c.height;
+let AC=null;
+function beep(f,d,type,v){try{AC=AC||new (window.AudioContext||window.webkitAudioContext)();const o=AC.createOscillator(),g=AC.createGain();o.type=type||'square';o.frequency.value=f;g.gain.value=v||0.05;g.gain.exponentialRampToValueAtTime(0.0001,AC.currentTime+d);o.connect(g);g.connect(AC.destination);o.start();o.stop(AC.currentTime+d)}catch(e){}}
+function ptr(e){const r=c.getBoundingClientRect();return{x:(e.clientX-r.left)*W/r.width,y:(e.clientY-r.top)*H/r.height}}
+function txt(s,px,py,size,col,al){x.font='bold '+size+'px Courier New';x.fillStyle=col;x.textAlign=al||'center';x.fillText(s,px,py)}
+function overlay(lines){x.fillStyle='rgba(3,5,12,.82)';x.fillRect(0,0,W,H);lines.forEach((l,i)=>txt(l[0],W/2,H/2-40+i*34,l[1],l[2]))}
+
+const COLS=7,ROWS=6,CELL=80,OX=40,OY=150;
+let state='title',difficulty='normal',board,turn=1,score=0,msg='',sel=3,anim=null,winCells=null,busy=false;
+function diff(){difficulty=document.getElementById('difficultySelect').value}
+function reset(){diff();board=Array.from({length:ROWS},()=>Array(COLS).fill(0));turn=1;score=0;msg='YOUR TURN — PICK A COLUMN';sel=3;winCells=null;busy=false;anim=null;state='play'}
+function rowFor(b,col){for(let r=ROWS-1;r>=0;r--)if(!b[r][col])return r;return -1}
+function findWin(b,p){const D=[[0,1],[1,0],[1,1],[1,-1]];
+ for(let r=0;r<ROWS;r++)for(let q=0;q<COLS;q++)if(b[r][q]===p)for(const d of D){const cells=[];for(let k=0;k<4;k++){const rr=r+d[0]*k,cc=q+d[1]*k;if(rr<0||rr>=ROWS||cc<0||cc>=COLS||b[rr][cc]!==p)break;cells.push([rr,cc])}if(cells.length===4)return cells}
+ return null}
+function isFull(b){return b[0].every(v=>v)}
+function evalB(b){let s=0;const D=[[0,1],[1,0],[1,1],[1,-1]];
+ for(let r=0;r<ROWS;r++){if(b[r][3]===2)s+=3;else if(b[r][3]===1)s-=3}
+ for(let r=0;r<ROWS;r++)for(let q=0;q<COLS;q++)for(const d of D){let a=0,h=0,e=0,ok=true;for(let k=0;k<4;k++){const rr=r+d[0]*k,cc=q+d[1]*k;if(rr<0||rr>=ROWS||cc<0||cc>=COLS){ok=false;break}const v=b[rr][cc];if(v===2)a++;else if(v===1)h++;else e++}
+  if(!ok)continue;if(a&&h)continue;if(a===3)s+=6;else if(a===2)s+=2;if(h===3)s-=7;else if(h===2)s-=2}
+ return s}
+const ORDER=[3,2,4,1,5,0,6];
+function mm(b,depth,al,be,max){
+ if(findWin(b,2))return 100000+depth;if(findWin(b,1))return -100000-depth;if(isFull(b)||depth===0)return evalB(b);
+ if(max){let v=-1e9;for(const col of ORDER){const r=rowFor(b,col);if(r<0)continue;b[r][col]=2;v=Math.max(v,mm(b,depth-1,al,be,false));b[r][col]=0;al=Math.max(al,v);if(al>=be)break}return v}
+ else{let v=1e9;for(const col of ORDER){const r=rowFor(b,col);if(r<0)continue;b[r][col]=1;v=Math.min(v,mm(b,depth-1,al,be,true));b[r][col]=0;be=Math.min(be,v);if(al>=be)break}return v}}
+function cpuPick(){
+ const valid=ORDER.filter(cc=>rowFor(board,cc)>=0);
+ if(difficulty==='easy'&&Math.random()<0.45)return valid[Math.floor(Math.random()*valid.length)];
+ const depth=difficulty==='easy'?2:difficulty==='hard'?7:4;
+ let best=valid[0],bv=-1e9;
+ for(const col of valid){const r=rowFor(board,col);board[r][col]=2;const v=mm(board,depth-1,-1e9,1e9,false)+Math.random()*0.5;board[r][col]=0;if(v>bv){bv=v;best=col}}
+ return best}
+function place(col,p,cb){const r=rowFor(board,col);if(r<0)return false;busy=true;
+ anim={col,row:r,y:OY-CELL-20,p};const ty=OY+r*CELL+CELL/2;let vy=4;
+ const iv=setInterval(()=>{vy+=2.2;anim.y+=vy;if(anim.y>=ty-CELL/2){clearInterval(iv);board[r][col]=p;anim=null;beep(p===1?330:220,.08,'triangle');cb()}},16);return true}
+function afterMove(p){
+ const w=findWin(board,p);
+ if(w){winCells=w;busy=true;if(p===1){score=500+board.flat().filter(v=>!v).length*25+(difficulty==='hard'?500:difficulty==='normal'?200:0);msg='YOU WIN!';beep(660,.3);setTimeout(()=>{state='won'},1300)}else{msg='CPU WINS';setTimeout(()=>{state='over'},1300)}return}
+ if(isFull(board)){msg='DRAW';score=100;busy=true;setTimeout(()=>{state='over'},1000);return}
+ if(p===1){turn=2;msg='CPU THINKING...';setTimeout(()=>{const col=cpuPick();place(col,2,()=>{busy=false;afterMove(2)})},350)}
+ else{turn=1;busy=false;msg='YOUR TURN — PICK A COLUMN'}}
+function humanDrop(col){if(state!=='play'||busy||turn!==1)return;if(rowFor(board,col)<0)return;place(col,1,()=>{busy=false;afterMove(1)})}
+function drawDisc(cx,cy,p,a){x.beginPath();x.arc(cx,cy,32,0,7);x.fillStyle=p===1?'#38e8ff':'#ff5a79';x.globalAlpha=a||1;x.fill();x.lineWidth=4;x.strokeStyle=p===1?'#c9f8ff':'#ffc1cd';x.stroke();x.globalAlpha=1}
+function draw(){
+ x.fillStyle='#050714';x.fillRect(0,0,W,H);
+ if(state==='title'){txt('NEON CONNECT',W/2,200,44,'#4deaff');txt('DROP DISCS • GET FOUR IN A ROW',W/2,260,16,'#ffe35b');txt('YOU ARE CYAN • CPU IS RED',W/2,300,14,'#b5bbd5');txt('CLICK / TAP / ENTER TO START',W/2,380,18,'#73ff89');return}
+ txt('NEON CONNECT',W/2,44,26,'#4deaff');txt(msg,W/2,76,14,turn===1?'#73ff89':'#ff8aa0');
+ if(state==='play'&&!busy&&turn===1){drawDisc(OX+sel*CELL+CELL/2,OY-42,1,.55)}
+ if(anim)drawDisc(OX+anim.col*CELL+CELL/2,anim.y+CELL/2,anim.p);
+ for(let r=0;r<ROWS;r++)for(let q=0;q<COLS;q++){const cx=OX+q*CELL+CELL/2,cy=OY+r*CELL+CELL/2;
+  x.fillStyle='#14206b';x.fillRect(OX+q*CELL,OY+r*CELL,CELL,CELL);
+  if(board[r][q])drawDisc(cx,cy,board[r][q]);else{x.beginPath();x.arc(cx,cy,32,0,7);x.fillStyle='#050714';x.fill()}
+  x.strokeStyle='#2c3fb0';x.lineWidth=2;x.strokeRect(OX+q*CELL,OY+r*CELL,CELL,CELL)}
+ if(winCells&&Math.floor(Date.now()/250)%2){winCells.forEach(([r,q])=>{x.beginPath();x.arc(OX+q*CELL+CELL/2,OY+r*CELL+CELL/2,38,0,7);x.lineWidth=5;x.strokeStyle='#ffe35b';x.stroke()})}
+ if(state==='won')overlay([['YOU WIN!',40,'#73ff89'],['SCORE '+score,20,'#ffe35b'],['CLICK / ENTER TO PLAY AGAIN',14,'#fff']]);
+ if(state==='over')overlay([[msg==='DRAW'?'DRAW GAME':'CPU WINS',40,'#ff5a79'],['CLICK / ENTER TO TRY AGAIN',14,'#fff']]);
+}
+c.addEventListener('pointermove',e=>{const p=ptr(e);sel=Math.max(0,Math.min(COLS-1,Math.floor((p.x-OX)/CELL)))});
+c.addEventListener('pointerdown',e=>{if(state!=='play'){reset();return}const p=ptr(e);const col=Math.floor((p.x-OX)/CELL);if(col>=0&&col<COLS){sel=col;humanDrop(col)}});
+addEventListener('keydown',e=>{if(state!=='play'){if(e.key==='Enter'||e.key===' '){reset();e.preventDefault()}return}
+ if(e.key==='ArrowLeft'||e.key==='a'){sel=Math.max(0,sel-1);e.preventDefault()}
+ if(e.key==='ArrowRight'||e.key==='d'){sel=Math.min(COLS-1,sel+1);e.preventDefault()}
+ if(e.key==='ArrowDown'||e.key===' '||e.key==='Enter'){humanDrop(sel);e.preventDefault()}});
+document.getElementById('difficultySelect').addEventListener('change',()=>{if(state!=='play')diff()});
+board=Array.from({length:ROWS},()=>Array(COLS).fill(0));setInterval(draw,33);draw();
+
+const RETRO_LOCAL_STATS=(()=>{
+  const GAME_ID="neon-connect.html", GAME_TITLE="NEON CONNECT";
+  let active=false,lastProgress=0;
+  function mode(){try{return String(state||'').toLowerCase()}catch(e){return ''}}
+  function metric(){try{return {name:'score',value:Math.round(Number(score)||0),higher:true}}catch(e){return {name:'score',value:0,higher:true}}}
+  function send(type,extra={}){try{parent.postMessage(Object.assign({source:'retro-world-game',type,gameId:GAME_ID,title:GAME_TITLE},extra),'*')}catch(e){}}
+  function snapshot(){const m=metric();send('progress',{metric:m.name,value:m.value,higherBetter:m.higher})}
+  setInterval(()=>{const now=Date.now(),md=mode(),playing=md==='play'||md==='playing'||md==='running',won=md==='win'||md==='won'||md==='victory'||md==='complete',lost=md==='over'||md==='gameover'||md==='lost'||md==='dead'||md==='fail'||md==='failed';
+    if(playing&&!active){active=true;send('start');snapshot();lastProgress=now}
+    if(active&&playing&&now-lastProgress>1200){snapshot();lastProgress=now}
+    if(active&&(won||lost)){const m=metric();snapshot();send('finish',{result:won?'win':'loss',metric:m.name,value:m.value,higherBetter:m.higher});active=false}
+  },250);
+  addEventListener('pagehide',()=>{if(active)snapshot()});
+  return{snapshot};
+})();
+</script></body></html>

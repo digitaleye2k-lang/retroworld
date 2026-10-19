@@ -1,0 +1,3 @@
+Upload index.html and the epic folder to the root of the existing Retro World repository. Retain all existing games, assets and styles.css. This is an update patch, not a complete replacement of the repository.
+Three permanent guides are linked from the catalogue and News. Game launches use existing game entry files. First-visit profile prompts are no longer automatic; profile creation remains available explicitly. No ad code was added to guides.
+Validation: static links checked against repository tree; page layouts and launch wiring checked locally. Full gameplay on physical phones and AdSense approval are not guaranteed by these changes.
