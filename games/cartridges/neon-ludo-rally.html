@@ -161,6 +161,14 @@ addEventListener('keydown',e=>{if(e.key==='Enter'&&state!=='play')reset();if((e.
 document.getElementById('difficultySelect').addEventListener('change',()=>{if(state==='title'||state==='win'||state==='over')diff()});
 draw();setInterval(draw,33);
 
+
+let AC=null;function sfx(f,d,t,v,f2,delay){const go=()=>{try{AC=AC||new (window.AudioContext||window.webkitAudioContext)();const o=AC.createOscillator(),g=AC.createGain(),n=AC.currentTime;o.type=t||'square';o.frequency.setValueAtTime(f,n);if(f2)o.frequency.exponentialRampToValueAtTime(f2,n+d);g.gain.setValueAtTime(v||.05,n);g.gain.exponentialRampToValueAtTime(.0001,n+d);o.connect(g);g.connect(AC.destination);o.start();o.stop(n+d)}catch(e){}};delay?setTimeout(go,delay):go()}
+function arp(a,step,t){a.forEach((f,i)=>sfx(f,.16,t||'triangle',.06,0,i*(step||90)))}
+
+const _af=afterRoll;afterRoll=function(){sfx(240+dice*80,.12,'square',.06);if(dice===6)arp([660,880],70,'triangle');_af()};
+const _mp=movePiece;movePiece=function(p,i){const h=players[p].home,lost=()=>players.reduce((a,q)=>a+q.pieces.filter(v=>v<0).length,0),l0=lost();_mp(p,i);
+ try{if(state==='win'&&p===0)arp([523,659,784,1047,1319],110,'square');else if(state==='over')arp([392,330,262,196],140,'sawtooth');
+ else if(lost()>l0){sfx(150,.2,'sawtooth',.08,60);sfx(800,.06,'square',.04,0,40)}else if(players[p].home>h)arp([523,659,784],90,'triangle');else sfx(420+Math.random()*80,.07,'square',.05)}catch(e){}};
 const RETRO_LOCAL_STATS=(()=>{
   const GAME_ID="neon-ludo-rally.html", GAME_TITLE="NEON LUDO RALLY";
   let active=false,lastProgress=0;

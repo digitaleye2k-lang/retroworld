@@ -1,0 +1,94 @@
+<!doctype html><html><head><script src="rw-boost.js"></script><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>CAPTAIN LEAP • RETRO WORLD</title><style>
+html,body{height:100%;margin:0;background:#03050c;color:#fff;font-family:"Courier New",monospace}
+body{display:grid;place-items:center;background:radial-gradient(circle at 50% 35%,#151735,#03050c 68%);overflow:hidden}
+.wrap{width:min(96vw,900px);text-align:center}
+.top{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:7px;min-height:34px}
+.title{color:#4deaff;font-size:clamp(14px,3vw,20px);font-weight:900;letter-spacing:2px;text-shadow:2px 2px #4c165d}
+.diff{display:flex;gap:5px;align-items:center;color:#949abc;font-size:8px}
+.diff select{background:#0b0d1d;color:#fff;border:1px solid #4deaff;padding:5px;font:700 9px "Courier New",monospace}
+.frame{position:relative;border:3px solid #4deaff;box-shadow:0 0 0 3px #181a36,0 0 28px #00eaff29;background:#050714}
+canvas{display:block;width:100%;height:auto;max-height:calc(100dvh - 115px);object-fit:contain;touch-action:none;user-select:none;-webkit-user-select:none}
+.help{margin-top:7px;color:#858bad;font-size:9px;line-height:1.45}
+.help b{color:#e6d36f}
+@media(max-width:650px){.wrap{width:99vw}.top{margin:2px 5px 4px}.help{font-size:7px;margin-top:4px}.diff span{display:none}}
+</style><script>addEventListener('keydown',function(e){if((e.keyCode||e.which)===461&&window.parent!==window){e.preventDefault();window.parent.postMessage({type:'retroworld-tv-back'},'*');}},true);</script></head>
+<body><div class="wrap"><div class="top"><div class="title">CAPTAIN LEAP</div><div class="diff"><span>DIFFICULTY</span><select id="difficultySelect"><option value="easy">EASY</option><option value="normal" selected>NORMAL</option><option value="hard">HARD</option></select></div></div>
+<div class="frame"><canvas id="g" width="640" height="400"></canvas></div><div class="help"><b>← →</b> RUN • <b>SPACE / ↑</b> JUMP (HOLD = HIGHER) • STOMP ENEMIES • REACH THE FLAG</div></div>
+<script>
+
+const c=document.getElementById('g'),x=c.getContext('2d');x.imageSmoothingEnabled=false;
+const W=c.width,H=c.height;
+let AC=null;
+function beep(f,d,type,v){try{AC=AC||new (window.AudioContext||window.webkitAudioContext)();const o=AC.createOscillator(),g=AC.createGain();o.type=type||'square';o.frequency.value=f;g.gain.value=v||0.05;g.gain.exponentialRampToValueAtTime(0.0001,AC.currentTime+d);o.connect(g);g.connect(AC.destination);o.start();o.stop(AC.currentTime+d)}catch(e){}}
+function ptr(e){const r=c.getBoundingClientRect();return{x:(e.clientX-r.left)*W/r.width,y:(e.clientY-r.top)*H/r.height}}
+function txt(s,px,py,size,col,al){x.font='bold '+size+'px Courier New';x.fillStyle=col;x.textAlign=al||'center';x.fillText(s,px,py)}
+function overlay(lines){x.fillStyle='rgba(3,5,12,.82)';x.fillRect(0,0,W,H);lines.forEach((l,i)=>txt(l[0],W/2,H/2-40+i*34,l[1],l[2]))}
+
+const GR=320,LV=3,SP={easy:.8,normal:1,hard:1.35};
+let state='title',difficulty='normal',lvl=0,score=0,lives=3,cam=0,P,gr=[],pl=[],en=[],cn=[],flag=0,K={},last=0,inv=0,safe=60,ptrs={};
+function diff(){difficulty=document.getElementById('difficultySelect').value}
+function build(){gr=[[0,520]];pl=[];en=[];cn=[];let x0=520,len=3000+lvl*1100;
+ while(x0<len){const gap=(difficulty==='hard'?125:difficulty==='easy'?70:100)+Math.random()*40|0,w=230+Math.random()*320|0,a=x0+gap;gr.push([a,a+w]);
+  if(Math.random()<.65+lvl*.12)en.push({x:a+w*.6,a:a+12,b:a+w-30,d:1,dead:0});
+  for(let i=0;i<3;i++)cn.push({x:a+w*.3+i*34,y:GR-46,got:0});
+  if(Math.random()<.8){const px=a+w*.2,py=GR-95-Math.random()*60|0;pl.push({x:px,y:py,w:70+Math.random()*60|0});for(let i=0;i<3;i++)cn.push({x:px+14+i*28,y:py-34,got:0})}
+  x0=a+w}
+ flag=x0-110}
+function spawn(){P={x:safe,y:GR,vx:0,vy:0,on:true,f:1};inv=1}
+function reset(){diff();lvl=0;score=0;lives=3;cam=0;safe=60;build();spawn();last=performance.now();state='play'}
+function hurt(){if(inv>0)return;lives--;beep(110,.3,'sawtooth');if(lives<=0){state='over';return}inv=1.6;P.vy=-380}
+function die(){lives--;beep(110,.4,'sawtooth');if(lives<=0){state='over';return}spawn();cam=Math.max(0,P.x-200)}
+function upd(){if(state!=='play')return;const n=performance.now(),dt=Math.min(.05,(n-last)/1000);last=n;inv=Math.max(0,inv-dt);
+ const run=(K.l?-1:0)+(K.r?1:0);P.vx+=(run*215-P.vx)*Math.min(1,dt*10);if(run)P.f=run;
+ if(K.j&&P.on){P.vy=-640;P.on=false;beep(520,.08,'square',.04)}if(!K.j&&P.vy<-260)P.vy=-260;P.vy+=1750*dt;
+ P.x=Math.max(cam,P.x+P.vx*dt);let ny=P.y+P.vy*dt,landed=false;
+ if(P.vy>=0){const g=gr.find(s=>P.x>s[0]&&P.x<s[1]);if(g&&P.y<=GR+3&&ny>=GR){ny=GR;landed=true;safe=Math.max(60,P.x-30)}
+  for(const p of pl)if(P.x>p.x-6&&P.x<p.x+p.w+6&&P.y<=p.y+4&&ny>=p.y){ny=p.y;landed=true}}
+ if(landed){P.vy=0;P.on=true}else P.on=false;P.y=ny;if(P.y>H+80){die();return}
+ en.forEach(e=>{if(e.dead)return;e.x+=e.d*(45+25*SP[difficulty])*dt;if(e.x<e.a||e.x>e.b)e.d*=-1;
+  if(Math.abs(P.x-e.x)<24&&P.y>GR-52&&P.y<GR+8){if(P.vy>0&&P.y<GR-14){e.dead=1;P.vy=-420;score+=100;beep(700,.08)}else hurt()}});
+ cn.forEach(c=>{if(!c.got&&Math.abs(P.x-c.x)<22&&Math.abs(P.y-22-c.y)<30){c.got=1;score+=10;beep(900,.05,'triangle',.04)}});
+ cam=Math.max(cam,P.x-210);
+ if(P.x>flag){score+=200+lives*50;beep(660,.3);lvl++;if(lvl>=LV){state='won';return}build();safe=60;cam=0;spawn()}}
+function draw(){upd();const sx=v=>Math.round(v-cam);
+ const g=x.createLinearGradient(0,0,0,H);g.addColorStop(0,'#3a8dde');g.addColorStop(1,'#a8e0ff');x.fillStyle=g;x.fillRect(0,0,W,H);
+ for(let i=0;i<8;i++){const hx=((i*260-cam*.3)%2100+2100)%2100-200;x.fillStyle='#5fb35a';x.beginPath();x.arc(hx,GR+40,90+i%3*30,Math.PI,0);x.fill()}
+ if(state==='title'){txt('CAPTAIN LEAP',W/2,120,46,'#fff');txt('RUN \u2022 JUMP \u2022 STOMP \u2022 REACH THE FLAG',W/2,170,16,'#ffe35b');txt('3 WORLDS \u2022 3 LIVES \u2022 GRAB COINS \u2022 DON\u2019T FALL',W/2,205,13,'#102040');txt('\u2190 \u2192 MOVE \u2022 SPACE / \u2191 JUMP (HOLD FOR HIGHER)',W/2,235,13,'#102040');txt('CLICK / TAP / ENTER TO START',W/2,300,18,'#fff');return}
+ gr.forEach(s=>{x.fillStyle='#8a5a2b';x.fillRect(sx(s[0]),GR,s[1]-s[0],H-GR);x.fillStyle='#4cc04a';x.fillRect(sx(s[0]),GR,s[1]-s[0],10)});
+ pl.forEach(p=>{x.fillStyle='#d9822b';x.fillRect(sx(p.x),p.y,p.w,16);x.strokeStyle='#7a3d0a';x.lineWidth=2;for(let i=0;i<p.w;i+=16)x.strokeRect(sx(p.x)+i,p.y,16,16)});
+ cn.forEach(c=>{if(c.got)return;x.beginPath();x.arc(sx(c.x),c.y,8,0,7);x.fillStyle='#ffd23a';x.fill();x.strokeStyle='#a87800';x.lineWidth=2;x.stroke()});
+ en.forEach(e=>{if(e.dead)return;const ex=sx(e.x);x.fillStyle='#7a2fb0';x.beginPath();x.arc(ex,GR-14,16,Math.PI,0);x.fillRect(ex-16,GR-14,32,14);x.fill();x.fillStyle='#fff';x.fillRect(ex-9,GR-24,6,8);x.fillRect(ex+3,GR-24,6,8);x.fillStyle='#000';x.fillRect(ex-7,GR-21,3,4);x.fillRect(ex+5,GR-21,3,4)});
+ x.fillStyle='#fff';x.fillRect(sx(flag),GR-130,5,130);x.fillStyle='#e53b4a';x.beginPath();x.moveTo(sx(flag)+5,GR-130);x.lineTo(sx(flag)+55,GR-110);x.lineTo(sx(flag)+5,GR-90);x.fill();
+ if(!(inv>0&&Math.floor(inv*12)%2)){const px=sx(P.x),py=P.y;x.fillStyle='#2f6fe0';x.fillRect(px-11,py-22,22,16);x.fillStyle='#f2c79b';x.fillRect(px-9,py-40,18,16);x.fillStyle='#e53b4a';x.fillRect(px-11,py-46,22,8);x.fillRect(px+(P.f>0?4:-18),py-40,14,5);x.fillStyle='#000';x.fillRect(px+(P.f>0?3:-6),py-34,3,4);x.fillStyle='#4a2a10';x.fillRect(px-11+(Math.floor(P.x/12)%2&&P.on&&Math.abs(P.vx)>20?3:0),py-6,9,6);x.fillRect(px+2,py-6,9,6)}
+ txt('SCORE '+score,14,28,16,'#fff','left');txt('WORLD '+(lvl+1)+'/'+LV,W/2,28,16,'#fff');txt('\u2665'.repeat(Math.max(0,lives)),W-14,28,18,'#ff3b5c','right');
+ if(('ontouchstart' in window)||navigator.maxTouchPoints>0){[['\u25C0',50],['\u25B6',140]].forEach(b=>{x.globalAlpha=.4;x.fillStyle='#000';x.fillRect(b[1]-34,H-80,68,60);x.globalAlpha=1;txt(b[0],b[1],H-40,28,'#fff')});x.globalAlpha=.4;x.fillStyle='#000';x.fillRect(W-120,H-80,100,60);x.globalAlpha=1;txt('JUMP',W-70,H-42,18,'#fff')}
+ if(state==='won')overlay([['YOU SAVED THE KINGDOM!',30,'#73ff89'],['SCORE '+score,20,'#ffe35b'],['CLICK / ENTER TO PLAY AGAIN',14,'#fff']]);
+ if(state==='over')overlay([['GAME OVER',40,'#ff5a79'],['SCORE '+score,20,'#ffe35b'],['CLICK / ENTER TO TRY AGAIN',14,'#fff']])}
+function zone(p){return p.x<W*.22?'l':p.x<W*.45?'r':p.x>W*.65?'j':null}
+function sync(){K.l=K.r=K.j=0;for(const k in ptrs){const z=ptrs[k];if(z)K[z]=1}}
+c.addEventListener('pointerdown',e=>{if(state!=='play'){reset();return}ptrs[e.pointerId]=zone(ptr(e));sync()});
+c.addEventListener('pointermove',e=>{if(e.pointerId in ptrs){ptrs[e.pointerId]=zone(ptr(e));sync()}});
+['pointerup','pointercancel'].forEach(t=>c.addEventListener(t,e=>{delete ptrs[e.pointerId];sync()}));
+const KM={ArrowLeft:'l',a:'l',ArrowRight:'r',d:'r',ArrowUp:'j',w:'j',' ':'j'};
+addEventListener('keydown',e=>{if(state!=='play'){if(e.key==='Enter'||e.key===' '){reset();e.preventDefault()}return}const k=KM[e.key];if(k){K[k]=1;e.preventDefault()}});
+addEventListener('keyup',e=>{const k=KM[e.key];if(k)K[k]=0});
+document.getElementById('difficultySelect').addEventListener('change',()=>{if(state!=='play')diff()});
+diff();build();spawn();setInterval(draw,16);
+
+const RETRO_LOCAL_STATS=(()=>{
+  const GAME_ID="captain-leap.html", GAME_TITLE="CAPTAIN LEAP";
+  let active=false,lastProgress=0;
+  function mode(){try{return String(state||'').toLowerCase()}catch(e){return ''}}
+  function metric(){try{return {name:'score',value:Math.round(Number(score)||0),higher:true}}catch(e){return {name:'score',value:0,higher:true}}}
+  function send(type,extra={}){try{parent.postMessage(Object.assign({source:'retro-world-game',type,gameId:GAME_ID,title:GAME_TITLE},extra),'*')}catch(e){}}
+  function snapshot(){const m=metric();send('progress',{metric:m.name,value:m.value,higherBetter:m.higher})}
+  setInterval(()=>{const now=Date.now(),md=mode(),playing=md==='play'||md==='playing'||md==='running',won=md==='win'||md==='won'||md==='victory'||md==='complete',lost=md==='over'||md==='gameover'||md==='lost'||md==='dead'||md==='fail'||md==='failed';
+    if(playing&&!active){active=true;send('start');snapshot();lastProgress=now}
+    if(active&&playing&&now-lastProgress>1200){snapshot();lastProgress=now}
+    if(active&&(won||lost)){const m=metric();snapshot();send('finish',{result:won?'win':'loss',metric:m.name,value:m.value,higherBetter:m.higher});active=false}
+  },250);
+  addEventListener('pagehide',()=>{if(active)snapshot()});
+  return{snapshot};
+})();
+</script></body></html>

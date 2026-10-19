@@ -740,7 +740,7 @@ function buildTrack(def){
  // Run every circuit in the opposite direction while keeping the same
  // start/finish location. Reversing the control points reverses tangents,
  // AI pathing, lap progress and the player's starting heading together.
- const cps=[raw[0],...raw.slice(1).reverse()],n=cps.length,samples=[];
+ const cps=raw.slice(),n=cps.length,samples=[];
  const per=18;
  for(let i=0;i<n;i++){
    const p0=cps[(i-1+n)%n],p1=cps[i],p2=cps[(i+1)%n],p3=cps[(i+2)%n];
@@ -756,7 +756,7 @@ function buildTrack(def){
    const a=samples[(i-1+samples.length)%samples.length],b=samples[(i+1)%samples.length];
    const t=norm(b.x-a.x,b.y-a.y);tang.push(t);normals.push({x:-t.y,y:t.x})
  }
- return{def,samples,cum,length,tang,normals,width:def.width,reverse:true}
+ return{def,samples,cum,length,tang,normals,width:def.width,reverse:false}
 }
 function pointAtS(s,offset=0){
  s=mod(s,track.length);
@@ -1126,7 +1126,7 @@ function drawHUD(){
  txt(TRACKS[trackChoice-1].name,18,16,11,'#8cefff');
  txt(countdown>0?'GRID POLE':'POS '+rank+'/'+(ais.length+1),18,35,14,countdown>0?'#6feaff':rank===1?'#68ff8b':'#ffe066');
  txt('LAP '+lap+'/'+track.def.laps,105,35,14,'#fff');
- txt('REVERSE COURSE',18,86,8,'#ff7dde');
+ txt('CIRCUIT',18,86,8,'#ff7dde');
  txt(sp+' KM/H',18,59,20,'#ff65dc');
  txt(difficulty.toUpperCase(),112,66,9,difficulty==='hard'?'#ff6478':difficulty==='easy'?'#70ff91':'#ffd85c');
 
@@ -1158,7 +1158,7 @@ function drawTitle(){
  txt('TOP-DOWN HOVER RACING',W/2,112,15,'#ff58dc','center');
  txt('10 TRACKS • GARAGE • DRIFT PHYSICS • CHAMPIONS',W/2,148,11,'#ffe066','center');
  txt('UP THROTTLE  DOWN BRAKE/DRIFT  LEFT/RIGHT STEER',W/2,207,11,'#ddd','center');
- txt('ALL CIRCUITS NOW RUN IN REVERSE DIRECTION',W/2,226,10,'#ff79df','center');
+ txt('CLASSIC CIRCUIT DIRECTION',W/2,226,10,'#ff79df','center');
  txt('A / SPACE = BOOST',W/2,248,12,'#72f4ff','center');
  txt('ENTER / START = TRACK SELECT',W/2,286,17,'#68ff8c','center');
  txt('A / SPACE FROM MENU = GARAGE',W/2,316,11,'#aaa','center');
@@ -1179,7 +1179,7 @@ function drawTrackSelect(){
  x.strokeStyle=d.theme[3];x.lineWidth=2;x.setLineDash([8,8]);x.stroke();x.setLineDash([]);x.restore();
 
  txt((locked?'🔒 ':'')+trackChoice+'. '+d.name,W/2,356,19,locked?'#777':'#ffe063','center');
- txt(d.world+' • '+d.laps+' LAPS • REVERSE'+(d.boss?' • CHAMPION: '+d.boss:''),W/2,384,10,d.boss?'#ff7da7':'#9adfff','center');
+ txt(d.world+' • '+d.laps+' LAPS'+(d.boss?' • CHAMPION: '+d.boss:''),W/2,384,10,d.boss?'#ff7da7':'#9adfff','center');
  txt(locked?'FINISH THE PREVIOUS TRACK TO UNLOCK':(d.boss?'WIN THIS CHAMPION EVENT':'TOP 3 QUALIFIES'),W/2,414,11,locked?'#ff6576':'#70ff8a','center')
 }
 function drawGarage(){

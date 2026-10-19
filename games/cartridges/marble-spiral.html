@@ -763,6 +763,18 @@ function draw(){
     txt('PRESS ENTER',W/2,260,13,'#00ffff','center');
   }
 }
+
+const MFX=[],MPOP=[];let nextBomb=7;
+function mburst(px,py,col,n,sp){for(let i=0;i<n;i++){const a=Math.random()*6.283,v=sp*(.3+Math.random());MFX.push({x:px,y:py,vx:Math.cos(a)*v,vy:Math.sin(a)*v,l:1,c:col,s:2+Math.random()*3})}}
+const _cg=clearGroup;clearGroup=function(i,mult){const q=chain[i],pt=q?pointAt(q.d):null,col=q?COLORS[q.col]:'#fff',n0=chain.length,r=_cg(i,mult);
+ if(r&&pt){const n=n0-chain.length;mburst(pt.x,pt.y,col,10+n*3,150+mult*40);MPOP.push({x:pt.x,y:pt.y,t:0,v:'+'+n*100*(mult||1)+((mult||1)>1?'  COMBO x'+mult+'!':''),big:(mult||1)>1});try{SFX.tone(520+(mult||1)*110,.12,'triangle',.05,900+(mult||1)*140)}catch(e){}}return r};
+const _fi=fire;fire=function(){const had=!!shot;_fi.apply(this,arguments);if(!had&&shot){if(shotsFired>=nextBomb){shot.bomb=true;nextBomb=shotsFired+7}}};
+const _ia=insertAt;insertAt=function(hit){if(shot&&shot.bomb&&chain[hit]){const a=Math.max(0,hit-3),n=Math.min(chain.length,hit+4)-a,pt=pointAt(chain[hit].d);chain.splice(a,n);for(let k=a;k<chain.length;k++)chain[k].d-=n*SPACE;score+=n*150;combo=2;comboTimer=1.2;shot=null;try{SFX.boom()}catch(e){}mburst(pt.x,pt.y,'#ffb13b',50,260);mburst(pt.x,pt.y,'#fff',20,320);MPOP.push({x:pt.x,y:pt.y,t:0,v:'BOMB! +'+n*150,big:1});return}return _ia(hit)};
+const _dr=draw;draw=function(){_dr();try{x.save();x.globalCompositeOperation='lighter';for(let i=0;i<40;i++){const sx=(i*113)%640,sy=(i*71)%480,a=.1+.35*Math.abs(Math.sin(Date.now()/700+i));x.fillStyle='rgba(160,220,255,'+a+')';x.fillRect(sx,sy,1.6,1.6)}
+ MFX.forEach(p=>{p.x+=p.vx*.016;p.y+=p.vy*.016;p.vy+=240*.016;p.l-=.028;if(p.l>0){x.globalAlpha=p.l;x.fillStyle=p.c;x.fillRect(p.x,p.y,p.s,p.s)}});x.globalAlpha=1;for(let i=MFX.length-1;i>=0;i--)if(MFX[i].l<=0)MFX.splice(i,1);x.restore();
+ MPOP.forEach(q=>{q.t+=.016;x.globalAlpha=Math.max(0,1-q.t*1.1);x.fillStyle=q.big?'#ffe35b':'#fff';x.font='bold '+(q.big?22:16)+'px Courier New';x.textAlign='center';x.strokeStyle='#000';x.lineWidth=3;x.strokeText(q.v,q.x,q.y-q.t*50);x.fillText(q.v,q.x,q.y-q.t*50)});x.globalAlpha=1;for(let i=MPOP.length-1;i>=0;i--)if(MPOP[i].t>.9)MPOP.splice(i,1);
+ if(shot&&shot.bomb){x.fillStyle='#161616';x.beginPath();x.arc(shot.x,shot.y,11,0,7);x.fill();x.strokeStyle='#ffb13b';x.lineWidth=2;x.stroke();x.fillStyle='#ffb13b';x.fillRect(shot.x-1,shot.y-17,3,6);x.fillStyle='#fff';x.fillRect(shot.x-2+Math.random()*4,shot.y-20,2,2)}
+ if(state==='play'){const left=Math.max(0,nextBomb-shotsFired);x.font='bold 11px Courier New';x.textAlign='right';x.fillStyle=left<=1?'#ffb13b':'#7f8fd8';x.fillText(left<=0||(shot&&shot.bomb)?'BOMB LOADED!':'BOMB IN '+left+' SHOTS',632,40)}}catch(e){}};
 function loop(t){let d=Math.min(.03,(t-last)/1000||0);last=t;up(d);draw();requestAnimationFrame(loop)}
 requestAnimationFrame(loop);
 window.__gameDebug=()=>({

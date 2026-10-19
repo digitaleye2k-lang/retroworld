@@ -144,6 +144,12 @@ addEventListener('keydown',e=>{if(e.key==='Enter'&&state!=='play')reset()});
 document.getElementById('difficultySelect').addEventListener('change',e=>{difficulty=e.target.value});
 board=resetBoard();setInterval(draw,33);draw();
 
+
+let AC=null;function sfx(f,d,t,v,f2,delay){const go=()=>{try{AC=AC||new (window.AudioContext||window.webkitAudioContext)();const o=AC.createOscillator(),g=AC.createGain(),n=AC.currentTime;o.type=t||'square';o.frequency.setValueAtTime(f,n);if(f2)o.frequency.exponentialRampToValueAtTime(f2,n+d);g.gain.setValueAtTime(v||.05,n);g.gain.exponentialRampToValueAtTime(.0001,n+d);o.connect(g);g.connect(AC.destination);o.start();o.stop(n+d)}catch(e){}};delay?setTimeout(go,delay):go()}
+function arp(a,step,t){a.forEach((f,i)=>sfx(f,.16,t||'triangle',.06,0,i*(step||90)))}
+
+const _pm=playMove;playMove=function(m){const cap=board[m.tr][m.tc];_pm(m);try{if(state==='win')arp([523,659,784,1047,1319],110,'square');else if(state==='over')arp([392,330,262,196],140,'sawtooth');else if(cap){sfx(120,.14,'sawtooth',.08,60);sfx(900,.05,'square',.04,0,20)}else if(inCheck(board,turn)){arp([880,660],110,'square')}else sfx(300+Math.random()*60,.07,'triangle',.07)}catch(e){}};
+const _cs=clickSquare;clickSquare=function(){const was=sel;_cs.apply(this,arguments);try{if(sel&&sel!==was)sfx(620,.04,'triangle',.04)}catch(e){}};
 const RETRO_LOCAL_STATS=(()=>{
   const GAME_ID="pixel-chess.html", GAME_TITLE="PIXEL CHESS";
   let active=false,lastProgress=0;

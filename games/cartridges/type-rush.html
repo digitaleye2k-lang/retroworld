@@ -1,0 +1,70 @@
+<!doctype html><html><head><script src="rw-boost.js"></script><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>TYPE RUSH • RETRO WORLD</title><style>
+html,body{height:100%;margin:0;background:#03050c;color:#fff;font-family:"Courier New",monospace}
+body{display:grid;place-items:center;background:radial-gradient(circle at 50% 35%,#151735,#03050c 68%);overflow:hidden}
+.wrap{width:min(96vw,900px);text-align:center}
+.top{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:7px;min-height:34px}
+.title{color:#4deaff;font-size:clamp(14px,3vw,20px);font-weight:900;letter-spacing:2px;text-shadow:2px 2px #4c165d}
+.diff{display:flex;gap:5px;align-items:center;color:#949abc;font-size:8px}
+.diff select{background:#0b0d1d;color:#fff;border:1px solid #4deaff;padding:5px;font:700 9px "Courier New",monospace}
+.frame{position:relative;border:3px solid #4deaff;box-shadow:0 0 0 3px #181a36,0 0 28px #00eaff29;background:#050714}
+canvas{display:block;width:100%;height:auto;max-height:calc(100dvh - 115px);object-fit:contain;touch-action:none;user-select:none;-webkit-user-select:none}
+.help{margin-top:7px;color:#858bad;font-size:9px;line-height:1.45}
+.help b{color:#e6d36f}
+@media(max-width:650px){.wrap{width:99vw}.top{margin:2px 5px 4px}.help{font-size:7px;margin-top:4px}.diff span{display:none}}
+</style><script>addEventListener('keydown',function(e){if((e.keyCode||e.which)===461&&window.parent!==window){e.preventDefault();window.parent.postMessage({type:'retroworld-tv-back'},'*');}},true);</script></head>
+<body><div class="wrap"><div class="top"><div class="title">TYPE RUSH</div><div class="diff"><span>DIFFICULTY</span><select id="difficultySelect"><option value="easy">EASY</option><option value="normal" selected>NORMAL</option><option value="hard">HARD</option></select></div></div>
+<div class="frame"><canvas id="g" width="640" height="600"></canvas></div><div class="help"><b>TYPE</b> THE FALLING WORDS • <b>BACKSPACE</b> CLEARS A LETTER • DON’T LET 5 WORDS LAND</div></div>
+<script>
+
+const c=document.getElementById('g'),x=c.getContext('2d');x.imageSmoothingEnabled=false;
+const W=c.width,H=c.height;
+let AC=null;
+function beep(f,d,type,v){try{AC=AC||new (window.AudioContext||window.webkitAudioContext)();const o=AC.createOscillator(),g=AC.createGain();o.type=type||'square';o.frequency.value=f;g.gain.value=v||0.05;g.gain.exponentialRampToValueAtTime(0.0001,AC.currentTime+d);o.connect(g);g.connect(AC.destination);o.start();o.stop(AC.currentTime+d)}catch(e){}}
+function ptr(e){const r=c.getBoundingClientRect();return{x:(e.clientX-r.left)*W/r.width,y:(e.clientY-r.top)*H/r.height}}
+function txt(s,px,py,size,col,al){x.font='bold '+size+'px Courier New';x.fillStyle=col;x.textAlign=al||'center';x.fillText(s,px,py)}
+function overlay(lines){x.fillStyle='rgba(3,5,12,.82)';x.fillRect(0,0,W,H);lines.forEach((l,i)=>txt(l[0],W/2,H/2-40+i*34,l[1],l[2]))}
+
+const WORDS='pixel arcade joystick cartridge neon retro sprite combo laser bonus level boss coin quest turbo glitch cursor sector vector blaster rocket galaxy orbit comet nova pulse quantum cyber matrix byte disk floppy modem score power shield warp portal robot alien ghost maze snake frog racer pilot tunnel crystal dragon wizard knight castle sword arrow ninja pirate'.split(' ');
+let state='title',difficulty='normal',words=[],typed='',score=0,lives=5,spawnAt=0,last=0,killed=0,goal=30,speed=40,gap=1700,inp;
+function diff(){difficulty=document.getElementById('difficultySelect').value;goal={easy:20,normal:30,hard:40}[difficulty];speed={easy:34,normal:46,hard:62}[difficulty];gap={easy:2200,normal:1700,hard:1250}[difficulty]}
+function reset(){diff();words=[];typed='';score=0;lives=5;killed=0;last=performance.now();spawnAt=last+400;state='play';inp.value='';inp.focus()}
+function tick(){if(state!=='play')return;const n=performance.now(),dt=Math.min(.1,(n-last)/1000);last=n;
+ if(n>spawnAt){const w=WORDS[Math.floor(Math.random()*WORDS.length)];words.push({w,x:60+Math.random()*(W-200),y:-10});spawnAt=n+gap*(1-.3*killed/goal)}
+ words.forEach(o=>o.y+=speed*(1+killed/goal*.5)*dt);
+ words=words.filter(o=>{if(o.y>H-50){lives--;typed='';beep(120,.25,'sawtooth');return false}return true});
+ if(lives<=0)state='over'}
+function press(ch){if(state!=='play')return;const t=typed+ch;const m=words.filter(o=>o.w.startsWith(t)).sort((a,b)=>b.y-a.y);
+ if(!m.length){typed='';beep(150,.1,'square');return}typed=t;beep(500+t.length*40,.03,'square',.03);
+ const done=m.find(o=>o.w===t);if(done){words.splice(words.indexOf(done),1);score+=t.length*10;killed++;typed='';beep(800,.1);if(killed>=goal)state='won'}}
+function draw(){tick();x.fillStyle='#050714';x.fillRect(0,0,W,H);
+ if(state==='title'){txt('TYPE RUSH',W/2,190,46,'#4deaff');txt('TYPE THE FALLING WORDS BEFORE THEY LAND',W/2,250,15,'#ffe35b');txt('5 LIVES \u2022 EASY 20 WORDS \u2022 NORMAL 30 \u2022 HARD 40',W/2,285,12,'#b5bbd5');txt('ON PHONES, TAP THE SCREEN TO OPEN THE KEYBOARD',W/2,315,12,'#b5bbd5');txt('CLICK OR ENTER TO START',W/2,400,18,'#73ff89');return}
+ txt('TYPE RUSH',W/2,36,22,'#4deaff');txt('SCORE '+score+'   WORDS '+killed+'/'+goal+'   LIVES '+'\u2665'.repeat(Math.max(0,lives)),W/2,66,13,'#ffe35b');
+ x.fillStyle='#ff2bd655';x.fillRect(0,H-50,W,3);
+ words.forEach(o=>{const m=typed&&o.w.startsWith(typed);x.font='bold 24px Courier New';x.textAlign='left';x.fillStyle=m?'#73ff89':'#e8f1ff';x.fillText(o.w,o.x,o.y);if(m){x.fillStyle='#ffe35b';x.fillText(o.w.slice(0,typed.length),o.x,o.y)}});
+ txt('> '+typed+(Math.floor(Date.now()/400)%2?'_':' '),W/2,H-14,20,'#4deaff');
+ if(state==='won')overlay([['WORD MASTER!',38,'#73ff89'],['SCORE '+score,20,'#ffe35b'],['CLICK / ENTER TO PLAY AGAIN',14,'#fff']]);
+ if(state==='over')overlay([['WORDS GOT THROUGH',34,'#ff5a79'],['SCORE '+score,20,'#ffe35b'],['CLICK / ENTER TO TRY AGAIN',14,'#fff']])}
+inp=document.createElement('input');inp.setAttribute('autocapitalize','off');inp.setAttribute('autocomplete','off');inp.setAttribute('spellcheck','false');inp.style.cssText='position:fixed;left:-200px;top:0;opacity:0;width:10px';document.body.appendChild(inp);
+inp.addEventListener('input',()=>{const v=inp.value.toLowerCase();inp.value='';[...v].forEach(ch=>{if(/[a-z]/.test(ch))press(ch)})});
+c.addEventListener('pointerdown',()=>{if(state!=='play')reset();else inp.focus()});
+addEventListener('keydown',e=>{if(state!=='play'&&(e.key==='Enter')){reset();e.preventDefault()}else if(e.key==='Backspace')typed=typed.slice(0,-1)});
+document.getElementById('difficultySelect').addEventListener('change',()=>{if(state!=='play')diff()});
+diff();setInterval(draw,16);
+
+const RETRO_LOCAL_STATS=(()=>{
+  const GAME_ID="type-rush.html", GAME_TITLE="TYPE RUSH";
+  let active=false,lastProgress=0;
+  function mode(){try{return String(state||'').toLowerCase()}catch(e){return ''}}
+  function metric(){try{return {name:'score',value:Math.round(Number(score)||0),higher:true}}catch(e){return {name:'score',value:0,higher:true}}}
+  function send(type,extra={}){try{parent.postMessage(Object.assign({source:'retro-world-game',type,gameId:GAME_ID,title:GAME_TITLE},extra),'*')}catch(e){}}
+  function snapshot(){const m=metric();send('progress',{metric:m.name,value:m.value,higherBetter:m.higher})}
+  setInterval(()=>{const now=Date.now(),md=mode(),playing=md==='play'||md==='playing'||md==='running',won=md==='win'||md==='won'||md==='victory'||md==='complete',lost=md==='over'||md==='gameover'||md==='lost'||md==='dead'||md==='fail'||md==='failed';
+    if(playing&&!active){active=true;send('start');snapshot();lastProgress=now}
+    if(active&&playing&&now-lastProgress>1200){snapshot();lastProgress=now}
+    if(active&&(won||lost)){const m=metric();snapshot();send('finish',{result:won?'win':'loss',metric:m.name,value:m.value,higherBetter:m.higher});active=false}
+  },250);
+  addEventListener('pagehide',()=>{if(active)snapshot()});
+  return{snapshot};
+})();
+</script></body></html>
