@@ -1,0 +1,64 @@
+<!doctype html><html><head><script src="rw-boost.js"></script><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>NEON WHACK • RETRO WORLD</title><style>
+html,body{height:100%;margin:0;background:#03050c;color:#fff;font-family:"Courier New",monospace}
+body{display:grid;place-items:center;background:radial-gradient(circle at 50% 35%,#151735,#03050c 68%);overflow:hidden}
+.wrap{width:min(96vw,900px);text-align:center}
+.top{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:7px;min-height:34px}
+.title{color:#4deaff;font-size:clamp(14px,3vw,20px);font-weight:900;letter-spacing:2px;text-shadow:2px 2px #4c165d}
+.diff{display:flex;gap:5px;align-items:center;color:#949abc;font-size:8px}
+.diff select{background:#0b0d1d;color:#fff;border:1px solid #4deaff;padding:5px;font:700 9px "Courier New",monospace}
+.frame{position:relative;border:3px solid #4deaff;box-shadow:0 0 0 3px #181a36,0 0 28px #00eaff29;background:#050714}
+canvas{display:block;width:100%;height:auto;max-height:calc(100dvh - 115px);object-fit:contain;touch-action:none;user-select:none;-webkit-user-select:none}
+.help{margin-top:7px;color:#858bad;font-size:9px;line-height:1.45}
+.help b{color:#e6d36f}
+@media(max-width:650px){.wrap{width:99vw}.top{margin:2px 5px 4px}.help{font-size:7px;margin-top:4px}.diff span{display:none}}
+</style><script>addEventListener('keydown',function(e){if((e.keyCode||e.which)===461&&window.parent!==window){e.preventDefault();window.parent.postMessage({type:'retroworld-tv-back'},'*');}},true);</script></head>
+<body><div class="wrap"><div class="top"><div class="title">NEON WHACK</div><div class="diff"><span>DIFFICULTY</span><select id="difficultySelect"><option value="easy">EASY</option><option value="normal" selected>NORMAL</option><option value="hard">HARD</option></select></div></div>
+<div class="frame"><canvas id="g" width="640" height="600"></canvas></div><div class="help"><b>CLICK / TAP</b> BOTS • <b>1-9</b> OR <b>Q W E / A S D / Z X C</b> • AVOID RED BOMBS</div></div>
+<script>
+
+const c=document.getElementById('g'),x=c.getContext('2d');x.imageSmoothingEnabled=false;
+const W=c.width,H=c.height;
+let AC=null;
+function beep(f,d,type,v){try{AC=AC||new (window.AudioContext||window.webkitAudioContext)();const o=AC.createOscillator(),g=AC.createGain();o.type=type||'square';o.frequency.value=f;g.gain.value=v||0.05;g.gain.exponentialRampToValueAtTime(0.0001,AC.currentTime+d);o.connect(g);g.connect(AC.destination);o.start();o.stop(AC.currentTime+d)}catch(e){}}
+function ptr(e){const r=c.getBoundingClientRect();return{x:(e.clientX-r.left)*W/r.width,y:(e.clientY-r.top)*H/r.height}}
+function txt(s,px,py,size,col,al){x.font='bold '+size+'px Courier New';x.fillStyle=col;x.textAlign=al||'center';x.fillText(s,px,py)}
+function overlay(lines){x.fillStyle='rgba(3,5,12,.82)';x.fillRect(0,0,W,H);lines.forEach((l,i)=>txt(l[0],W/2,H/2-40+i*34,l[1],l[2]))}
+
+const CS=150,OX=95,OY=170;let state='title',difficulty='normal',score=0,time=60,holes=[],combo=0,target=250,last=0,spawnAt=0;
+function diff(){difficulty=document.getElementById('difficultySelect').value;target={easy:150,normal:250,hard:350}[difficulty]}
+function reset(){diff();score=0;time=60;combo=0;holes=Array.from({length:9},()=>({t:0,k:0,hit:0}));last=performance.now();spawnAt=last+500;state='play'}
+function tick(){if(state!=='play')return;const n=performance.now(),dt=(n-last)/1000;last=n;time-=dt;if(time<=0){time=0;state=score>=target?'won':'over';return}
+ holes.forEach(h=>{if(h.k&&n>h.t){if(h.k===1)combo=0;h.k=0}});
+ if(n>spawnAt){const free=holes.filter(h=>!h.k&&n>h.hit);if(free.length){const h=free[Math.floor(Math.random()*free.length)];h.k=Math.random()<.2?2:1;const d=({easy:1150,normal:880,hard:660}[difficulty])*(1-.35*(60-time)/60);h.t=n+d;spawnAt=n+d*.5}else spawnAt=n+100}}
+function hit(i){const h=holes[i];if(state!=='play'||!h||!h.k)return;if(h.k===1){combo++;score+=10*Math.min(5,1+Math.floor(combo/5));beep(520+combo*12,.06)}else{score=Math.max(0,score-30);combo=0;time=Math.max(0,time-3);beep(120,.25,'sawtooth')}h.k=0;h.hit=performance.now()+150}
+function draw(){tick();x.fillStyle='#050714';x.fillRect(0,0,W,H);
+ if(state==='title'){txt('NEON WHACK',W/2,190,46,'#4deaff');txt('WHACK THE CYAN BOTS \u2022 AVOID THE RED BOMBS',W/2,250,15,'#ffe35b');txt('BOMBS COST 30 POINTS AND 3 SECONDS \u2022 COMBOS MULTIPLY SCORE',W/2,285,12,'#b5bbd5');txt('CLICK / TAP / KEYS 1-9 (OR Q W E / A S D / Z X C)',W/2,320,12,'#b5bbd5');txt('CLICK OR ENTER TO START',W/2,400,18,'#73ff89');return}
+ txt('NEON WHACK',W/2,40,24,'#4deaff');txt('SCORE '+score+'   GOAL '+target+'   COMBO x'+Math.min(5,1+Math.floor(combo/5)),W/2,74,14,'#ffe35b');
+ x.fillStyle='#14206b';x.fillRect(OX,92,3*CS-10,10);x.fillStyle=time<10?'#ff5a79':'#73ff89';x.fillRect(OX,92,(3*CS-10)*time/60,10);
+ holes.forEach((h,i)=>{const cx=OX+(i%3)*CS+70,cy=OY+Math.floor(i/3)*CS+60;x.beginPath();x.ellipse(cx,cy+22,62,26,0,0,7);x.fillStyle='#10143a';x.fill();x.strokeStyle='#2c3fb0';x.lineWidth=3;x.stroke();
+  if(h.k){x.beginPath();x.arc(cx,cy-4,40,0,7);x.fillStyle=h.k===1?'#38e8ff':'#ff3b5c';x.fill();x.fillStyle='#050714';if(h.k===1){x.fillRect(cx-18,cy-14,10,14);x.fillRect(cx+8,cy-14,10,14);x.fillRect(cx-14,cy+10,28,6)}else{txt('\u2716',cx,cy+10,36,'#050714')}}
+  txt(String(i+1),cx,cy+58,11,'#44508f')});
+ if(state==='won')overlay([['TARGET REACHED!',36,'#73ff89'],['SCORE '+score,20,'#ffe35b'],['CLICK / ENTER TO PLAY AGAIN',14,'#fff']]);
+ if(state==='over')overlay([['TIME UP',40,'#ff5a79'],['SCORE '+score+' / GOAL '+target,18,'#ffe35b'],['CLICK / ENTER TO TRY AGAIN',14,'#fff']])}
+c.addEventListener('pointerdown',e=>{if(state!=='play'){reset();return}const p=ptr(e),q=Math.floor((p.x-OX)/CS),r=Math.floor((p.y-OY)/CS);if(q>=0&&q<3&&r>=0&&r<3)hit(r*3+q)});
+addEventListener('keydown',e=>{const k=e.key.toLowerCase();if(state!=='play'){if(k==='enter'||k===' '){reset();e.preventDefault()}return}const i='123456789'.indexOf(k),j='qweasdzxc'.indexOf(k);if(i>=0)hit(i);else if(j>=0)hit(j)});
+document.getElementById('difficultySelect').addEventListener('change',()=>{if(state!=='play')diff()});
+holes=Array.from({length:9},()=>({t:0,k:0,hit:0}));diff();setInterval(draw,16);
+
+const RETRO_LOCAL_STATS=(()=>{
+  const GAME_ID="neon-whack.html", GAME_TITLE="NEON WHACK";
+  let active=false,lastProgress=0;
+  function mode(){try{return String(state||'').toLowerCase()}catch(e){return ''}}
+  function metric(){try{return {name:'score',value:Math.round(Number(score)||0),higher:true}}catch(e){return {name:'score',value:0,higher:true}}}
+  function send(type,extra={}){try{parent.postMessage(Object.assign({source:'retro-world-game',type,gameId:GAME_ID,title:GAME_TITLE},extra),'*')}catch(e){}}
+  function snapshot(){const m=metric();send('progress',{metric:m.name,value:m.value,higherBetter:m.higher})}
+  setInterval(()=>{const now=Date.now(),md=mode(),playing=md==='play'||md==='playing'||md==='running',won=md==='win'||md==='won'||md==='victory'||md==='complete',lost=md==='over'||md==='gameover'||md==='lost'||md==='dead'||md==='fail'||md==='failed';
+    if(playing&&!active){active=true;send('start');snapshot();lastProgress=now}
+    if(active&&playing&&now-lastProgress>1200){snapshot();lastProgress=now}
+    if(active&&(won||lost)){const m=metric();snapshot();send('finish',{result:won?'win':'loss',metric:m.name,value:m.value,higherBetter:m.higher});active=false}
+  },250);
+  addEventListener('pagehide',()=>{if(active)snapshot()});
+  return{snapshot};
+})();
+</script></body></html>

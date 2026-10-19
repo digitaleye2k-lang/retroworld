@@ -1,0 +1,29 @@
+/* RETRO WORLD upgrade layer: search, sort, favourites, thumbnails, NEW badges */
+.grid .card{position:relative;display:flex;flex-direction:column}
+.grid .card .play{margin-top:auto}
+.rw-hidden{display:none!important}
+.rw-thumb{position:relative;margin:-16px -16px 12px;aspect-ratio:16/10;overflow:hidden;border-bottom:2px solid var(--cyan);background:#03050c}
+.rw-thumb img{display:block;width:100%;height:100%;object-fit:cover;transition:transform .35s ease,filter .35s ease;filter:saturate(1.05)}
+.card:hover .rw-thumb img{transform:scale(1.07);filter:saturate(1.3) brightness(1.08)}
+.rw-thumb::after{content:"";position:absolute;inset:0;pointer-events:none;background:repeating-linear-gradient(0deg,rgba(0,0,0,.18) 0 1px,transparent 1px 3px)}
+.rw-has-thumb .icon{display:none}
+.rw-fav{position:absolute;top:8px;right:8px;z-index:3;width:34px;height:34px;display:grid;place-items:center;font-size:18px;line-height:1;cursor:pointer;color:#fff;background:#050714cc;border:2px solid var(--mag);border-radius:2px;transition:.15s}
+.rw-fav:hover{transform:scale(1.12);border-color:var(--yellow)}
+.rw-fav[aria-pressed="true"]{color:var(--red);border-color:var(--red);background:#2a0a14e6;text-shadow:0 0 8px var(--red)}
+.rw-new{position:absolute;top:8px;left:8px;z-index:3;padding:4px 7px;font:900 10px "Courier New",monospace;letter-spacing:2px;color:#050714;background:var(--yellow);box-shadow:3px 3px 0 var(--mag);animation:rwBlink 1.4s steps(2) infinite}
+@keyframes rwBlink{50%{filter:brightness(.7)}}
+.rw-tools{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin:0 0 16px}
+.rw-tools input,.rw-tools select,.rw-tools button{font:inherit;font-size:12px;letter-spacing:1px;background:#090918;color:var(--cyan);border:1px solid var(--cyan);padding:10px 12px;min-height:40px}
+.rw-tools input{flex:1 1 220px;min-width:0}
+.rw-tools input::placeholder{color:#6e76a8}
+.rw-tools button{cursor:pointer;font-weight:900}
+.rw-tools button:hover,.rw-tools button[aria-pressed="true"]{background:var(--cyan);color:#050714}
+.rw-tools #rwRandom{border-color:var(--mag);color:var(--mag)}
+.rw-tools #rwRandom:hover{background:var(--mag);color:#050714}
+.rw-empty{grid-column:1/-1;text-align:center;padding:40px 10px;color:var(--yellow);letter-spacing:2px;border:2px dashed #3e3e6b}
+@media(max-width:520px){.rw-tools select,.rw-tools button{flex:1 1 45%}}
+@media (prefers-reduced-motion:reduce){.rw-new{animation:none}.rw-thumb img,.card:hover .rw-thumb img{transition:none;transform:none}}
+.rw-recent{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin:0 0 12px}
+.rw-recent span{color:var(--yellow);font-size:11px;letter-spacing:2px;margin-right:4px}
+.rw-recent button{font:inherit;font-size:11px;letter-spacing:1px;cursor:pointer;background:#090918;color:var(--green);border:1px solid var(--green);padding:7px 10px}
+.rw-recent button:hover{background:var(--green);color:#050714}

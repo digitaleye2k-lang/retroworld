@@ -1,0 +1,100 @@
+<!doctype html><html><head><script src="rw-boost.js"></script><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>RING KING • RETRO WORLD</title><style>
+html,body{height:100%;margin:0;background:#03050c;color:#fff;font-family:"Courier New",monospace}
+body{display:grid;place-items:center;background:radial-gradient(circle at 50% 35%,#151735,#03050c 68%);overflow:hidden}
+.wrap{width:min(96vw,900px);text-align:center}
+.top{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:7px;min-height:34px}
+.title{color:#4deaff;font-size:clamp(14px,3vw,20px);font-weight:900;letter-spacing:2px;text-shadow:2px 2px #4c165d}
+.diff{display:flex;gap:5px;align-items:center;color:#949abc;font-size:8px}
+.diff select{background:#0b0d1d;color:#fff;border:1px solid #4deaff;padding:5px;font:700 9px "Courier New",monospace}
+.frame{position:relative;border:3px solid #4deaff;box-shadow:0 0 0 3px #181a36,0 0 28px #00eaff29;background:#050714}
+canvas{display:block;width:100%;height:auto;max-height:calc(100dvh - 115px);object-fit:contain;touch-action:none;user-select:none;-webkit-user-select:none}
+.help{margin-top:7px;color:#858bad;font-size:9px;line-height:1.45}
+.help b{color:#e6d36f}
+@media(max-width:650px){.wrap{width:99vw}.top{margin:2px 5px 4px}.help{font-size:7px;margin-top:4px}.diff span{display:none}}
+</style><script>addEventListener('keydown',function(e){if((e.keyCode||e.which)===461&&window.parent!==window){e.preventDefault();window.parent.postMessage({type:'retroworld-tv-back'},'*');}},true);</script></head>
+<body><div class="wrap"><div class="top"><div class="title">RING KING</div><div class="diff"><span>DIFFICULTY</span><select id="difficultySelect"><option value="easy">EASY</option><option value="normal" selected>NORMAL</option><option value="hard">HARD</option></select></div></div>
+<div class="frame"><canvas id="g" width="640" height="400"></canvas></div><div class="help"><b>← →</b> MOVE • <b>Z</b> JAB • <b>X</b> POWER PUNCH • HOLD <b>C</b> TO BLOCK • WHITE GLOVE = PUNCH COMING</div></div>
+<script>
+
+const c=document.getElementById('g'),x=c.getContext('2d');x.imageSmoothingEnabled=false;
+const W=c.width,H=c.height;
+let AC=null;
+function beep(f,d,type,v){try{AC=AC||new (window.AudioContext||window.webkitAudioContext)();const o=AC.createOscillator(),g=AC.createGain();o.type=type||'square';o.frequency.value=f;g.gain.value=v||0.05;g.gain.exponentialRampToValueAtTime(0.0001,AC.currentTime+d);o.connect(g);g.connect(AC.destination);o.start();o.stop(AC.currentTime+d)}catch(e){}}
+function ptr(e){const r=c.getBoundingClientRect();return{x:(e.clientX-r.left)*W/r.width,y:(e.clientY-r.top)*H/r.height}}
+function txt(s,px,py,size,col,al){x.font='bold '+size+'px Courier New';x.fillStyle=col;x.textAlign=al||'center';x.fillText(s,px,py)}
+function overlay(lines){x.fillStyle='rgba(3,5,12,.82)';x.fillRect(0,0,W,H);lines.forEach((l,i)=>txt(l[0],W/2,H/2-40+i*34,l[1],l[2]))}
+
+const OPP=[{n:'ROOKIE RICO',hp:100,cd:1.2,bl:.12,col:'#ff5a79'},{n:'IRON MIKE',hp:130,cd:.85,bl:.3,col:'#ffb13b'},{n:'KING KRUSH',hp:160,cd:.6,bl:.45,col:'#b04bff'}];
+const MV={jab:{w:.1,tot:.36,dmg:6},pow:{w:.3,tot:.72,dmg:16}};
+let state='title',difficulty='normal',round=0,score=0,tm=60,pl,op,last=0,shake=0,banner='',bt=0,K={},mul=1;
+function F(x,hp,col,d){return{x,hp,max:hp,col,d,st:'idle',t:0,cd:0,hit:0,did:0,bt:0}}
+function diff(){difficulty=document.getElementById('difficultySelect').value;mul={easy:1.4,normal:1,hard:.75}[difficulty]}
+function fight(){pl=pl||F(190,100,'#38e8ff',1);pl.x=190;pl.st='idle';pl.hit=0;pl.cd=0;pl.hp=Math.min(pl.max,pl.hp+25);op=F(450,OPP[round].hp,OPP[round].col,-1);tm=60;banner='ROUND '+(round+1)+' \u2022 '+OPP[round].n;bt=1.8}
+function reset(){diff();round=0;score=0;pl=null;fight();last=performance.now();state='play'}
+function act(f,t){if(f.st!=='idle'||f.cd>0||f.hit>0)return;f.st=t;f.t=0;f.did=0;if(f===pl)beep(t==='jab'?300:200,.05,'square',.04)}
+function strike(f,o){const m=MV[f.st],dist=Math.abs(f.x-o.x)<100;f.did=1;if(!dist)return;let d=m.dmg;
+ if(o.st==='blk'){d*=.15;beep(160,.06)}else{o.hit=f.st==='pow'?.45:.22;o.st='idle';shake=f.st==='pow'?9:4;beep(f.st==='pow'?90:140,.12,'sawtooth',.07)}
+ o.hp-=d;o.x+=f.d*(f.st==='pow'?26:10);if(f===pl)score+=Math.round(d*10)}
+function step(f,o,dt){f.cd=Math.max(0,f.cd-dt);f.hit=Math.max(0,f.hit-dt);
+ if(MV[f.st]){f.t+=dt;const m=MV[f.st];if(f.t>=m.w&&!f.did)strike(f,o);if(f.t>=m.tot){f.st='idle';f.cd=.08}}
+ else if(f.st==='blk'&&f===op){f.bt-=dt;if(f.bt<=0)f.st='idle'}}
+function end(win,ko){if(win){score+=300+(ko?500:0)+Math.round(tm*5);round++;if(round>=3){state='won';return}fight()}else state='over'}
+function upd(){if(state!=='play')return;const n=performance.now(),dt=Math.min(.05,(n-last)/1000);last=n;shake=Math.max(0,shake-dt*30);
+ if(bt>0){bt-=dt;return}
+ tm-=dt;
+ const mv=(K.r?1:0)-(K.l?1:0);if(pl.st==='idle'&&pl.hit<=0&&mv)pl.x+=mv*170*dt;
+ if(K.b&&pl.st==='idle'&&pl.hit<=0)pl.st='blk';if(!K.b&&pl.st==='blk')pl.st='idle';
+ if(K.z)act(pl,'jab');if(K.x)act(pl,'pow');
+ // AI
+ const o=OPP[round];if(op.st==='idle'&&op.hit<=0){const dist=Math.abs(op.x-pl.x);
+  if(dist>105)op.x-=Math.sign(op.x-pl.x)*(95+round*20)*dt;else if(op.cd<=0){const r=Math.random();
+   if(r<o.bl){op.st='blk';op.bt=.55;op.cd=.4*mul}else if(r<o.bl+.3+round*.06&&dist<100){act(op,'pow');op.cd=o.cd*mul*1.1}else{act(op,'jab');op.cd=o.cd*mul*.7}}
+  else if(dist<70)op.x+=45*dt}
+ step(pl,op,dt);step(op,pl,dt);
+ pl.x=Math.max(70,Math.min(570,pl.x));op.x=Math.max(70,Math.min(570,op.x));if(op.x-pl.x<62)op.x=pl.x+62;
+ if(op.hp<=0){op.hp=0;end(true,true);return}if(pl.hp<=0){pl.hp=0;end(false);return}
+ if(tm<=0){tm=0;end(pl.hp/pl.max>=op.hp/op.max,false)}}
+function body(f,col){const y=250,tel=MV[f.st]&&f.t<MV[f.st].w;x.save();x.translate(f.x,y);x.scale(f.d,1);if(f.hit>0)x.translate(-6,0);
+ x.fillStyle=f.hit>0?'#fff':col;x.fillRect(-16,-70,32,46);x.fillStyle='#f2c79b';x.fillRect(-12,-100,24,28);x.fillStyle='#222';x.fillRect(4,-90,4,5);x.fillStyle=f.hit>0?'#fff':'#1a2a5a';x.fillRect(-16,-24,13,40);x.fillRect(3,-24,13,40);
+ let gx=18,gy=-62;if(f.st==='jab'&&f.t>=MV.jab.w)gx=58;else if(f.st==='pow'){gx=f.t<MV.pow.w?-8:70;gy=-66}else if(f.st==='blk'){gx=14;gy=-88}
+ x.fillStyle=tel?'#fff':'#e53b4a';x.fillRect(gx-10,gy-9,22,18);x.fillStyle='#b32030';x.fillRect(-26,-62,16,16);x.restore()}
+function bar(px,f,al,nm){x.fillStyle='#222';x.fillRect(px,50,260,16);x.fillStyle=f.hp/f.max>.3?'#73ff89':'#ff5a79';const w=260*f.hp/f.max;x.fillRect(al==='r'?px+260-w:px,50,w,16);x.strokeStyle='#fff';x.lineWidth=2;x.strokeRect(px,50,260,16);txt(nm,al==='r'?px+260:px,44,12,'#fff',al==='r'?'right':'left')}
+function draw(){upd();x.save();if(shake>0)x.translate((Math.random()-.5)*shake,(Math.random()-.5)*shake);
+ x.fillStyle='#1b0f2e';x.fillRect(0,0,W,H);for(let i=0;i<40;i++){x.fillStyle=i%3?'#2c1b4a':'#3b2560';x.fillRect(i*17%W,60+(i*37)%110,10,12)}
+ x.fillStyle='#3a2a55';x.fillRect(0,250,W,150);x.fillStyle='#7a2fb0';x.fillRect(0,262,W,138);x.strokeStyle='#fff';x.lineWidth=3;x.strokeRect(30,274,W-60,110);
+ [150,185,220].forEach((y,i)=>{x.fillStyle=['#e53b4a','#fff','#2f6fe0'][i];x.fillRect(0,y,W,5)});x.fillStyle='#ddd';x.fillRect(18,140,10,120);x.fillRect(W-28,140,10,120);
+ if(state==='title'){x.restore();x.fillStyle='rgba(0,0,0,.55)';x.fillRect(0,0,W,H);txt('RING KING',W/2,110,46,'#ffe35b');txt('3 FIGHTS \u2022 KO OR WIN ON POINTS',W/2,150,15,'#fff');txt('\u2190 \u2192 MOVE \u2022 Z JAB \u2022 X POWER \u2022 HOLD C BLOCK',W/2,185,13,'#b5bbd5');txt('WHITE GLOVE = PUNCH INCOMING \u2014 BLOCK OR BACK OFF',W/2,212,12,'#b5bbd5');txt('CLICK / TAP / ENTER TO START',W/2,300,18,'#73ff89');return}
+ body(op,op.col);body(pl,pl.col);x.restore();
+ bar(30,pl,'l','YOU');bar(350,op,'r',OPP[round].n);txt(String(Math.ceil(tm)),W/2,30,24,'#ffe35b');txt('SCORE '+score,W/2,92,12,'#fff');
+ if(bt>0)txt(banner,W/2,150,28,'#fff');
+ if(('ontouchstart' in window)||navigator.maxTouchPoints>0)[['\u25C0',40,'l'],['\u25B6',110,'r'],['JAB',W-210,'z'],['POW',W-140,'x'],['BLK',W-70,'b']].forEach(b=>{x.globalAlpha=.45;x.fillStyle='#000';x.fillRect(b[1]-30,H-64,60,52);x.globalAlpha=1;txt(b[0],b[1],H-30,15,'#fff')});
+ if(state==='won')overlay([['CHAMPION OF THE RING!',32,'#73ff89'],['SCORE '+score,20,'#ffe35b'],['CLICK / ENTER TO PLAY AGAIN',14,'#fff']]);
+ if(state==='over')overlay([['YOU\u2019RE KNOCKED OUT',34,'#ff5a79'],['SCORE '+score,20,'#ffe35b'],['CLICK / ENTER TO TRY AGAIN',14,'#fff']])}
+const KM={ArrowLeft:'l',a:'l',ArrowRight:'r',d:'r',z:'z',j:'z',x:'x',k:'x',c:'b',l:'b'};
+const BT=[[40,'l'],[110,'r'],[W-210,'z'],[W-140,'x'],[W-70,'b']];let pk={};
+function bz(p){if(p.y<H-70)return null;const b=BT.find(b=>Math.abs(p.x-b[0])<34);return b?b[1]:null}
+c.addEventListener('pointerdown',e=>{if(state!=='play'){reset();return}const z=bz(ptr(e));if(z){pk[e.pointerId]=z;K[z]=1;if(z==='z'||z==='x')_t(z)}});
+function _t(z){setTimeout(()=>{K[z]=0},60)}
+['pointerup','pointercancel'].forEach(t=>c.addEventListener(t,e=>{const z=pk[e.pointerId];if(z){if(z!=='z'&&z!=='x')K[z]=0;delete pk[e.pointerId]}}));
+addEventListener('keydown',e=>{const k=e.key.toLowerCase();if(state!=='play'){if(k==='enter'||k===' '){reset();e.preventDefault()}return}const m=KM[e.key]||KM[k];if(m){K[m]=1;e.preventDefault()}});
+addEventListener('keyup',e=>{const m=KM[e.key]||KM[e.key.toLowerCase()];if(m)K[m]=0});
+document.getElementById('difficultySelect').addEventListener('change',()=>{if(state!=='play')diff()});
+diff();pl=F(190,100,'#38e8ff',1);op=F(450,100,'#ff5a79',-1);setInterval(draw,16);
+
+const RETRO_LOCAL_STATS=(()=>{
+  const GAME_ID="ring-king.html", GAME_TITLE="RING KING";
+  let active=false,lastProgress=0;
+  function mode(){try{return String(state||'').toLowerCase()}catch(e){return ''}}
+  function metric(){try{return {name:'score',value:Math.round(Number(score)||0),higher:true}}catch(e){return {name:'score',value:0,higher:true}}}
+  function send(type,extra={}){try{parent.postMessage(Object.assign({source:'retro-world-game',type,gameId:GAME_ID,title:GAME_TITLE},extra),'*')}catch(e){}}
+  function snapshot(){const m=metric();send('progress',{metric:m.name,value:m.value,higherBetter:m.higher})}
+  setInterval(()=>{const now=Date.now(),md=mode(),playing=md==='play'||md==='playing'||md==='running',won=md==='win'||md==='won'||md==='victory'||md==='complete',lost=md==='over'||md==='gameover'||md==='lost'||md==='dead'||md==='fail'||md==='failed';
+    if(playing&&!active){active=true;send('start');snapshot();lastProgress=now}
+    if(active&&playing&&now-lastProgress>1200){snapshot();lastProgress=now}
+    if(active&&(won||lost)){const m=metric();snapshot();send('finish',{result:won?'win':'loss',metric:m.name,value:m.value,higherBetter:m.higher});active=false}
+  },250);
+  addEventListener('pagehide',()=>{if(active)snapshot()});
+  return{snapshot};
+})();
+</script></body></html>
