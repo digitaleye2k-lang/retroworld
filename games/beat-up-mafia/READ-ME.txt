@@ -26,6 +26,11 @@ CONTROLS (WASD + Mouse)
 WASD move, mouse aim, click or Space to fire. Switch on the title screen or
 the pause menu. A gamepad also works (sticks, triggers, A to enter a car).
 
+STORY
+You are Nico Ferrante, an immigrant from Naples whose family was ruined by
+Don Corvino's mob. A comic-style intro plays on your first start (Esc skips it,
+the STORY button on the title screen replays it). Beat the Don for the epilogue.
+
 HOW IT WORKS
 - Seven missions, from stealing your first car to the Don Corvino boss fight.
 - Wanted level 1-5: patrol cars, SWAT, a helicopter at 4+ stars. Pay'n'Spray
