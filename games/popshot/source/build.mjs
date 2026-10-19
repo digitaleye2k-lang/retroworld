@@ -1,1 +1,0 @@
-import {build} from 'esbuild'; await build({entryPoints:['campaign.ts'],outfile:'../game.js',bundle:true,minify:true,format:'iife',platform:'browser',target:['chrome110','firefox110','safari16'],legalComments:'external'});
