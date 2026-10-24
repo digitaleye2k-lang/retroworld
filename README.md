@@ -10,7 +10,7 @@ Live site: https://retroworld.eu.cc/
 - Every game: pause (P), mute (M), CRT effect (C), fullscreen (F), best score, auto-fit to the screen (`games/cartridges/rw-boost.js`)
 
 ## v2.9
-- NEW EPIC GAME: **Beat Up Mafia**, a top-down open-city crime game (`games/beat-up-mafia/Beat-Up-Mafia.html`, guide at `epic/beat-up-mafia.html`). 7 missions, wanted levels, police helicopter, day/night lighting, radio, boss fight; 11 new trophies and a daily challenge. Contains cartoon violence (13+).
+- NEW EPIC GAME: **Beat Up Mafia**, a top-down open-city crime game (`games/beat-up-mafia/Beat-Up-Mafia.html`, guide at `epic/beat-up-mafia.html`). 12 missions across a large city, harbour, islands, airport and army base; boats, tanks, helicopters and planes; 10 weapons; day/night cycle and weather; wanted levels, police helicopter, radio, boss fight; 19 trophies and a daily challenge. Contains cartoon violence (13+).
 
 ## Layout
 `index.html` main site · `games/cartridges/` arcade games · `games/dust-iron|crimson-fang|popshot|beat-up-mafia/` epic games · `epic/` guides · `tv/` TV mode · `assets/` media
