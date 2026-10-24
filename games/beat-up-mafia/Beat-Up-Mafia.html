@@ -82,7 +82,7 @@ function sirenUpdate(vol,dt){const c=AC;if(!c)return;
  if(!sr_.o){sr_.o=c.createOscillator();sr_.g=c.createGain();sr_.o.type='square';sr_.g.gain.value=0;const f=c.createBiquadFilter();f.type='lowpass';f.frequency.value=1500;sr_.o.connect(f);f.connect(sr_.g);sr_.g.connect(sfxBus);sr_.o.start()}
  sr_.t+=dt;const hi=(Math.floor(sr_.t/.42)%2)===0;sr_.o.frequency.setTargetAtTime(hi?920:690,c.currentTime,.02);sr_.g.gain.setTargetAtTime(muted?0:vol*.025,c.currentTime,.1)}
 /* ---------- radio ---------- */
-const radio={st:0,step:0,next:0,names:['RADIO OFF','NEON FM','MOB JAZZ','STREET BEATS'],dur:[.1,60/118/4,60/132/2,60/92/4]};
+const radio={st:0,step:0,next:0,names:['MUSIC OFF','STREET PRESSURE','',''],dur:[.1,60/118/4,60/132/2,60/92/4]};
 const NOTE=n=>440*Math.pow(2,(n-69)/12);
 function rTone(t,f,d,ty,v){const c=AC,o=c.createOscillator(),g=c.createGain();o.type=ty;o.frequency.setValueAtTime(f,t);g.gain.setValueAtTime(.0001,t);g.gain.exponentialRampToValueAtTime(v,t+.012);g.gain.exponentialRampToValueAtTime(.0001,t+d);o.connect(g);g.connect(radioBus);o.start(t);o.stop(t+d+.03)}
 function rNoise(t,d,f,v,ty){const c=AC,s=c.createBufferSource();s.buffer=noiseBuf();const fl=c.createBiquadFilter();fl.type=ty||'highpass';fl.frequency.value=f;const g=c.createGain();g.gain.setValueAtTime(v,t);g.gain.exponentialRampToValueAtTime(.0001,t+d);s.connect(fl);fl.connect(g);g.connect(radioBus);s.start(t,Math.random());s.stop(t+d+.03)}
@@ -105,7 +105,7 @@ function stepRadio(st,s,t){
   if(p===0||p===6||p===10)rKick(t,.55);if(p===4||p===12)rNoise(t,.14,1500,.2,'bandpass');if(p%2===0)rNoise(t,.05,8000,.05);
   if(p===0||p===7||p===10)rTone(t,NOTE(B3[bar]),.32,'sine',.2);
   if(p%4===2)rTone(t,NOTE(69+[0,3,7,10,12,10,7,3][(s>>2)%8]),.18,'triangle',.04)}}
-function radioTick(){const c=AC;if(!c||radio.st===0||muted)return;if(radio.next<c.currentTime)radio.next=c.currentTime+.05;
+function radioTick(){return;const c=AC;if(!c||radio.st===0||muted)return;if(radio.next<c.currentTime)radio.next=c.currentTime+.05;
  while(radio.next<c.currentTime+.22){stepRadio(radio.st,radio.step++,radio.next);radio.next+=radio.dur[radio.st]}}
 
 /* ============================ WORLD ============================ */
@@ -492,9 +492,9 @@ function colFor(vt){return vt==='taxi'?'#f2c335':vt==='ambulance'?'#f4f4f6':vt==
 function mkPed(px,py,o){return Object.assign({x:px,y:py,a:R(0,TAU),hp:40,max:40,sp:R(34,58),col:pick(PEDCOLS),skin:pick(SKIN),hair:pick(['#2a1a0f','#4a2f1a','#a87a3a','#1a1a1a','#8a8a8a']),t:R(0,3),walk:R(0,6),fl:0,type:'civ',fire:R(.3,1),vx:0,vy:0,cross:0,w:0,pref:150,range:300,hx:px,hy:py,burst:0,hold:false,pan:0,kx:0,ky:0,alert:0,cross:0,st:0,sd:1,los:false,losT:0},o||{})}
 function pedAtFree(px,py){return !solidAt(Math.floor(px/T),Math.floor(py/T))}
 function onScreen(px,py,m){const z=cam.z;return Math.abs(px-cam.x)<(W/z)/2+m&&Math.abs(py-cam.y)<(H/z)/2+m}
-function spawnCiv(){for(let i=0;i<90;i++){const tx=RI(1,N-2),ty=RI(1,N-2),k=kind[ty][tx];if(k===1||k===2||k===5||k===7||k===8){const px=(tx+.5)*T,py=(ty+.5)*T;{const dd=D(px,py,P.x,P.y);if(dd<1000&&dd>(onScreen(px,py,0)?9999:330)){peds.push(mkPed(px,py));return}}}}}
+function spawnCiv(){for(let i=0;i<90;i++){const tx=RI(1,N-2),ty=RI(1,N-2),k=kind[ty][tx];if(inBase((tx+.5)*T,(ty+.5)*T))continue;if(k===1||k===2||k===5||k===7||k===8){const px=(tx+.5)*T,py=(ty+.5)*T;{const dd=D(px,py,P.x,P.y);if(dd<1000&&dd>(onScreen(px,py,0)?9999:330)){peds.push(mkPed(px,py));return}}}}}
 function mobAt(px,py,o){const w=o&&o.w!==undefined?o.w:(Math.random()<.55?0:Math.random()<.6?1:2);const d=DIFF[diffIdx];const m=mkPed(px,py,Object.assign({type:'mob',hp:60*d.hp,max:60*d.hp,sp:R(62,82),col:'#17171c',w:w,pref:R(110,185),range:w===2?230:330,fire:R(.4,1.2)},o||{}));peds.push(m);return m}
-function mobSpawnFar(){for(let i=0;i<14;i++){const a=R(0,TAU),d=R(250,900),px=HQ.x+HQ.w/2+Math.cos(a)*d,py=HQ.y+HQ.h/2+Math.sin(a)*d;if(px<80||py<80||px>WS-80||py>WS-80)continue;if(solidAt(Math.floor(px/T),Math.floor(py/T)))continue;if(D(px,py,P.x,P.y)<(onScreen(px,py,60)?9999:400))continue;
+function mobSpawnFar(){for(let i=0;i<14;i++){const a=R(0,TAU),d=R(250,900),px=HQ.x+HQ.w/2+Math.cos(a)*d,py=HQ.y+HQ.h/2+Math.sin(a)*d;if(px<80||py<80||px>WS-80||py>WS-80)continue;if(solidAt(Math.floor(px/T),Math.floor(py/T))||inBase(px,py))continue;if(D(px,py,P.x,P.y)<(onScreen(px,py,60)?9999:400))continue;
   const n=RI(1,3);for(let j=0;j<n;j++){const qx=px+R(-30,30),qy=py+R(-30,30);if(pedAtFree(qx,qy))mobAt(qx,qy)}return}}
 function spawnTrafficCar(far){for(let i=0;i<40;i++){const rp=roadPos(),d=D(rp.x,rp.y,P.x,P.y);if(d<(far||520)||d>1150||onScreen(rp.x,rp.y,80))continue;let ok=true;for(const o of cars)if(D(o.x,o.y,rp.x,rp.y)<70){ok=false;break}if(!ok)continue;const vt=vtPick(),c=mkCar(rp.x,rp.y,rp.a,vt,colFor(vt),'ai');c.ax=rp.ax;c.k=rp.k;c.dir=rp.dir;cars.push(c);return c}return null}
 function curbPark(){for(let i=0;i<60;i++){const k=RI(0,NR-1),ax=RI(0,1),side=Math.random()<.5?1:-1,al=R(300,roadLen(ax)-300),off=T*1.5-14;const px=ax===0?al:roadC(k)+side*off,py=ax===0?roadC(k)+side*off:al;if(tileKind(px,py)!==0)continue;{const dd=D(px,py,P.x,P.y);if(dd<150||dd>1200)continue}let ok=true;for(const o of cars)if(D(o.x,o.y,px,py)<60){ok=false;break}if(!ok)continue;const vt=pick(['sedan','sedan','sports','taxi','van','truck','muscle','pickup']);const c=mkCar(px,py,ax===0?(Math.random()<.5?0:PI):(Math.random()<.5?PI/2:-PI/2),vt,colFor(vt),'parked');cars.push(c);return c}return null}
@@ -974,7 +974,7 @@ function updPickups(dt){for(let i=pickups.length-1;i>=0;i--){const p=pickups[i];
   }
   if(used){if(p.respawn)pickRespawn.push({t:p.respawn,type:p.type,hx:p.home?p.x:undefined,hy:p.home?p.y:undefined});pickups.splice(i,1)}}}
 let pickRespawn=[];
-function randWalk(minD){for(let i=0;i<80;i++){const tx=RI(2,N-3),ty=RI(2,N-3);if(kind[ty][tx]===1||kind[ty][tx]===5||kind[ty][tx]===7||kind[ty][tx]===9){const px=(tx+.5)*T,py=(ty+.5)*T;if(D(px,py,P.x,P.y)>(minD||0))return{x:px,y:py}}}return{x:600,y:600}}
+function randWalk(minD){for(let i=0;i<80;i++){const tx=RI(2,N-3),ty=RI(2,N-3);if(kind[ty][tx]===1||kind[ty][tx]===5||kind[ty][tx]===7||kind[ty][tx]===9){const px=(tx+.5)*T,py=(ty+.5)*T;if(D(px,py,P.x,P.y)>(minD||0)&&!inBase(px,py))return{x:px,y:py}}}return{x:600,y:600}}
 function scatterPickups(){for(let i=0;i<30;i++){const q=randWalk(100);addPickup(q.x,q.y,'cash',{v:RI(250,650),respawn:80})}for(let i=0;i<12;i++){const q=randWalk(100);addPickup(q.x,q.y,'health',{respawn:70})}for(let i=0;i<7;i++){const q=randWalk(100);addPickup(q.x,q.y,'armor',{respawn:100})}
  for(let i=0;i<8;i++){const q=randWalk(100);addPickup(q.x,q.y,i<5?'wp2':'wp3',{respawn:90})}for(let i=0;i<3;i++){const q=randWalk(100);addPickup(q.x,q.y,'star',{respawn:120})}
  for(let i=0;i<4;i++){const q=randWalk(100);addPickup(q.x,q.y,'wp5',{respawn:100})}for(let i=0;i<4;i++){const q=randWalk(100);addPickup(q.x,q.y,'wp6',{respawn:100})} const fx=(tx,ty,t,o)=>addPickup((tx+.5)*T,(ty+.5)*T,t,Object.assign({home:true,respawn:120},o||{}));
@@ -1057,7 +1057,7 @@ function baseGuards(initial){let n=0;for(const o of peds)if(o.base&&!o.dead)n++;
 function milTick(dt){
  if(state!=='play'){return}
  const low=!(P.car&&P.car.dom===2&&(P.car.alt||0)>.45),ib=inBase(P.x,P.y)&&low;
- if(ib&&!inB){inB=true;if(wanted<3){heat=Math.max(heat,HEAT[3]+1);lastCrime=time;setWanted(3)}say('RESTRICTED MILITARY ZONE',2.6,'#ff5a5a');ach('basebreak')}else if(!ib&&inB)inB=false;
+ if(ib&&!inB){inB=true;if(wanted<1){heat=Math.max(heat,HEAT[1]+1);lastCrime=time;setWanted(1)}say('RESTRICTED MILITARY ZONE',2.6,'#ff5a5a');ach('basebreak')}else if(!ib&&inB)inB=false;
  guardT-=dt;if(guardT<=0){guardT=4;if(D(P.x,P.y,(BASE.x0+BASE.x1)/2,(BASE.y0+BASE.y1)/2)<1600)baseGuards(false)}
  snT-=dt;if(snT<=0){snT=3;let n=0;for(const o of peds)if(o.type==='cop'&&o.w===3&&!o.dead){n++;if(wanted<4||D(o.x,o.y,P.x,P.y)>1500){o.dead=true;o.gone=true}}
   if(wanted>=4&&n<wanted-3){for(let k=0;k<30;k++){const a=R(0,TAU),d=R(470,640),px=P.x+Math.cos(a)*d,py=P.y+Math.sin(a)*d;if(px<80||py<80||px>WS-80||py>WS-80||onScreen(px,py,40)||!pedAtFree(px,py))continue;const k2=kind[py/T|0][px/T|0];if(k2!==1&&k2!==2&&k2!==5)continue;const s=mkPed(px,py,{type:'cop',w:3,hp:45*DIFF[diffIdx].hp,max:45*DIFF[diffIdx].hp,sp:70,col:'#1c3f9a',pref:520,range:640,fire:R(1,2),hair:'#222'});peds.push(s);break}}}
@@ -1074,9 +1074,9 @@ function bgmInit(){if(BGM.intro)return;try{BGM.intro=new Audio('audio/street-pre
 function bgmUnlock(){BGM.ok=true;bgmInit()}
 for(const ev of['keydown','pointerdown','touchstart','mousedown'])window.addEventListener(ev,bgmUnlock,{passive:true});
 function bgmTick(dt){if(!BGM.ok||!BGM.intro)return;
- const want=(state==='title'||state==='story'||state==='over'||state==='won')?'intro':'game';
- const radioOn=state==='play'&&P&&P.car&&radio.st>0;
- const base=.42*(paused?.3:1)*(muted?0:1)*(radioOn?0:1);
+ const inCar=state==='play'&&P&&P.car&&radio.st>0;
+ const want=(state==='title'||state==='story'||state==='over'||state==='won'||inCar)?'intro':'game';
+ const base=.42*(paused?.3:1)*(muted?0:1);
  for(const k of['intro','game']){const tg=k===want?base:0,cur=BGM.g[k];BGM.g[k]=cur+(tg-cur)*Math.min(1,dt*(tg>cur?1.1:2.4));const v=Math.max(0,Math.min(1,BGM.g[k]));
   try{BGM[k].volume=v;if(v>.004&&BGM[k].paused){const pr=BGM[k].play();if(pr&&pr.catch)pr.catch(()=>{})}else if(v<=.004&&!BGM[k].paused&&tg===0)BGM[k].pause()}catch(e){}}}
 
@@ -1268,10 +1268,10 @@ function update(dt){
 /* ============================ RENDERING ============================ */
 function drawPed(p,isP){const wk=Math.sin(p.walk||0)*3,t=p.type;x.save();x.translate(p.x,p.y);x.rotate(p.a);
  x.fillStyle='rgba(0,0,0,.28)';x.beginPath();x.ellipse(1.5,2,6,7,0,0,TAU);x.fill();
- x.fillStyle=isP?'#26304a':t==='mob'||t==='boss'?(t==='boss'?'#d8d8d8':'#0c0c10'):t==='cop'?'#101c44':'#2a2a33';
+ x.fillStyle=isP?'#26304a':t==='mob'||t==='boss'?(t==='boss'?'#d8d8d8':p.base?'#46553a':'#0c0c10'):t==='cop'?'#101c44':'#2a2a33';
  x.fillRect(-2.5+wk,-4.2,5.5,3.2);x.fillRect(-2.5-wk,1.2,5.5,3.2);
  const body=isP?'#e6c13c':p.col;x.fillStyle=body;x.beginPath();x.ellipse(0,0,4.3,7,0,0,TAU);x.fill();x.strokeStyle='rgba(0,0,0,.45)';x.lineWidth=.8;x.stroke();
- if(t==='mob'){x.fillStyle='#ececf2';x.fillRect(.6,-1.2,2.2,2.4);x.fillStyle='#8a1620';x.fillRect(2.6,-.6,1.2,1.2)}
+ if(t==='mob'&&!p.base){x.fillStyle='#ececf2';x.fillRect(.6,-1.2,2.2,2.4);x.fillStyle='#8a1620';x.fillRect(2.6,-.6,1.2,1.2)}
  if(t==='cop'){x.fillStyle=p.swat?'#3a4048':'#2a52c4';x.fillRect(-1,-6.5,3,13);x.fillStyle='#ffd24a';x.fillRect(.4,2.4,1.5,1.6)}
  if(t==='boss'){x.fillStyle='#d4af37';x.fillRect(1.2,-.7,2,1.4)}
  const armed=isP?(P.wp>0&&P.ammo[P.wp]>0):(t==='mob'||t==='cop'||t==='boss');
@@ -1283,6 +1283,7 @@ function drawPed(p,isP){const wk=Math.sin(p.walk||0)*3,t=p.type;x.save();x.trans
  else{x.fillStyle=sk;const sw=Math.sin(p.walk||0)*2;x.fillRect(-1+sw,4.6,4,2.2);x.fillRect(-1-sw,-6.8,4,2.2)}
  x.fillStyle=sk;x.beginPath();x.arc(.8,0,4.2,0,TAU);x.fill();
  if(isP){x.fillStyle='#2b1a10';x.beginPath();x.arc(.2,0,4.4,PI*.45,PI*1.55);x.fill();x.fillStyle='#d92b2b';x.fillRect(.4,-4.4,1.8,8.8)}
+ else if(t==='mob'&&p.base){x.fillStyle='#2f3a22';x.beginPath();x.arc(.6,0,6.6,0,TAU);x.fill();x.fillStyle='#4b5a3a';x.beginPath();x.arc(.6,0,5.2,0,TAU);x.fill();x.fillStyle='#6a7a52';x.beginPath();x.arc(-.4,-1.2,2.2,0,TAU);x.fill()}
  else if(t==='mob'){x.fillStyle='#1a1a1f';x.beginPath();x.arc(.6,0,6.4,0,TAU);x.fill();x.fillStyle='#2c2c33';x.beginPath();x.arc(.6,0,3.8,0,TAU);x.fill();x.fillStyle='#8a1620';x.beginPath();x.arc(.6,0,3.9,0,TAU);x.lineWidth=.9;x.strokeStyle='#8a1620';x.stroke()}
  else if(t==='boss'){x.fillStyle='#ececec';x.beginPath();x.arc(.6,0,7,0,TAU);x.fill();x.fillStyle='#fff';x.beginPath();x.arc(.6,0,4,0,TAU);x.fill();x.strokeStyle='#d4af37';x.lineWidth=1.1;x.stroke()}
  else if(t==='cop'){x.fillStyle=p.swat?'#15171b':'#12307a';x.beginPath();x.arc(.6,0,4.7,0,TAU);x.fill();x.fillStyle='#0a1a40';x.fillRect(3.4,-3.2,2.4,6.4);x.fillStyle='#ffd24a';x.fillRect(1.6,-.8,1.2,1.6)}
@@ -1819,7 +1820,7 @@ function keyPress(k){
  if(k==='f'||k==='enter')useVehicle();
  else if(k==='q')cycleWeapon(-1);else if(k==='e')cycleWeapon(1);
  else if(k>='1'&&k<='9')setWeapon(+k-1);else if(k==='0')setWeapon(9);
- else if(k==='r'){radio.st=(radio.st+1)%4;radio.next=0;say(radio.names[radio.st],1.6,'#ff9aff');if(radio.st)SFX.pick()}
+ else if(k==='r'){radio.st=(radio.st+1)%2;radio.next=0;say(radio.names[radio.st],1.6,'#ff9aff');if(radio.st)SFX.pick()}
  else if(k==='h'&&!P.car){}
 }
 window.addEventListener('keydown',e=>{const k=e.key.length===1?e.key.toLowerCase():e.key.toLowerCase();if([' ','arrowup','arrowdown','arrowleft','arrowright','tab'].includes(k))e.preventDefault();
