@@ -196,6 +196,15 @@ function addB(tx,ty,w,h,o){const b=Object.assign({x:tx*T,y:ty*T,w:w*T,h:h*T,c:'#
  // runway + apron lights
  for(let tx=4;tx<91;tx+=4){lamps.push({x:tx*T,y:110*T+4},{x:tx*T,y:115*T-4})}
  for(let tx=8;tx<90;tx+=10){lamps.push({x:tx*T,y:100*T+4})}
+
+ /* ---- south-east suburb (between the runway and the army base side) ---- */
+ {const SX=33,SY=117,pats=[[[0,0,4,4]],[[0,0,2,4],[2,0,2,4]],[[0,0,4,2],[0,2,4,2]],[[0,0,4,2],[0,2,2,2]],[[0,0,2,2]],[[1,1,2,2]],[[0,0,2,4]],[[0,0,4,2]]],rs=mulberry(4242),pr=a=>a[Math.floor(rs()*a.length)];
+  for(let ty=SY;ty<N;ty++)for(let tx=SX;tx<90;tx++){const rx=(tx-SX)%9,ry=(ty-SY)%9;if(rx<3||ry<3){kind[ty][tx]=0;continue}const bx=rx-3,by=ry-3;kind[ty][tx]=(bx===0||bx===5||by===0||by===5)?1:2}
+  for(let bi=0;bi<6;bi++)for(let bj=0;bj<2;bj++){const x0=SX+bi*9+4,y0=SY+bj*9+4,r=rs();blocks.push({bi:bi+20,bj:bj+20,x0,y0,type:r<.16?'park':r<.26?'lot':'bldg',pond:rs()<.4,seed:bi*57+bj*11+900});
+   if(r<.16)continue;if(r<.26){setK(x0,y0,4,4,5);continue}
+   setK(x0,y0,4,4,rs()<.5?5:1);for(const p of pr(pats)){setK(x0+p[0],y0+p[1],p[2],p[3],3);addB(x0+p[0],y0+p[1],p[2],p[3],{c:pr(PALETTE),hh:1+Math.floor(rs()*3),style:Math.floor(rs()*6),sign:rs()<.55?pr(SIGNS):null,sr:rs(),seed:hsh(x0+p[0],y0+p[1])})}}
+  for(let bi=0;bi<7;bi++)for(let bj=0;bj<2;bj++)lamps.push({x:(SX+bi*9+3)*T,y:(SY+bj*9+3)*T});
+  setK(SX,SY-1,3,1,0)}
  /* ---- fleet: parked vehicles that always exist (respawn when stolen/destroyed) ---- */
  for(let i=0;i<4;i++)FLEET.push({t:'cessna',x:(9+(i>>1)*9)*T,y:(111.6+(i&1)*2.2)*T,a:0});
  FLEET.push({t:'cessna',x:72*T,y:98*T,a:PI/2},{t:'cessna',x:82*T,y:98*T,a:PI/2});
