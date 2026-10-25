@@ -2738,7 +2738,7 @@ function rcResults(){const r=rcRanked(),pos=r.indexOf(RCS.pl)+1,base=[3000,1800,
  if(RCS.from){P.cash+=prize}
  SFX.cash()}
 /* ---------- open / exit / input ---------- */
-function raceNeed(){return Math.ceil(MIS.length/2)}
+function raceNeed(){return 3}
 function raceDone(){let b=0;try{b=+localStorage.getItem('bum-maxmis')||0}catch(e){}return Math.max(b,state==='play'||paused?mis.i:0)}
 function raceUnlocked(){return raceDone()>=raceNeed()}
 function raceOpen(fromGame){if(!raceUnlocked()){if(state==='title')TLOCK=3.2;else say('RACING WORLD LOCKS UNTIL MISSION '+(raceNeed()+1)+' ('+Math.min(raceDone(),raceNeed())+'/'+raceNeed()+' DONE)',3,'#ff9a5a');return}RCS.from=!!fromGame;RCS.ph='sel';RCS.tick=0;state='race';paused=false;try{RCS.bests=JSON.parse(localStorage.getItem('bum-race-best')||'{}');const s=JSON.parse(localStorage.getItem('bum-race-sel')||'null');if(s){RCS.sel=s.c|0;RCS.trk=s.t|0;RCS.laps=s.l||3;RCS.dif=s.d==null?1:s.d}}catch(e){}ac();if(AC&&AC.state==='suspended')AC.resume()}
