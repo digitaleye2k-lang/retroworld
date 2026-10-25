@@ -2195,7 +2195,7 @@ body.tv-mode #gameframe{border-color:#4f829e}
 </div>
 </section>
 </main>
-<footer>RETRO WORLD © DIGITAL EYE • 70-GAME CURATED ARCADE EDITION</footer>
+<footer>RETRO WORLD © DIGITAL EYE • 70-GAME CURATED ARCADE EDITION • <a href="privacy.html" style="color:inherit">PRIVACY POLICY</a> • <a href="advertising.html" style="color:inherit">ADVERTISING POLICY</a></footer>
 <audio id="bgMusic" loop="" preload="auto"></audio>
 
 <div aria-hidden="true" aria-labelledby="onboardingTitle" aria-modal="true" class="onboarding-modal" id="onboardingModal" role="dialog">
@@ -3957,7 +3957,7 @@ atOptions = {
 <\/script>
 <script src="https://www.highrevenueformat.com/d980028d42e80f07410de2e215519675/invoke.js"><\/script>
 </div>
-</body></html>`;
+<div id="rwNotice" style="display:none;position:fixed;left:10px;right:10px;bottom:10px;z-index:99999;max-width:720px;margin:auto;background:#0e1424;color:#e9edf6;border:1px solid #344059;border-radius:12px;padding:12px 14px;font:13px/1.5 system-ui,Arial,sans-serif;box-shadow:0 6px 24px rgba(0,0,0,.5)">Retro World stores your game progress and settings on your device, and ads (Google AdSense / AdMob) may use cookies or advertising IDs. See the <a href="privacy.html" style="color:#79eed4">Privacy Policy</a> and <a href="advertising.html" style="color:#79eed4">Advertising Policy</a>. <button id="rwNoticeOk" style="margin-left:8px;background:#79eed4;color:#082119;border:0;border-radius:8px;padding:6px 12px;font-weight:700;cursor:pointer">OK</button></div><script>(function(){var n=document.getElementById('rwNotice'),ok=false;try{ok=localStorage.getItem('rwNoticeOk')==='1'}catch(e){}if(!ok)n.style.display='block';document.getElementById('rwNoticeOk').onclick=function(){n.style.display='none';try{localStorage.setItem('rwNoticeOk','1')}catch(e){}}})();</script></body></html>`;
 
 let currentGameObjectURL='';
 let gameLoadToken=0;
@@ -4038,7 +4038,7 @@ function openGame(id){
     overlay.classList.add('open');overlay.setAttribute('aria-hidden','false');document.body.style.overflow='hidden';
     if(bgMusic)bgMusic.volume=0;showGameLoading('LOADING '+currentGameTitle,'Preparing your adventure...');
     frame.onload=()=>{if(token!==gameLoadToken)return;hideGameLoading();try{frame.focus()}catch(e){}};
-    frame.removeAttribute('srcdoc');frame.src=new URL(({'popshot.html':'games/popshot/index.html','crimson-fang.html':'games/crimson-fang/Crimson-Fang.html','beat-up-mafia.html':'games/beat-up-mafia/Beat-Up-Mafia.html?v=20261026c'})[id],document.baseURI).href;
+    frame.removeAttribute('srcdoc');frame.src=new URL(({'popshot.html':'games/popshot/index.html','crimson-fang.html':'games/crimson-fang/Crimson-Fang.html','beat-up-mafia.html':'games/beat-up-mafia/Beat-Up-Mafia.html?v=20261026d'})[id],document.baseURI).href;
     return;
   }
 
