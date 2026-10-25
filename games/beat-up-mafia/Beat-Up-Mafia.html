@@ -1858,14 +1858,13 @@ function drawTitle(){
  const f=(s,py,sz)=>{x.font='900 '+sz+'px Impact,"Arial Black",sans-serif';x.textAlign='center';x.lineJoin='round';x.lineWidth=sz*.16;x.strokeStyle='#000';x.strokeText(s,0,py);x.save();x.shadowColor='rgba(255,40,30,.8)';x.shadowBlur=26;const gg=x.createLinearGradient(0,py-sz*.8,0,py);gg.addColorStop(0,'#fff2b0');gg.addColorStop(.45,'#ff9a2a');gg.addColorStop(1,'#d3201a');x.fillStyle=gg;x.fillText(s,0,py);x.restore()};
  if(LOGO.ok){x.restore();x.save();const lh=Math.min(fs*2.95,(W*.92)*LOGO.h/LOGO.w),lw=lh*LOGO.w/LOGO.h,bob=Math.sin(time*1.6)*2*U;x.translate(cx,ty+fs*.42+bob);x.rotate(-.012);x.shadowColor='rgba(255,40,20,.45)';x.shadowBlur=30;x.drawImage(LOGO.img,-lw/2,-lh/2,lw,lh);x.restore()}
  else{f('BEAT UP',0,fs);f('MAFIA',fs*.92,fs*1.08);x.restore()}
- txt('A TOP-DOWN CRIME SPREE  ·  RETRO WORLD EPIC & 3D',cx,ty+fs*2.02,Math.max(11,13*U),'#9fd8ff','center');
- const by=Math.max(ty+fs*2.45,H*.56)+(hasSave()?46*U:0);
- btn('START GAME',cx,by,260*U,46*U,()=>{titleStart()},{fs:22*U});btn('▶ STORY',W-80*U,26*U,130*U,32*U,()=>{beginStory('intro')},{col:'#8a2ab8',col2:'#4a1468',fs:14*U});{const ok=raceUnlocked();btn(ok?'RACING WORLD':'🔒 RACING '+Math.min(raceDone(),raceNeed())+'/'+raceNeed(),W-98*U,66*U,166*U,32*U,()=>{raceOpen(false)},{col:ok?'#1f9a52':'#4a4a4a',col2:ok?'#0f5a2c':'#202020',fs:13*U})}
- if(TLOCK>0){TLOCK-=.016;x.globalAlpha=Math.min(1,TLOCK*2);txt('FINISH '+raceNeed()+' MISSIONS TO UNLOCK',W-16*U,100*U,13*U,'#ff9a5a','right');txt('RACING WORLD  ('+Math.min(raceDone(),raceNeed())+'/'+raceNeed()+')',W-16*U,118*U,13*U,'#ff9a5a','right');x.globalAlpha=1}
- if(hasSave())btn('CONTINUE SAVED GAME',cx,by-52*U,260*U,38*U,()=>{loadGame()},{col:'#b8862a',col2:'#6a4a14',fs:16*U});btn('◀  '+DIFF[diffIdx].n+'  ▶',cx,by+58*U,260*U,38*U,()=>{diffIdx=(diffIdx+1)%3;try{localStorage.setItem('bum-diff',diffIdx)}catch(e){}},{col:'#2a5ab8',col2:'#15305f',fs:16*U});
- btn(scheme===0?'CONTROLS: CLASSIC':'CONTROLS: WASD + MOUSE',cx,by+104*U,260*U,38*U,()=>{scheme=1-scheme;try{localStorage.setItem('bum-scheme',scheme)}catch(e){}},{col:'#2a8a5a',col2:'#144a30',fs:14*U});
- const L=controlsLines(),lx0=cx-170*U;x.fillStyle='rgba(8,10,20,.6)';rrect(x,cx-190*U,by+132*U,380*U,Math.min(150*U,H-by-150*U+10),8*U);
- if(H>by+280*U&&!TOUCH){x.fill();for(let i=0;i<L.length;i++){const col=i%2,row=(i/2)|0;txt(L[i][0],cx-176*U+col*190*U,by+158*U+row*24*U,12*U,'#ffd24a','left');txt(L[i][1],cx-176*U+col*190*U+70*U,by+158*U+row*24*U,11*U,'#dfe6f5','left',2)}}
+ if(TLOCK>0){TLOCK-=.016;txt('FINISH '+raceNeed()+' MISSIONS TO UNLOCK RACING WORLD  ('+Math.min(raceDone(),raceNeed())+'/'+raceNeed()+')',cx,ty+fs*2.02,Math.max(12,14*U),'#ff9a5a','center')}else txt('A TOP-DOWN CRIME SPREE  ·  RETRO WORLD EPIC & 3D',cx,ty+fs*2.02,Math.max(11,13*U),'#9fd8ff','center');
+ const by=Math.max(ty+fs*2.4,H*.53)+(hasSave()?46*U:0);
+ btn('START GAME',cx,by,260*U,46*U,()=>{titleStart()},{fs:22*U});{const ok=raceUnlocked();btn('STORY',cx-67*U,by+52*U,126*U,38*U,()=>{beginStory('intro')},{col:'#8a2ab8',col2:'#4a1468',fs:15*U});btn(ok?'RACING':'🔒 '+Math.min(raceDone(),raceNeed())+'/'+raceNeed(),cx+67*U,by+52*U,126*U,38*U,()=>{raceOpen(false)},{col:ok?'#1f9a52':'#4a4a4a',col2:ok?'#0f5a2c':'#202020',fs:15*U})}
+ if(hasSave())btn('CONTINUE SAVED GAME',cx,by-52*U,260*U,38*U,()=>{loadGame()},{col:'#b8862a',col2:'#6a4a14',fs:16*U});btn('◀  '+DIFF[diffIdx].n+'  ▶',cx,by+100*U,260*U,38*U,()=>{diffIdx=(diffIdx+1)%3;try{localStorage.setItem('bum-diff',diffIdx)}catch(e){}},{col:'#2a5ab8',col2:'#15305f',fs:16*U});
+ btn(scheme===0?'CONTROLS: CLASSIC':'CONTROLS: WASD + MOUSE',cx,by+144*U,260*U,38*U,()=>{scheme=1-scheme;try{localStorage.setItem('bum-scheme',scheme)}catch(e){}},{col:'#2a8a5a',col2:'#144a30',fs:14*U});
+ const L=controlsLines(),lx0=cx-170*U;x.fillStyle='rgba(8,10,20,.6)';rrect(x,cx-190*U,by+172*U,380*U,Math.min(150*U,H-by-190*U+10),8*U);
+ if(H>by+342*U&&!TOUCH){x.fill();for(let i=0;i<L.length;i++){const col=i%2,row=(i/2)|0;txt(L[i][0],cx-176*U+col*190*U,by+198*U+row*24*U,12*U,'#ffd24a','left');txt(L[i][1],cx-176*U+col*190*U+70*U,by+198*U+row*24*U,11*U,'#dfe6f5','left',2)}}
  txt('BEST SCORE  '+fmt(best),cx,H-20*U,14*U,'#ffe27a','center');
  if(muted)txt('SOUND OFF',W-16*U,H-20*U,12*U,'#ff9a9a','right');
  txt(TOUCH?'TAP START GAME':'ENTER = START  ·  M = SOUND',16*U,H-20*U,11*U,'#9aa6c0','left')}
