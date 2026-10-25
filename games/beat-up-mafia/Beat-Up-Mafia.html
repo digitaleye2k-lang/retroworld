@@ -2219,7 +2219,7 @@ const AMMU=[];(function(){const cand=[];
 const SHOP=[{w:2,a:60,p:300,n:'SMG'},{w:3,a:16,p:400,n:'SHOTGUN'},{w:4,a:5,p:800,n:'ROCKETS'},{w:5,a:6,p:350,n:'GRENADES'},{w:6,a:6,p:250,n:'MOLOTOVS'},{w:7,a:100,p:900,n:'FLAMER'},{w:8,a:200,p:1500,n:'MINIGUN'},{w:9,a:10,p:1000,n:'SNIPER'},{w:1,a:30,p:50,n:'PISTOL AMMO'},{k:'armor',p:250,n:'BODY ARMOUR'},{k:'health',p:120,n:'MEDKIT'}];
 let shopOpen=false,shopMsg='',shopMsgT=0;
 function nearAmmu(){if(P.car||P.dead)return null;for(const s of AMMU)if(D(s.x,s.y,P.x,P.y)<s.r)return s;return null}
-function openShop(){if(!nearAmmu())return;shopOpen=true;paused=true;shopMsg='';engineUpdate(false,0);skidUpdate(0);sirenUpdate(0,0);SFX.door()}
+let shopT0=0;function openShop(){if(!nearAmmu())return;shopT0=performance.now();shopOpen=true;paused=true;shopMsg='';engineUpdate(false,0);skidUpdate(0);sirenUpdate(0,0);SFX.door()}
 function closeShop(){shopOpen=false;paused=false}
 function shopBuy(i){const it=SHOP[i];if(!it)return;if(P.cash<it.p){shopMsg='NOT ENOUGH CASH';shopMsgT=1.6;SFX.hit&&0;return}
  if(it.k==='armor'){if(P.armor>=100){shopMsg='ARMOUR ALREADY FULL';shopMsgT=1.6;return}P.armor=100}
@@ -2233,11 +2233,19 @@ function drawAmmu(s){const pu=Math.sin(time*3)*.5+.5,b=s.b;x.save();x.translate(
  x.fillStyle='#ffd24a';x.font='bold 9px "Arial Black",Arial';x.textAlign='center';x.fillText('AMMU-NATION',0,-10);
  x.restore();x.save();x.translate(s.x,s.y);drawWeaponIcon(x,2,-10,6,20);drawWeaponIcon(x,4,12,6,20);x.strokeStyle='rgba(255,210,74,'+(.25+.35*pu)+')';x.lineWidth=2;x.beginPath();x.arc(0,0,s.r*.6,0,TAU);x.stroke();x.restore()}
 function drawShop(){x.fillStyle='rgba(4,6,16,.985)';x.fillRect(0,0,W,H);const cx=W/2;
- if(CLK.ok){const fi=((performance.now()/120)|0)%32,two0=W>=640,cw0=two0?Math.min(300*U,W/2-30):Math.min(360*U,W-30),gridR=cx+(two0?cw0+6*U:cw0/2),free=W-gridR-16*U;let dw,dh,dx,dy;
-  if(free>=120*U){dw=Math.min(free,230*U);dh=dw*240/135;if(dh>H*.7){dh=H*.7;dw=dh*135/240}dx=gridR+(free-dw)/2+8*U;dy=Math.max(48*U,H*.1)}else{dh=Math.min(130*U,H*.17);dw=dh*135/240;dx=W-dw-8*U;dy=6*U}
-  x.save();x.imageSmoothingEnabled=false;x.fillStyle='#000';x.fillRect(dx-4*U,dy-4*U,dw+8*U,dh+8*U);x.drawImage(CLK.img,(fi%8)*135,((fi/8)|0)*240,135,240,dx,dy,dw,dh);x.strokeStyle='#ffd24a';x.lineWidth=3;x.strokeRect(dx-4*U,dy-4*U,dw+8*U,dh+8*U);x.restore()}
+ const SB=Math.max(48*U,H*.1),two0=W>=640,cw0=two0?Math.min(300*U,W/2-30):Math.min(360*U,W-30),gridR=cx+(two0?cw0+6*U:cw0/2),free=W-gridR-16*U;let stripH=0;
+ if(CLK.ok){const fi=((performance.now()/120)|0)%32,wide=free>=120*U,GREET='Hi, welcome to Ammu-Nation! How can I help you today?',nch=Math.min(GREET.length,Math.floor((performance.now()-shopT0)/32));let dw,dh,dx,dy;
+  if(wide){dh=Math.min(230*U*240/135,H*.5);dw=dh*135/240;if(dw>free){dw=free;dh=dw*240/135}dx=gridR+(free-dw)/2+8*U;dy=SB+66*U}else{dh=Math.min(120*U,H*.15);dw=dh*135/240;dx=Math.max(10*U,cx-cw0/2);dy=SB+54*U;stripH=dh+12*U-12*U}
+  x.save();x.imageSmoothingEnabled=false;x.fillStyle='#000';x.fillRect(dx-4*U,dy-4*U,dw+8*U,dh+8*U);x.drawImage(CLK.img,(fi%8)*135,((fi/8)|0)*240,135,240,dx,dy,dw,dh);x.strokeStyle='#ffd24a';x.lineWidth=3;x.strokeRect(dx-4*U,dy-4*U,dw+8*U,dh+8*U);
+  // speech bubble (typed out)
+  const fs=Math.max(11,(wide?14:13)*U);x.font='bold '+fs+'px Arial, sans-serif';const bw=wide?dw+8*U:Math.min(cw0-dw-24*U,260*U),bx=wide?dx-4*U:dx+dw+18*U,pad=10*U,words=GREET.split(' '),lines=[];let cur='';for(const w of words){const t=cur?cur+' '+w:w;if(x.measureText(t).width>bw-pad*2&&cur){lines.push(cur);cur=w}else cur=t}lines.push(cur);
+  const lh=fs*1.3,bh=lines.length*lh+pad*2,by2=wide?dy+dh+18*U:dy+Math.max(0,(dh-bh)/2);
+  x.fillStyle='#fff8e0';x.strokeStyle='#000';x.lineWidth=3;rrect(x,bx,by2,bw,bh,10*U);x.fill();x.stroke();
+  x.beginPath();if(wide){x.moveTo(bx+bw/2-8*U,by2+1);x.lineTo(bx+bw/2,by2-12*U);x.lineTo(bx+bw/2+8*U,by2+1)}else{x.moveTo(bx+1,by2+bh/2-8*U);x.lineTo(bx-12*U,by2+bh/2);x.lineTo(bx+1,by2+bh/2+8*U)}x.fillStyle='#fff8e0';x.fill();
+  x.fillStyle='#1a1208';x.textAlign='left';x.textBaseline='top';let left=nch;lines.forEach((ln,k)=>{const t=ln.slice(0,Math.max(0,left));left-=ln.length+1;x.fillText(t,bx+pad,by2+pad+k*lh)});x.restore();
+  if(!wide)stripH=dh+14*U}
 txt('AMMU-NATION',cx,Math.max(48*U,H*.1),Math.min(40*U,W/12),'#ffd24a','center',1);txt('$ '+fmt(P.cash),cx,Math.max(48*U,H*.1)+34*U,26*U,'#7dff9b','center',1);
- const two=W>=640,cw=two?Math.min(300*U,W/2-30):Math.min(360*U,W-30),ch=48*U,gap=8*U,y0=Math.max(48*U,H*.1)+66*U;
+ const two=W>=640,cw=two?Math.min(300*U,W/2-30):Math.min(360*U,W-30),ch=48*U,gap=8*U,y0=Math.max(48*U,H*.1)+66*U+(stripH?stripH-12*U:0);
  for(let i=0;i<SHOP.length;i++){const it=SHOP[i],col=two?i%2:0,row=two?(i/2)|0:i,bx=two?cx+(col?1:-1)*(cw/2+6*U):cx,by=y0+row*(ch+gap)+ch/2;const can=P.cash>=it.p;
   btn('#'+i+it.n,bx,by,cw,ch,()=>shopBuy(i),{col:can?'#2a5ab8':'#444',col2:can?'#15305f':'#222',fs:1});
   x.save();x.fillStyle='rgba(8,10,20,.0)';if(it.w!==undefined)drawWeaponIcon(x,it.w,bx-cw/2+44*U,by,52*U);else{x.fillStyle=it.k==='armor'?'#4a90e2':'#fff';if(it.k==='armor'){x.beginPath();x.moveTo(bx-cw/2+26*U,by-14*U);x.lineTo(bx-cw/2+54*U,by-14*U);x.lineTo(bx-cw/2+54*U,by+2*U);x.lineTo(bx-cw/2+40*U,by+16*U);x.lineTo(bx-cw/2+26*U,by+2*U);x.closePath();x.fill();x.strokeStyle='#000';x.stroke()}else{rrect(x,bx-cw/2+26*U,by-14*U,28*U,28*U,5*U);x.fill();x.fillStyle='#e0304a';x.fillRect(bx-cw/2+31*U,by-3*U,18*U,6*U);x.fillRect(bx-cw/2+37*U,by-9*U,6*U,18*U)}}x.restore();
