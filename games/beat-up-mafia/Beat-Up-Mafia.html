@@ -689,8 +689,10 @@ function pedSprite(p,isP){const s=pedPick(p,isP),r=PEDART[s[0]];if(!r||!pedOk(s[
  if(s[1]===3){x.save();x.imageSmoothingQuality='high';x.rotate(-PI/2);const cut=.64,hh=r.h*cut,yb=(hh-r.py)*PSC,pc=r.pants||[40,44,60],mv=pedMoving(p,false)?1:0,sw=Math.sin(p.walk||0)*2.6*mv;
   for(let i=-1;i<=1;i+=2){const o=i*sw;x.fillStyle=PANTS[p.vi%6];x.fillRect(i*2.4-1.1,yb-2,2.2,4.2+o*.8);x.fillStyle='#16161a';x.fillRect(i*2.4-1.3,yb+2+o*.8,2.6,1.8)}
   x.drawImage(r.img,0,0,r.w,hh,-r.px*PSC,-r.py*PSC,r.w*PSC,hh*PSC);x.restore();return true}
+ let ch=1;if(isP&&s[1]===0&&!/swim|punch0/.test(s[0])){ch=.8;const mv=pedMoving(p,true)?1:0,sw=Math.sin(p.walk||0)*3.2*mv,yb=(r.h*ch-r.py)*PSC-1.2;
+  x.lineCap='butt';for(let i=-1;i<=1;i+=2){const fx=i*sw;x.strokeStyle='#26365c';x.lineWidth=2;x.beginPath();x.moveTo(i*1.5,yb-1);x.lineTo(i*1.5+fx*.8,yb+4);x.stroke();x.fillStyle='#17171c';x.fillRect(i*1.5+fx*.8-1.1,yb+3.6,2.2,1.6)}}
  x.save();x.imageSmoothingQuality='high';if(s[1]===1)x.rotate(-PI/2);else if(s[1]===2)x.rotate(-.45);
- x.drawImage(r.img,-r.px*PSC,-r.py*PSC,r.w*PSC,r.h*PSC);x.restore();
+ x.drawImage(r.img,0,0,r.w,r.h*ch,-r.px*PSC,-r.py*PSC,r.w*PSC,r.h*ch*PSC);x.restore();
  if(p.muz>0&&s[1]===0&&!s[0].startsWith('p_flame')&&s[0]!=='p_punch1'){const gx=(r.w-r.px)*PSC;x.fillStyle='#fff3a0';x.beginPath();x.moveTo(gx,0);x.lineTo(gx+7,-2);x.lineTo(gx+5,0);x.lineTo(gx+8,2);x.closePath();x.fill()}
  return true}
 function pedBodyName(b){const t=b.type;
