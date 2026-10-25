@@ -174,6 +174,8 @@ function addB(tx,ty,w,h,o){const b=Object.assign({x:tx*T,y:ty*T,w:w*T,h:h*T,c:'#
  const isl=(c,rd,grass,wob)=>{for(let ty=Math.floor(c.cy-rd-3);ty<=Math.ceil(c.cy+rd+3);ty++)for(let tx=Math.floor(c.cx-rd-3);tx<=Math.ceil(c.cx+rd+3);tx++){if(tx<0||ty<0||tx>=N||ty>=N)continue;const dx=tx+.5-c.cx,dy=ty+.5-c.cy,a=Math.atan2(dy,dx),d=Math.hypot(dx,dy)+wob*Math.sin(a*3+c.cx)+wob*.6*Math.sin(a*5+c.cy*2);
    if(d<rd*grass)kind[ty][tx]=2;else if(d<rd)kind[ty][tx]=7}};
  isl(ISLE,ISLE.r,.68,1.0);isl(ROCK,ROCK.r,.4,.5);isl(CAY,CAY.r,.3,.4);
+ // lighthouse on the rock
+ setK(125,40,2,2,3);addB(125,40,2,2,{style:'tower',c:'#e9ecf2',hh:3});
  // smuggler's isle: pier, warehouse, containers
  setK(105,110,6,2,8);PIERS.push({x:105,y:110,len:6,isle:1});
  BERTHS.push({x:106*T,y:110*T-17,a:0,isle:1,cargo:1},{x:108.4*T,y:112*T+17,a:PI,isle:1});
@@ -228,15 +230,17 @@ function addB(tx,ty,w,h,o){const b=Object.assign({x:tx*T,y:ty*T,w:w*T,h:h*T,c:'#
  /* ============ COSTA VERDE: the second island, south-east, linked to the harbour by a long causeway ============ */
  {const OUTi=(tx,ty)=>tx<0||ty<0||tx>=N||ty>=N,rg3=mulberry(31337),pk3=a=>a[Math.floor(rg3()*a.length)],IC=ISL2;
   const dN=(tx,ty)=>{const dx=tx+.5-IC.cx,dy=ty+.5-IC.cy,a=Math.atan2(dy,dx);return Math.hypot(dx,dy)/(IC.r*(1+.07*Math.sin(3*a+1.3)+.05*Math.sin(5*a+.4)+.03*Math.sin(9*a+2)))};
-  const urb=(bi,bj)=>dN(bi*9+6,bj*9+6)<.72;
+  const urb=(bi,bj)=>dN(bi*9+6,bj*9+6)<.5;
   const x0_=IC.cx-IC.r-6,x1_=IC.cx+IC.r+6,y0_=IC.cy-IC.r-6,y1_=IC.cy+IC.r+6;
-  for(let ty=y0_;ty<=y1_;ty++)for(let tx=x0_;tx<=x1_;tx++){if(OUTi(tx,ty))continue;const d=dN(tx,ty);if(d>=1)continue;kind[ty][tx]=d>.9?7:2}
+  for(let ty=y0_;ty<=y1_;ty++)for(let tx=x0_;tx<=x1_;tx++){if(OUTi(tx,ty))continue;const d=dN(tx,ty);if(d>=1)continue;kind[ty][tx]=d>.74?7:2}
   /* town grid on the 9-tile pattern, only where the island is wide enough */
   for(let ty=y0_;ty<=y1_;ty++)for(let tx=x0_;tx<=x1_;tx++){if(OUTi(tx,ty)||kind[ty][tx]!==2)continue;
    const bi=Math.floor(tx/9),bj=Math.floor(ty/9),rx=tx%9,ry=ty%9;
    if(rx<3||ry<3){let on;if(rx<3&&ry<3)on=urb(bi,bj)||urb(bi-1,bj)||urb(bi,bj-1)||urb(bi-1,bj-1);else if(rx<3)on=urb(bi,bj)||urb(bi-1,bj);else on=urb(bi,bj)||urb(bi,bj-1);if(on)kind[ty][tx]=0}
    else if(urb(bi,bj)){const bx=rx-3,by=ry-3;kind[ty][tx]=(bx===0||bx===5||by===0||by===5)?1:2}}
   for(let bi=Math.floor(x0_/9);bi<=Math.ceil(x1_/9);bi++)for(let bj=Math.floor(y0_/9);bj<=Math.ceil(y1_/9);bj++)if(urb(bi,bj)){cityBlock(bi,bj,rg3,pk3);const x0=bi*9+4,y0=bj*9+4;lamps.push({x:(x0-1)*T,y:(y0-1)*T},{x:(x0+5)*T,y:(y0+5)*T})}
+  /* the two main streets run right across the island and simply stop where the beach starts */
+  for(let ty=y0_;ty<=y1_;ty++)for(let tx=x0_;tx<=x1_;tx++){if(OUTi(tx,ty)||kind[ty][tx]!==2)continue;if((ty>=81&&ty<=83)||(tx>=144&&tx<=146))kind[ty][tx]=0}
   /* bridge: straight off the end of the city's road (y 81..83) onto the island's main street */
   for(let ty=81;ty<=83;ty++)for(let tx=SEA_X;tx<N;tx++){const k=kind[ty][tx];if(k===6||k===8){kind[ty][tx]=8;BR[ty*N+tx]=ty===82?4:1}else if(k===2||k===7)kind[ty][tx]=0;else if(k===0&&tx>=SEA_X+4)break;else break}
   for(let tx=SEA_X+2;tx<=IC.cx-IC.r;tx+=4){lamps.push({x:(tx+.5)*T,y:81*T+3},{x:(tx+.5)*T,y:84*T-3})}
@@ -251,7 +255,7 @@ function addB(tx,ty,w,h,o){const b=Object.assign({x:tx*T,y:ty*T,w:w*T,h:h*T,c:'#
   /* lighthouse at the southern tip */
   {let ty=IC.cy+IC.r+3;while(ty>IC.cy&&kind[ty][IC.cx]!==7)ty--;const ly=ty-3;setK(IC.cx-1,ly,2,2,3);addB(IC.cx-1,ly,2,2,{style:'tower',c:'#e9ecf2',hh:3})}
   /* palms over the beach and the jungle ring */
-  for(let i=0;i<150;i++){const tx=Math.floor(x0_+rg3()*(x1_-x0_)),ty=Math.floor(y0_+rg3()*(y1_-y0_));if(OUTi(tx,ty))continue;const k=kind[ty][tx];if(k!==7&&!(k===2&&dN(tx,ty)>.76))continue;PALMS.push({x:(tx+.5)*T+rg3()*24-12,y:(ty+.5)*T+rg3()*24-12,s:.8+rg3()*.5,a:rg3()*TAU})}
+  for(let i=0;i<330;i++){const tx=Math.floor(x0_+rg3()*(x1_-x0_)),ty=Math.floor(y0_+rg3()*(y1_-y0_));if(OUTi(tx,ty))continue;const k=kind[ty][tx];if(k!==7&&!(k===2&&dN(tx,ty)>.76))continue;PALMS.push({x:(tx+.5)*T+rg3()*24-12,y:(ty+.5)*T+rg3()*24-12,s:.8+rg3()*.5,a:rg3()*TAU})}
   /* parked cars along the town streets */
   {let pc=0;for(let t=0;t<2000&&pc<14;t++){const tx=Math.floor(x0_+rg3()*(x1_-x0_)),ty=Math.floor(y0_+rg3()*(y1_-y0_));if(OUTi(tx,ty)||kind[ty][tx]!==0)continue;const rx=tx%9,ry=ty%9;if(rx<3&&ry<3)continue;
    let px,py,a;if(rx<3){px=(tx+(rx===0?.35:rx===2?.65:.5))*T;py=(ty+.5)*T;a=rg3()<.5?PI/2:-PI/2;if(rx===1)continue}else{px=(tx+.5)*T;py=(ty+(ry===0?.35:ry===2?.65:.5))*T;a=rg3()<.5?0:PI;if(ry===1)continue}
@@ -578,7 +582,8 @@ function colFor(vt){return vt==='taxi'?'#f2c335':vt==='ambulance'?'#f4f4f6':vt==
 function mkPed(px,py,o){return Object.assign({x:px,y:py,a:R(0,TAU),hp:40,max:40,sp:R(34,58),col:pick(PEDCOLS),skin:pick(SKIN),hair:pick(['#2a1a0f','#4a2f1a','#a87a3a','#1a1a1a','#8a8a8a']),t:R(0,3),walk:R(0,6),fl:0,type:'civ',fire:R(.3,1),vx:0,vy:0,cross:0,w:0,pref:150,range:300,hx:px,hy:py,burst:0,hold:false,pan:0,kx:0,ky:0,alert:0,cross:0,st:0,sd:1,los:false,losT:0},o||{})}
 function pedAtFree(px,py){return !solidAt(Math.floor(px/T),Math.floor(py/T))}
 function onScreen(px,py,m){const z=cam.z;return Math.abs(px-cam.x)<(W/z)/2+m&&Math.abs(py-cam.y)<(H/z)/2+m}
-function spawnCiv(){const cx0=Math.floor(P.x/T),cy0=Math.floor(P.y/T);for(let i=0;i<90;i++){const tx=cl(cx0+RI(-26,26),1,N-2),ty=cl(cy0+RI(-26,26),1,N-2),k=kind[ty][tx];if(inBase((tx+.5)*T,(ty+.5)*T))continue;if(k===1||k===2||k===5||k===7||k===8){const px=(tx+.5)*T,py=(ty+.5)*T;{const dd=D(px,py,P.x,P.y);if(dd<1000&&dd>(onScreen(px,py,0)?9999:330)){peds.push(mkPed(px,py));return}}}}}
+function tinyIsle(px,py){for(const q of[ISLE,ROCK,CAY])if(Math.hypot(px/T-q.cx,py/T-q.cy)<q.r+4)return true;return false}
+function spawnCiv(){const cx0=Math.floor(P.x/T),cy0=Math.floor(P.y/T);for(let i=0;i<90;i++){const tx=cl(cx0+RI(-26,26),1,N-2),ty=cl(cy0+RI(-26,26),1,N-2),k=kind[ty][tx];if(inBase((tx+.5)*T,(ty+.5)*T)||tinyIsle((tx+.5)*T,(ty+.5)*T))continue;if(k===1||k===2||k===5||k===7||k===8){const px=(tx+.5)*T,py=(ty+.5)*T;{const dd=D(px,py,P.x,P.y);if(dd<1000&&dd>(onScreen(px,py,0)?9999:330)){peds.push(mkPed(px,py));return}}}}}
 function mobAt(px,py,o){const w=o&&o.w!==undefined?o.w:(Math.random()<.55?0:Math.random()<.6?1:2);const d=DIFF[diffIdx];const m=mkPed(px,py,Object.assign({type:'mob',hp:60*d.hp,max:60*d.hp,sp:R(62,82),col:'#17171c',w:w,pref:R(110,185),range:w===2?230:330,fire:R(.4,1.2)},o||{}));peds.push(m);return m}
 function mobSpawnFar(){for(let i=0;i<14;i++){const a=R(0,TAU),d=R(250,900),px=HQ.x+HQ.w/2+Math.cos(a)*d,py=HQ.y+HQ.h/2+Math.sin(a)*d;if(px<80||py<80||px>WS-80||py>WS-80)continue;if(solidAt(Math.floor(px/T),Math.floor(py/T))||inBase(px,py))continue;if(D(px,py,P.x,P.y)<(onScreen(px,py,60)?9999:400))continue;
   const n=RI(1,3);for(let j=0;j<n;j++){const qx=px+R(-30,30),qy=py+R(-30,30);if(pedAtFree(qx,qy))mobAt(qx,qy)}return}}
@@ -1284,6 +1289,15 @@ function spawnCargo(){const b=BERTHS.find(b=>b.cargo)||BERTHS[0];const c=mkCar(b
  for(let i=0;i<6;i++){const l=nearestLand(b.x+R(-130,60),b.y+R(-90,40),6);if(pedAtFree(l.x,l.y))mobAt(l.x,l.y,{keep:true,w:i%3,range:340})}}
 function spawnHunterBoat(){const c=P.car||P;for(let i=0;i<40;i++){const a=R(0,TAU),d=R(550,900),px=c.x+Math.cos(a)*d,py=c.y+Math.sin(a)*d;if(px<120||py<120||px>WS-120||py>WS-120)continue;const tx=px/T|0,ty=py/T|0;if(kind[ty][tx]===6&&SD[ty*N+tx]>=2){const g=mkCar(px,py,R(0,TAU),Math.random()<.5?'gunboat':'speedboat','#2a2f3a','bhunt');g.gun=true;g.hp=g.max=VT[g.vt].hp*hpm()*.8;cars.push(g);return}}}
 function hpm(){return DIFF[diffIdx].hp}
+/* ---- helpers for the air / sea / army missions ---- */
+function isl2Dock(){const p=PIERS.find(q=>q.isl2&&!q.air);return p?{x:(p.x+p.len+1.8)*T,y:(p.y+1)*T}:{x:(ISL2.cx+ISL2.r)*T,y:ISL2.cy*T}}
+function isl2Air(){const p=PIERS.find(q=>q.isl2&&q.air);return p?{x:(p.x+p.len+2.2)*T,y:(p.y+1)*T}:isl2Dock()}
+function rockPt(){return{x:ROCK.cx*T,y:ROCK.cy*T}}
+function isPlane(c){return !!c&&VT[c.vt].dom===2&&VT[c.vt].air!=='heli'}
+function isBoat(c){return !!c&&VT[c.vt].dom===1}
+function lostVeh(ok,secs){if(ok){mis.lost=0;return false}mis.lost=(mis.lost||0)+1/60;if(mis.lost>(secs||2.5)){mis.lost=0;return true}return false}
+function seaPts(cx,cy,rmin,rmax,n){const out=[];for(let k=0;k<400&&out.length<n;k++){const a=R(0,TAU),d=R(rmin,rmax),x_=cx+Math.cos(a)*d,y_=cy+Math.sin(a)*d;if(x_<160||y_<160||x_>WS-160||y_>WS-160)continue;const tx=x_/T|0,ty=y_/T|0;if(kind[ty][tx]!==6||SD[ty*N+tx]<3)continue;if(out.some(o=>D(o.x,o.y,x_,y_)<260))continue;out.push({x:x_,y:y_})}return out}
+function airCars(sea){return cars.filter(c=>!c.dead&&isPlane(c)&&!!VT[c.vt].sea===!!sea).map(c=>({x:c.x,y:c.y,c:'#ffd24a'})).slice(0,4)}
 const MIS=[
  {t:'WHEELS',b:'WELCOME TO VICE ROW. The Corvino family owns this town — time to change that. First, get wheels: walk up to a car and press F (the ENTER button on touch).',reward:300,
   obj:()=>'STEAL A CAR  (press F beside a vehicle)',done:()=>!!P.car,tg:()=>{const c=nearestCarAny();return c?[{x:c.x,y:c.y,c:'#ffd24a'}]:[]}},
@@ -1346,6 +1360,63 @@ const MIS=[
   upd(){if(mis.step===0&&inBase(P.x,P.y)){mis.step=1;mis.cnt=0;say('FIND THE CRATES!',2.2,'#9fd86a')}else if(mis.step===1&&(mis.cnt||0)>=3){mis.step=2;say('NOW GET OUT OF THERE!',2.4,'#ff9a5a')}},
   done:()=>{if(mis.step!==2)return false;const w=heistWare();return D(P.x,P.y,w.x,w.y)<190},
   tg:()=>mis.step===0?[{x:(BASE.x0+BASE.x1)/2,y:(BASE.y0+BASE.y1)/2,c:'#9fd86a'}]:mis.step===1?pickups.filter(p=>p.type==='milcrate').map(p=>({x:p.x,y:p.y,c:'#9fd86a'})):[{x:heistWare().x,y:heistWare().y,c:'#7dff9b'}]},
+
+ {t:'FLIGHT SCHOOL',b:'Corvino wants a pilot who does not scare. Steal a plane from the airport, take off, thread all five rings over the bay and the islands, then put it down on the runway in one piece.',reward:5500,
+  start(){mis.rings=[[40,70],[96,56],[126,98],[143,84],[110,50]].map(p=>({x:p[0]*T,y:p[1]*T}));mis.cnt=0},
+  obj:()=>mis.step===0?'STEAL A PLANE AND TAKE OFF  (airport, not a seaplane)':mis.step===1?'FLY THROUGH THE RINGS  '+(mis.cnt||0)+'/5':'LAND ON THE AIRPORT RUNWAY',
+  upd(){const pc=P.car;if(mis.step===0&&isPlane(pc)&&!VT[pc.vt].sea&&pc.fly){mis.step=1;mis.cnt=0;say('FLY THROUGH THE CYAN RINGS',2.6,'#7ab8ff')}
+   if(mis.step>=1&&lostVeh(isPlane(pc))){mis.step=0;mis.cnt=0;say('YOU LOST THE PLANE — GET ANOTHER',2.4,'#ff9a5a')}
+   if(mis.step===1&&isPlane(pc)){const r=mis.rings[mis.cnt||0];if(r&&D(pc.x,pc.y,r.x,r.y)<150){mis.cnt++;SFX.cash();say('RING '+mis.cnt+'/5',1.2,'#ffd24a');if(mis.cnt>=5){mis.step=2;say('NOW LAND ON THE RUNWAY',2.6,'#7ab8ff')}}}},
+  done:()=>mis.step===2&&isPlane(P.car)&&!P.car.fly&&tileKind(P.car.x,P.car.y)===9&&Math.abs(P.car.sp)<120,
+  tg:()=>mis.step===0?airCars(false):mis.step===1?(mis.rings&&mis.rings[mis.cnt||0]?[{x:mis.rings[mis.cnt||0].x,y:mis.rings[mis.cnt||0].y,c:'#2bd6ff'}]:[]):[{x:47*T,y:112.5*T,c:'#7dff9b'}]},
+ {t:'ISLAND HOP',b:'A crate of Corvino contraband is waiting at the lighthouse on the rock north-east of the harbour. Take a boat, grab it, and run it to the Costa Verde marina. The coast patrol will not be happy.',reward:6500,
+  start(){mis.hunt=0},
+  obj:()=>mis.step===0?'STEAL A BOAT  (harbour piers)':mis.step===1?'GO TO THE LIGHTHOUSE ROCK':'DELIVER THE CRATE TO THE COSTA VERDE MARINA',
+  upd(){const pc=P.car;if(mis.step===0&&isBoat(pc)){mis.step=1;say('HEAD FOR THE LIGHTHOUSE',2.4,'#7ab8ff')}
+   if(mis.step>=1&&lostVeh(isBoat(pc))){mis.step=mis.step===2?2:0;if(mis.step===0)say('GET ANOTHER BOAT',2,'#ff9a5a')}
+   if(mis.step===1&&isBoat(pc)){const r=rockPt();if(D(pc.x,pc.y,r.x,r.y)<260){mis.step=2;mis.hunt=0;say('CRATE ABOARD — PATROL BOATS INBOUND!',2.8,'#ff9a5a');crime(50);for(let i=0;i<3;i++)spawnHunterBoat()}}
+   if(mis.step===2&&isBoat(pc)){mis.hunt+=1/60;if(mis.hunt>8){mis.hunt=0;if(cars.filter(o=>o.type==='bhunt'&&!o.dead).length<4)spawnHunterBoat()}}},
+  done:()=>{const d=isl2Dock();return mis.step===2&&isBoat(P.car)&&D(P.car.x,P.car.y,d.x,d.y)<190},
+  tg:()=>mis.step===0?cars.filter(c=>!c.dead&&isBoat(c)&&D(c.x,c.y,P.x,P.y)<1500).slice(0,3).map(c=>({x:c.x,y:c.y,c:'#ffd24a'})):mis.step===1?[{x:rockPt().x,y:rockPt().y,c:'#ffd24a'}]:[{x:isl2Dock().x,y:isl2Dock().y,c:'#7dff9b'}]},
+ {t:'COASTAL RACE',b:'Corvino bets on everything, including you. Steal a boat and take six buoys around the bay inside 110 seconds. Miss the clock and the course resets.',reward:7000,
+  start(){mis.cnt=0;mis.buoys=null;mis.rt=110},
+  obj:()=>mis.step===0?'STEAL A BOAT  (harbour piers)':'BUOY '+Math.min(6,(mis.cnt||0)+1)+'/6   TIME '+Math.max(0,Math.ceil(mis.rt))+'s',
+  upd(){const pc=P.car;if(mis.step===0&&isBoat(pc)){mis.step=1;mis.cnt=0;mis.rt=110;mis.buoys=makeBuoys(pc.x,pc.y,6);say('GO GO GO!',1.8,'#7dff9b')}
+   if(mis.step===1){if(lostVeh(isBoat(pc),3)){mis.step=0;say('GET BACK IN A BOAT',2,'#ff9a5a');return}
+    mis.rt-=1/60;if(mis.rt<=0){mis.cnt=0;mis.rt=110;if(pc)mis.buoys=makeBuoys(pc.x,pc.y,6);say('TOO SLOW — COURSE RESET',2.4,'#ff5a5a')}
+    const bu=mis.buoys&&mis.buoys[mis.cnt||0];if(bu&&isBoat(pc)&&D(pc.x,pc.y,bu.x,bu.y)<75){mis.cnt++;SFX.cash();say('BUOY '+mis.cnt+'/6',1.2,'#ffd24a')}}},
+  done:()=>mis.step===1&&(mis.cnt||0)>=6,
+  tg:()=>mis.step===0?cars.filter(c=>!c.dead&&isBoat(c)&&D(c.x,c.y,P.x,P.y)<1500).slice(0,3).map(c=>({x:c.x,y:c.y,c:'#ffd24a'})):(mis.buoys&&mis.buoys[mis.cnt||0]?[{x:mis.buoys[mis.cnt||0].x,y:mis.buoys[mis.cnt||0].y,c:'#2bd6ff'}]:[])},
+ {t:'SEAPLANE SMUGGLER',b:'Take a seaplane from the harbour or the airport dock, land on the water beside the lighthouse rock to pick up a package, then fly it to the Costa Verde seaplane pier. Seaplanes can only land on water.',reward:7500,
+  start(){mis.hunt=0},
+  obj:()=>mis.step===0?'STEAL A SEAPLANE AND TAKE OFF':mis.step===1?'LAND ON THE WATER BY THE LIGHTHOUSE ROCK':mis.step===2?'TAKE OFF WITH THE PACKAGE':'LAND AT THE COSTA VERDE SEAPLANE PIER',
+  upd(){const pc=P.car,sp=isPlane(pc)&&!!VT[pc.vt].sea;if(mis.step===0&&sp&&pc.fly){mis.step=1;say('FLY TO THE LIGHTHOUSE ROCK',2.4,'#7ab8ff')}
+   if(mis.step>=1&&lostVeh(sp)){mis.step=0;say('YOU LOST THE SEAPLANE — GET ANOTHER',2.4,'#ff9a5a')}
+   if(mis.step===1&&sp&&!pc.fly&&tileKind(pc.x,pc.y)===6){const r=rockPt();if(D(pc.x,pc.y,r.x,r.y)<330){mis.step=2;crime(40);say('PACKAGE LOADED — TAKE OFF!',2.6,'#ff9a5a');for(let i=0;i<2;i++)spawnHunterBoat()}}
+   if(mis.step===2&&sp&&pc.fly){mis.step=3;say('NOW TO COSTA VERDE',2.2,'#7ab8ff')}},
+  done:()=>{const d=isl2Air(),pc=P.car;return mis.step===3&&isPlane(pc)&&!!VT[pc.vt].sea&&!pc.fly&&tileKind(pc.x,pc.y)===6&&D(pc.x,pc.y,d.x,d.y)<330},
+  tg:()=>mis.step===0?airCars(true):mis.step===1?[{x:rockPt().x,y:rockPt().y,c:'#ffd24a'}]:mis.step===2?[]:[{x:isl2Air().x,y:isl2Air().y,c:'#7dff9b'}]},
+ {t:'GUNBOAT HUNT',b:'A smuggler flotilla is hiding around Costa Verde. Take the gunboat at the harbour and sink all four of their boats. Fire from the boat with J, K or the FIRE button.',reward:8000,
+  start(){mis.cnt=0;const b=harbourBerth();const g=mkCar(b.x+60,b.y,b.a,'gunboat','#2a2f3a','parked');g.keep=true;cars.push(g);P.ammo[2]+=120;P.ammo[4]+=4},
+  obj:()=>mis.step===0?'STEAL THE GUNBOAT  (harbour pier)':'SINK THE SMUGGLER BOATS  '+Math.min(4,mis.cnt||0)+'/4',
+  upd(){const pc=P.car;if(mis.step===0&&isBoat(pc)){mis.step=1;mis.cnt=0;const pts=seaPts(ISL2.cx*T,ISL2.cy*T,(ISL2.r+6)*T,(ISL2.r+16)*T,4);for(const q of pts){const g=mkCar(q.x,q.y,R(0,TAU),'gunboat','#5a1f1f','bhunt');g.mark=true;g.keep=true;g.gun=true;g.hp=g.max=VT.gunboat.hp*hpm()*1.2;cars.push(g)}say('4 SMUGGLER BOATS MARKED AROUND COSTA VERDE',2.8,'#ff9a5a')}
+   if(mis.step===1&&lostVeh(isBoat(pc),4)){say('GET A BOAT — OR FIGHT FROM THE SHORE',2.2,'#ff9a5a')}},
+  done:()=>mis.step===1&&(mis.cnt||0)>=4,
+  tg:()=>mis.step===0?cars.filter(c=>!c.dead&&c.vt==='gunboat'&&c.type==='parked').map(c=>({x:c.x,y:c.y,c:'#ffd24a'})):cars.filter(c=>c.mark&&!c.dead).map(c=>({x:c.x,y:c.y,c:'#ff5a5a'}))},
+ {t:'DEPOT RAID',b:'The army parks its armoured vehicles inside the base south-west of the airport. Break in and blow up six of them. A tank or the rocket launcher helps. The soldiers will fight back.',reward:9000,
+  start(){mis.cnt=0;P.ammo[4]+=4;const spots=[[6,124.3,'jeep'],[10.5,124.3,'jeep'],[14.5,124.3,'truck'],[26,129.4,'jeep'],[10,130.6,'truck'],[14.5,130.6,'jeep']];for(const s of spots){const c=mkCar(s[0]*T,s[1]*T,0,s[2],s[2]==='jeep'?'#4a5a34':'#59653f','parked');c.mark=true;c.keep=true;c.hp=c.max=(s[2]==='jeep'?60:80)*hpm();cars.push(c)}},
+  obj:()=>mis.step===0?'BREAK INTO THE ARMY BASE  (south-west of the airport)':'DESTROY THE ARMY VEHICLES  '+Math.min(6,mis.cnt||0)+'/6',
+  upd(){if(mis.step===0&&inBase(P.x,P.y)){mis.step=1;say('BLOW THEM UP!',2.2,'#ff9a5a')}},
+  done:()=>mis.step===1&&(mis.cnt||0)>=6,
+  tg:()=>mis.step===0?[{x:(BASE.x0+BASE.x1)/2,y:(BASE.y0+BASE.y1)/2,c:'#9fd86a'}]:cars.filter(c=>c.mark&&!c.dead).map(c=>({x:c.x,y:c.y,c:'#ff5a5a'}))},
+ {t:'GUNSHIP STRIKE',b:'Corvino has dug in on Costa Verde. Steal an army gunship, fly across the bay and burn his five vehicles from the air. Minigun and rockets.',reward:10000,
+  start(){mis.cnt=0},
+  obj:()=>mis.step===0?'STEAL A GUNSHIP  (army base)':'DESTROY THE TARGETS ON COSTA VERDE  '+Math.min(5,mis.cnt||0)+'/5',
+  upd(){const pc=P.car;if(mis.step===0&&pc&&pc.vt==='gunship'){mis.step=1;mis.cnt=0;const ts=['sedan','pickup','van','sedan','pickup'];for(let i=0;i<5;i++){const a=i*TAU/5+R(-.3,.3),d=R(4,12);const l=nearestLand((ISL2.cx+Math.cos(a)*d)*T,(ISL2.cy+Math.sin(a)*d)*T,6);const c=mkCar(l.x,l.y,R(0,TAU),ts[i],'#1d1d24','parked');c.mark=true;c.keep=true;c.hp=c.max=70*hpm();cars.push(c)}
+    for(let i=0;i<6;i++){const l=nearestLand((ISL2.cx+R(-9,9))*T,(ISL2.cy+R(-9,9))*T,6);if(pedAtFree(l.x,l.y))mobAt(l.x,l.y,{keep:true,w:i%3===0?2:1,range:360})}say('TARGETS MARKED ON COSTA VERDE',2.8,'#ff9a5a')}
+   if(mis.step===1&&lostVeh(pc&&pc.vt==='gunship',6)){say('GET BACK IN THE GUNSHIP',2,'#ff9a5a')}},
+  done:()=>mis.step===1&&(mis.cnt||0)>=5,
+  tg:()=>mis.step===0?cars.filter(c=>!c.dead&&c.vt==='gunship').map(c=>({x:c.x,y:c.y,c:'#ffd24a'})):cars.filter(c=>c.mark&&!c.dead).map(c=>({x:c.x,y:c.y,c:'#ff5a5a'}))},
  {t:'THE DON',b:'Don Corvino is fleeing in his armoured limo! Hunt him down. Make it end tonight.',reward:0,boss:true,
   start(){startBoss()},obj:()=>boss.phase===1?'DESTROY THE DON\'S ARMOURED LIMO':'KILL DON CORVINO!',done:()=>false,
   tg:()=>boss.phase===1&&boss.car&&!boss.car.dead?[{x:boss.car.x,y:boss.car.y,c:'#ff5a5a'}]:boss.don&&!boss.don.dead?[{x:boss.don.x,y:boss.don.y,c:'#ff5a5a'}]:[]}
