@@ -109,8 +109,8 @@ function radioTick(){return;const c=AC;if(!c||radio.st===0||muted)return;if(radi
  while(radio.next<c.currentTime+.22){stepRadio(radio.st,radio.step++,radio.next);radio.next+=radio.dur[radio.st]}}
 
 /* ============================ WORLD ============================ */
-/* 135 x 135 tiles: a 90x90 city, a harbour strip, a sea with islands and an airport + army base in the south. */
-const T=40,N=135,WS=T*N,NB=10,NR=11,SEA_X=99,RX=SEA_X*T,RY=93*T;
+/* 196 x 196 tiles: a 90x90 city, a harbour strip, a sea with islands, an airport + army base in the south, and the Costa Verde island in the south-east. */
+const T=40,N=196,N0=135,WS=T*N,NB=10,NR=11,SEA_X=99,RX=SEA_X*T,RY=93*T;
 const kind=[];for(let i=0;i<N;i++)kind.push(new Uint8Array(N).fill(6));
 // 0 road 1 walk 2 grass 3 building 4 casino 5 lot/yard 6 water 7 sand 8 dock 9 tarmac 10 solid wall (hangar/terminal/fence)
 const bldgs=[],lamps=[],blocks=[],BERTHS=[],FLEET=[],PALMS=[],PIERS=[];
@@ -124,6 +124,8 @@ const th=(a,b)=>hsh(a,b)/4294967296;
 const ISLE={cx:114.5,cy:110.5,r:8};
 const ROCK={cx:125.5,cy:40.5,r:3.4};
 const CAY={cx:121.5,cy:70.5,r:2.8};
+const ISL2={cx:152,cy:152,r:35};
+function onIsl2(tx,ty){return tx>=112&&ty>=112&&tx<N&&ty<N}
 const AIR={term:{x:12,y:95,w:29,h:4},tower:{x:63,y:95,w:3,h:3},hang:[{x:68,y:95,w:8,h:5},{x:78,y:95,w:8,h:5}],
  apron:{x:6,y:100,w:84,h:7},run:{x:3,y:110,w:88,h:5},base:{x:3,y:122,w:28,h:11},pads:[[16,103],[20,103],[24,103]]};
 function setK(tx,ty,w,h,k){for(let j=0;j<h;j++)for(let i=0;i<w;i++){const a=tx+i,b=ty+j;if(a>=0&&b>=0&&a<N&&b<N)kind[b][a]=k}}
@@ -163,7 +165,7 @@ function addB(tx,ty,w,h,o){const b=Object.assign({x:tx*T,y:ty*T,w:w*T,h:h*T,c:'#
   for(let i=0;i<len;i+=3){lamps.push({x:(SEA_X+i+.5)*T,y:pr*T+3});lamps.push({x:(SEA_X+i+.5)*T,y:(pr+2)*T-3})}}
  for(let ty=4;ty<90;ty+=9){lamps.push({x:98.5*T,y:ty*T});}
  /* ---- seaplane docks: harbour pier tips + a dock beside the airport ---- */
- {const sp=['seaplane','amphib','sportsea','patrolsea'];[21,39,57,75].forEach((pr,i)=>FLEET.push({t:sp[i%4],x:(SEA_X+8+3.1)*T,y:(pr+1)*T,a:PI}));
+ {const sp=['seaplane','amphib','sportsea','patrolsea'];[21,39,75].forEach((pr,i)=>FLEET.push({t:sp[i%4],x:(SEA_X+8+3.1)*T,y:(pr+1)*T,a:PI}));
   setK(93,100,8,2,8);PIERS.push({x:93,y:100,len:8,air:1});for(let i=0;i<8;i+=3){lamps.push({x:(93+i+.5)*T,y:100*T+3});lamps.push({x:(93+i+.5)*T,y:102*T-3})}
   FLEET.push({t:'seaplane',x:95.2*T,y:100*T-44,a:0},{t:'sportsea',x:98.1*T,y:100*T-44,a:0},{t:'amphib',x:95.2*T,y:102*T+44,a:0},{t:'patrolsea',x:98.1*T,y:102*T+44,a:0})}
  for(let ty=4;ty<90;ty+=9){}
@@ -181,8 +183,8 @@ function addB(tx,ty,w,h,o){const b=Object.assign({x:tx*T,y:ty*T,w:w*T,h:h*T,c:'#
  setK(125,40,1,1,3);addB(125,40,1,1,{style:'light',c:'#e8e8ee',hh:3});lamps.push({x:125.5*T,y:40.5*T});
  for(let i=0;i<46;i++){const c=pk2([ISLE,ISLE,ISLE,CAY,ROCK]),a=rg2()*TAU,d=rg2()*c.r*.85,tx=Math.floor(c.cx+Math.cos(a)*d),ty=Math.floor(c.cy+Math.sin(a)*d);if(kind[ty]&&(kind[ty][tx]===7||kind[ty][tx]===2))PALMS.push({x:(tx+.5)*T+rg2()*20-10,y:(ty+.5)*T+rg2()*20-10,s:.8+rg2()*.5,a:rg2()*TAU})}
  /* ---- airport + army base (south) ---- */
- for(let ty=93;ty<N;ty++)for(let tx=0;tx<93;tx++)kind[ty][tx]=2;
- setK(91,93,2,N-93,7);setK(0,93,93,1,1);
+ for(let ty=93;ty<N0;ty++)for(let tx=0;tx<93;tx++)kind[ty][tx]=2;
+ setK(91,93,2,N0-93,7);setK(0,93,93,1,1);
  setK(2,94,9,6,5);setK(43,94,6,6,5);setK(52,94,9,6,5);
  setK(49,93,3,8,0);
  const tm=AIR.term;setK(tm.x,tm.y,tm.w,tm.h,10);addB(tm.x,tm.y,tm.w,tm.h,{style:'term',c:'#8a93a3',hh:2,sign:'VICE ROW INTL'});setK(10,99,33,1,1);
@@ -204,7 +206,7 @@ function addB(tx,ty,w,h,o){const b=Object.assign({x:tx*T,y:ty*T,w:w*T,h:h*T,c:'#
 
  /* ---- south-east suburb (between the runway and the army base side) ---- */
  {const SX=33,SY=117,pats=[[[0,0,4,4]],[[0,0,2,4],[2,0,2,4]],[[0,0,4,2],[0,2,4,2]],[[0,0,4,2],[0,2,2,2]],[[0,0,2,2]],[[1,1,2,2]],[[0,0,2,4]],[[0,0,4,2]]],rs=mulberry(4242),pr=a=>a[Math.floor(rs()*a.length)];
-  for(let ty=SY;ty<N;ty++)for(let tx=SX;tx<90;tx++){const rx=(tx-SX)%9,ry=(ty-SY)%9;if(rx<3||ry<3){kind[ty][tx]=0;continue}const bx=rx-3,by=ry-3;kind[ty][tx]=(bx===0||bx===5||by===0||by===5)?1:2}
+  for(let ty=SY;ty<N0;ty++)for(let tx=SX;tx<90;tx++){const rx=(tx-SX)%9,ry=(ty-SY)%9;if(rx<3||ry<3){kind[ty][tx]=0;continue}const bx=rx-3,by=ry-3;kind[ty][tx]=(bx===0||bx===5||by===0||by===5)?1:2}
   for(let bi=0;bi<6;bi++)for(let bj=0;bj<1;bj++){const x0=SX+bi*9+4,y0=SY+bj*9+4,r=rs();blocks.push({bi:bi+20,bj:bj+20,x0,y0,type:r<.16?'park':r<.26?'lot':'bldg',pond:rs()<.4,seed:bi*57+bj*11+900});
    if(r<.16)continue;if(r<.26){setK(x0,y0,4,4,5);continue}
    setK(x0,y0,4,4,rs()<.5?5:1);for(const p of pr(pats)){setK(x0+p[0],y0+p[1],p[2],p[3],3);addB(x0+p[0],y0+p[1],p[2],p[3],{c:pr(PALETTE),hh:1+Math.floor(rs()*3),style:Math.floor(rs()*6),sign:rs()<.55?pr(SIGNS):null,sr:rs(),seed:hsh(x0+p[0],y0+p[1])})}}
@@ -221,6 +223,41 @@ function addB(tx,ty,w,h,o){const b=Object.assign({x:tx*T,y:ty*T,w:w*T,h:h*T,c:'#
  FLEET.push({t:'cessna',x:72*T,y:98*T,a:PI/2},{t:'pjet',x:82*T,y:98*T,a:PI/2});FLEET.push({t:'jet',x:28*T,y:112.6*T,a:0},{t:'gunship',x:17.5*T,y:127.5*T,a:-PI/2},{t:'gunship',x:27*T,y:131*T,a:-PI/2});
  AIR.pads.forEach(p=>FLEET.push({t:'heli',x:(p[0]+.5)*T,y:(p[1]+.5)*T,a:-PI/2}));
  FLEET.push({t:'tank',x:8*T,y:127*T,a:0},{t:'tank',x:12*T,y:127*T,a:0},{t:'jeep',x:20*T,y:129.5*T,a:PI});
+
+ /* ============ COSTA VERDE: the second island, south-east, linked to the harbour by a long causeway ============ */
+ {const OUTi=(tx,ty)=>tx<0||ty<0||tx>=N||ty>=N,rg3=mulberry(31337),pk3=a=>a[Math.floor(rg3()*a.length)],IC=ISL2;
+  const dN=(tx,ty)=>{const dx=tx+.5-IC.cx,dy=ty+.5-IC.cy,a=Math.atan2(dy,dx);return Math.hypot(dx,dy)/(IC.r*(1+.07*Math.sin(3*a+1.3)+.05*Math.sin(5*a+.4)+.03*Math.sin(9*a+2)))};
+  const urb=(bi,bj)=>dN(bi*9+6,bj*9+6)<.72;
+  const x0_=IC.cx-IC.r-6,x1_=IC.cx+IC.r+6;
+  for(let ty=x0_;ty<=x1_;ty++)for(let tx=x0_;tx<=x1_;tx++){if(OUTi(tx,ty))continue;const d=dN(tx,ty);if(d>=1)continue;kind[ty][tx]=d>.9?7:2}
+  /* town grid on the 9-tile pattern, only where the island is wide enough */
+  for(let ty=x0_;ty<=x1_;ty++)for(let tx=x0_;tx<=x1_;tx++){if(OUTi(tx,ty)||kind[ty][tx]!==2)continue;
+   const bi=Math.floor(tx/9),bj=Math.floor(ty/9),rx=tx%9,ry=ty%9;
+   if(rx<3||ry<3){let on;if(rx<3&&ry<3)on=urb(bi,bj)||urb(bi-1,bj)||urb(bi,bj-1)||urb(bi-1,bj-1);else if(rx<3)on=urb(bi,bj)||urb(bi-1,bj);else on=urb(bi,bj)||urb(bi,bj-1);if(on)kind[ty][tx]=0}
+   else if(urb(bi,bj)){const bx=rx-3,by=ry-3;kind[ty][tx]=(bx===0||bx===5||by===0||by===5)?1:2}}
+  for(let bi=Math.floor(x0_/9);bi<=Math.ceil(x1_/9);bi++)for(let bj=Math.floor(x0_/9);bj<=Math.ceil(x1_/9);bj++)if(urb(bi,bj)){cityBlock(bi,bj,rg3,pk3);const x0=bi*9+4,y0=bj*9+4;lamps.push({x:(x0-1)*T,y:(y0-1)*T},{x:(x0+5)*T,y:(y0+5)*T})}
+  /* causeway: harbour pier 84 -> east -> south onto the island's main road (x 144..146) */
+  for(let tx=SEA_X+8;tx<=146;tx++)for(let ty=84;ty<=85;ty++)if(kind[ty][tx]===6)kind[ty][tx]=8;
+  for(let tx=144;tx<=146;tx++)for(let ty=86;ty<N;ty++){const k=kind[ty][tx];if(k===6)kind[ty][tx]=8;else if(k===0)break;else if(k===2||k===7)kind[ty][tx]=0;else break}
+  for(let tx=SEA_X+10;tx<=146;tx+=4){lamps.push({x:(tx+.5)*T,y:84*T+3},{x:(tx+.5)*T,y:86*T-3})}
+  for(let ty=88;ty<=118;ty+=4){lamps.push({x:144*T+3,y:(ty+.5)*T},{x:147*T-3,y:(ty+.5)*T})}
+  /* marina pier on the east coast (boats) and a seaplane pier below it */
+  const coastE=ry=>{for(let tx=IC.cx;tx<N;tx++)if(kind[ry][tx]===6)return tx;return IC.cx+IC.r};
+  {const ry=146,xs=coastE(ry)-2;setK(xs,ry,9,2,8);PIERS.push({x:xs,y:ry,len:9,isl2:1});
+   for(let i=0;i<3;i++){const bx=(xs+3.2+i*2.1)*T;FLEET.push({t:i===1?'jetski':'speedboat',x:bx,y:ry*T-17,a:0,boat:1});if(i!==1)FLEET.push({t:'speedboat',x:bx+8,y:(ry+2)*T+17,a:0,boat:1})}
+   for(let i=0;i<9;i+=3){lamps.push({x:(xs+i+.5)*T,y:ry*T+3});lamps.push({x:(xs+i+.5)*T,y:(ry+2)*T-3})}}
+  {const ry=158,xs=coastE(ry)-2;setK(xs,ry,9,2,8);PIERS.push({x:xs,y:ry,len:9,isl2:1,air:1});
+   FLEET.push({t:'seaplane',x:(xs+4)*T,y:ry*T-44,a:0},{t:'amphib',x:(xs+7)*T,y:(ry+2)*T+44,a:0},{t:'sportsea',x:(xs+9+2.6)*T,y:(ry+1)*T,a:PI});
+   for(let i=0;i<9;i+=3){lamps.push({x:(xs+i+.5)*T,y:ry*T+3});lamps.push({x:(xs+i+.5)*T,y:(ry+2)*T-3})}}
+  /* lighthouse at the southern tip */
+  {let ty=IC.cy+IC.r+6;while(ty>IC.cy&&kind[ty][IC.cx]!==7)ty--;const ly=ty-3;setK(IC.cx-1,ly,2,2,3);addB(IC.cx-1,ly,2,2,{style:'tower',c:'#e9ecf2',hh:3})}
+  /* palms over the beach and the jungle ring */
+  for(let i=0;i<260;i++){const tx=Math.floor(x0_+rg3()*(x1_-x0_)),ty=Math.floor(x0_+rg3()*(x1_-x0_));if(OUTi(tx,ty))continue;const k=kind[ty][tx];if(k!==7&&!(k===2&&dN(tx,ty)>.76))continue;PALMS.push({x:(tx+.5)*T+rg3()*24-12,y:(ty+.5)*T+rg3()*24-12,s:.8+rg3()*.5,a:rg3()*TAU})}
+  /* parked cars along the town streets */
+  {let pc=0;for(let t=0;t<2000&&pc<22;t++){const tx=Math.floor(x0_+rg3()*(x1_-x0_)),ty=Math.floor(x0_+rg3()*(x1_-x0_));if(OUTi(tx,ty)||kind[ty][tx]!==0)continue;const rx=tx%9,ry=ty%9;if(rx<3&&ry<3)continue;
+   let px,py,a;if(rx<3){px=(tx+(rx===0?.35:rx===2?.65:.5))*T;py=(ty+.5)*T;a=rg3()<.5?PI/2:-PI/2;if(rx===1)continue}else{px=(tx+.5)*T;py=(ty+(ry===0?.35:ry===2?.65:.5))*T;a=rg3()<.5?0:PI;if(ry===1)continue}
+   if(FLEET.some(f=>Math.hypot(f.x-px,f.y-py)<150))continue;FLEET.push({t:pk3(['sedan','sedan','sports','van','pickup','muscle','taxi']),x:px,y:py,a:a,car:1});pc++}}
+ }
  let bn=0;BERTHS.forEach(b=>{if(b.cargo)return;if(bn%2===0||b.isle)FLEET.push({t:bn%5===3?'jetski':'speedboat',x:b.x,y:b.y,a:b.a,boat:1});bn++});
 })();
 /* land / boat solidity ---------------------------------------------------- */
@@ -254,11 +291,11 @@ for(let i=lamps.length-1;i>=0;i--){const l=lamps[i],tx=Math.floor(l.x/T),ty=Math
 function nearestLand(px,py,maxR){const cx=Math.floor(px/T),cy=Math.floor(py/T);for(let r=0;r<=(maxR||40);r++){let best=null,bd=1e9;for(let dy=-r;dy<=r;dy++)for(let dx=-r;dx<=r;dx++){if(Math.max(Math.abs(dx),Math.abs(dy))!==r)continue;const tx=cx+dx,ty=cy+dy;if(OUT(tx,ty))continue;const k=kind[ty][tx];if(k===1||k===2||k===5||k===7||k===8||k===9||k===0){const d=dx*dx+dy*dy;if(d<bd){bd=d;best={x:(tx+.5)*T,y:(ty+.5)*T}}}}if(best)return best}return{x:600,y:600}}
 
 /* ============================ PAINT THE MAP (chunked) ============================ */
-const CH=1080,NCH=Math.round(WS/CH),CHK=[];
+const CH=1120,NCH=Math.ceil(WS/CH),CHMAX=14,CHC=new Map();
 const GB=[],RD=[],STR=[];
 function rrect(g,px,py,w,h,r){g.beginPath();if(g.roundRect)g.roundRect(px,py,w,h,r);else g.rect(px,py,w,h)}
 (function decor(){const rg=mulberry(4242),rr=(a,b)=>a+rg()*(b-a);
- for(let i=0;i<30000;i++){const px=rr(0,WS),py=rr(0,WS);if(kind[py/T|0][px/T|0]===2)GB.push([px,py,rg()<.5?'#3b8548':'#265c31'])}
+ for(let i=0,ng=Math.round(30000*(WS/5400)*(WS/5400));i<ng;i++){const px=rr(0,WS),py=rr(0,WS);if(kind[py/T|0][px/T|0]===2)GB.push([px,py,rg()<.5?'#3b8548':'#265c31'])}
  for(let i=0;i<1700;i++){const px=rr(0,RX),py=rr(0,RY);if(tileKind(px,py)!==0)continue;const t=rg();RD.push({x:px,y:py,t:t,a:rr(0,3),b:rr(2,9),c:rr(2,6),dx:rr(-24,24),dy:rr(-24,24),w:rr(10,30),h:rr(8,20)})}
  for(let i=0;i<700;i++){const tx=RI(0,98),ty=RI(0,92);if(kind[ty][tx]!==1)continue;let nr=false;[[0,1],[0,-1],[1,0],[-1,0]].forEach(d=>{const a=tx+d[0],b=ty+d[1];if(a>=0&&b>=0&&a<N&&b<N&&(kind[b][a]===0||kind[b][a]===6))nr=true});if(nr)continue;STR.push({x:tx*T+T/2,y:ty*T+T/2,r:rr(9,13)})}
  blocks.forEach(b=>{if(b.type!=='park')return;const rp=mulberry(b.seed*977+5),q=(a,c)=>a+rp()*(c-a),s=4*T,px=b.x0*T,py=b.y0*T;b.deco={p1:q(-40,40),p2:q(-40,40),trees:[],bench:1};
@@ -307,6 +344,10 @@ function paintChunk(g,ox,oy){
   if(x1+16<=RX&&j>0&&k>0)for(let yy=y0+7;yy<y1-9;yy+=11)g.fillRect(x1+2,yy,16,6);
   if(k>1&&j>0)for(let xx=x0+7;xx<x1-9;xx+=11)g.fillRect(xx,y0-18,6,16);
   if(k<10&&k>0&&j>0)for(let xx=x0+7;xx<x1-9;xx+=11)g.fillRect(xx,y1+2,6,16)}
+ /* ---- Costa Verde road markings ---- */
+ for(let ty=ty0;ty<=ty1;ty++)for(let tx=tx0;tx<=tx1;tx++){if(kind[ty][tx]!==0||!onIsl2(tx,ty))continue;const rx=tx%9,ry=ty%9;if(rx<3&&ry<3)continue;const px=tx*T,py=ty*T;
+  if(rx<3){if(rx!==1){g.fillStyle='rgba(0,0,0,.13)';g.fillRect(px+(rx===0?T-7:-7),py,14,T)}if(rx===1){g.fillStyle='#d9b92e';g.fillRect(px+T/2-3.5,py,2,T);g.fillRect(px+T/2+1.5,py,2,T)}else{g.fillStyle='rgba(235,235,225,.7)';g.fillRect(px+(rx===0?T:0)-1,py+6,2,24)}}
+  else{if(ry!==1){g.fillStyle='rgba(0,0,0,.13)';g.fillRect(px,py+(ry===0?T-7:-7),T,14)}if(ry===1){g.fillStyle='#d9b92e';g.fillRect(px,py+T/2-3.5,T,2);g.fillRect(px,py+T/2+1.5,T,2)}else{g.fillStyle='rgba(235,235,225,.7)';g.fillRect(px+6,py+(ry===0?T:0)-1,24,2)}}}
  /* ---- road decals ---- */
  for(const d of RD){if(d.x<ox-30||d.x>X1+30||d.y<oy-30||d.y>Y1+30)continue;
   if(d.t<.45){g.fillStyle='rgba(0,0,0,.16)';g.beginPath();g.ellipse(d.x,d.y,d.b,d.c,d.a,0,TAU);g.fill()}
@@ -401,9 +442,18 @@ function drawBuilding(g,b){
  if(b.sign&&b.w>=2*T){g.save();g.translate(cx,ry+b.h-18);g.fillStyle='rgba(0,0,0,.45)';g.font='bold 9px Arial Black,Arial';g.textAlign='center';const tw=g.measureText(b.sign).width;g.fillRect(-tw/2-4,-9,tw+8,13);g.fillStyle=['#ffd34e','#ff6a7a','#7df0ff','#9dff9d','#fff'][Math.floor(b.sr*5)];g.fillText(b.sign,0,1);g.restore()}
 }
 for(const bb of bldgs){const st=bb.style;bb.dyn=!(st==='fence'||st==='light'||bb.hh===0)}
-const radarMap=document.createElement('canvas');radarMap.width=radarMap.height=1350;
-(function paintAll(){const rm=radarMap.getContext('2d');for(let cj=0;cj<NCH;cj++)for(let ci=0;ci<NCH;ci++){const c=document.createElement('canvas');c.width=c.height=CH;paintChunk(c.getContext('2d'),ci*CH,cj*CH);CHK.push(c);rm.drawImage(c,ci*CH*1350/WS,cj*CH*1350/WS,CH*1350/WS,CH*1350/WS)}for(const bb of bldgs){if(!bb.dyn)continue;rm.fillStyle=shade(bb.c||'#80858f',-.15);const k=1350/WS;rm.fillRect(bb.x*k,bb.y*k,bb.w*k,bb.h*k)}})();
-function drawMapView(x_,sx,sy,ex,ey){for(let cj=Math.max(0,Math.floor(sy/CH));cj<=Math.min(NCH-1,Math.floor((ey-1)/CH));cj++)for(let ci=Math.max(0,Math.floor(sx/CH));ci<=Math.min(NCH-1,Math.floor((ex-1)/CH));ci++){const c=CHK[cj*NCH+ci],cx0=ci*CH,cy0=cj*CH,a=Math.max(sx,cx0),b=Math.max(sy,cy0),e=Math.min(ex,cx0+CH),f=Math.min(ey,cy0+CH);if(e>a&&f>b)x_.drawImage(c,a-cx0,b-cy0,e-a,f-b,a,b,e-a,f-b)}}
+const RMS=Math.round(WS/4),radarMap=document.createElement('canvas');radarMap.width=radarMap.height=RMS;
+(function paintAll(){const rm=radarMap.getContext('2d'),tc=document.createElement('canvas');tc.width=tc.height=CH;const tg=tc.getContext('2d'),k=RMS/WS;
+ for(let cj=0;cj<NCH;cj++)for(let ci=0;ci<NCH;ci++){paintChunk(tg,ci*CH,cj*CH);rm.drawImage(tc,ci*CH*k,cj*CH*k,CH*k,CH*k)}
+ for(const bb of bldgs){if(!bb.dyn)continue;rm.fillStyle=shade(bb.c||'#80858f',-.15);rm.fillRect(bb.x*k,bb.y*k,bb.w*k,bb.h*k)}})();
+/* map chunks are painted on demand and the least recently used ones are recycled (keeps memory flat on the big world) */
+function getChunk(ci,cj){const id=cj*NCH+ci;let c=CHC.get(id);if(c){CHC.delete(id);CHC.set(id,c);return c}
+ if(CHC.size>=CHMAX){const old=CHC.keys().next().value;c=CHC.get(old);CHC.delete(old)}else{c=document.createElement('canvas');c.width=c.height=CH}
+ paintChunk(c.getContext('2d'),ci*CH,cj*CH);CHC.set(id,c);return c}
+function drawMapView(x_,sx,sy,ex,ey){
+ for(let cj=Math.max(0,Math.floor(sy/CH));cj<=Math.min(NCH-1,Math.floor((ey-1)/CH));cj++)for(let ci=Math.max(0,Math.floor(sx/CH));ci<=Math.min(NCH-1,Math.floor((ex-1)/CH));ci++){const c=getChunk(ci,cj),cx0=ci*CH,cy0=cj*CH,a=Math.max(sx,cx0),b=Math.max(sy,cy0),e=Math.min(ex,cx0+CH),f=Math.min(ey,cy0+CH);if(e>a&&f>b)x_.drawImage(c,a-cx0,b-cy0,e-a,f-b,a,b,e-a,f-b)}
+ /* pre-paint at most one chunk per frame that is about to scroll into view */
+ const m=520;for(let cj=Math.max(0,Math.floor((sy-m)/CH));cj<=Math.min(NCH-1,Math.floor((ey+m)/CH));cj++)for(let ci=Math.max(0,Math.floor((sx-m)/CH));ci<=Math.min(NCH-1,Math.floor((ex+m)/CH));ci++){if(!CHC.has(cj*NCH+ci)){getChunk(ci,cj);return}}}
 
 /* ============ GTA2-style 3D buildings: roofs rise towards the camera, walls drawn per frame ============ */
 const LIT=[];
@@ -518,7 +568,7 @@ function colFor(vt){return vt==='taxi'?'#f2c335':vt==='ambulance'?'#f4f4f6':vt==
 function mkPed(px,py,o){return Object.assign({x:px,y:py,a:R(0,TAU),hp:40,max:40,sp:R(34,58),col:pick(PEDCOLS),skin:pick(SKIN),hair:pick(['#2a1a0f','#4a2f1a','#a87a3a','#1a1a1a','#8a8a8a']),t:R(0,3),walk:R(0,6),fl:0,type:'civ',fire:R(.3,1),vx:0,vy:0,cross:0,w:0,pref:150,range:300,hx:px,hy:py,burst:0,hold:false,pan:0,kx:0,ky:0,alert:0,cross:0,st:0,sd:1,los:false,losT:0},o||{})}
 function pedAtFree(px,py){return !solidAt(Math.floor(px/T),Math.floor(py/T))}
 function onScreen(px,py,m){const z=cam.z;return Math.abs(px-cam.x)<(W/z)/2+m&&Math.abs(py-cam.y)<(H/z)/2+m}
-function spawnCiv(){for(let i=0;i<90;i++){const tx=RI(1,N-2),ty=RI(1,N-2),k=kind[ty][tx];if(inBase((tx+.5)*T,(ty+.5)*T))continue;if(k===1||k===2||k===5||k===7||k===8){const px=(tx+.5)*T,py=(ty+.5)*T;{const dd=D(px,py,P.x,P.y);if(dd<1000&&dd>(onScreen(px,py,0)?9999:330)){peds.push(mkPed(px,py));return}}}}}
+function spawnCiv(){const cx0=Math.floor(P.x/T),cy0=Math.floor(P.y/T);for(let i=0;i<90;i++){const tx=cl(cx0+RI(-26,26),1,N-2),ty=cl(cy0+RI(-26,26),1,N-2),k=kind[ty][tx];if(inBase((tx+.5)*T,(ty+.5)*T))continue;if(k===1||k===2||k===5||k===7||k===8){const px=(tx+.5)*T,py=(ty+.5)*T;{const dd=D(px,py,P.x,P.y);if(dd<1000&&dd>(onScreen(px,py,0)?9999:330)){peds.push(mkPed(px,py));return}}}}}
 function mobAt(px,py,o){const w=o&&o.w!==undefined?o.w:(Math.random()<.55?0:Math.random()<.6?1:2);const d=DIFF[diffIdx];const m=mkPed(px,py,Object.assign({type:'mob',hp:60*d.hp,max:60*d.hp,sp:R(62,82),col:'#17171c',w:w,pref:R(110,185),range:w===2?230:330,fire:R(.4,1.2)},o||{}));peds.push(m);return m}
 function mobSpawnFar(){for(let i=0;i<14;i++){const a=R(0,TAU),d=R(250,900),px=HQ.x+HQ.w/2+Math.cos(a)*d,py=HQ.y+HQ.h/2+Math.sin(a)*d;if(px<80||py<80||px>WS-80||py>WS-80)continue;if(solidAt(Math.floor(px/T),Math.floor(py/T))||inBase(px,py))continue;if(D(px,py,P.x,P.y)<(onScreen(px,py,60)?9999:400))continue;
   const n=RI(1,3);for(let j=0;j<n;j++){const qx=px+R(-30,30),qy=py+R(-30,30);if(pedAtFree(qx,qy))mobAt(qx,qy)}return}}
@@ -633,7 +683,7 @@ function updBoat(c,dt){const d=D(c.x,c.y,P.x,P.y);let tx,ty,spd=c.cur;
 function randWater(minD,maxD){for(let i=0;i<50;i++){const a=R(0,TAU),d=R(minD,maxD),px=P.x+Math.cos(a)*d,py=P.y+Math.sin(a)*d;if(px<80||py<80||px>WS-80||py>WS-80)continue;const tx=px/T|0,ty=py/T|0;if(kind[ty][tx]===6&&SD[ty*N+tx]>=3&&!onScreen(px,py,90))return{x:px,y:py}}return null}
 /* ---------------- fleet: the vehicles that are always lying around the harbour, airport and army base ---------------- */
 function fleetColor(t){if(t==='gunship'||t==='jet')return'#4b5a3a';if(t==='pjet')return'#f2f4f8';if(VT[t]&&VT[t].sea)return'#f2f4f8';return t==='cessna'?pick(['#d94b4b','#3b82d9','#e8c13b','#46b86b']):t==='heli'?pick(['#e9e9ef','#d94b4b','#2f3d5a']):t==='tank'||t==='jeep'?'#5a6b45':pick(BOATCOLS)}
-function fleetSpawn(f){const c=mkCar(f.x,f.y,f.a,f.t,fleetColor(f.t),'parked');c.keep=true;c.fleet=1;cars.push(c);return c}
+function fleetSpawn(f){const c=mkCar(f.x,f.y,f.a,f.t,f.car?colFor(f.t):fleetColor(f.t),'parked');c.keep=true;c.fleet=1;cars.push(c);return c}
 function fleetInit(){for(const f of FLEET)fleetSpawn(f)}
 let fleetT=0;
 function fleetTick(dt){fleetT-=dt;if(fleetT>0)return;fleetT=4;for(const f of FLEET){if(D(f.x,f.y,P.x,P.y)<900)continue;let occ=false;for(const c of cars)if(D(c.x,c.y,f.x,f.y)<75){occ=true;break}if(!occ)fleetSpawn(f)}}
@@ -1201,7 +1251,7 @@ function bgmTick(dt){if(!BGM.ok||!BGM.intro)return;
 const SPR=[];(function(){const cand=[];
  for(const b of bldgs){if(b.style==='fence'||b.style==='light'||!b.hh||b.w<2*T||b.w>5*T)continue;
   const sides=[[b.x+b.w/2,b.y+b.h+16,0],[b.x+b.w/2,b.y-16,2],[b.x-16,b.y+b.h/2,3],[b.x+b.w+16,b.y+b.h/2,1]];
-  for(const q of sides){const tx=Math.floor(q[0]/T),ty=Math.floor(q[1]/T);if(tx<10||ty<10||tx>N-3||ty>N-3||tx>100||ty>=91)continue;if(kind[ty][tx]!==1)continue;if(inBase(q[0],q[1]))continue;cand.push({x:q[0],y:q[1],b:b,side:q[2],r:52,cd:0});break}}
+  for(const q of sides){const tx=Math.floor(q[0]/T),ty=Math.floor(q[1]/T);if(tx<10||ty<10||tx>N-3||ty>N-3||((tx>100||ty>=91)&&!onIsl2(tx,ty)))continue;if(kind[ty][tx]!==1)continue;if(inBase(q[0],q[1]))continue;cand.push({x:q[0],y:q[1],b:b,side:q[2],r:52,cd:0});break}}
  const mid=cand.filter(c=>D(c.x,c.y,WS/2,WS/2)<WS*.3);let first=mid.length?mid[0]:cand[0];if(first)SPR.push(first);
  while(SPR.length<5){let best=null,bd=0;for(const c of cand){const d=Math.min(...SPR.map(a=>D(a.x,a.y,c.x,c.y)));if(d>bd){bd=d;best=c}}if(!best||bd<900)break;SPR.push(best)}
  if(!SPR.length)SPR.push({x:1500,y:1500,r:52,cd:0,side:0})})();
@@ -1589,7 +1639,7 @@ function txt(s,px,py,size,col,al,st){x.font=(st===2?'':'bold ')+size+'px '+(st==
 function btn(label,cx,cy,w,h,act,opt){opt=opt||{};const hov=hoverBtn&&hoverBtn.label===label;buttons.push({x:cx-w/2,y:cy-h/2,w:w,h:h,act:act,label:label});
  x.save();x.translate(cx,cy);const g=x.createLinearGradient(0,-h/2,0,h/2);g.addColorStop(0,hov?'#ff6a4a':(opt.col||'#c8302a'));g.addColorStop(1,hov?'#c8302a':(opt.col2||'#7a1612'));x.fillStyle=g;x.shadowColor='rgba(255,60,40,'+(hov?.7:.35)+')';x.shadowBlur=hov?20:10;rrect(x,-w/2,-h/2,w,h,8*U);x.fill();x.shadowBlur=0;x.strokeStyle=hov?'#fff':'rgba(255,255,255,.35)';x.lineWidth=2;x.stroke();
  x.fillStyle='#fff';x.font='bold '+(opt.fs||18*U)+'px "Arial Black",Impact,sans-serif';x.textAlign='center';x.textBaseline='middle';x.fillText(label,0,1);x.restore();x.textBaseline='alphabetic'}
-function drawRadar(){const R_=74*U,cx=18*U+R_+4,cy=H-22*U-R_-4,RW=620,k=1350/WS;
+function drawRadar(){const R_=74*U,cx=18*U+R_+4,cy=H-22*U-R_-4,RW=620,k=radarMap.width/WS;
  x.save();x.beginPath();x.arc(cx,cy,R_,0,TAU);x.clip();x.fillStyle='#04060b';x.fillRect(cx-R_,cy-R_,R_*2,R_*2);
  const sw=RW*2*k,sx=P.x*k-sw/2,sy=P.y*k-sw/2;x.globalAlpha=.92;x.drawImage(radarMap,sx,sy,sw,sw,cx-R_,cy-R_,R_*2,R_*2);x.globalAlpha=1;
  x.fillStyle='rgba(8,18,40,.45)';x.fillRect(cx-R_,cy-R_,R_*2,R_*2);
@@ -1980,11 +2030,11 @@ function drawWeaponIcon(g,i,cx,cy,w,col){g.save();g.translate(cx,cy);const s=w/4
 const AMMU=[];(function(){const cand=[];
  for(const b of bldgs){if(b.style==='fence'||b.style==='light'||!b.hh||b.w<2*T||b.w>5*T)continue;
   const sides=[[b.x+b.w/2,b.y+b.h+12,0],[b.x+b.w/2,b.y-12,2],[b.x-12,b.y+b.h/2,3],[b.x+b.w+12,b.y+b.h/2,1]];
-  for(const q of sides){const tx=Math.floor(q[0]/T),ty=Math.floor(q[1]/T);if(tx<10||ty<10||tx>N-3||ty>N-3||ty>=91)continue;if(kind[ty][tx]!==1)continue;if(inBase(q[0],q[1])||SPR.some(a=>D(a.x,a.y,q[0],q[1])<500))continue;cand.push({x:q[0],y:q[1],b:b,side:q[2]});break}}
+  for(const q of sides){const tx=Math.floor(q[0]/T),ty=Math.floor(q[1]/T);if(tx<10||ty<10||tx>N-3||ty>N-3||(ty>=91&&!onIsl2(tx,ty)))continue;if(kind[ty][tx]!==1)continue;if(inBase(q[0],q[1])||SPR.some(a=>D(a.x,a.y,q[0],q[1])<500))continue;cand.push({x:q[0],y:q[1],b:b,side:q[2]});break}}
  const hosp={x:SPAWN_HOSP.x+150,y:SPAWN_HOSP.y-60};
  let first=cand.reduce((a,c)=>D(c.x,c.y,hosp.x,hosp.y)<D(a.x,a.y,hosp.x,hosp.y)?c:a,cand[0]);
  if(first)AMMU.push(Object.assign(first,{r:56}));
- while(AMMU.length<6){let best=null,bd=0;for(const c of cand){if(c.x>100*T)continue;const d=Math.min(...AMMU.map(a=>D(a.x,a.y,c.x,c.y)));if(d>bd){bd=d;best=c}}if(!best||bd<900)break;AMMU.push(Object.assign(best,{r:56}))}
+ while(AMMU.length<6){let best=null,bd=0;for(const c of cand){if(c.x>100*T&&!onIsl2(c.x/T|0,c.y/T|0))continue;const d=Math.min(...AMMU.map(a=>D(a.x,a.y,c.x,c.y)));if(d>bd){bd=d;best=c}}if(!best||bd<900)break;AMMU.push(Object.assign(best,{r:56}))}
  for(const a of AMMU)if(a.b)a.b.shop=1})();
 const SHOP=[{w:2,a:60,p:300,n:'SMG'},{w:3,a:16,p:400,n:'SHOTGUN'},{w:4,a:5,p:800,n:'ROCKETS'},{w:5,a:6,p:350,n:'GRENADES'},{w:6,a:6,p:250,n:'MOLOTOVS'},{w:7,a:100,p:900,n:'FLAMER'},{w:8,a:200,p:1500,n:'MINIGUN'},{w:9,a:10,p:1000,n:'SNIPER'},{w:1,a:30,p:50,n:'PISTOL AMMO'},{k:'armor',p:250,n:'BODY ARMOUR'},{k:'health',p:120,n:'MEDKIT'}];
 let shopOpen=false,shopMsg='',shopMsgT=0;
@@ -2140,8 +2190,8 @@ function hwDraw(){if(!hw)return false;const now=performance.now(),dt=Math.min(.0
 /* ---------- arcade (plays real Retro World catalogue games) ---------- */
 const ARCADE=[];(function(){
  const place=b=>{const sides=[[b.x+b.w/2,b.y+b.h+12,0],[b.x+b.w/2,b.y-12,2],[b.x-12,b.y+b.h/2,3],[b.x+b.w+12,b.y+b.h/2,1]];
-  for(const q of sides){const tx=Math.floor(q[0]/T),ty=Math.floor(q[1]/T);if(tx<10||ty<10||tx>N-3||ty>=91||tx>100)continue;if(kind[ty][tx]!==1)continue;if(inBase(q[0],q[1])||SPR.some(a=>D(a.x,a.y,q[0],q[1])<260)||AMMU.some(a=>D(a.x,a.y,q[0],q[1])<260))continue;ARCADE.push({x:q[0],y:q[1],b:b,side:q[2],r:56});return true}return false};
- for(const b of bldgs){if(b.sign!=='ARCADE'||b.style==='fence'||b.style==='light'||!b.hh||b.w<2*T)continue;if(b.x/T>100||b.y/T>=91)continue;place(b)}
+  for(const q of sides){const tx=Math.floor(q[0]/T),ty=Math.floor(q[1]/T);if(tx<10||ty<10||tx>N-3||((ty>=91||tx>100)&&!onIsl2(tx,ty)))continue;if(kind[ty][tx]!==1)continue;if(inBase(q[0],q[1])||SPR.some(a=>D(a.x,a.y,q[0],q[1])<260)||AMMU.some(a=>D(a.x,a.y,q[0],q[1])<260))continue;ARCADE.push({x:q[0],y:q[1],b:b,side:q[2],r:56});return true}return false};
+ for(const b of bldgs){if(b.sign!=='ARCADE'||b.style==='fence'||b.style==='light'||!b.hh||b.w<2*T)continue;if((b.x/T>100||b.y/T>=91)&&!onIsl2(b.x/T|0,b.y/T|0))continue;place(b)}
  if(ARCADE.length<2){const c0={x:WS*.42,y:WS*.42},c=bldgs.filter(b=>b.sign!=='ARCADE'&&b.style!=='fence'&&b.style!=='light'&&b.hh&&b.w>=2*T&&b.w<=5*T&&b.x/T<100&&b.y/T<91).sort((a,b)=>D(a.x,a.y,c0.x,c0.y)-D(b.x,b.y,c0.x,c0.y));for(const b of c){if(ARCADE.length>=2)break;if(ARCADE.some(a=>D(a.x,a.y,b.x,b.y)<900))continue;const old=b.sign;b.sign='ARCADE';if(!place(b))b.sign=old}}})();
 function nearArcade(){if(P.car||P.dead)return null;for(const s of ARCADE)if(D(s.x,s.y,P.x,P.y)<s.r)return s;return null}
 function drawArcade(s){const pu=Math.sin(time*3)*.5+.5;x.save();x.translate(s.x,s.y);x.rotate([0,-PI/2,PI,PI/2][s.side]);
@@ -2296,7 +2346,7 @@ function frame(now){requestAnimationFrame(frame);let dt=(now-lastT)/1000;lastT=n
  if(state==='title'||state==='story'||state==='over'||state==='won'||paused){engineUpdate(false,0);skidUpdate(0);if(paused)sirenUpdate(0,0)}
 }
 newGame();state='title';try{window.focus();cv.focus()}catch(e){}requestAnimationFrame(frame);
-window.__bum={get:()=>({P,cars,peds,bul,parts,pickups,wanted,heat,mis,boss,stats,lives,state,earned,heli,cam,time,paused,bodies,spray,msgs,scheme,diffIdx,K,BGM,bldgs,flames,wx,fleet:typeof FLEET!=='undefined'?FLEET:null,MIS}),
+window.__bum={get:()=>({P,cars,peds,bul,parts,pickups,wanted,heat,mis,boss,stats,lives,state,earned,heli,cam,time,paused,bodies,spray,msgs,scheme,diffIdx,K,BGM,bldgs,flames,wx,radarMap,fleet:typeof FLEET!=='undefined'?FLEET:null,MIS}),
  set:(k,v)=>{({state:()=>state=v,tod0:()=>tod0=v,wxType:()=>{wx.type=v;const t=WXT[v];Object.assign(wx,t)},wanted:()=>wanted=v,heat:()=>heat=v,paused:()=>paused=v,scheme:()=>scheme=v,diffIdx:()=>diffIdx=v,time:()=>time=v})[k]()},
  fn:{SIDE,FARE,SKY,fareToggle,AMB,ambCall,fareTick,driveBy,sideUpdate,sideTalk,sideAccept,sideSpawnGiver,hwStart,hwHit,hwKey,hwNeeded,getHw:()=>hw,ARCADE,openArcade,closeArcade,getArc:()=>arc,nearArcade,pedPNG,PEDCOLS,SKIN,vehiclePNG,VT,CARCOLS,SPR,AMMU,SHOP,shopBuy,saveGame,loadGame,hasSave,respawn,drawWeaponIcon,getShop:()=>shopOpen,bldgs:null,baseGuards,milTick,crimeTick,crime,helipadAt,beginStory,endStory,storyAdvance,startGame,useVehicle,explode,crime,setWanted,clearWanted,hurtPlayer,tryFire,mkCar,mkPed,mobAt,addPickup,startMission,killCar,hurtPed,playerDie,keyPress,startBoss,bossPhase2,cop_dismount,update,render,newGame,doWin,say,setWeapon,spawnTrafficCar,score,nightAmt,harbourBerth,spawnCargo,fleetInit,fleetTick,wxUpdate,wxPick,stepHeli,stepPlane,vehFire,todHour,flowDir,FFOOT,FCAR,rayClear,ach},VT,MIS,SPR,HQ,kind,roadC,solidAt};
 
