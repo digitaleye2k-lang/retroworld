@@ -4038,7 +4038,7 @@ function openGame(id){
     overlay.classList.add('open');overlay.setAttribute('aria-hidden','false');document.body.style.overflow='hidden';
     if(bgMusic)bgMusic.volume=0;showGameLoading('LOADING '+currentGameTitle,'Preparing your adventure...');
     frame.onload=()=>{if(token!==gameLoadToken)return;hideGameLoading();try{frame.focus()}catch(e){}};
-    frame.removeAttribute('srcdoc');frame.src=new URL(({'popshot.html':'games/popshot/index.html','crimson-fang.html':'games/crimson-fang/Crimson-Fang.html','beat-up-mafia.html':'games/beat-up-mafia/Beat-Up-Mafia.html?v=20261026w'})[id],document.baseURI).href;
+    frame.removeAttribute('srcdoc');frame.src=new URL(({'popshot.html':'games/popshot/index.html','crimson-fang.html':'games/crimson-fang/Crimson-Fang.html','beat-up-mafia.html':'games/beat-up-mafia/Beat-Up-Mafia.html?v=20261026x'})[id],document.baseURI).href;
     return;
   }
 
