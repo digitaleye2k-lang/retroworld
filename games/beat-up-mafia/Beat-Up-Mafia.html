@@ -217,6 +217,30 @@ function addB(tx,ty,w,h,o){const b=Object.assign({x:tx*T,y:ty*T,w:w*T,h:h*T,c:'#
   /* ---- sea around the island: west, north and south coasts ---- */
   const wat=(x0,y0,x1,y1)=>{for(let ty=y0;ty<=y1;ty++)for(let tx=x0;tx<=x1;tx++)if(ty>=0&&tx>=0&&ty<N&&tx<N)kind[ty][tx]=6};
   wat(0,0,8,93);wat(0,0,104,8);wat(0,94,2,N-1);wat(33,129,N-1,N-1);wat(0,133,32,N-1);
+  /* ---- irregular island coast: land spits and coves in the north/west rim, rounded NW corner ---- */
+  {const rgc=mulberry(5150),ph=[rgc()*6,rgc()*6,rgc()*6,rgc()*6,rgc()*6,rgc()*6],mk=(len,n)=>{const a=[];for(let i=0;i<n;i++)a.push({c:len*(.08+.84*rgc()),w:2+rgc()*4.5,a:(rgc()<.5?-1:1)*(2+rgc()*3)});return a},bw=mk(93,7),bn=mk(99,8);
+   const smooth=(v,a,b)=>{const t=cl((v-a)/(b-a),0,1);return t*t*(3-2*t)};
+   const lwW=ty=>{let d=3.6+1.6*Math.sin(ty*.14+ph[0])+1*Math.sin(ty*.33+ph[1])+.6*Math.sin(ty*.6+ph[2]);for(const b of bw)d+=b.a*Math.exp(-(((ty-b.c)/b.w)**2));d*=smooth(ty,34,54);return cl(d,.4,7.7)};
+   const lwN=tx=>{let d=3.4+1.6*Math.sin(tx*.12+ph[3])+1*Math.sin(tx*.3+ph[4])+.6*Math.sin(tx*.62+ph[5]);for(const b of bn)d+=b.a*Math.exp(-(((tx-b.c)/b.w)**2));d*=smooth(tx,34,54)*smooth(99-tx,0,12);return cl(d,.4,7.7)};
+   const land=(tx,ty)=>{const jt=(th(tx*3+1,ty*5+2)-.5)*.9;return tx>=9-lwW(ty)-jt&&ty>=9-lwN(tx)-jt};
+   const add=[];for(let ty=0;ty<9;ty++)for(let tx=0;tx<SEA_X;tx++){if(tx>=9&&ty>=9)continue;add.push([tx,ty])}
+   for(let ty=9;ty<93;ty++)for(let tx=0;tx<9;tx++)add.push([tx,ty]);
+   const L=new Set;for(const[tx,ty]of add)if(land(tx,ty)&&!(tx>=9&&ty>=9))L.add(ty*N+tx);
+   // NW corner of the city itself is rounded off
+   for(let ty=9;ty<60;ty++)for(let tx=9;tx<60;tx++){if(tx+ty<41+Math.round((th(tx*2+5,ty)-.5)*4))kind[ty][tx]=6}
+   const bay=(cx,cy,rx,ry)=>{for(let ty=Math.max(9,Math.floor(cy-ry-2));ty<=Math.min(92,Math.ceil(cy+ry+2));ty++)for(let tx=Math.max(9,Math.floor(cx-rx-2));tx<=Math.min(SEA_X-1,Math.ceil(cx+rx+2));tx++){if(((tx-cx)/rx)**2+((ty-cy)/ry)**2+(th(tx*3,ty*7)-.5)*.3<1)kind[ty][tx]=6}};
+   bay(8,45,15,8.5);bay(64,7,12,12);bay(6,81,14,9);bay(30,3,9,9);
+   const isW=(tx,ty)=>tx>=0&&ty>=0&&tx<SEA_X&&ty<93&&kind[ty][tx]===6;
+   for(const q of L){const tx=q%N,ty=(q/N)|0;kind[ty][tx]=2}
+   // beach: 2 tiles inland of any water; palms behind
+   for(let ty=0;ty<93;ty++)for(let tx=0;tx<SEA_X-2;tx++){const k=kind[ty][tx];if(k!==2&&k!==1&&k!==5)continue;let near=false;for(let dy=-2;dy<=2&&!near;dy++)for(let dx=-2;dx<=2;dx++){if(dx*dx+dy*dy>5)continue;if(isW(tx+dx,ty+dy)){near=true;break}}if(near){kind[ty][tx]=7;if(rgc()<.14)PALMS.push({x:(tx+.5)*T+rgc()*24-12,y:(ty+.5)*T+rgc()*24-12,s:.8+rgc()*.5,a:rgc()*TAU})}}
+   for(let ty=0;ty<9;ty++)for(let tx=0;tx<SEA_X;tx++){if(kind[ty][tx]===2&&rgc()<.1)PALMS.push({x:(tx+.5)*T+rgc()*24-12,y:(ty+.5)*T+rgc()*24-12,s:.8+rgc()*.5,a:rgc()*TAU})}
+   for(let ty=9;ty<93;ty++)for(let tx=0;tx<9;tx++){if(kind[ty][tx]===2&&rgc()<.1)PALMS.push({x:(tx+.5)*T+rgc()*24-12,y:(ty+.5)*T+rgc()*24-12,s:.8+rgc()*.5,a:rgc()*TAU})}
+   // city stuff swallowed by the rounded corner
+   for(let i=bldgs.length-1;i>=0;i--){const b=bldgs[i];if(b.hq)continue;const x0=Math.floor(b.x/T),y0=Math.floor(b.y/T);if(x0>=SEA_X||y0>=93)continue;let wet=x0<9||y0<9;const w=Math.max(1,Math.round(b.w/T)),h=Math.max(1,Math.round(b.h/T));for(let yy=y0;yy<y0+h&&!wet;yy++)for(let xx=x0;xx<x0+w;xx++)if(isW(xx,yy)){wet=true;break}
+    if(wet){for(let yy=y0;yy<y0+h;yy++)for(let xx=x0;xx<x0+w;xx++)if(kind[yy]&&kind[yy][xx]===3)kind[yy][xx]=1;bldgs.splice(i,1)}}
+   for(let i=lamps.length-1;i>=0;i--){const l=lamps[i];if(isW(Math.floor(l.x/T),Math.floor(l.y/T)))lamps.splice(i,1)}
+   window.__K=kind}
   setK(SX,SY-1,3,1,0)}
    for(let i=bldgs.length-1;i>=0;i--){const b=bldgs[i],tx=Math.floor((b.x+b.w/2)/T),ty=Math.floor((b.y+b.h/2)/T);if(kind[ty]&&kind[ty][tx]===6)bldgs.splice(i,1)}
   for(let i=blocks.length-1;i>=0;i--){const b=blocks[i];if(kind[b.y0+1]&&kind[b.y0+1][b.x0+1]===6)blocks.splice(i,1)}
@@ -287,8 +311,12 @@ const BH=new Uint8Array(N*N);for(const b of bldgs){if(b.style==='fence'||b.style
 /* ---- roads helpers (city grid + harbour road extensions) ---- */
 const roadC=k=>(9*k+1.5)*T;
 const LO=9*T;
-const roadLen=ax=>ax===0?RX:RY;   // horizontal roads (ax 0) run x 0..RX, vertical roads (ax 1) run y 0..RY
-function roadPos(){const k=RI(1,NR-1),ax=RI(0,1),dir=Math.random()<.5?1:-1,c=roadC(k),along=R(LO+120,roadLen(ax)-120),lane=ax===0?(dir>0?c+T*.5:c-T*.5):(dir>0?c-T*.5:c+T*.5);
+const roadLen=ax=>ax===0?RX:RY;
+const RMN=[[],[]],RMX=[[],[]];
+(function(){for(let k=0;k<NR;k++)for(let ax=0;ax<2;ax++){const c=Math.floor(roadC(k)/T),lim=ax===0?SEA_X:93;let st=-1,en=-1,bs=-1,be=-2;for(let a=0;a<lim;a++){const kk=ax===0?kind[c][a]:kind[a][c];if(kk===0){if(st<0)st=a;en=a}else{if(st>=0&&en-st>be-bs){bs=st;be=en}st=-1}}if(st>=0&&en-st>be-bs){bs=st;be=en}
+  if(be-bs<9){RMN[ax][k]=1e9;RMX[ax][k]=-1e9}else{RMN[ax][k]=Math.max(LO+100,bs*T+2.5*T);RMX[ax][k]=Math.min(roadLen(ax)-130,(be+1)*T-3.25*T)}}})();
+const rMin=(ax,k)=>RMN[ax][k],rMax=(ax,k)=>RMX[ax][k];   // horizontal roads (ax 0) run x 0..RX, vertical roads (ax 1) run y 0..RY
+function roadPos(){let k=RI(1,NR-1),ax=RI(0,1);for(let t=0;t<12&&rMax(ax,k)-rMin(ax,k)<500;t++){k=RI(1,NR-1);ax=RI(0,1)}const dir=Math.random()<.5?1:-1,c=roadC(k),along=R(rMin(ax,k)+20,Math.max(rMin(ax,k)+21,rMax(ax,k)-20)),lane=ax===0?(dir>0?c+T*.5:c-T*.5):(dir>0?c-T*.5:c+T*.5);
  return ax===0?{x:along,y:lane,ax,k,dir,a:dir>0?0:PI}:{x:lane,y:along,ax,k,dir,a:dir>0?PI/2:-PI/2}}
 function nearestRoad(px,py){let bk=1,bd=1e9;for(let k=1;k<NR;k++){const d=Math.abs(px-roadC(k));if(d<bd){bd=d;bk=k}}let bk2=1,bd2=1e9;for(let k=1;k<NR;k++){const d=Math.abs(py-roadC(k));if(d<bd2){bd2=d;bk2=k}}
  return bd<bd2?{ax:1,k:bk,x:roadC(bk),y:cl(py,LO+150,RY-150)}:{ax:0,k:bk2,x:cl(px,LO+150,RX-150),y:roadC(bk2)}}
@@ -345,6 +373,7 @@ function paintChunk(g,ox,oy){
    g.fillStyle='#7b6a4c';if(d[1]===-1)g.fillRect(px,py,T,5);if(d[1]===1)g.fillRect(px,py+T-5,T,5);if(d[0]===-1)g.fillRect(px,py,5,T);if(d[0]===1)g.fillRect(px+T-5,py,5,T);g.fillStyle='rgba(235,215,170,.35)';if(d[1]===-1)g.fillRect(px,py+1,T,1.5);if(d[1]===1)g.fillRect(px,py+T-4,T,1.5);if(d[0]===-1)g.fillRect(px+1,py,1.5,T);if(d[0]===1)g.fillRect(px+T-4,py,1.5,T);
    g.fillStyle='rgba(0,0,0,.4)';if(d[1]===-1)g.fillRect(px,py-2,T,2);if(d[1]===1)g.fillRect(px,py+T,T,2);if(d[0]===-1)g.fillRect(px-2,py,2,T);if(d[0]===1)g.fillRect(px+T,py,2,T)})}
  /* ---- road wear + markings ---- */
+ g.save();{const cp=new Path2D();cp.rect(tx0*T-8,ty0*T-8,(tx1-tx0+1)*T+16,(ty1-ty0+1)*T+16);for(let ty=ty0;ty<=ty1;ty++)for(let tx=tx0;tx<=tx1;tx++)if(kind[ty][tx]===6&&tx<99&&ty<93)cp.rect(tx*T,ty*T,T,T);g.clip(cp,'evenodd')}
  for(let k=1;k<NR;k++){const c=roadC(k);
   for(let j=1;j<=10;j++){const a0=(9*j+3)*T,a1=Math.min((9*j+9)*T,RX);
    if(inR(a0,c-T*1.6,a1-a0,T*3.2)){g.fillStyle='rgba(0,0,0,.13)';g.fillRect(a0,c-T*.5-7,a1-a0,14);g.fillRect(a0,c+T*.5-7,a1-a0,14);g.fillStyle='#d9b92e';g.fillRect(a0,c-3.5,a1-a0,2);g.fillRect(a0,c+1.5,a1-a0,2);g.fillStyle='rgba(235,235,225,.7)';for(let xx=a0+6;xx<a1-20;xx+=48){g.fillRect(xx,c-T*.5-1,26,2);g.fillRect(xx,c+T*.5-1,26,2)}g.fillStyle='rgba(235,235,225,.55)';g.fillRect(a0,9*k*T+5,a1-a0,2);g.fillRect(a0,(9*k+3)*T-7,a1-a0,2)}
@@ -355,6 +384,7 @@ function paintChunk(g,ox,oy){
   if(x1+16<=RX&&j>0&&k>0)for(let yy=y0+7;yy<y1-9;yy+=11)g.fillRect(x1+2,yy,16,6);
   if(k>1&&j>0)for(let xx=x0+7;xx<x1-9;xx+=11)g.fillRect(xx,y0-18,6,16);
   if(k<10&&k>0&&j>0)for(let xx=x0+7;xx<x1-9;xx+=11)g.fillRect(xx,y1+2,6,16)}
+ g.restore();
  /* ---- Costa Verde road markings ---- */
  for(let ty=ty0;ty<=ty1;ty++)for(let tx=tx0;tx<=tx1;tx++){if(kind[ty][tx]!==0||!onIsl2(tx,ty))continue;const rx=tx%9,ry=ty%9;if(rx<3&&ry<3)continue;const px=tx*T,py=ty*T;
   if(rx<3){if(rx!==1){g.fillStyle='rgba(0,0,0,.13)';g.fillRect(px+(rx===0?T-7:-7),py,14,T)}if(rx===1){g.fillStyle='#d9b92e';g.fillRect(px+T/2-3.5,py,2,T);g.fillRect(px+T/2+1.5,py,2,T)}else{g.fillStyle='rgba(235,235,225,.7)';g.fillRect(px+(rx===0?T:0)-1,py+6,2,24)}}
@@ -588,7 +618,7 @@ function mobAt(px,py,o){const w=o&&o.w!==undefined?o.w:(Math.random()<.55?0:Math
 function mobSpawnFar(){for(let i=0;i<14;i++){const a=R(0,TAU),d=R(250,900),px=HQ.x+HQ.w/2+Math.cos(a)*d,py=HQ.y+HQ.h/2+Math.sin(a)*d;if(px<80||py<80||px>WS-80||py>WS-80)continue;if(solidAt(Math.floor(px/T),Math.floor(py/T))||inBase(px,py))continue;if(D(px,py,P.x,P.y)<(onScreen(px,py,60)?9999:400))continue;
   const n=RI(1,3);for(let j=0;j<n;j++){const qx=px+R(-30,30),qy=py+R(-30,30);if(pedAtFree(qx,qy))mobAt(qx,qy)}return}}
 function spawnTrafficCar(far){for(let i=0;i<40;i++){const rp=roadPos(),d=D(rp.x,rp.y,P.x,P.y);if(d<(far||520)||d>1150||onScreen(rp.x,rp.y,80))continue;let ok=true;for(const o of cars)if(D(o.x,o.y,rp.x,rp.y)<70){ok=false;break}if(!ok)continue;const vt=vtPick(),c=mkCar(rp.x,rp.y,rp.a,vt,colFor(vt),'ai');c.ax=rp.ax;c.k=rp.k;c.dir=rp.dir;cars.push(c);return c}return null}
-function curbPark(){for(let i=0;i<60;i++){const k=RI(1,NR-1),ax=RI(0,1),side=Math.random()<.5?1:-1,al=R(LO+300,roadLen(ax)-300),off=T*1.5-14;const px=ax===0?al:roadC(k)+side*off,py=ax===0?roadC(k)+side*off:al;if(tileKind(px,py)!==0)continue;{const dd=D(px,py,P.x,P.y);if(dd<150||dd>1200)continue}let ok=true;for(const o of cars)if(D(o.x,o.y,px,py)<60){ok=false;break}if(!ok)continue;const vt=pick(['sedan','sedan','sports','taxi','van','truck','muscle','pickup']);const c=mkCar(px,py,ax===0?(Math.random()<.5?0:PI):(Math.random()<.5?PI/2:-PI/2),vt,colFor(vt),'parked');cars.push(c);return c}return null}
+function curbPark(){for(let i=0;i<60;i++){const k=RI(1,NR-1),ax=RI(0,1),side=Math.random()<.5?1:-1,al=R(Math.min(rMin(ax,k)+300,1e8),Math.max(rMin(ax,k)+301,rMax(ax,k)-300)),off=T*1.5-14;const px=ax===0?al:roadC(k)+side*off,py=ax===0?roadC(k)+side*off:al;if(tileKind(px,py)!==0)continue;{const dd=D(px,py,P.x,P.y);if(dd<150||dd>1200)continue}let ok=true;for(const o of cars)if(D(o.x,o.y,px,py)<60){ok=false;break}if(!ok)continue;const vt=pick(['sedan','sedan','sports','taxi','van','truck','muscle','pickup']);const c=mkCar(px,py,ax===0?(Math.random()<.5?0:PI):(Math.random()<.5?PI/2:-PI/2),vt,colFor(vt),'parked');cars.push(c);return c}return null}
 function addPickup(px,py,type,o){const p=Object.assign({x:px,y:py,type:type,r:R(0,6),got:false,t2:0,ttl:0},o||{});pickups.push(p);return p}
 
 /* ============================ NEW VEHICLES: tanks, boats, helicopters, planes ============================ */
@@ -924,8 +954,8 @@ function interYield(c){return 999;const along=c.ax===0?c.x:c.y;let ci=-1,dd=0;fo
 function updTraffic(c,dt){let tx,ty;const k=c.k,cc=roadC(k),lane=c.ax===0?(c.dir>0?cc+T*.5:cc-T*.5):(c.dir>0?cc-T*.5:cc+T*.5);
  if(c.ax===0){tx=c.x+c.dir*95;ty=lane}else{tx=lane;ty=c.y+c.dir*95}
  c.tc-=dt;const along=c.ax===0?c.x:c.y;
- if(along<LO+100&&c.dir<0||along>roadLen(c.ax)-130&&c.dir>0){c.dir=-c.dir;c.tc=1.2}
- if(c.tc<=0){for(let k2=1;k2<NR;k2++){if(k2===k&&false)continue;const cross=roadC(k2);if(Math.abs(along-cross)<14){c.tc=2.6;if(Math.random()<.42){c.ax=1-c.ax;c.k=k2;c.dir=Math.random()<.5?1:-1;const ap=c.ax===0?c.x:c.y;if(ap<260)c.dir=1;if(ap>roadLen(c.ax)-260)c.dir=-1}else c.tc=1.6;break}}}
+ if(along<rMin(c.ax,k)&&c.dir<0||along>rMax(c.ax,k)&&c.dir>0){c.dir=-c.dir;c.tc=1.2}
+ if(c.tc<=0){for(let k2=1;k2<NR;k2++){if(k2===k&&false)continue;const cross=roadC(k2);if(Math.abs(along-cross)<14){c.tc=2.6;const ap0=c.ax===0?c.y:c.x;if(Math.random()<.42&&ap0>rMin(1-c.ax,k2)+120&&ap0<rMax(1-c.ax,k2)-120){c.ax=1-c.ax;c.k=k2;c.dir=Math.random()<.5?1:-1;const ap=c.ax===0?c.x:c.y;if(ap<rMin(c.ax,k2)+160)c.dir=1;if(ap>rMax(c.ax,k2)-160)c.dir=-1}else c.tc=1.6;break}}}
  const b=aheadBlocked(c),iy_=c.panic>0?999:interYield(c);let spd=(c.panic>0?c.cur*1.3:c.cur);if(iy_<999)spd=Math.min(spd,Math.max(0,(iy_-88)*2.4));if(b<999){spd=Math.min(spd,Math.max(0,(b-18)*2.2));if(b<28&&c.hornC<=0&&Math.random()<.02){c.hornC=1.2;if(D(c.x,c.y,P.x,P.y)<500)SFX.horn()}}
  c.hornC-=dt;c.panic-=dt;
  if(Math.abs(c.sp)<6){c.jam=(c.jam||0)+dt;if(c.jam>2.5&&c.rev<=0){c.rev=R(.8,1.4);c.jam=0;c.panic=2.5;c.jn=(c.jn||0)+1}if(c.jn>3&&!onScreen(c.x,c.y,120)){c.jn=0;c.type='parked'}}else c.jam=Math.max(0,(c.jam||0)-dt*2);
@@ -1643,6 +1673,9 @@ function render(){
  const z=cam.z,shx=shake?(Math.random()-.5)*shake:0,shy=shake?(Math.random()-.5)*shake:0;
  x.save();x.translate(W/2+shx,H/2+shy);x.scale(z,z);x.translate(-cam.x,-cam.y);
  const hw=W/z/2+6,hh=H/z/2+6,sx=Math.max(0,Math.floor(cam.x-hw)),sy=Math.max(0,Math.floor(cam.y-hh)),ex=Math.min(WS,Math.ceil(cam.x+hw)),ey=Math.min(WS,Math.ceil(cam.y+hh)),sw=ex-sx,sh=ey-sy;
+ {x.fillStyle='#0d3458';x.fillRect(cam.x-hw-60,cam.y-hh-60,hw*2+120,hh*2+120);
+  if(cam.x-hw<0||cam.y-hh<0||cam.x+hw>WS||cam.y+hh>WS){x.save();x.strokeStyle='rgba(150,205,235,.16)';x.lineWidth=2.2;x.lineCap='round';const gx0=Math.floor((cam.x-hw)/150),gx1=Math.ceil((cam.x+hw)/150),gy0=Math.floor((cam.y-hh)/150),gy1=Math.ceil((cam.y+hh)/150);
+   for(let gy=gy0;gy<=gy1;gy++)for(let gx=gx0;gx<=gx1;gx++){const wx=gx*150+(th(gx,gy)*120),wy=gy*150+(th(gy,gx)*120);if(wx>=0&&wy>=0&&wx<=WS&&wy<=WS)continue;const ph=Math.sin(time*1.1+gx*1.7+gy*.9);x.globalAlpha=.55+.45*ph;x.beginPath();x.moveTo(wx-16,wy+ph*2);x.quadraticCurveTo(wx,wy-5+ph*2,wx+16,wy+ph*2);x.stroke()}x.restore()}}
  if(sw>0&&sh>0){drawMapView(x,sx,sy,ex,ey);drawSea(sx,sy,ex,ey);x.drawImage(dec,sx/2,sy/2,sw/2,sh/2,sx,sy,sw,sh)}
  const vis=(px,py,m)=>px>sx-m&&px<ex+m&&py>sy-m&&py<ey+m;
  
@@ -1860,7 +1893,7 @@ function drawTitle(){
  else{f('BEAT UP',0,fs);f('MAFIA',fs*.92,fs*1.08);x.restore()}
  if(TLOCK>0){TLOCK-=.016;txt('FINISH '+raceNeed()+' MISSIONS TO UNLOCK RACING WORLD  ('+Math.min(raceDone(),raceNeed())+'/'+raceNeed()+')',cx,ty+fs*2.02,Math.max(12,14*U),'#ff9a5a','center')}else txt('A TOP-DOWN CRIME SPREE  ·  RETRO WORLD EPIC & 3D',cx,ty+fs*2.02,Math.max(11,13*U),'#9fd8ff','center');
  const by=Math.max(ty+fs*2.4,H*.53)+(hasSave()?46*U:0);
- btn('START GAME',cx,by,260*U,46*U,()=>{titleStart()},{fs:22*U});{const ok=raceUnlocked();btn('STORY',cx-67*U,by+52*U,126*U,38*U,()=>{beginStory('intro')},{col:'#8a2ab8',col2:'#4a1468',fs:15*U});btn(ok?'RACING':'🔒 '+Math.min(raceDone(),raceNeed())+'/'+raceNeed(),cx+67*U,by+52*U,126*U,38*U,()=>{raceOpen(false)},{col:ok?'#1f9a52':'#4a4a4a',col2:ok?'#0f5a2c':'#202020',fs:15*U})}
+ btn('START GAME',cx,by,260*U,46*U,()=>{titleStart()},{fs:22*U});{const ok=raceUnlocked();btn('STORY',cx-92*U,by+52*U,76*U,38*U,()=>{beginStory('intro')},{col:'#8a2ab8',col2:'#4a1468',fs:15*U});btn(ok?'RACING WORLD':'🔒 RACING WORLD '+Math.min(raceDone(),raceNeed())+'/'+raceNeed(),cx+43*U,by+52*U,176*U,38*U,()=>{raceOpen(false)},{col:ok?'#1f9a52':'#4a4a4a',col2:ok?'#0f5a2c':'#202020',fs:12*U})}
  if(hasSave())btn('CONTINUE SAVED GAME',cx,by-52*U,260*U,38*U,()=>{loadGame()},{col:'#b8862a',col2:'#6a4a14',fs:16*U});btn('◀  '+DIFF[diffIdx].n+'  ▶',cx,by+100*U,260*U,38*U,()=>{diffIdx=(diffIdx+1)%3;try{localStorage.setItem('bum-diff',diffIdx)}catch(e){}},{col:'#2a5ab8',col2:'#15305f',fs:16*U});
  btn(scheme===0?'CONTROLS: CLASSIC':'CONTROLS: WASD + MOUSE',cx,by+144*U,260*U,38*U,()=>{scheme=1-scheme;try{localStorage.setItem('bum-scheme',scheme)}catch(e){}},{col:'#2a8a5a',col2:'#144a30',fs:14*U});
  const L=controlsLines(),lx0=cx-170*U;x.fillStyle='rgba(8,10,20,.6)';rrect(x,cx-190*U,by+172*U,380*U,Math.min(150*U,H-by-190*U+10),8*U);
