@@ -1320,15 +1320,15 @@ function crimeTick(dt){if(state!=='play'){return}
  if(pend>=HEAT[1]&&pendT<=0)pendT=diffIdx===0?R(7,10):R(3.5,5.5);
  if(pendT>0){pendT-=dt;if(pendT<=0){pendT=0;if(pend>=HEAT[1]*.8){heat=Math.max(HEAT[1],0);lastCrime=time;pend=0;setWanted(1)}}}}
 /* ---------- background music ---------- */
-const BGM={intro:null,game:null,g:{intro:0,game:0},ok:false};
-function bgmInit(){if(BGM.intro)return;try{BGM.intro=new Audio('audio/street-pressure.mp3');BGM.game=new Audio('audio/heavy-pressure.mp3');for(const k of['intro','game']){BGM[k].loop=true;BGM[k].preload='auto';BGM[k].volume=0}}catch(e){BGM.intro=null}}
+const BGM={intro:null,game:null,race:null,g:{intro:0,game:0,race:0},ok:false};
+function bgmInit(){if(BGM.intro)return;try{BGM.intro=new Audio('audio/street-pressure.mp3');BGM.game=new Audio('audio/heavy-pressure.mp3');BGM.race=new Audio('audio/redline.mp3');for(const k of['intro','game','race']){BGM[k].loop=true;BGM[k].preload='auto';BGM[k].volume=0}}catch(e){BGM.intro=null}}
 function bgmUnlock(){BGM.ok=true;bgmInit()}
 for(const ev of['keydown','pointerdown','touchstart','mousedown'])window.addEventListener(ev,bgmUnlock,{passive:true});
 function bgmTick(dt){if(!BGM.ok||!BGM.intro)return;
  const inCar=state==='play'&&P&&P.car&&radio.st>0;
- const want=(state==='title'||state==='story'||state==='over'||state==='won'||inCar)?'intro':'game';
+ const want=state==='race'?'race':(state==='title'||state==='story'||state==='over'||state==='won'||inCar)?'intro':'game';
  const base=.42*(paused?.3:1)*(muted?0:1);
- for(const k of['intro','game']){const tg=k===want?base:0,cur=BGM.g[k];BGM.g[k]=cur+(tg-cur)*Math.min(1,dt*(tg>cur?1.1:2.4));const v=Math.max(0,Math.min(1,BGM.g[k]));
+ for(const k of['intro','game','race']){const tg=k===want?base:0,cur=BGM.g[k];BGM.g[k]=cur+(tg-cur)*Math.min(1,dt*(tg>cur?1.1:2.4));const v=Math.max(0,Math.min(1,BGM.g[k]));
   try{BGM[k].volume=v;if(v>.004&&BGM[k].paused){const pr=BGM[k].play();if(pr&&pr.catch)pr.catch(()=>{})}else if(v<=.004&&!BGM[k].paused&&tg===0)BGM[k].pause()}catch(e){}}}
 
 /* ============================ PAY'N'SPRAY ============================ */
