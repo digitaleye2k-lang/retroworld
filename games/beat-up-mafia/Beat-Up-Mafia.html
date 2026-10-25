@@ -767,7 +767,7 @@ function aheadBlocked(c){const fx=Math.cos(c.a),fy=Math.sin(c.a),look=Math.max(5
  for(const o of peds){if(o.dead)continue;const dx=o.x-c.x,dy=o.y-c.y;if(Math.abs(dx)>look+30||Math.abs(dy)>look+30)continue;const al=dx*fx+dy*fy,la=Math.abs(-dx*fy+dy*fx);if(al>0&&al<look&&la<18)best=Math.min(best,al-10)}
  if(!P.car&&!P.dead){const dx=P.x-c.x,dy=P.y-c.y,al=dx*fx+dy*fy,la=Math.abs(-dx*fy+dy*fx);if(al>0&&al<look&&la<20)best=Math.min(best,al-10)}
  return best}
-function interYield(c){const along=c.ax===0?c.x:c.y;let ci=-1,dd=0;for(let k2=1;k2<NR;k2++){const cc=roadC(k2),d=(cc-along)*c.dir;if(d>20&&d<150){ci=cc;dd=d;break}}if(ci<0)return 999;
+function interYield(c){return 999;const along=c.ax===0?c.x:c.y;let ci=-1,dd=0;for(let k2=1;k2<NR;k2++){const cc=roadC(k2),d=(cc-along)*c.dir;if(d>20&&d<150){ci=cc;dd=d;break}}if(ci<0)return 999;
  const ix=c.ax===0?ci:roadC(c.k),iy=c.ax===0?roadC(c.k):ci;
  for(const o of cars){if(o===c||o.type==='wreck'||o.type==='parked'||o.dead)continue;if(Math.abs(o.x-ix)<64&&Math.abs(o.y-iy)<64){const oax=Math.abs(Math.cos(o.a))>.7?0:1;if(oax!==c.ax&&Math.abs(o.sp)>5)return dd}}
  return 999}
@@ -778,6 +778,7 @@ function updTraffic(c,dt){let tx,ty;const k=c.k,cc=roadC(k),lane=c.ax===0?(c.dir
  if(c.tc<=0){for(let k2=1;k2<NR;k2++){if(k2===k&&false)continue;const cross=roadC(k2);if(Math.abs(along-cross)<14){c.tc=2.6;if(Math.random()<.42){c.ax=1-c.ax;c.k=k2;c.dir=Math.random()<.5?1:-1;const ap=c.ax===0?c.x:c.y;if(ap<260)c.dir=1;if(ap>roadLen(c.ax)-260)c.dir=-1}else c.tc=1.6;break}}}
  const b=aheadBlocked(c),iy_=c.panic>0?999:interYield(c);let spd=(c.panic>0?c.cur*1.3:c.cur);if(iy_<999)spd=Math.min(spd,Math.max(0,(iy_-88)*2.4));if(b<999){spd=Math.min(spd,Math.max(0,(b-18)*2.2));if(b<28&&c.hornC<=0&&Math.random()<.02){c.hornC=1.2;if(D(c.x,c.y,P.x,P.y)<500)SFX.horn()}}
  c.hornC-=dt;c.panic-=dt;
+ if(Math.abs(c.sp)<6){c.jam=(c.jam||0)+dt;if(c.jam>2.5&&c.rev<=0){c.rev=R(.8,1.4);c.jam=0;c.panic=2.5;c.jn=(c.jn||0)+1}if(c.jn>3&&!onScreen(c.x,c.y,120)){c.jn=0;c.type='parked'}}else c.jam=Math.max(0,(c.jam||0)-dt*2);
  const r=steerTo(c,tx,ty,spd,dt);stepCar(c,dt,b<22?-1:r[0],r[1],b<18&&Math.abs(c.sp)>60);if(c.gun)carShoot(c,dt)}
 function carShoot(c,dt){c.shootT=(c.shootT||0)-dt;if(c.shootT>0||!c.gun)return;const dx=P.x-c.x,dy=P.y-c.y,d=Math.hypot(dx,dy);if(d>340||d<30||P.dead)return;if(!rayClear(c.x,c.y,P.x,P.y))return;c.shootT=R(.45,.9);const a=Math.atan2(dy,dx)+R(-.14,.14);bul.push({x:c.x,y:c.y,vx:Math.cos(a)*520,vy:Math.sin(a)*520,l:420,dmg:6*DIFF[diffIdx].dm,own:'m',r:2});SFX.enemy()}
 function updChase(c,dt){// cops, swat, mob cars hunting player
