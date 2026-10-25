@@ -619,7 +619,7 @@ function pedAtFree(px,py){return !solidAt(Math.floor(px/T),Math.floor(py/T))}
 function onScreen(px,py,m){const z=cam.z;return Math.abs(px-cam.x)<(W/z)/2+m&&Math.abs(py-cam.y)<(H/z)/2+m}
 function tinyIsle(px,py){for(const q of[ISLE,ROCK,CAY])if(Math.hypot(px/T-q.cx,py/T-q.cy)<q.r+4)return true;return false}
 function spawnCiv(){const cx0=Math.floor(P.x/T),cy0=Math.floor(P.y/T);for(let i=0;i<90;i++){const tx=cl(cx0+RI(-26,26),1,N-2),ty=cl(cy0+RI(-26,26),1,N-2),k=kind[ty][tx];if(inBase((tx+.5)*T,(ty+.5)*T)||tinyIsle((tx+.5)*T,(ty+.5)*T))continue;if(k===1||k===2||k===5||k===7||k===8){const px=(tx+.5)*T,py=(ty+.5)*T;{const dd=D(px,py,P.x,P.y);if(dd<1000&&dd>(onScreen(px,py,0)?9999:330)){peds.push(mkPed(px,py));return}}}}}
-function mobAt(px,py,o){const w=o&&o.w!==undefined?o.w:(Math.random()<.55?0:Math.random()<.6?1:2);const d=DIFF[diffIdx];const m=mkPed(px,py,Object.assign({type:'mob',hp:60*d.hp,max:60*d.hp,sp:R(58,77),col:'#17171c',w:w,pref:R(110,185),range:w===2?230:330,fire:R(.4,1.2)},o||{}));peds.push(m);return m}
+function mobAt(px,py,o){const w=o&&o.w!==undefined?o.w:(Math.random()<.55?0:Math.random()<.6?1:2);const d=DIFF[diffIdx];const m=mkPed(px,py,Object.assign({type:'mob',hp:60*d.hp,max:60*d.hp,sp:R(54,72),col:'#17171c',w:w,pref:R(110,185),range:w===2?210:300,fire:R(.4,1.2)},o||{}));peds.push(m);return m}
 function mobSpawnFar(){for(let i=0;i<14;i++){const a=R(0,TAU),d=R(250,900),px=HQ.x+HQ.w/2+Math.cos(a)*d,py=HQ.y+HQ.h/2+Math.sin(a)*d;if(px<80||py<80||px>WS-80||py>WS-80)continue;if(solidAt(Math.floor(px/T),Math.floor(py/T))||inBase(px,py))continue;if(D(px,py,P.x,P.y)<(onScreen(px,py,60)?9999:400))continue;
   const n=RI(1,3);for(let j=0;j<n;j++){const qx=px+R(-30,30),qy=py+R(-30,30);if(pedAtFree(qx,qy))mobAt(qx,qy)}return}}
 function spawnTrafficCar(far){for(let i=0;i<40;i++){const rp=roadPos(),d=D(rp.x,rp.y,P.x,P.y);if(d<(far||520)||d>1150||onScreen(rp.x,rp.y,80))continue;let ok=true;for(const o of cars)if(D(o.x,o.y,rp.x,rp.y)<70){ok=false;break}if(!ok)continue;const vt=vtPick(),c=mkCar(rp.x,rp.y,rp.a,vt,colFor(vt),'ai');c.ax=rp.ax;c.k=rp.k;c.dir=rp.dir;cars.push(c);return c}return null}
@@ -887,8 +887,8 @@ const HEAT=[0,30,100,220,380,560];
 function copsNear(px,py,r){for(const o of peds)if(o.type==='cop'&&!o.dead&&D(o.x,o.y,px,py)<r&&rayClear(o.x,o.y,px,py))return true;
  for(const c of cars)if(c.vt==='cop'&&!c.dead&&c.type!=='wreck'&&D(c.x,c.y,px,py)<r&&rayClear(c.x,c.y,px,py))return true;return false}
 function crime(pts,px,py,force){if(state!=='play')return;if(!force&&!copsNear(px,py,520)&&wanted===0)return;lastCrime=time;
- if(wanted===0){pend+=pts*(DIFF[diffIdx].dm>1?1.2:diffIdx===0?.5:1);return}
- heat+=pts*(DIFF[diffIdx].dm>1?1.2:diffIdx===0?.5:1);let lv=0;for(let i=1;i<6;i++)if(heat>=HEAT[i])lv=i;setWanted(lv)}
+ if(wanted===0){pend+=pts*(DIFF[diffIdx].dm>1?1.1:diffIdx===0?.45:.85);return}
+ heat+=pts*(DIFF[diffIdx].dm>1?1.1:diffIdx===0?.45:.85);let lv=0;for(let i=1;i<6;i++)if(heat>=HEAT[i])lv=i;setWanted(lv)}
 let heat=0,lostT=0;
 function setWanted(lv){if(lv>wanted){wanted=lv;SFX.star();say('WANTED LEVEL '+lv,2,'#ff5a5a');if(lv>=3)ach('wanted3');if(lv>=5)ach('wanted5')}else if(lv<wanted){wanted=lv}
  if(wanted>0){for(const c of cars)if(c.vt==='cop'&&c.type==='ai'&&D(c.x,c.y,P.x,P.y)<900)c.type='chase'}}
@@ -971,7 +971,7 @@ function carShoot(c,dt){c.shootT=(c.shootT||0)-dt;if(c.shootT>0||!c.gun)return;c
 function updChase(c,dt){// cops, swat, mob cars hunting player
  const cop=c.vt==='cop'||c.vt==='swat';let tx=P.x,ty=P.y,d=D(c.x,c.y,P.x,P.y);
  if(!P.dead&&P.car&&P.car!==c&&d<300){tx=P.x+P.car.vx*.35;ty=P.y+P.car.vy*.35}
- const clear=rayClear(c.x,c.y,P.x,P.y);let spd=VT[c.vt].top*(c.vt==='cop'?.95:.88)*(DIFF[diffIdx].dm>1?1.04:diffIdx===0?.82:1);
+ const clear=rayClear(c.x,c.y,P.x,P.y);let spd=VT[c.vt].top*(c.vt==='cop'?.9:.85)*(DIFF[diffIdx].dm>1?1.04:diffIdx===0?.82:1);
  if(!clear||d>220){const f=flowDir(FCAR,c.x,c.y);if(f){tx=f.x;ty=f.y}}
  // dismount cops near an on-foot player
  if(cop&&!P.car&&d<190&&Math.abs(c.sp)<110&&(c.dis||0)<=0&&wanted>0){c.dis=99;cop_dismount(c)}
@@ -1046,9 +1046,9 @@ function updPed(p,dt){
    p.fire-=dt;if(p.fire<=0&&p.los&&dP<p.range){
     if(p.type==='boss'){p.burst=(p.burst||0);if(p.burst<=0){p.burst=RI(5,8)}p.burst--;pedShoot(p,ang,.1,600,5.5,'m');p.fire=p.burst>0?.085:R(.8,1.4)}
     else if(p.w===3){if(!(p.aimT>0)){p.aimT=1.2}else{p.aimT-=dt;if(p.aimT<=0){p.aimT=0;pedShoot(p,ang,.015,1500,30,'m');try{SFX.sniper()}catch(e){}p.fire=R(2,3.2)}}}
-    else if(p.w===0){pedShoot(p,ang,isCop&&diffIdx===0?.16:p.type==='mob'?.12:.1,560,isCop?(diffIdx===0?3.5:6):6,'m');p.fire=R(.55,1.1)*(isCop&&diffIdx===0?1.9:p.type==='mob'?1.2:1)}
-    else if(p.w===1){p.burst=(p.burst||0);if(p.burst<=0)p.burst=RI(3,5);p.burst--;pedShoot(p,ang,.14,600,3.6,'m');p.fire=p.burst>0?.1:R(1.05,1.95)}
-    else{if(dP<250){pedShoot(p,ang,.26,520,4.5,'m',5);p.fire=R(1.3,2);SFX.shotgun()}else p.fire=.3}}
+    else if(p.w===0){pedShoot(p,ang,isCop?(diffIdx===0?.18:.13):p.type==='mob'?.14:.1,560,isCop?(diffIdx===0?2.8:4.8):5,'m');p.fire=R(.55,1.1)*(isCop?(diffIdx===0?2.2:1.35):p.type==='mob'?1.45:1)}
+    else if(p.w===1){p.burst=(p.burst||0);if(p.burst<=0)p.burst=RI(3,5);p.burst--;pedShoot(p,ang,.16,600,3.1,'m');p.fire=p.burst>0?.115:R(1.25,2.2)*(isCop?1.15:1)}
+    else{if(dP<250){pedShoot(p,ang,.26,520,isCop?3.8:3.8,'m',5);p.fire=R(1.3,2)*1.25;SFX.shotgun()}else p.fire=.3}}
   }else if(!act||(isCop&&wanted===0)||dP>=p.range){p.t-=dt;if(p.t<=0){p.t=R(1.5,4);p.a+=R(-1.2,1.2);p.hold=Math.random()<.45}if(!p.hold&&!(p.type==='boss')){const nx=p.x+Math.cos(p.a)*14,ny=p.y+Math.sin(p.a)*14,k=tileKind(nx,ny);if(isWall(k)||k===0){p.a+=PI*R(.6,1.4);p.t=R(.6,1.5)}movePed(p,Math.cos(p.a)*p.sp*.35*dt,Math.sin(p.a)*p.sp*.35*dt);moving=true}}
  }
  if(moving)p.walk+=dt*p.sp*.09;
@@ -1527,7 +1527,7 @@ function updSpawns(dt){
  mobCarT-=dt;if(mobCarT<=0&&state==='play'){mobCarT=7;const hq=D(P.x,P.y,HQ.x+HQ.w/2,HQ.y+HQ.h/2);let n=0;for(const c of cars)if(c.type==='hunt'&&!c.dead)n++;const want=(hq<1100?1:0)+(stats.mob>6?1:0)+(stats.mob>16?1:0);if(n<want&&!boss.on||(boss.on&&n<2&&boss.phase===1&&false)){for(let k=0;k<12;k++){const rp=roadPos();const d=D(rp.x,rp.y,P.x,P.y);if(d<520||d>1100||onScreen(rp.x,rp.y,80))continue;const c=mkCar(rp.x,rp.y,rp.a,'sedan','#17171c','hunt');c.gun=true;c.hp=c.max=62*hpm();cars.push(c);break}}}
  // cops
  if(state==='play'&&wanted>0){copT-=dt;const want=Math.max(1,[0,2,3,4,5,6][wanted]-(diffIdx===0?1:0)),swatQ=[0,0,0,0,1,2][wanted];let n=0,sw=0,nf=0;for(const o of peds)if(o.type==='cop'&&!o.dead&&!o.army&&o.w!==3)nf++;if(copT>1.5&&!cars.some(c=>c.type==='chase'&&!c.dead))copT=1.2;for(const c of cars)if(c.type==='chase'&&!c.dead&&!c.army){n++;if(c.vt==='swat')sw++}
-  if(n<want&&(nf<[0,2,4,5,6,7][wanted]||sw<swatQ)&&copT<=0){copT=Math.max(2.2,5-wanted*.45)*(diffIdx===0?1.7:1);for(let k=0;k<14;k++){const rp=roadPos();const d=D(rp.x,rp.y,P.x,P.y);if(d<430||d>1050||onScreen(rp.x,rp.y,90))continue;let ok=true;for(const o of cars)if(D(o.x,o.y,rp.x,rp.y)<70){ok=false;break}if(!ok)continue;
+  if(n<want&&(nf<[0,2,4,5,6,7][wanted]||sw<swatQ)&&copT<=0){copT=Math.max(2.2,5-wanted*.45)*(diffIdx===0?2:1.2);for(let k=0;k<14;k++){const rp=roadPos();const d=D(rp.x,rp.y,P.x,P.y);if(d<430||d>1050||onScreen(rp.x,rp.y,90))continue;let ok=true;for(const o of cars)if(D(o.x,o.y,rp.x,rp.y)<70){ok=false;break}if(!ok)continue;
     const vt=sw<swatQ?'swat':'cop',c=mkCar(rp.x,rp.y,rp.a,vt,vt==='swat'?'#1a1d24':'#ececf0','chase');c.dis=0;c.gun=vt==='swat'&&wanted>=4;c.hp=c.max=VT[vt].hp*hpm()*.9;cars.push(c);break}}}
  armyT-=dt;if(state==='play'&&wanted>=5){if(armyT<=0){armyT=6;let nj=0,ns=0;for(const c of cars)if(c.army&&!c.dead)nj++;for(const o of peds)if(o.army&&!o.dead)ns++;
   if(nj<2){for(let k=0;k<14;k++){const rp=roadPos();const d=D(rp.x,rp.y,P.x,P.y);if(d<470||d>1050||onScreen(rp.x,rp.y,90))continue;let ok=true;for(const o of cars)if(D(o.x,o.y,rp.x,rp.y)<70){ok=false;break}if(!ok)continue;const c=mkCar(rp.x,rp.y,rp.a,'jeep','#4a5a34','chase');c.army=1;c.dis=99;c.gun=true;c.hp=c.max=VT.jeep.hp*hpm();cars.push(c);say('ARMY DEPLOYED',2,'#9fd86a');break}}
