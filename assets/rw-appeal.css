@@ -1,0 +1,54 @@
+/* RETRO WORLD appeal layer: hero CTAs, featured rails, compact mobile header, share row, SEO footer list */
+.rw-hero-cta{display:flex;flex-wrap:wrap;gap:12px;align-items:center;margin:18px 0 12px}
+.rw-hero-cta .cta{margin:0}
+.rw-cta-main{font:700 16px/1 "Courier New",monospace;letter-spacing:1px;color:#07131a;background:linear-gradient(180deg,#9dfcff,#00e5ff);border:0;border-radius:6px;padding:16px 22px;cursor:pointer;box-shadow:0 5px 0 #0a6d7a,0 0 26px #00ffff66;transition:transform .12s,box-shadow .12s}
+.rw-cta-main:hover{transform:translateY(-2px);box-shadow:0 7px 0 #0a6d7a,0 0 34px #00ffffaa}.rw-cta-main:active{transform:translateY(3px);box-shadow:0 2px 0 #0a6d7a}
+.rw-cta-alt{font:700 14px/1 "Courier New",monospace;color:#ffe85c;background:#16103a;border:2px solid #ffe85c;border-radius:6px;padding:14px 16px;cursor:pointer}
+.rw-cta-alt:hover{background:#241a55}
+.rw-chips{list-style:none;display:flex;flex-wrap:wrap;gap:8px;margin:6px 0 0;padding:0}
+.rw-chips li{font:700 11px/1 "Courier New",monospace;letter-spacing:1px;color:#9dfcff;background:#0b1630;border:1px solid #1d4a63;border-radius:999px;padding:7px 11px}
+.rw-share{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-top:14px;font:11px "Courier New",monospace;color:#8f96c4}
+.rw-share button,.rw-share a{font:700 11px "Courier New",monospace;color:#d7dcff;background:#10143a;border:1px solid #3a4280;border-radius:6px;padding:7px 10px;cursor:pointer;text-decoration:none}
+.rw-share button:hover,.rw-share a:hover{border-color:#00ffff;color:#00ffff}
+/* rails */
+.rw-rails{margin:26px 0 8px}
+.rw-rail{margin:0 0 26px}
+.rw-rail h2{font:700 17px "Courier New",monospace;letter-spacing:2px;color:var(--yellow,#ffe85c);margin:0 0 12px;display:flex;align-items:center;gap:10px}
+.rw-rail h2 small{font-size:11px;color:#8f96c4;letter-spacing:1px;font-weight:400}
+.rw-track{display:flex;gap:14px;overflow-x:auto;padding:4px 2px 14px;scroll-snap-type:x proximity;-webkit-overflow-scrolling:touch;scrollbar-width:thin;scrollbar-color:#2b3a7a #0a0a1c}
+.rw-rc{flex:0 0 232px;scroll-snap-align:start;position:relative;text-align:left;font-family:"Courier New",monospace;color:#fff;background:linear-gradient(180deg,#14143a,#0b0b22);border:2px solid #263070;border-radius:12px;padding:0 0 12px;cursor:pointer;overflow:hidden;transition:transform .15s,border-color .15s,box-shadow .15s}
+.rw-rc:hover,.rw-rc:focus-visible{transform:translateY(-4px);border-color:#00ffff;box-shadow:0 10px 26px #00ffff33;outline:none}
+.rw-rc img{display:block;width:100%;aspect-ratio:16/10;object-fit:cover;background:#05051a}
+.rw-rc b{display:block;margin:10px 12px 3px;font-size:14px;letter-spacing:1px;color:#00ffff}
+.rw-rc small{display:block;margin:0 12px;font-size:10px;color:#ff2bd6;letter-spacing:.5px;min-height:24px}
+.rw-rc-play{position:absolute;right:10px;bottom:10px;font-size:11px;font-weight:700;color:#07131a;background:#67ff67;border-radius:5px;padding:5px 8px}
+.rw-rc-new{position:absolute;left:8px;top:8px;font-size:10px;font-weight:700;color:#190a00;background:#ffe85c;border-radius:4px;padding:3px 6px;box-shadow:0 0 12px #ffe85c88}
+.rw-rc-hot{position:absolute;left:8px;top:8px;font-size:10px;font-weight:700;color:#fff;background:#ff2bd6;border-radius:4px;padding:3px 6px}
+/* all-games SEO list */
+.rw-seo{margin:40px 0 10px;padding:20px;border:1px solid #232a5c;border-radius:12px;background:#0a0a1e}
+.rw-seo h2{font:700 15px "Courier New",monospace;letter-spacing:2px;color:#00ffff;margin:0 0 6px}
+.rw-seo p{font:12px/1.6 "Courier New",monospace;color:#8f96c4;margin:0 0 12px}
+.rw-seo ul{list-style:none;margin:0;padding:0;columns:4 180px;column-gap:18px}
+.rw-seo li{break-inside:avoid;margin:0 0 6px;font:12px "Courier New",monospace}
+.rw-seo a{color:#b9c1ff;text-decoration:none}.rw-seo a:hover{color:#00ffff;text-decoration:underline}
+/* header compaction */
+.rw-menu-btn{display:none;font:700 12px "Courier New",monospace;color:#00ffff;background:#0b1630;border:1px solid #00ffff;border-radius:6px;padding:9px 12px;cursor:pointer}
+@media(max-width:900px){
+  header{position:relative!important}
+  header .nav{display:flex!important;flex-wrap:wrap;align-items:center;gap:8px 10px;padding:10px 0}
+  header .brand{flex:1 1 auto}
+  header nav{order:3;flex:1 0 100%;display:flex;gap:6px 16px;overflow-x:auto;white-space:nowrap;padding-bottom:2px}
+  header nav a{font-size:12px!important}
+  .rw-menu-btn{display:inline-block;order:2}
+  header .profile-launch{order:2}
+  header .music-panel,header .tv-mode-toggle,header .report-launch,header .controller-status,header .view-counter{display:none!important}
+  header.rw-open .music-panel,header.rw-open .tv-mode-toggle,header.rw-open .report-launch,header.rw-open .controller-status,header.rw-open .view-counter{display:flex!important;order:5;flex:1 0 100%}
+  header.rw-open .music-panel{display:block!important}
+  .hero{padding-top:18px!important}
+  .machine{display:block!important}
+}
+@media(max-width:560px){
+  .rw-cta-main{flex:1 0 100%;text-align:center}
+  .rw-rc{flex-basis:200px}
+  #rwNotice{left:6px!important;right:6px!important;bottom:6px!important;font-size:11px!important;padding:8px 10px!important;line-height:1.35!important}
+}
