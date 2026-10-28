@@ -1573,6 +1573,29 @@ body.tv-mode #gameframe{border-color:#4f829e}
 .epic-intro,.epic-news{scroll-margin-top:100px;margin:30px 0;padding:28px;border:2px solid var(--mag);background:linear-gradient(135deg,#20123c,#081c27);box-shadow:6px 6px 0 #080411}.epic-intro h2{font-size:clamp(28px,5vw,46px);margin:10px 0;color:var(--cyan);letter-spacing:3px}.epic-intro p,.epic-news p{max-width:900px;line-height:1.75;color:#d8d9ed;font-size:14px}.epic-free{display:block;margin-top:18px;font-size:10px;letter-spacing:2px;color:var(--green)}.epic-game{border-color:var(--mag);background:linear-gradient(160deg,#27183f,#09232c)}.epic-news h3{color:var(--cyan);font-size:24px}.epic-news .cta{margin-right:12px}@media(max-width:600px){.epic-intro,.epic-news{padding:18px}}
 
 .popshot-preview{width:100%;height:170px;object-fit:cover;border:1px solid var(--cyan);background:#080812}.standalone-link{display:block;text-align:center;text-decoration:none;margin-top:10px;font-size:11px}.epic-game .play{width:100%}
+
+/* TOKEN VAULT */
+html[data-vault="gold"]{--cyan:#ffd34d;--mag:#ff9f1a;--yellow:#fff1b0;--theme-glow:#3d2c05;--theme-deep:#140d01}
+html[data-vault="ice"]{--cyan:#9fe8ff;--mag:#6ea8ff;--yellow:#e6fbff;--green:#a8fff0;--theme-glow:#0e2b4a;--theme-deep:#030c18}
+html[data-vault="sunset"]{--cyan:#ff9ac1;--mag:#ff6a3d;--yellow:#ffe27a;--green:#ffb86b;--theme-glow:#4a1238;--theme-deep:#14040f}
+html[data-vault="mono"]{--cyan:#e8e8e8;--mag:#b0b0b0;--yellow:#ffffff;--green:#d0d0d0;--red:#c0c0c0;--theme-glow:#222;--theme-deep:#050505}
+html[data-vault="rainbow"] .hero h1,html[data-vault="rainbow"] .section-title{animation:vaultHue 6s linear infinite}
+@keyframes vaultHue{to{filter:hue-rotate(360deg)}}
+.vault-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:10px;margin:10px 0}
+.vault-item{border:2px solid #343a68;background:#0a0c1f;padding:12px;display:grid;gap:6px;font-size:10px;line-height:1.5}
+.vault-item.owned{border-color:var(--green)}.vault-item.equipped{border-color:var(--yellow);box-shadow:0 0 14px #ffe85c55}
+.vault-item b{color:var(--cyan);font-size:11px}.vault-item small{color:#9aa0c9;font-size:9px}
+.vault-item button{font:inherit;font-size:10px;padding:8px;border:2px solid var(--cyan);background:#101436;color:var(--cyan);cursor:pointer}
+.vault-item button:disabled{opacity:.4;cursor:not-allowed}
+.vault-bal{font-size:14px;color:var(--yellow);margin:6px 0}
+.vault-capsule{border:2px dashed var(--mag);padding:14px;margin:10px 0;text-align:center;background:#12092a}
+.vault-capsule button{font:inherit;padding:10px 16px;border:2px solid var(--mag);background:#2a0a3a;color:#fff;cursor:pointer}
+.vault-capsule .res{min-height:22px;margin-top:8px;color:var(--yellow);font-size:11px}
+.profile-avatar-large.vf-gold{border-color:#ffd34d!important;box-shadow:0 0 20px #ffd34d}
+.profile-avatar-large.vf-flame{border-color:#ff5a1f!important;box-shadow:0 0 22px #ff5a1f,0 -8px 18px #ffb02e}
+.profile-avatar-large.vf-rainbow{border-color:#ff2bd6!important;animation:vaultHue 3s linear infinite;box-shadow:0 0 22px #00e5ff}
+.profile-avatar-large.vf-glitch{border-color:#00ffd5!important;box-shadow:3px 0 #ff2bd6,-3px 0 #00e5ff}
+#vaultTitle{color:var(--yellow);font-size:10px;letter-spacing:2px;margin-top:4px}
 </style>
 <link rel="stylesheet" href="tv/tv-enhancements.css">
 <script>if(!window.RETROWORLD_TV_DEVICE){const a=document.createElement('script');a.async=true;a.crossOrigin="anonymous";a.src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7935805760564580";document.head.appendChild(a);}</script>
@@ -2589,6 +2612,11 @@ body.tv-mode #gameframe{border-color:#4f829e}
         🔒 Earn <b>2,500 challenge tokens</b> and unlock <b>15 trophies</b> to permanently open SILENT WIRE for this local profile.
       </div>
 </div>
+<h3 class="profile-section-title">:: TOKEN VAULT</h3>
+<p style="font-size:10px;line-height:1.6;color:#9aa0c9;margin:0 0 6px">Spend challenge tokens on cosmetics. Premium-game unlocks use your <b>total earned</b> tokens, so spending here never locks you out of a cartridge.</p>
+<div class="vault-bal">🎟️ BALANCE: <b id="vaultBal">0</b> <span style="color:#9aa0c9;font-size:10px">(earned <span id="vaultEarned">0</span> · spent <span id="vaultSpent">0</span>)</span></div>
+<div class="vault-capsule">🎰 <b>MYSTERY CAPSULE</b> — 120 tokens for a random item you don't own yet.<br><br><button type="button" id="vaultCapsuleBtn">OPEN CAPSULE (120 🎟️)</button><div class="res" id="vaultCapsuleRes"></div></div>
+<div class="vault-grid" id="vaultGrid"></div>
 <h3 class="profile-section-title">:: TROPHY CABINET</h3>
 <div class="trophy-grid" id="trophyGrid"></div>
 <h3 class="profile-section-title">:: GAME RECORDS</h3>
@@ -3251,6 +3279,43 @@ const TROPHY_DEFS=[
   {id:'premium_galactic_reward',icon:'🪐',name:'ORBITAL ACCESS',desc:'Earn the Galactic Golf Premium Cartridge.',test:(a,p)=>!!(p.premiumRewards&&p.premiumRewards['galactic-golf.html'])},
   {id:'premium_hellbyte_reward',icon:'☠️',name:'HELL GATE ACCESS',desc:'Earn the Hellbyte 93 Premium Cartridge.',test:(a,p)=>!!(p.premiumRewards&&p.premiumRewards['hellbyte-93.html'])},
 
+
+  // NEW GAME TROPHIES
+  {id:'pack_board',icon:'♟️',name:'BOARD ROOM REGULAR',desc:'Play Reversi Reborn, Checkers Club, Connect Four Clash and Blackjack Royale.',test:(a,p)=>playedAll(p,['reversi-reborn.html','checkers-club.html','connect-four-clash.html','blackjack-royale.html'])},
+  {id:'pack_sports2',icon:'🏟️',name:'SPORTS DAY',desc:'Play Strike Zone Bowling, Hoops Showdown, Penalty Keeper and Centre Court Tennis.',test:(a,p)=>playedAll(p,['strike-zone-bowling.html','hoops-showdown.html','penalty-keeper.html','centre-court-tennis.html'])},
+  {id:'pack_puzzle2',icon:'🧠',name:'BIG BRAIN',desc:'Play Word Grid, Number Slide, Color Flood, Box Pusher and Pipe Panic.',test:(a,p)=>playedAll(p,['word-grid.html','number-slide.html','color-flood.html','box-pusher.html','pipe-panic.html'])},
+  {id:'pack_aim',icon:'🎯',name:'DEAD AIM',desc:'Play Bullseye Archery, Dart Master, Sky Hunter and Slice Frenzy.',test:(a,p)=>playedAll(p,['bullseye-archery.html','dart-master.html','sky-hunter.html','slice-frenzy.html'])},
+  {id:'pack_arcade2',icon:'👾',name:'COIN-OP CLASSICS',desc:'Play Pellet Chase, Rock Blaster, Raptor Run and Air Hockey Arena.',test:(a,p)=>playedAll(p,['pellet-chase.html','rock-blaster.html','raptor-run.html','air-hockey-arena.html'])},
+  {id:'win_c4',icon:'🔴',name:'FOUR IN A ROW',desc:'Beat the CPU in Connect Four Clash.',test:(a,p)=>hasWon(p,'connect-four-clash.html')},
+  {id:'win_reversi',icon:'⚫',name:'CORNER KING',desc:'Win a game of Reversi Reborn.',test:(a,p)=>hasWon(p,'reversi-reborn.html')},
+  {id:'win_checkers',icon:'👑',name:'KING ME',desc:'Win a game of Checkers Club.',test:(a,p)=>hasWon(p,'checkers-club.html')},
+  {id:'win_word',icon:'🔤',name:'WORD WIZARD',desc:'Solve a Word Grid puzzle.',test:(a,p)=>hasWon(p,'word-grid.html')},
+  {id:'win_box',icon:'📦',name:'WAREHOUSE BOSS',desc:'Clear all Box Pusher puzzles.',test:(a,p)=>hasWon(p,'box-pusher.html')},
+  {id:'win_flood',icon:'🎨',name:'FLOOD CONTROL',desc:'Beat all Color Flood boards.',test:(a,p)=>hasWon(p,'color-flood.html')},
+  {id:'win_slide',icon:'🔢',name:'TILE MASTER',desc:'Solve all Number Slide boards.',test:(a,p)=>hasWon(p,'number-slide.html')},
+  {id:'win_pipe',icon:'🚰',name:'MASTER PLUMBER',desc:'Finish all five Pipe Panic levels.',test:(a,p)=>hasWon(p,'pipe-panic.html')},
+  {id:'win_bj',icon:'🃏',name:'HIGH ROLLER',desc:'Turn $500 into $2000 in Blackjack Royale.',test:(a,p)=>hasWon(p,'blackjack-royale.html')},
+  {id:'win_dart',icon:'🎯',name:'GAME SHOT',desc:'Win a game of Dart Master.',test:(a,p)=>hasWon(p,'dart-master.html')},
+  {id:'win_archery',icon:'🏹',name:'DEAD EYE',desc:'Win Bullseye Archery with 60+ points.',test:(a,p)=>hasWon(p,'bullseye-archery.html')},
+  {id:'win_beat',icon:'🎵',name:'PERFECT RHYTHM',desc:'Clear a Beat Runner track.',test:(a,p)=>hasWon(p,'beat-runner.html')},
+  {id:'win_pellet',icon:'🟡',name:'MAZE MUNCHER',desc:'Clear all three Pellet Chase mazes.',test:(a,p)=>hasWon(p,'pellet-chase.html')},
+  {id:'win_clicker',icon:'⚡',name:'REACTOR MAXED',desc:'Harvest 50K energy in Neon Clicker.',test:(a,p)=>hasWon(p,'neon-clicker.html')},
+  {id:'win_hunter',icon:'🦆',name:'SHARPSHOOTER',desc:'Score 600 in Sky Hunter.',test:(a,p)=>hasWon(p,'sky-hunter.html')},
+  {id:'win_air',icon:'🏒',name:'PUCK WIZARD',desc:'Beat the CPU at Air Hockey Arena.',test:(a,p)=>hasWon(p,'air-hockey-arena.html')},
+  {id:'score_raptor',icon:'🦖',name:'RAPTOR RAMPAGE',desc:'Score 1,000 in Raptor Run.',test:(a,p)=>bestAtLeast(p,'raptor-run.html',1000)},
+  {id:'score_rock',icon:'☄️',name:'ROCK STAR',desc:'Score 3,000 in Rock Blaster.',test:(a,p)=>bestAtLeast(p,'rock-blaster.html',3000)},
+  {id:'score_slice',icon:'🍉',name:'FRUIT NINJA',desc:'Score 100 in Slice Frenzy.',test:(a,p)=>bestAtLeast(p,'slice-frenzy.html',100)},
+  {id:'score_tower',icon:'🧱',name:'SKYSCRAPER',desc:'Build a 50-block tower in Tower Stack.',test:(a,p)=>bestAtLeast(p,'tower-stack.html',50)},
+  {id:'score_dart',icon:'🎯',name:'TON EIGHTY',desc:'Reach 300+ points in Dart Master.',test:(a,p)=>bestAtLeast(p,'dart-master.html',300)},
+  {id:'score_pellet',icon:'💊',name:'POWER PELLET',desc:'Score 3,000 in Pellet Chase.',test:(a,p)=>bestAtLeast(p,'pellet-chase.html',3000)},
+  {id:'plays_10',icon:'🔁',name:'ONE MORE GO',desc:'Play any single new game 10 times.',test:(a,p)=>['raptor-run','slice-frenzy','tower-stack','word-grid','sky-hunter','neon-clicker','pellet-chase','rock-blaster','beat-runner','blackjack-royale'].some(i=>hasPlayed(p,i+'.html',10))},
+
+  // TOKEN VAULT TROPHIES
+  {id:'vault_first',icon:'🛍️',name:'FIRST PURCHASE',desc:'Buy your first item in the Token Vault.',test:(a,p)=>Object.keys((p.vault&&p.vault.owned)||{}).length>=1},
+  {id:'vault_collector',icon:'🗃️',name:'VAULT COLLECTOR',desc:'Own 6 Token Vault items.',test:(a,p)=>Object.keys((p.vault&&p.vault.owned)||{}).length>=6},
+  {id:'vault_all',icon:'💎',name:'VAULT COMPLETE',desc:'Own every Token Vault item.',test:(a,p)=>Object.keys((p.vault&&p.vault.owned)||{}).length>=14},
+  {id:'vault_capsule',icon:'🎰',name:'LUCKY DIP',desc:'Open a Mystery Capsule.',test:(a,p)=>!!(p.vault&&p.vault.capsules>=1)},
+
   // COLLECTION TROPHIES
   {id:'space_explorer_pack',icon:'🚀',name:'SPACE EXPLORER',desc:'Play Moon Lander, Star Miner, Space Courier and Space Dock.',test:(a,p)=>playedAll(p,['moon-lander.html','star-miner.html','space-courier.html','space-dock.html'])},
   {id:'deep_sea_pack',icon:'🌊',name:'DEEP SEA CREW',desc:'Play Sub Hunter, Pearl Diver, Fishing Quest and River Escape.',test:(a,p)=>playedAll(p,['sub-hunter.html','pearl-diver.html','fishing-quest.html','river-escape.html'])},
@@ -3776,7 +3841,7 @@ function renderProfile(){
 
   const a=aggregates(p);
   document.getElementById('sumPlays').textContent=fmtNumber(a.plays);
-  document.getElementById('sumUnique').textContent=a.unique+'/70';
+  document.getElementById('sumUnique').textContent=a.unique+'/'+Object.keys(TITLES).length;
   document.getElementById('sumWins').textContent=fmtNumber(a.wins);
   document.getElementById('sumPoints').textContent=fmtNumber(a.points);
   document.getElementById('sumChallenges').textContent=fmtNumber(a.challenges);
@@ -4454,4 +4519,59 @@ window.dispatchEvent(new Event('rw-bridge-ready'));
 </script>
 <script src="tv/tv-enhancements.js" defer></script>
 <script src="assets/retro-upgrade.js" defer></script><script src="assets/rw-trophy.js" defer></script><script src="assets/rw-appeal.js" defer></script>
-<div id="rwNotice" style="display:none;position:fixed;left:10px;right:10px;bottom:10px;z-index:99999;max-width:720px;margin:auto;background:#0e1424;color:#e9edf6;border:1px solid #344059;border-radius:12px;padding:12px 14px;font:13px/1.5 system-ui,Arial,sans-serif;box-shadow:0 6px 24px rgba(0,0,0,.5)">Retro World stores your game progress and settings on your device, and ads (Google AdSense / AdMob) may use cookies or advertising IDs. See the <a href="privacy.html" style="color:#79eed4">Privacy Policy</a> and <a href="advertising.html" style="color:#79eed4">Advertising Policy</a>. <button id="rwNoticeOk" style="margin-left:8px;background:#79eed4;color:#082119;border:0;border-radius:8px;padding:6px 12px;font-weight:700;cursor:pointer">OK</button></div><script>(function(){var n=document.getElementById('rwNotice'),ok=false;try{ok=localStorage.getItem('rwNoticeOk')==='1'}catch(e){}if(!ok)n.style.display='block';document.getElementById('rwNoticeOk').onclick=function(){n.style.display='none';try{localStorage.setItem('rwNoticeOk','1')}catch(e){}}})();</script></body></html>
+<div id="rwNotice" style="display:none;position:fixed;left:10px;right:10px;bottom:10px;z-index:99999;max-width:720px;margin:auto;background:#0e1424;color:#e9edf6;border:1px solid #344059;border-radius:12px;padding:12px 14px;font:13px/1.5 system-ui,Arial,sans-serif;box-shadow:0 6px 24px rgba(0,0,0,.5)">Retro World stores your game progress and settings on your device, and ads (Google AdSense / AdMob) may use cookies or advertising IDs. See the <a href="privacy.html" style="color:#79eed4">Privacy Policy</a> and <a href="advertising.html" style="color:#79eed4">Advertising Policy</a>. <button id="rwNoticeOk" style="margin-left:8px;background:#79eed4;color:#082119;border:0;border-radius:8px;padding:6px 12px;font-weight:700;cursor:pointer">OK</button></div><script>(function(){var n=document.getElementById('rwNotice'),ok=false;try{ok=localStorage.getItem('rwNoticeOk')==='1'}catch(e){}if(!ok)n.style.display='block';document.getElementById('rwNoticeOk').onclick=function(){n.style.display='none';try{localStorage.setItem('rwNoticeOk','1')}catch(e){}}})();</script><script>
+(function(){
+const ITEMS=[
+ {id:'sk_gold',k:'skin',n:'GOLD RUSH SKIN',d:'Whole site glows gold.',c:300,v:'gold'},
+ {id:'sk_ice',k:'skin',n:'ICE COLD SKIN',d:'Frozen blue site theme.',c:400,v:'ice'},
+ {id:'sk_sunset',k:'skin',n:'SUNSET DRIVE SKIN',d:'Pink and orange synthwave.',c:500,v:'sunset'},
+ {id:'sk_mono',k:'skin',n:'MONO TERMINAL SKIN',d:'Black and white CRT.',c:250,v:'mono'},
+ {id:'sk_rainbow',k:'skin',n:'RAINBOW PULSE SKIN',d:'Headings cycle through every colour.',c:900,v:'rainbow'},
+ {id:'fr_gold',k:'frame',n:'GOLD FRAME',d:'Golden profile avatar frame.',c:200,v:'gold'},
+ {id:'fr_flame',k:'frame',n:'FLAME FRAME',d:'Your avatar is on fire.',c:400,v:'flame'},
+ {id:'fr_glitch',k:'frame',n:'GLITCH FRAME',d:'RGB-split avatar frame.',c:800,v:'glitch'},
+ {id:'fr_rainbow',k:'frame',n:'RAINBOW FRAME',d:'Colour-cycling avatar frame.',c:600,v:'rainbow'},
+ {id:'ti_roller',k:'title',n:'TITLE: HIGH ROLLER',d:'Shown under your name.',c:150,v:'HIGH ROLLER'},
+ {id:'ti_legend',k:'title',n:'TITLE: PIXEL LEGEND',d:'Shown under your name.',c:300,v:'PIXEL LEGEND'},
+ {id:'ti_baron',k:'title',n:'TITLE: TOKEN BARON',d:'Shown under your name.',c:500,v:'TOKEN BARON'},
+ {id:'ti_royal',k:'title',n:'TITLE: ARCADE ROYALTY',d:'Shown under your name.',c:1000,v:'ARCADE ROYALTY'},
+ {id:'ti_ghost',k:'title',n:'TITLE: HIGH SCORE GHOST',d:'Shown under your name.',c:250,v:'HIGH SCORE GHOST'}
+];
+const CAP=120;
+const P=()=>window.RWP&&RWP.active&&RWP.active();
+function V(p){p.vault=p.vault&&typeof p.vault==='object'?p.vault:{};const v=p.vault;v.spent=v.spent||0;v.owned=v.owned||{};v.eq=v.eq||{};v.capsules=v.capsules||0;return v}
+function earned(p){return Number((p.challengeStats&&p.challengeStats.tokens)||0)}
+function apply(p){
+ const h=document.documentElement;
+ if(!p){h.removeAttribute('data-vault');return}
+ const v=V(p);const sk=ITEMS.find(i=>i.id===v.eq.skin);
+ if(sk)h.setAttribute('data-vault',sk.v);else h.removeAttribute('data-vault');
+ const av=document.getElementById('profileAvatarLarge');
+ if(av){av.className=av.className.replace(/\bvf-\w+/g,'').trim();const f=ITEMS.find(i=>i.id===v.eq.frame);if(f)av.classList.add('vf-'+f.v)}
+ let t=document.getElementById('vaultTitle');const g=document.getElementById('profileIdentityGenre');
+ if(!t&&g){t=document.createElement('div');t.id='vaultTitle';g.parentNode.insertBefore(t,g.nextSibling)}
+ if(t){const ti=ITEMS.find(i=>i.id===v.eq.title);t.textContent=ti?'★ '+ti.v+' ★':''}
+}
+function commit(p){RWP.save();try{RWP.evaluate(p,true)}catch(e){}render()}
+function buy(id){const p=P();if(!p)return;const v=V(p),it=ITEMS.find(i=>i.id===id);if(!it||v.owned[id])return;if(earned(p)-v.spent<it.c)return;v.spent+=it.c;v.owned[id]=1;v.eq[it.k]=id;commit(p)}
+function equip(id){const p=P();if(!p)return;const v=V(p),it=ITEMS.find(i=>i.id===id);if(!it||!v.owned[id])return;if(v.eq[it.k]===id)delete v.eq[it.k];else v.eq[it.k]=id;commit(p)}
+function capsule(){const p=P();if(!p)return;const v=V(p);if(earned(p)-v.spent<CAP)return;const left=ITEMS.filter(i=>!v.owned[i.id]);v.spent+=CAP;v.capsules++;const r=document.getElementById('vaultCapsuleRes');
+ if(!left.length){v.spent-=Math.floor(CAP/2);commit(p);document.getElementById('vaultCapsuleRes').textContent='You own everything! Refunded '+Math.floor(CAP/2)+' tokens.';return}
+ const it=left[Math.floor(Math.random()*left.length)];v.owned[it.id]=1;v.eq[it.k]=it.id;commit(p);document.getElementById('vaultCapsuleRes').textContent='🎉 You got: '+it.n+' (worth '+it.c+')!'}
+let last='';
+function render(){
+ const p=P();const grid=document.getElementById('vaultGrid');if(!grid)return;apply(p);if(!p)return;const v=V(p),bal=earned(p)-v.spent;
+ document.getElementById('vaultBal').textContent=bal.toLocaleString();document.getElementById('vaultEarned').textContent=earned(p).toLocaleString();document.getElementById('vaultSpent').textContent=v.spent.toLocaleString();
+ document.getElementById('vaultCapsuleBtn').disabled=bal<CAP;
+ grid.innerHTML='';
+ ITEMS.forEach(it=>{const own=!!v.owned[it.id],eq=v.eq[it.k]===it.id;const d=document.createElement('div');d.className='vault-item'+(own?' owned':'')+(eq?' equipped':'');
+  d.innerHTML='<b>'+it.n+'</b><small>'+it.d+'</small>';const b=document.createElement('button');b.type='button';
+  if(own){b.textContent=eq?'EQUIPPED — TAP TO REMOVE':'EQUIP';b.onclick=()=>equip(it.id)}else{b.textContent='BUY • '+it.c+' 🎟️';b.disabled=bal<it.c;b.onclick=()=>buy(it.id)}
+  d.appendChild(b);grid.appendChild(d)});
+}
+document.addEventListener('click',e=>{if(e.target&&e.target.id==='vaultCapsuleBtn')capsule()});
+setInterval(()=>{const p=P();const key=p?p.id+'|'+earned(p)+'|'+JSON.stringify(p.vault||{}):'';if(key!==last){last=key;render()}},800);
+window.addEventListener('load',()=>setTimeout(render,600));
+})();
+</script>
+</body></html>
