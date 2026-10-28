@@ -42,7 +42,7 @@ const TL=2.74,TW=1.525,TZ0=0,TZ1=2.74,NZ=1.37,NH=.1525,TY=.76,CAMX=0,CAMY=1.5,CA
 const SI=Math.sin(PIT),CO=Math.cos(PIT);
 let ball,pad={x:0,y:1.0,vx:0,vy:0,px:0,py:0,tx:0,ty:1},cpu={x:0,y:1,tx:0},srv=0,pts=[0,0],state='menu2',msg='',msgT=0,t=0,waitT=0,lastHit=-1,bnc=[0,0],rally=0,served=false,gameOverT=0,level=0,swingBoost=0,hist=[],pointerOn=false,wonRallies=0,longest=0,tossed=false,spin=0,cpuSw=0,plSw=0,trail=[];
 const PZ=-.3;
-function pr(x,y,z){const dx=x-CAMX,dy=y-CAMY,dz=z-CAMZ;const zc=dz*CO-dy*SI,yc=dy*CO+dz*SI;const s=FOC/Math.max(.2,zc);return[480+dx*s,300-yc*s,s]}
+function pr(x,y,z){const dx=x-CAMX,dy=y-CAMY,dz=z-CAMZ;const zc=dz*CO-dy*SI,yc=dy*CO+dz*SI;const s=FOC/Math.max(.2,zc);return[480+dx*s,385-yc*s,s]}
 function unproj(sx,sy,z){ // point at world z on camera ray
  const nx=(sx-480)/FOC,ny=(300-sy)/FOC;const wx=nx,wy=-SI+ny*CO,wz=CO+ny*SI;const k=(z-CAMZ)/wz;return[CAMX+wx*k,CAMY+wy*k]}
 function newGame(){pts=[0,0];srv=0;level=0;wonRallies=0;longest=0;score=0;mode='play';reset()}
@@ -72,7 +72,7 @@ function update(dt){t+=dt;if(msgT>0)msgT-=dt;if(mode==='menu')return;if(mode!=='
  // paddle follow pointer
  const k=Math.min(1,dt*26);const nx=pad.x+(pad.tx-pad.x)*k,ny=pad.y+(pad.ty-pad.y)*k;pad.vx=lerp(pad.vx,(nx-pad.x)/dt,.5);pad.vy=lerp(pad.vy,(ny-pad.y)/dt,.5);pad.x=nx;pad.y=ny;
  if(state==='dead'){waitT-=dt;if(waitT<=0&&mode==='play')reset();return}
- if(state==='serve'){if(srv===0){if(!tossed){ball.x=pad.x;ball.y=pad.y+.18;ball.z=PZ+.1}else{stepBall(dt)}}
+ if(state==='serve'){if(srv===0&&!tossed)pad.ty=Math.min(pad.ty,.98);if(srv===0){if(!tossed){ball.x=pad.x;ball.y=pad.y+.14;ball.z=PZ+.1}}
   else{waitT-=dt;ball.x=cpu.x;if(waitT<=0){ball.held=false;ball.y=.95;ball.z=TL+.25;ball.vy=0;// serve: bounce own then opp
     ball.vx=rnd(-.5,.5);ball.vz=1.0;ball.vy=.5;state='rally';lastHit=1;bnc=[0,0];rally=1;served=true;cpuSw=.2}}}
  if(state==='rally'||(state==='serve'&&tossed&&srv===0)){stepBall(dt)}
@@ -84,7 +84,7 @@ function update(dt){t+=dt;if(msgT>0)msgT-=dt;if(mode==='menu')return;if(mode!=='
   if(lastHit!==1&&ball.vz>0&&ball.z>=TL+.2&&ball.z<TL+.9){const dx=ball.x-cpu.x,dy=Math.max(0,Math.abs(ball.y-.95)-.25);if(Math.hypot(dx,dy)<.2-Math.min(.05,level*.012)){if(Math.random()<.95-level*.01)cpuHit();else lastHit=1}}}
 }
 function predictCpu(){let b={x:ball.x,y:ball.y,z:ball.z,vx:ball.vx,vy:ball.vy,vz:ball.vz};for(let i=0;i<500;i++){const h=1/120;b.vy-=G*h;b.x+=b.vx*h;b.y+=b.vy*h;b.z+=b.vz*h;if(b.y<TY+BR&&b.vy<0&&b.z>0&&b.z<TL&&Math.abs(b.x)<TW/2){b.y=TY+BR;b.vy*=-.9}if(b.z>=TL+.28)return b.x;if(b.vz<=0)return null}return null}
-function stepBall(dt){const sub=4,h=dt/sub;for(let s=0;s<sub;s++){const b=ball;const pz=b.z;b.vy-=G*h;b.x+=b.vx*h;b.y+=b.vy*h;b.z+=b.vz*h;
+function stepBall(dt){const sub=4,h=dt/sub;for(let s=0;s<sub;s++){const b=ball;const pz=b.z;b.vy-=((state==='serve'&&tossed&&!served)?2.0:G)*h;b.x+=b.vx*h;b.y+=b.vy*h;b.z+=b.vz*h;
   trail.push([b.x,b.y,b.z]);if(trail.length>10)trail.shift();
   // net
   if(((pz<NZ&&b.z>=NZ)||(pz>NZ&&b.z<=NZ))&&b.y<TY+NH+BR&&b.y>TY-.01){point(lastHit===0?1:0,'NET');return}
@@ -100,10 +100,10 @@ function stepBall(dt){const sub=4,h=dt/sub;for(let s=0;s<sub;s++){const b=ball;c
     if(lastHit===0){if(bnc[1]>=1)point(0,'GOT BY');else point(1,'OFF THE TABLE')}else{if(bnc[0]>=1)point(1,'MISSED');else point(0,'CPU MISSES TABLE')}return}
   if(b.z>TL+1.2||b.z<-1.2){const pl=lastHit;if(pl===0){if(bnc[1]>=1)point(0,'WINNER');else point(1,'OUT')}else{if(bnc[0]>=1)point(1,'MISSED');else point(0,'CPU OUT')}return}
  }
- if(state==='serve'&&tossed&&srv===0&&ball.y<pad.y-.7&&ball.vy<0&&!served){point(1,'MISSED SERVE')}}
-function doServe(){if(state!=='serve'||srv!==0)return;if(!tossed){tossed=true;ball.held=false;ball.vy=3.1;ball.vx=0;ball.vz=0;tone(300,.1,'sine',.08,.4);return}
+ if(state==='serve'&&tossed&&srv===0&&ball.y<.45&&ball.vy<0&&!served){point(1,'MISSED SERVE')}}
+function doServe(){if(state!=='serve'||srv!==0)return;if(!tossed){tossed=true;ball.held=false;ball.vy=1.15;ball.vx=0;ball.vz=0;tone(300,.1,'sine',.08,.4);return}
  // hit the ball if within reach
- const dx=ball.x-pad.x,dy=ball.y-pad.y;if(Math.hypot(dx,dy)<PRAD*2.2&&ball.z<PZ+.4){ // serve: bounce own side then opp
+ const dx=ball.x-pad.x,dy=ball.y-pad.y;if(Math.hypot(dx,dy)<.5&&ball.vy<.6){ // serve: bounce own side then opp
   ball.z=PZ+.1;const tx=rnd(-.4,.4)+clamp(pad.x,-.4,.4)*.4;hitTo(ball,tx,rnd(1.9,2.4),0,.62,5.5);ball.vx=tx*0.2+ball.vx*.5;state='rally';lastHit=0;bnc=[0,0];rally=1;served=true;plSw=.2;tone(520,.05,'square',.1)}}
 function quad(p){ctx.beginPath();p.forEach((q,i)=>{const r=pr(q[0],q[1],q[2]);i?ctx.lineTo(r[0],r[1]):ctx.moveTo(r[0],r[1])});ctx.closePath()}
 function draw(){

@@ -38,10 +38,11 @@ function saveBest(v){if(v>best){best=v;LS.set(GKEY+'-best',String(best));return 
 
 /* ===== PENALTY KEEPER ===== */
 let mode='menu',score=0;
-const GX0=270,GX1=690,GY0=268,GY1=420,BX=480,BY=548;
+const GX0=270,GX1=690,GY0=268,GY1=420,BX=480,BY=500,LL=112;
 let shot=null,phase='wait',pt=0,shots=0,saves=0,goals=0,streak=0,keeper,msg='',msgT=0,t=0,diff=0,shooter,gameOverT=0,results=[],net=0,shake=0,flash=0,ballFx=null,fouled=false,pointerX=480;
-function newGame(){shots=0;saves=0;goals=0;streak=0;score=0;results=[];mode='play';keeper={x:480,y:400,hx:480,hy:360,dive:0,dt:0,fx:480,fy:360,tx:480,ty:360,state:'idle',rec:0,rot:0};msg='';nextKick(1.4)}
-function nextKick(delay){phase='wait';pt=-(delay||1);shot=null;ballFx=null;keeper.state='idle';keeper.dive=0;keeper.hx=keeper.x;keeper.hy=360;keeper.rot=0;
+function newGame(){shots=0;saves=0;goals=0;streak=0;score=0;results=[];mode='play';keeper=mkKeeper();msg='';nextKick(1.4)}
+function mkKeeper(){return{x:480,px:480,py:364,rot:0,hx:480,hy:334,state:'idle',dt:0,rec:0,h0x:480,h0y:364,tpx:480,tpy:364,tr:0}}
+function nextKick(delay){phase='wait';pt=-(delay||1);shot=null;ballFx=null;keeper.state='idle';keeper.px=keeper.x;keeper.py=364;keeper.hx=keeper.x;keeper.hy=334;keeper.rot=0;
  const lvl=Math.min(1,shots/9);diff=lvl;
  const T=lerp(.95,.5,lvl)+rnd(-.05,.05);
  // target: corners more as difficulty rises
@@ -53,14 +54,16 @@ function nextKick(delay){phase='wait';pt=-(delay||1);shot=null;ballFx=null;keepe
  const curve=lvl>.3&&Math.random()<.45?rnd(-70,70)*lvl:0;
  const tell=Math.random()<.7?Math.sign(tx-480):-Math.sign(tx-480);
  shot={tx,ty,T,curve,tell,wide,post,done:false,res:null,sx:BX,sy:BY};shooter={x:BX-120,run:0,kick:0,lean:0}}
-function dive(x,y){if(keeper.state!=='idle'&&keeper.state!=='ready')return;keeper.state='dive';keeper.dt=0;keeper.fx=keeper.hx;keeper.fy=keeper.hy;keeper.tx=clamp(x,GX0-40,GX1+40);keeper.ty=clamp(y,GY0-10,GY1+6);tone(200,.18,'sawtooth',.05,.6);noise(.1,.04,400)}
+function dive(x,y){const k=keeper;if(k.state!=='idle'&&k.state!=='ready')return;k.state='dive';k.dt=0;k.h0x=k.px;k.h0y=k.py;
+ const tx=clamp(x,GX0-40,GX1+40),ty=clamp(y,GY0-10,GY1+6);let r=clamp((tx-k.px)/115,-1.4,1.4);if(Math.abs(tx-k.px)<28)r=0;if(ty<340)r*=.85;
+ k.tr=r;k.tpx=tx-LL*Math.sin(r);k.tpy=Math.min(398,ty+LL*Math.cos(r));tone(200,.18,'sawtooth',.05,.6);noise(.1,.04,400)}
 function ballPos(p){ // p 0..1 progress
  const e=p;const x=lerp(shot.sx,shot.tx,e)+Math.sin(e*Math.PI)*shot.curve,y0=lerp(shot.sy,shot.ty,e),y=y0-Math.sin(e*Math.PI)*60*(1-diff*.3);const r=lerp(26,10,e);return{x,y,r,gy:y0}}
 function update(dt){t+=dt;if(msgT>0)msgT-=dt;shake=Math.max(0,shake-dt*30);flash=Math.max(0,flash-dt*2);if(net>0)net-=dt;
  if(mode==='menu')return;if(mode!=='play'){gameOverT+=dt;return}
  // keeper idle sway follows pointer slowly
- if(keeper.state==='idle'||keeper.state==='ready'){const tg=clamp(pointerX,GX0+60,GX1-60);keeper.x+=(tg-keeper.x)*Math.min(1,dt*3.5);keeper.hx=keeper.x}
- if(keeper.state==='dive'){keeper.dt+=dt;const k=Math.min(1,keeper.dt/.27),e=1-Math.pow(1-k,2.2);keeper.hx=lerp(keeper.fx,keeper.tx,e);keeper.hy=lerp(keeper.fy,keeper.ty,e);keeper.rot=lerp(0,Math.atan2(keeper.tx-keeper.x,Math.max(60,keeper.y-keeper.ty))*1.0,e);if(k>=1){keeper.state='down';keeper.rec=.7}}
+ if(keeper.state==='idle'||keeper.state==='ready'){const tg=clamp(pointerX,GX0+60,GX1-60);keeper.x+=(tg-keeper.x)*Math.min(1,dt*3.5);keeper.px=keeper.x;keeper.py=364;keeper.rot=0;keeper.hx=keeper.px;keeper.hy=keeper.state==='ready'?326:334}
+ if(keeper.state==='dive'){const k=keeper;k.dt+=dt;const q=Math.min(1,k.dt/.27),e=1-Math.pow(1-q,2.2);k.px=lerp(k.h0x,k.tpx,e);k.py=lerp(k.h0y,k.tpy,e);k.rot=lerp(0,k.tr,e);k.hx=k.px+LL*Math.sin(k.rot);k.hy=k.py-LL*Math.cos(k.rot);if(q>=1){k.state='down';k.rec=.7}}
  if(keeper.state==='down'){keeper.rec-=dt;if(keeper.rec<=0)keeper.state='done'}
  pt+=dt;
  if(phase==='wait'){shooter.run=clamp((pt+1)/1,0,1);shooter.lean=(pt>-.35?shot.tell*(pt+.35)/.35:0)*14;if(pt>=0){phase='fly';tone(130,.12,'sine',.12,-.3);noise(.1,.1,300);shooter.kick=1;if(keeper.state==='idle')keeper.state='ready'}}
@@ -69,12 +72,12 @@ function update(dt){t+=dt;if(msgT>0)msgT-=dt;shake=Math.max(0,shake-dt*30);flash
  else if(phase==='after'){ballFx.x+=ballFx.vx*dt;ballFx.y+=ballFx.vy*dt;ballFx.vy+=900*dt*(ballFx.grav?1:0);ballFx.r=Math.max(6,ballFx.r-dt*4);pt2+=dt;if(pt2>1.6){shots++;if(shots>=10)finish();else nextKick(1.2)}}
 }
 let pt2=0;
-function resolve(){const b=ballPos(1);const d=Math.hypot(b.x-keeper.hx,b.y-keeper.hy+((keeper.state==='idle'||keeper.state==='ready')?-10:0));
- const reach=keeper.state==='dive'||keeper.state==='down'||keeper.state==='done'?54:30;
+function resolve(){const b=ballPos(1),k=keeper,diving=k.state==='dive'||k.state==='down'||k.state==='done';const dh=Math.hypot(b.x-k.hx,b.y-k.hy),bxd=k.px+26*Math.sin(k.rot),byd=k.py-26*Math.cos(k.rot),db=Math.hypot((b.x-bxd)*.8,b.y-byd);
+ const reach=diving?56:34;
  let res;
  if(shot.wide){res='wide'}
  else if(shot.post){res='post'}
- else if(d<reach+10&&(keeper.state!=='ready'&&keeper.state!=='idle'||d<38))res='save';else res='goal';
+ else if(dh<reach||db<(diving?34:30))res='save';else res='goal';
  phase='after';pt2=0;
  if(res==='save'){saves++;streak++;score+=100+Math.max(0,streak-1)*25;msg='SAVE!';msgT=1.4;flash=.5;results.push(1);ballFx={x:b.x,y:b.y,r:b.r,vx:rnd(-220,220),vy:-260,grav:1};tone(520,.1,'square',.1);tone(780,.14,'square',.1,0,.09);noise(.08,.1,600)}
  else if(res==='goal'){goals++;streak=0;msg='GOAL!';msgT=1.4;shake=10;results.push(0);net=.8;ballFx={x:b.x,y:b.y,r:b.r,vx:0,vy:20,grav:0};tone(180,.3,'sawtooth',.1,-.4)}
@@ -83,25 +86,21 @@ function resolve(){const b=ballPos(1);const d=Math.hypot(b.x-keeper.hx,b.y-keepe
  shot.res=res}
 function finish(){saveBest(score);mode=saves>=6?'win':'over';gameOverT=0;tone(mode==='win'?880:200,.6,'square',.1)}
 function drawKeeper(){
- const k=keeper,bx=k.x,by=k.y;ctx.save();ctx.translate(bx,by);
- // dive: body stretches toward hands
- const dx=k.hx-bx,dy=k.hy-(by-60);ctx.fillStyle='#0005';ctx.beginPath();ctx.ellipse(0,6,34,8,0,0,TAU);ctx.fill();
- ctx.rotate(k.rot*.9);
+ const k=keeper,diving=k.state==='dive'||k.state==='down'||k.state==='done';
+ ctx.fillStyle='#0005';ctx.beginPath();ctx.ellipse(diving?k.px+(k.hx-k.px)*.5:k.px,405,diving?52:30,8,0,0,TAU);ctx.fill();
+ ctx.save();ctx.translate(k.px,k.py);ctx.rotate(k.rot);ctx.lineCap='round';
  // legs
- ctx.strokeStyle='#142a8a';ctx.lineWidth=11;ctx.lineCap='round';ctx.beginPath();ctx.moveTo(-9,-6);ctx.lineTo(-14,-34);ctx.moveTo(9,-6);ctx.lineTo(14,-34);ctx.stroke();
- ctx.strokeStyle='#ff2bd6';ctx.lineWidth=4;ctx.beginPath();ctx.moveTo(-9,-2);ctx.lineTo(-10,-8);ctx.moveTo(9,-2);ctx.lineTo(10,-8);ctx.stroke();
- // torso
- ctx.fillStyle='#ffd23f';rr(-18,-86,36,56,10);ctx.fill();ctx.fillStyle='#e0a010';ctx.fillRect(-18,-56,36,5);
- // head
- ctx.fillStyle='#f0c8a0';ctx.beginPath();ctx.arc(0,-98,12,0,TAU);ctx.fill();ctx.fillStyle='#2a1a0a';ctx.beginPath();ctx.arc(0,-103,12,Math.PI,TAU);ctx.fill();
- ctx.restore();
- // arms to hands (world coords)
- const sx=bx+Math.sin(k.rot)*-20,sy=by-72;let hx=k.hx,hy=k.hy;
- if(k.state==='idle'||k.state==='ready'){hx=bx+(Math.sin(t*6)*3);hy=by-82-(k.state==='ready'?10:0)}
- ctx.strokeStyle='#ffd23f';ctx.lineWidth=9;ctx.lineCap='round';
- for(const s of[-1,1]){const ex=k.state==='dive'||k.state==='down'||k.state==='done'?hx+s*10:bx+s*28+(k.state==='ready'?s*12:0),ey=k.state==='dive'||k.state==='down'||k.state==='done'?hy+s*4:hy+8;ctx.beginPath();ctx.moveTo(bx+s*16,by-74);ctx.lineTo(ex,ey);ctx.stroke();
-  ctx.fillStyle='#ff4b64';ctx.beginPath();ctx.arc(ex,ey,8,0,TAU);ctx.fill()}
- ctx.lineCap='butt'}
+ const spread=diving?5:9,lk=diving?Math.sin(t*20)*0:0;
+ ctx.strokeStyle='#142a8a';ctx.lineWidth=12;ctx.beginPath();ctx.moveTo(-8,0);ctx.lineTo(-spread-2,40);ctx.moveTo(8,0);ctx.lineTo(spread+2,40);ctx.stroke();
+ ctx.fillStyle='#ff2bd6';ctx.fillRect(-spread-9,36,14,6);ctx.fillRect(spread-5,36,14,6);
+ // arms (behind torso for dive)
+ const up=diving,rdy=k.state==='ready';
+ ctx.strokeStyle='#ffd23f';ctx.lineWidth=10;
+ for(const sd of[-1,1]){const hx=up?sd*7:sd*(rdy?36:26),hy=up?-LL:(rdy?-60:-22);ctx.beginPath();ctx.moveTo(sd*14,-46);ctx.lineTo(hx,hy);ctx.stroke();ctx.fillStyle='#ff4b64';ctx.beginPath();ctx.arc(hx,hy,10,0,TAU);ctx.fill();ctx.fillStyle='#ffffff55';ctx.beginPath();ctx.arc(hx-3,hy-3,3,0,TAU);ctx.fill()}
+ // torso + head
+ ctx.fillStyle='#ffd23f';rr(-19,-54,38,56,10);ctx.fill();ctx.fillStyle='#e0a010';ctx.fillRect(-19,-26,38,5);ctx.fillStyle='#142a8a';ctx.fillRect(-19,-6,38,10);
+ ctx.fillStyle='#f0c8a0';ctx.beginPath();ctx.arc(0,-68,12,0,TAU);ctx.fill();ctx.fillStyle='#2a1a0a';ctx.beginPath();ctx.arc(0,-72,12,Math.PI,TAU);ctx.fill();
+ ctx.lineCap='butt';ctx.restore()}
 function drawShooter(){
  if(!shooter)return;const x=shooter.x+shooter.run*120+shooter.lean,y=BY+48;
  ctx.fillStyle='#0005';ctx.beginPath();ctx.ellipse(x,y+40,28,7,0,0,TAU);ctx.fill();
@@ -146,7 +145,7 @@ function draw(){
  for(let i=0;i<10;i++){const x=400+i*30,r=results[i];ctx.fillStyle=r===1?'#67ff67':r===0?'#ff4b64':r===2?'#ffd23f':'#252545';ctx.beginPath();ctx.arc(x,26,10,0,TAU);ctx.fill();ctx.strokeStyle='#4a4a80';ctx.lineWidth=1;ctx.stroke()}
  if(streak>=2)text('STREAK x'+streak,600,70,13,'#ffe85c');
  if(msgT>0){ctx.globalAlpha=Math.min(1,msgT*2);glowText(msg,480,210,56,msg==='SAVE!'?'#67ff67':msg==='GOAL!'?'#ff4b64':'#ffe85c','#000');ctx.globalAlpha=1}
- if(mode==='play'&&phase==='wait'&&shots===0&&pt>-1.2)text('TAP WHERE YOU WANT TO DIVE · KEEP YOUR EYE ON THE BALL',480,LH-16,14,'#fff');
+ if(mode==='play'&&phase==='wait'&&shots===0&&pt>-1.2)text('TAP WHERE YOU WANT TO DIVE · KEEP YOUR EYE ON THE BALL',480,78,14,'#fff');
  if(mode==='menu'){ctx.fillStyle='#000c';ctx.fillRect(0,52,LW,LH);glowText('PENALTY',480,170,64,'#67ff67');glowText('KEEPER',480,236,64,'#ffe85c');text('10 PENALTIES · SAVE 6 TO WIN',480,296,20,'#fff');
   text('Tap / click where the ball is going to make your keeper dive',480,350,15,'#c5cae8');text('Watch the shooter\'s body — he usually leans the way he shoots',480,376,15,'#c5cae8');
   text('Move the pointer to shuffle along the line · Keys: ← → ↑ ↓ to dive',480,402,15,'#c5cae8');text('BEST '+best,480,448,16,'#8a90b8');if(Math.sin(t*5)>0)glowText('TAP TO START',480,520,28,'#ffe85c')}
@@ -159,7 +158,7 @@ addEventListener('keydown',e=>{const k=e.key.toLowerCase();if(mode!=='play'){if(
  if(phase==='fly'||phase==='wait'){const L=GX0+50,Rr=GX1-50,hi=GY0+22,lo=GY1-24,md=(GY0+GY1)/2;
   if(k==='arrowleft'||k==='a'){dive(L,e.shiftKey?hi:lo);e.preventDefault()}else if(k==='arrowright'||k==='d'){dive(Rr,e.shiftKey?hi:lo);e.preventDefault()}else if(k==='arrowup'||k==='w'){dive(480,hi);e.preventDefault()}else if(k==='arrowdown'||k==='s'||k===' '){dive(480,md+20);e.preventDefault()}else if(k==='q'){dive(L,hi)}else if(k==='e'){dive(Rr,hi)}}});
 let last=performance.now();function loop(now){requestAnimationFrame(loop);const dt=Math.min(.05,(now-last)/1000);last=now;update(dt);draw()}
-keeper={x:480,y:400,hx:480,hy:360,dive:0,dt:0,fx:480,fy:360,tx:480,ty:360,state:'idle',rec:0,rot:0};shooter={x:360,run:0,kick:0,lean:0};requestAnimationFrame(loop);
+keeper=mkKeeper();shooter={x:360,run:0,kick:0,lean:0};requestAnimationFrame(loop);
 
 /* RETRO WORLD profile bridge: report start / progress / finish to the arcade (trophies, quests, streaks) */
 (()=>{const GID="penalty-keeper.html",GT="PENALTY KEEPER".toUpperCase();let act=false,last=0,fin=false;
