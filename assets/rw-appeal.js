@@ -6,7 +6,7 @@
   const titleOf=c=>c?($('h3',c)||{}).textContent.trim():'';
   const tagsOf=c=>c?(($('.tags',c)||{}).textContent||'').trim():'';
   const thumbOf=id=>id==='beat-up-mafia.html'?'games/beat-up-mafia/preview.jpg':'assets/thumbs/'+id.replace(/\.html$/,'')+'.jpg';
-  const NEW=['raptor-run.html','air-hockey-arena.html','connect-four-clash.html','reversi-reborn.html','checkers-club.html','rock-blaster.html','pellet-chase.html','slice-frenzy.html','neon-survivors.html','grid-guardians.html','bubble-pop.html','sky-hop.html','neon-sudoku.html','beat-up-mafia.html','silent-wire.html','sandblade-1990.html','centre-court-tennis.html','snooker-club.html','strike-zone-bowling.html','hoops-showdown.html','penalty-keeper.html','turbo-table-tennis.html'];
+  const NEW=['jungle-gunship.html','raptor-run.html','air-hockey-arena.html','connect-four-clash.html','reversi-reborn.html','checkers-club.html','rock-blaster.html','pellet-chase.html','slice-frenzy.html','neon-survivors.html','grid-guardians.html','bubble-pop.html','sky-hop.html','neon-sudoku.html','beat-up-mafia.html','silent-wire.html','sandblade-1990.html','centre-court-tennis.html','snooker-club.html','strike-zone-bowling.html','hoops-showdown.html','penalty-keeper.html','turbo-table-tennis.html'];
   const PICKS=['neon-pod-rush.html','hellbyte-93.html','captain-leap.html','pixel-chess.html','neon-pinball.html','metro-brawler.html','galactic-golf.html','castle-cannon.html','ring-king.html','sky-raid-92.html'];
   function rail(title,sub,ids,badge){
     const r=document.createElement('div');r.className='rw-rail';
@@ -26,7 +26,7 @@
   // compact header toggle
   const hd=$('header .nav');if(hd){const m=document.createElement('button');m.type='button';m.className='rw-menu-btn';m.textContent='⚙ MENU';m.setAttribute('aria-expanded','false');m.addEventListener('click',()=>{const o=$('header').classList.toggle('rw-open');m.setAttribute('aria-expanded',o?'true':'false')});hd.insertBefore(m,$('nav',hd).nextSibling)}
   // share row
-  const sh=$('#rwShare');if(sh){const url='https://retroworld.eu.cc/',txt='Retro World — 104 free retro browser games, no download';
+  const sh=$('#rwShare');if(sh){const url='https://retroworld.eu.cc/',txt='Retro World — 105 free retro browser games, no download';
     sh.innerHTML='<span>SHARE:</span>';
     if(navigator.share){const b=document.createElement('button');b.type='button';b.textContent='📤 SHARE';b.addEventListener('click',()=>navigator.share({title:'Retro World',text:txt,url}).catch(()=>{}));sh.appendChild(b)}
     const cp=document.createElement('button');cp.type='button';cp.textContent='🔗 COPY LINK';cp.addEventListener('click',()=>{const done=()=>{cp.textContent='✔ COPIED';setTimeout(()=>cp.textContent='🔗 COPY LINK',1800)};try{navigator.clipboard.writeText(url).then(done,done)}catch(e){done()}});sh.appendChild(cp);
