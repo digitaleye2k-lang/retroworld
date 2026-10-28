@@ -85,3 +85,14 @@ body.rw-console.game-active #rwXmb{visibility:hidden}
 }
 @media (max-height:520px){.x-tabs,.x-dock{display:none}.x-txt p{display:none}}
 @media (prefers-reduced-motion:reduce){.x-art:after{animation:none}}
+.x-ad{flex:none;width:min(728px,92vw);margin:2px auto 4px;text-align:center}
+.x-ad small{display:block;font-size:8px;letter-spacing:.2em;opacity:.45;margin-bottom:2px}
+.x-ad:has(ins[data-ad-status=unfilled]){display:none}
+.x-pads{flex:none;display:none;justify-content:center;flex-wrap:wrap;gap:6px 22px;padding:2px 16px 8px;font-size:11px;letter-spacing:.12em;color:var(--dim)}
+.x-pads b{display:inline-block;min-width:24px;text-align:center;background:var(--chip);border:1px solid var(--chipB);border-radius:999px;padding:2px 8px;margin-right:6px;color:var(--txt)}
+.x-d.kf{transform:translateY(-4px) scale(1.12);background:var(--acc);color:var(--accT);border-color:#fff;box-shadow:0 0 0 3px #fff,0 0 24px var(--acc)}
+.x-d.kf span{opacity:1;transform:translateX(-50%)}
+#rwXmb.x-tv .x-main{zoom:1.3}
+@media (min-width:2300px){#rwXmb.x-tv .x-main{zoom:1.8}}
+.x-toast{position:fixed;left:50%;bottom:26px;transform:translateX(-50%);z-index:95;background:rgba(10,14,30,.92);color:#fff;border:1px solid rgba(255,255,255,.4);border-radius:999px;padding:12px 22px;font:600 14px/1 "Segoe UI",Arial,sans-serif;letter-spacing:.06em;box-shadow:0 10px 30px rgba(0,0,0,.5)}
+body.rw-console #tvModeHint,body.rw-mobile #tvModeHint{display:none!important}

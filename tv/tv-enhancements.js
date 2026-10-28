@@ -21,6 +21,8 @@
   let comboDidExit = false;
 
   function inGame() { return !!document.querySelector('#player.open'); }
+  // Console / mobile menus own their own controller navigation; TV helpers only handle dialogs and games.
+  function menuOwned() { return (body.classList.contains('rw-console') || body.classList.contains('rw-mobile')) && !inGame() && !currentDialog(); }
   function currentDialog() {
     // Topmost first: focus must not escape a dialog to elements behind it.
     for (const sel of ['#adminViewerModal.open','#dustDemoModal.open','#reportModal.open',
@@ -52,7 +54,7 @@
     scrollToFocus(el);
   }
   function ensureFocused() {
-    if (!tvOn || inGame()) return;
+    if (!tvOn || inGame() || menuOwned()) return;
     const list = focusable();
     if (!list.length) return;
     if (list.includes(document.activeElement)) return;
@@ -62,7 +64,7 @@
     focusIt(preference && list.includes(preference) ? preference : list[0]);
   }
   function directionMove(dir) {
-    if (!tvOn || inGame()) return;
+    if (!tvOn || inGame() || menuOwned()) return;
     const list = focusable();
     if (!list.length) return;
     const current = document.activeElement;
@@ -102,7 +104,7 @@
     focusIt(activeCategory || document.querySelector('.tv-category-chip') || document.querySelector('#profileBtn'));
   }
   function openActive() {
-    if (!tvOn || inGame()) return;
+    if (!tvOn || inGame() || menuOwned()) return;
     const el = document.activeElement;
     if (!el || el === document.body || !visible(el)) { ensureFocused(); return; }
     if (el.tagName === 'SELECT') { el.click(); return; }
@@ -134,16 +136,16 @@
       b.setAttribute('aria-pressed',chosen ? 'true':'false');
     });
   }
-  function setMode(on,persist) {
+  function setMode(on,persist,quiet) {
     tvOn = !!on;
     body.classList.toggle('tv-mode',tvOn);
     if (toggle) {
-      toggle.textContent = tvOn ? '▣ TV MODE: ON' : '▣ TV MODE';
+      toggle.textContent = tvOn ? '▣ TV / CONSOLE: ON' : '▣ TV / CONSOLE MODE';
       toggle.setAttribute('aria-pressed',tvOn ? 'true':'false');
     }
     hint?.setAttribute('aria-hidden',tvOn ? 'false':'true');
     if (persist) { try { localStorage.setItem(STORE,tvOn ? 'on':'off'); } catch (_) {} }
-    if (tvOn) {
+    if (tvOn && !quiet) {
       // TV GPUs are significantly happier without full-screen animated canvases.
       const background = document.getElementById('bgSelect');
       if (background && background.value !== 'static') {
@@ -153,7 +155,7 @@
     }
     window.dispatchEvent(new CustomEvent('retroworld:tv-mode',{detail:{enabled:tvOn}}));
   }
-  window.RETROWORLD_TV = {enable:()=>setMode(true,true),disable:()=>setMode(false,true),toggle:()=>setMode(!tvOn,true),isEnabled:()=>tvOn};
+  window.RETROWORLD_TV = {temp:on=>setMode(!!on,false,true),enable:()=>setMode(true,true),disable:()=>setMode(false,true),toggle:()=>setMode(!tvOn,true),isEnabled:()=>tvOn};
   categories();
   categorySelect?.addEventListener('change',updateCategories);
   toggle?.addEventListener('click',()=>setMode(!tvOn,true));
@@ -181,6 +183,7 @@
 
   addEventListener('keydown', e => {
     if (!tvOn) return;
+    if (menuOwned()) return;
     const code = e.keyCode || e.which;
     const tag = e.target && e.target.tagName;
     const editing = ['INPUT','TEXTAREA'].includes(tag);
@@ -219,7 +222,7 @@
           document.getElementById('closeBtn')?.click();
         }
       } else { comboStart=0; comboDidExit=false; }
-    } else {
+    } else if (!menuOwned()) {
       let dir = null;
       if (edge(14) || (gp.axes[0] < -0.6 && now-lastAxisMove>190)) dir='left';
       else if (edge(15) || (gp.axes[0] > 0.6 && now-lastAxisMove>190)) dir='right';
