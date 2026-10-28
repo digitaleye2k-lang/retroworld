@@ -4123,7 +4123,7 @@ gameLoadText=document.getElementById('gameLoadText');
 
 /* ===== Google AdSense =====
    Paste your ad-unit slot IDs (AdSense > Ads > By ad unit) below. Leave '' to hide that placement. */
-const RW_ADS={client:'ca-pub-7935805760564580',banner:'',side:''};
+const RW_ADS={client:'ca-pub-7935805760564580',banner:'4713461465',side:'4713461465'};
 function rwAdIns(slot,style,extra){const ins=document.createElement('ins');ins.className='adsbygoogle';ins.style.cssText=style;ins.setAttribute('data-ad-client',RW_ADS.client);ins.setAttribute('data-ad-slot',slot);if(extra)for(const k in extra)ins.setAttribute(k,extra[k]);return ins}
 function rwAdPush(){try{(window.adsbygoogle=window.adsbygoogle||[]).push({})}catch(e){}}
 function mountBannerAd(){const sec=document.getElementById('rwBannerSection'),slot=document.getElementById('rwBannerSlot');if(!sec||!slot)return;
@@ -4185,7 +4185,7 @@ function gameFrameReady(){
 }
 function loadSideAdvertisement(){
   if(!sideAdFrame||innerWidth<=760||window.RETROWORLD_TV_DEVICE||!RW_ADS.side)return;
-  sideAdFrame.innerHTML='';sideAdFrame.appendChild(rwAdIns(RW_ADS.side,'display:inline-block;width:160px;height:600px'));rwAdPush()
+  sideAdFrame.innerHTML='';sideAdFrame.appendChild(rwAdIns(RW_ADS.side,'display:block;width:160px;height:600px',{'data-ad-format':'auto'}));rwAdPush()
 }
 function loadGameViaBlob(html,token){
   if(token!==gameLoadToken)return;
