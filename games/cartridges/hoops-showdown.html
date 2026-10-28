@@ -43,13 +43,14 @@ const SPOTS=[[-3.6,-2.2],[-2,-3],[0,-4],[2,-3],[3.6,-2.2],[0,-1.2],[-3,-4.2],[3,
 let cam,ball,state='ready',spot,charge=0,chDir=1,holding=false,aimOff=0,tleft=60,streak=0,msg='',msgT=0,t=0,wind=0,shots=0,made=0,rimTouch=false,boardTouch=false,scoredNow=false,afterT=0,netT=0,fire=0,pops=[],vstar=0,ps=.5,startX=0,gameOverT=0,spotIdx=0,trail=[];
 const RNG=2.8;
 function pickSpot(){let i;do{i=Math.floor(Math.random()*SPOTS.length)}while(i===spotIdx&&SPOTS.length>1);spotIdx=i;spot=SPOTS[i];
- cam={x:spot[0],y:2.4,z:spot[1]-2.4};
+ cam={x:spot[0],y:2.4,z:spot[1]-2.4};cam.yaw=Math.atan2(HX-cam.x,HZ-cam.z);
  const dx=HX-spot[0],dz=HZ-spot[1],D=Math.hypot(dx,dz),th=52*Math.PI/180,y0=1.5,dh=HY-y0;vstar=Math.sqrt(GRAV*D*D/(2*Math.cos(th)**2*(D*Math.tan(th)-dh)));
  ps=.3+Math.random()*.5;wind=(Math.random()-.5)*(.8+Math.min(1.2,made*.05))*2;
  charge=0;state='ready';aimOff=0;ball=null;trail=[];this_D=D}
 let this_D=8;
 function newGame(){score=0;tleft=60;streak=0;made=0;shots=0;fire=0;msg='';mode='play';pops=[];spotIdx=-1;pickSpot();msg='SWIPE · HOLD · RELEASE IN THE GREEN';msgT=3}
-function proj(x,y,z){const d=Math.max(.2,z-cam.z),s=F/d;return[240+(x-cam.x)*s,330-(y-cam.y)*s,s]}
+function proj(x,y,z){const dx=x-cam.x,dz=z-cam.z,c=Math.cos(cam.yaw),n=Math.sin(cam.yaw),xr=dx*c-dz*n,d=Math.max(.2,dx*n+dz*c),s=F/d;return[240+xr*s,330-(y-cam.y)*s,s]}
+function polyP(pts,fill,stroke,lw){ctx.beginPath();pts.forEach((q,i)=>i?ctx.lineTo(q[0],q[1]):ctx.moveTo(q[0],q[1]));ctx.closePath();if(fill){ctx.fillStyle=fill;ctx.fill()}if(stroke){ctx.strokeStyle=stroke;ctx.lineWidth=lw;ctx.stroke()}}
 function shoot(){if(state!=='holding'&&state!=='ready')return;
  const v=vstar+(charge-ps)*RNG,th=52*Math.PI/180;
  const ax=HX+aimOff,az=HZ,dx=ax-spot[0],dz=az-spot[1],dl=Math.hypot(dx,dz);
@@ -92,8 +93,8 @@ function drawBall(x,y,r,rot){
 function drawHoop(front){
  const c=proj(HX,HY,HZ),rimR=RR*c[2];
  if(!front){ // board + back rim
-  const bz=BZ;const a=proj(-.9,4.05,bz),b2=proj(.9,2.9,bz);ctx.fillStyle='#e8f0ff22';ctx.fillRect(a[0],a[1],b2[0]-a[0],b2[1]-a[1]);ctx.strokeStyle='#cfe3ff';ctx.lineWidth=3;ctx.strokeRect(a[0],a[1],b2[0]-a[0],b2[1]-a[1]);
-  const q1=proj(-.3,3.55,bz),q2=proj(.3,3.1,bz);ctx.strokeStyle='#ff4b64';ctx.lineWidth=2;ctx.strokeRect(q1[0],q1[1],q2[0]-q1[0],q2[1]-q1[1]);
+  const bz=BZ;polyP([proj(-.9,4.05,bz),proj(.9,4.05,bz),proj(.9,2.9,bz),proj(-.9,2.9,bz)],'#e8f0ff22','#cfe3ff',3);
+  polyP([proj(-.3,3.55,bz),proj(.3,3.55,bz),proj(.3,3.1,bz),proj(-.3,3.1,bz)],null,'#ff4b64',2);
   const bk=proj(HX,HY,HZ+RR);ctx.strokeStyle='#e05020';ctx.lineWidth=Math.max(3,rimR*.14);ctx.beginPath();ctx.ellipse(c[0],c[1],rimR,rimR*.28,0,Math.PI,TAU);ctx.stroke();
  }else{
   // net
