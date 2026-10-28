@@ -124,3 +124,16 @@ body.rw-console #tvModeHint,body.rw-mobile #tvModeHint{display:none!important}
 @media(max-width:800px){.xp-box{grid-template-columns:1fr}.xp-stats{grid-template-columns:repeat(2,1fr)}}
 
 .xp-list{gap:4px}.xp-stats{grid-template-columns:repeat(4,1fr)}.xp-s{padding:.8vh .4vw}
+
+#xTro{position:fixed;inset:0;z-index:50;background:radial-gradient(circle at 50% 0,#2a1a5acc,#050712f2 70%);backdrop-filter:blur(14px);display:flex;flex-direction:column;align-items:center;padding:3vh 4vw;gap:1.6vh;overflow:auto;color:#fff}
+#xTro[hidden]{display:none}
+.xt-top{display:flex;align-items:center;gap:1.4vw;width:min(1200px,100%)}.xt-top h2{margin:0;font:900 clamp(20px,2.6vw,36px) system-ui;letter-spacing:3px;color:#ffd34d;text-shadow:0 0 20px #ffb02e}.xt-top b{font:900 clamp(12px,1.4vw,20px) "Courier New",monospace;color:#ffd34d;white-space:nowrap}
+.xt-prog{flex:1;height:14px;border-radius:9px;background:#ffffff18;overflow:hidden}.xt-prog div{height:100%;background:linear-gradient(90deg,#ff9d4a,#ffd34d,#7dff9c);box-shadow:0 0 16px #ffd34d}
+.xt-tabs{display:flex;gap:10px;width:min(1200px,100%)}.xt-tabs span{padding:.7vh 1.4vw;border-radius:99px;background:#ffffff14;font:900 clamp(10px,1.1vw,15px) "Courier New",monospace;letter-spacing:2px;color:#b8bfe6;cursor:pointer}.xt-tabs span.on{background:#ffd34d;color:#1a1200;box-shadow:0 0 16px #ffd34d88}
+.xt-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(clamp(54px,6.2vw,84px),1fr));gap:clamp(6px,.8vw,12px);width:min(1200px,100%);flex:1;overflow:auto;align-content:start;padding:8px 6px}
+.xt-t{aspect-ratio:1;border-radius:16px;display:grid;place-items:center;font-size:clamp(24px,3.2vw,44px);background:#ffffff0d;border:2px solid #ffffff1c;filter:grayscale(1) opacity(.5);cursor:pointer}
+.xt-t.on{filter:none;background:linear-gradient(145deg,#3a2a08,#151025);border-color:#ffd34d88;box-shadow:0 0 14px #ffd34d44}
+.xt-t.kf{transform:scale(1.16);filter:none;border-color:#fff;box-shadow:0 0 24px #ffd34d,0 0 0 3px #ffd34d;z-index:2}
+.xt-empty{grid-column:1/-1;text-align:center;color:#9aa3cc;font:700 18px "Courier New",monospace;padding:6vh 0}
+.xt-det{display:flex;gap:1.4vw;align-items:center;width:min(1200px,100%);min-height:11vh;background:#ffffff10;border:2px solid #ffd34d55;border-radius:16px;padding:1.4vh 1.6vw}
+.xt-ic{font-size:clamp(34px,5vw,64px)}.xt-det b{font:900 clamp(14px,1.8vw,24px) system-ui;letter-spacing:1px}.xt-det small{margin-left:12px;color:#ffd34d;font:700 11px "Courier New",monospace}.xt-det p{margin:.4vh 0 0;color:#c9cff0;font:clamp(11px,1.2vw,16px) "Courier New",monospace}

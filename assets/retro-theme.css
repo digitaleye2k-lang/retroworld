@@ -3,7 +3,7 @@
  --rw-body:"Space Grotesk","Inter",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;--rw-pix:"Press Start 2P","Courier New",monospace}
 html{scroll-behavior:smooth}
 body{font-family:var(--rw-body)!important;color:var(--rw-text);line-height:1.55;
- background:radial-gradient(1100px 520px at 12% -8%,color-mix(in srgb,var(--cyan) 14%,transparent),transparent 62%),radial-gradient(900px 480px at 100% 0,color-mix(in srgb,var(--mag) 11%,transparent),transparent 60%),var(--rw-bg)!important}
+ background:radial-gradient(1100px 520px at 12% -8%,color-mix(in srgb,var(--cyan) 20%,transparent),transparent 62%),radial-gradient(900px 480px at 100% 0,color-mix(in srgb,var(--mag) 16%,transparent),transparent 60%),radial-gradient(circle at 50% -10%,var(--theme-glow,#24164f) 0,var(--theme-deep,#090713) 55%,#020207 100%)!important;background-attachment:fixed!important}
 body *{letter-spacing:normal}
 /* header */
 header{background:color-mix(in srgb,var(--rw-bg) 86%,transparent)!important;border-bottom:1px solid var(--rw-line)!important;backdrop-filter:blur(14px) saturate(1.3)}

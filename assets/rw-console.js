@@ -21,7 +21,7 @@ const $=id=>document.getElementById(id);
 const esc=s=>String(s||'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 const skin=()=>ls.get(KK,'ps4');
 function hueFor(k){if(k==='xbox')return 112;if(k==='nebula')return 280;if(k==='crimson')return 352;const h=new Date().getHours();return h>=5&&h<11?190:h<17?215:h<21?266:226}
-function dockItems(){return[{ic:showAll()?'🖱️':'🎮',lb:showAll()?'ALL GAMES (MOUSE/KB)':'CONTROLLER GAMES',k:'g',run:()=>{kmForce=showAll()?'0':'1';try{localStorage.setItem('rw_km_all',kmForce)}catch(e){}renderTabs();renderRow();renderDock();focus(false,true)}},{ic:'🎲',lb:'RANDOM GAME',k:'r',run:rand},{ic:'🏆',lb:'PROFILE & TROPHIES',k:'t',run:showProf},{ic:'🎨',lb:'STYLE: '+(SKINS.find(s=>s[0]===skin())||SKINS[0])[1],k:'k',run:cycleSkin},{ic:ls.get(MK,'on')==='on'?'🎵':'🔕',lb:'AMBIENT MUSIC',k:'m',run:()=>{ls.set(MK,ls.get(MK,'on')==='on'?'off':'on');syncMusic();renderDock()}},{ic:ls.get(SK,'on')==='on'?'🔊':'🔇',lb:'CLICK SOUNDS',k:'n',run:()=>{ls.set(SK,ls.get(SK,'on')==='on'?'off':'on');renderDock()}},{ic:'🖥',lb:'CLASSIC VIEW',k:'v',run:()=>setView('classic')}]}
+function dockItems(){return[{ic:showAll()?'🖱️':'🎮',lb:showAll()?'ALL GAMES (MOUSE/KB)':'CONTROLLER GAMES',k:'g',run:()=>{kmForce=showAll()?'0':'1';try{localStorage.setItem('rw_km_all',kmForce)}catch(e){}renderTabs();renderRow();renderDock();focus(false,true)}},{ic:'🎲',lb:'RANDOM GAME',k:'r',run:rand},{ic:'👤',lb:'MY PROFILE',k:'t',run:showProf},{ic:'🏆',lb:'TROPHY ROOM',k:'h',run:showTro},{ic:'🎨',lb:'STYLE: '+(SKINS.find(s=>s[0]===skin())||SKINS[0])[1],k:'k',run:cycleSkin},{ic:ls.get(MK,'on')==='on'?'🎵':'🔕',lb:'AMBIENT MUSIC',k:'m',run:()=>{ls.set(MK,ls.get(MK,'on')==='on'?'off':'on');syncMusic();renderDock()}},{ic:ls.get(SK,'on')==='on'?'🔊':'🔇',lb:'CLICK SOUNDS',k:'n',run:()=>{ls.set(SK,ls.get(SK,'on')==='on'?'off':'on');renderDock()}},{ic:'🖥',lb:'CLASSIC VIEW',k:'v',run:()=>setView('classic')}]}
 // ---- PlayStation-style ambient music (generative, WebAudio) ----
 const MK='rw_xmb_music';
 const Amb=(()=>{let c=null,m=null,rev=null,t=null,nxt=0,step=0,run=false;
@@ -44,7 +44,7 @@ function syncMusic(){const ga=document.body.classList.contains('game-active');if
 function adStrip(host,cls){if(window.RETROWORLD_TV_DEVICE||!document.querySelector('script[src*="adsbygoogle"]'))return null;const w=document.createElement('div');w.className=cls||'x-ad';w.innerHTML='<small>ADVERTISEMENT</small>';const ins=document.createElement('ins');ins.className='adsbygoogle';ins.style.cssText='display:block;width:100%';ins.setAttribute('data-ad-client','ca-pub-7935805760564580');ins.setAttribute('data-ad-slot','4713461465');ins.setAttribute('data-ad-format','auto');ins.setAttribute('data-full-width-responsive','true');w.appendChild(ins);w.style.cssText='height:0;overflow:hidden;margin:0;padding:0;border:0';new MutationObserver(()=>{if(ins.getAttribute('data-ad-status')==='filled')w.style.cssText=''}).observe(ins,{attributes:true,attributeFilter:['data-ad-status']});host.appendChild(w);try{(window.adsbygoogle=window.adsbygoogle||[]).push({})}catch(e){}return w}
 window.RWAd=adStrip;
 function build(){if(built)return;built=true;readGames();const r=document.createElement('div');r.id='rwXmb';r.setAttribute('aria-label','Retro World console menu');
- r.innerHTML='<div id="xBgFill"></div><div id="xArtBg"></div><canvas id="xBg"></canvas><div id="xShade"></div><div class="x-main"><div class="x-top"><div class="x-prof"><span class="x-av" id="xAv">🎮</span><b id="xName">RETRO WORLD</b></div><div class="x-status"><span id="xClock"></span><button class="x-pill" id="xClassic" type="button" title="Back to the normal website (V)">CLASSIC VIEW</button></div></div><div class="x-tabs" id="xTabs"></div><div class="x-hero" id="xHero"></div><div class="x-row" id="xRow"></div><div class="x-dock" id="xDock"></div><div class="x-pads" id="xPads"></div></div><div id="xProf" hidden></div>';
+ r.innerHTML='<div id="xBgFill"></div><div id="xArtBg"></div><canvas id="xBg"></canvas><div id="xShade"></div><div class="x-main"><div class="x-top"><div class="x-prof"><span class="x-av" id="xAv">🎮</span><b id="xName">RETRO WORLD</b></div><div class="x-status"><span id="xClock"></span><button class="x-pill" id="xClassic" type="button" title="Back to the normal website (V)">CLASSIC VIEW</button></div></div><div class="x-tabs" id="xTabs"></div><div class="x-hero" id="xHero"></div><div class="x-row" id="xRow"></div><div class="x-dock" id="xDock"></div><div class="x-pads" id="xPads"></div></div><div id="xProf" hidden></div><div id="xTro" hidden></div>';
  document.body.appendChild(r);
  $('xClassic').addEventListener('click',()=>setView('classic'));
  $('xTabs').addEventListener('click',e=>{const t=e.target.closest('.x-tab');if(t)selCat(+t.dataset.i)});
@@ -81,7 +81,7 @@ function modalOpen(){if(document.body.classList.contains('game-active'))return t
 
 // ---- console player profile ----
 let profOpen=false,profI=0;
-const PROF_ROWS=['avatar','acc','theme','color','anim','title','motto','rand','full','close'];
+const PROF_ROWS=['avatar','acc','theme','color','anim','title','motto','rand','troph','full','close'];
 function profData(){const p=window.RWP&&RWP.active&&RWP.active();return p}
 function profCycle(list,cur,d){let i=list.indexOf(cur);if(i<0)i=0;return list[(i+d+list.length)%list.length]}
 function profChange(row,d){const p=profData(),R=window.RWP;if(!p||!R||!R.idn)return;const I=R.idn,pk=a=>a[Math.floor(Math.random()*a.length)];
@@ -103,7 +103,7 @@ function renderProf(){const el=$('xProf');if(!el)return;const R=window.RWP,p=pro
  const lab={avatar:'CHARACTER',acc:'ACCESSORY',theme:'CARD THEME',color:'GLOW',anim:'ANIMATION',title:'TITLE',motto:'MOTTO'};
  const g=glyphs();
  const rows=PROF_ROWS.map((r,i)=>{const f=i===profI?' kf':'';if(lab[r])return '<div class="xp-r'+f+'" data-i="'+i+'"><span>'+lab[r]+'</span><b'+(r==='color'&&p.accent?' style="color:'+p.accent+'"':'')+'>◀ '+pesc(val[r])+' ▶</b></div>';
-  const t={rand:'🎲 SURPRISE ME',full:'📋 FULL PROFILE, SAVE & EXPORT',close:'◀ BACK TO MENU'}[r];return '<button class="xp-b'+f+'" data-i="'+i+'">'+t+'</button>'}).join('');
+  const t={rand:'🎲 SURPRISE ME',troph:'🏆 OPEN TROPHY ROOM',full:'📋 FULL PROFILE, SAVE & EXPORT',close:'◀ BACK TO MENU'}[r];return '<button class="xp-b'+f+'" data-i="'+i+'">'+t+'</button>'}).join('');
  const st=[['GAMES PLAYED',a.plays],['DIFFERENT GAMES',a.unique],['WINS',a.wins],['TOTAL POINTS',a.points],['BEST SCORE',a.maxScore],['CHALLENGES',a.challenges],['TOKENS',a.tokens],['TROPHIES',earned.length+' / '+defs.length]].map(x=>'<div class="xp-s"><b>'+(typeof x[1]==='number'?x[1].toLocaleString():x[1])+'</b><small>'+x[0]+'</small></div>').join('');
  const tr=earned.slice(0,24).map(d=>'<span class="xp-t on" title="'+pesc(d.name)+'">'+d.icon+'</span>').join('')||'<small style="color:#9aa3cc;font:700 11px monospace">PLAY GAMES TO EARN TROPHIES 🏆</small>';
  el.innerHTML='<div class="xp-box" style="--ac:'+acc+'"><div class="xp-card" style="background:'+th.c+'"><div class="xp-av" data-acc="'+pesc(p.acc||'')+'" data-anim="'+pesc(p.anim||'')+'">'+av.icon+'</div><div class="xp-nm">'+pesc(p.name)+'</div><div class="xp-gn">'+pesc(p.genre)+' PLAYER • '+pesc(av.game)+'</div>'+(p.title?'<div class="xp-ti">« '+pesc(p.title)+' »</div>':'')+(p.motto?'<div class="xp-mo">“'+pesc(p.motto)+'”</div>':'')+'</div><div class="xp-right"><div class="xp-stats">'+st+'</div><div class="xp-trs">'+tr+'</div><div class="xp-list">'+rows+'</div></div></div><div class="xp-hint">◀ ▶ '+'CHANGE   ▲ ▼ MOVE   '+g.A+' SELECT   '+g.B+' BACK</div>';
@@ -114,21 +114,40 @@ function updTop(){try{const p=profData(),av=p&&RWP.avatar(p.avatar),e=$('xAv');i
 function profNav(k){const p=profData();if(!p||!(window.RWP&&RWP.idn)){if(k==='A'){hideProf();if(RWP&&RWP.openOnboarding)RWP.openOnboarding()}else if(k==='B')hideProf();return}
  const r=PROF_ROWS[profI];
  if(k==='U')profI=(profI-1+PROF_ROWS.length)%PROF_ROWS.length;else if(k==='D')profI=(profI+1)%PROF_ROWS.length;
- else if(k==='L'||k==='l'){if(!['rand','full','close'].includes(r))profChange(r,-1);return}
- else if(k==='R'||k==='r'){if(!['rand','full','close'].includes(r))profChange(r,1);return}
+ else if(k==='L'||k==='l'){if(!['rand','troph','full','close'].includes(r))profChange(r,-1);return}
+ else if(k==='R'||k==='r'){if(!['rand','troph','full','close'].includes(r))profChange(r,1);return}
  else if(k==='X'){profChange('rand',0);return}
  else if(k==='B'||k==='E'||k==='S'){hideProf();return}
- else if(k==='A'){if(r==='close')hideProf();else if(r==='full'){hideProf();if(RWP.openProfile)RWP.openProfile()}else if(r==='rand')profChange('rand',0);else profChange(r,1);return}
+ else if(k==='A'){if(r==='close')hideProf();else if(r==='troph'){hideProf();showTro()}else if(r==='full'){hideProf();if(RWP.openProfile)RWP.openProfile()}else if(r==='rand')profChange('rand',0);else profChange(r,1);return}
  tick&&tick(700);renderProf()}
+
+// ---- console trophy room ----
+let troOpen=false,troI=0,troF=0;const TRO_F=['ALL','EARNED','LOCKED'];
+function troList(){const p=profData(),R=window.RWP;const defs=(R&&R.defs)||[];const ea=d=>!!(p&&p.trophies&&p.trophies[d.id]);return defs.filter(d=>troF===0||(troF===1?ea(d):!ea(d)))}
+function renderTro(keep){const el=$('xTro');if(!el)return;const p=profData(),R=window.RWP;const defs=(R&&R.defs)||[];const g=glyphs();
+ const ea=d=>!!(p&&p.trophies&&p.trophies[d.id]);const n=defs.filter(ea).length;const L=troList();if(troI>=L.length)troI=Math.max(0,L.length-1);
+ const cur=L[troI];const pct=defs.length?Math.round(n/defs.length*100):0;
+ el.innerHTML='<div class="xt-top"><h2>🏆 TROPHY ROOM</h2><div class="xt-prog"><div style="width:'+pct+'%"></div></div><b>'+n+' / '+defs.length+' • '+pct+'%</b></div><div class="xt-tabs">'+TRO_F.map((f,i)=>'<span class="'+(i===troF?'on':'')+'" data-f="'+i+'">'+f+'</span>').join('')+'</div><div class="xt-grid">'+(L.length?L.map((d,i)=>'<div class="xt-t'+(ea(d)?' on':'')+(i===troI?' kf':'')+'" data-i="'+i+'"><span>'+d.icon+'</span></div>').join(''):'<div class="xt-empty">NOTHING HERE YET — GO PLAY! 🕹️</div>')+'</div><div class="xt-det">'+(cur?'<span class="xt-ic">'+cur.icon+'</span><div><b>'+pesc(cur.name)+'</b><small>'+(ea(cur)?'✔ UNLOCKED':'LOCKED')+'</small><p>'+pesc(cur.desc||'')+'</p></div>':'')+'</div><div class="xp-hint">◀ ▶ ▲ ▼ MOVE   '+g.L+'/'+g.R+' FILTER   '+g.Y+' FULL TROPHY ROOM   '+g.B+' BACK</div>';
+ const f=el.querySelector('.kf');if(f&&f.scrollIntoView)f.scrollIntoView({block:'nearest'})}
+function showTro(){const el=$('xTro');if(!el)return;if(profOpen)hideProf();troOpen=true;troI=0;el.hidden=false;renderTro()}
+function hideTro(){troOpen=false;const el=$('xTro');if(el)el.hidden=true;focus&&focus(true)}
+function troCols(){const t=document.querySelectorAll('#xTro .xt-t');if(t.length<2)return 1;const y=t[0].offsetTop;let c=0;while(c<t.length&&t[c].offsetTop===y)c++;return Math.max(1,c)}
+function troNav(k){const L=troList(),c=troCols();
+ if(k==='B'||k==='E'||k==='S'){hideTro();return}
+ if(k==='Y'){hideTro();try{window.RWP_UI&&RWP_UI.openRoom?RWP_UI.openRoom('rewards'):RWP.openProfile()}catch(e){}return}
+ if(k==='r'||k==='N'){troF=(troF+1)%3;troI=0}else if(k==='l'||k==='P'){troF=(troF+2)%3;troI=0}
+ else if(k==='L')troI=Math.max(0,troI-1);else if(k==='R')troI=Math.min(L.length-1,troI+1);
+ else if(k==='U')troI=troI-c>=0?troI-c:troI;else if(k==='D')troI=troI+c<L.length?troI+c:L.length-1;
+ else return;tick&&tick(700);renderTro()}
 let zone='row',dockI=0;
 function dockFocus(){const ds=document.querySelectorAll('#xDock .x-d');ds.forEach((d,i)=>d.classList.toggle('kf',zone==='dock'&&i===dockI))}
 function setZone(z){zone=z;dockFocus()}
 function dockMove(d){const n=dockItems().length;dockI=(dockI+d+n)%n;dockFocus();tick(700)}
 function dockAct(){const it=dockItems()[dockI];tick(900);if(it)it.run()}
-function nav(k){ if(profOpen){profNav(k);return} // k: L R U D A B X Y S(start) E(select) P(L2) N(R2) l(L1) r(R1)
+function nav(k){ if(troOpen){troNav(k);return} if(profOpen){profNav(k);return} // k: L R U D A B X Y S(start) E(select) P(L2) N(R2) l(L1) r(R1)
  if(zone==='dock'){if(k==='L')dockMove(-1);else if(k==='R')dockMove(1);else if(k==='A')dockAct();else if(k==='U'||k==='B'||k==='E')setZone('row');return}
  if(k==='L')move(-1);else if(k==='R')move(1);else if(k==='D'){if(cat>=CATS.length-1)setZone('dock');else selCat(cat+1)}else if(k==='U')selCat(cat-1);else if(k==='A')act();else if(k==='X')rand();else if(k==='Y')cycleSkin();else if(k==='S'){showProf()}else if(k==='E')setZone('dock');else if(k==='P')move(-5);else if(k==='N')move(5);else if(k==='l')selCat(cat-1);else if(k==='r')selCat(cat+1)}
-function key(e){if(!on)return;if(profOpen){const m={ArrowLeft:'L',ArrowRight:'R',ArrowUp:'U',ArrowDown:'D',Enter:'A',' ':'A',Escape:'B',Backspace:'B',BrowserBack:'B'}[e.key];if(m||e.keyCode===461){profNav(m||'B');e.preventDefault()}return}const tg=e.target;if(tg&&/^(INPUT|TEXTAREA|SELECT)$/.test(tg.tagName))return;if(modalOpen())return;const k=e.key,dk=dockItems().find(d=>d.k===k.toLowerCase());
+function key(e){if(!on)return;if(troOpen){const m={ArrowLeft:'L',ArrowRight:'R',ArrowUp:'U',ArrowDown:'D',Escape:'B',Backspace:'B',BrowserBack:'B',Tab:'r',y:'Y'}[e.key];if(m||e.keyCode===461){troNav(m||'B');e.preventDefault()}return}if(profOpen){const m={ArrowLeft:'L',ArrowRight:'R',ArrowUp:'U',ArrowDown:'D',Enter:'A',' ':'A',Escape:'B',Backspace:'B',BrowserBack:'B'}[e.key];if(m||e.keyCode===461){profNav(m||'B');e.preventDefault()}return}const tg=e.target;if(tg&&/^(INPUT|TEXTAREA|SELECT)$/.test(tg.tagName))return;if(modalOpen())return;const k=e.key,dk=dockItems().find(d=>d.k===k.toLowerCase());
  if(k==='Tab'){setZone(zone==='dock'?'row':'dock');e.preventDefault();return}
  if(k==='Escape'||k==='Backspace'||k==='BrowserBack'||e.keyCode===461){if(zone==='dock'){setZone('row');e.preventDefault();return}if((k==='BrowserBack'||e.keyCode===461)&&/web0s|webos/i.test(navigator.userAgent)){try{window.close()}catch(x){}}e.preventDefault();return}
  if(zone==='dock'){if(k==='ArrowRight')dockMove(1);else if(k==='ArrowLeft')dockMove(-1);else if(k==='Enter'||k===' ')dockAct();else if(k==='ArrowUp')setZone('row');else if(dk)dk.run();else return;e.preventDefault();return}
@@ -153,5 +172,6 @@ function init(){const q=/[?&]view=(classic|console|mobile)/.exec(location.search
  const go=()=>{const tvb=document.getElementById('tvModeBtn');if(tvb)tvb.addEventListener('click',e=>{e.stopImmediatePropagation();e.preventDefault();setView(document.body.classList.contains('rw-console')?'classic':'console')},true);const mbb=document.getElementById('mobileModeBtn');if(mbb)mbb.addEventListener('click',()=>setView('mobile'));if(v!=='classic')setView(v)};
  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',go);else go()}
 document.addEventListener('click',e=>{const t=e.target;if(!t.closest)return;if(t.closest('.x-prof')&&on){showProf();return}const b=t.closest('#xProf [data-r],#xProf [data-i]');if(!b)return;if(b.dataset.r==='create'){hideProf();if(RWP.openOnboarding)RWP.openOnboarding();return}if(b.dataset.r==='close'){hideProf();return}profI=+b.dataset.i;profNav('A')});
+document.addEventListener('click',e=>{const t=e.target.closest&&e.target.closest('#xTro .xt-t,#xTro .xt-tabs span');if(!t)return;if(t.dataset.f!=null){troF=+t.dataset.f;troI=0}else troI=+t.dataset.i;renderTro()});
 window.RWConsole={set:setView};init();
 })();
