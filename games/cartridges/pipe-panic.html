@@ -1,0 +1,114 @@
+<!doctype html><html lang="en"><head><script src="rw-boost.js"></script><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover"><meta name="theme-color" content="#05060f">
+<title>PIPE PANIC • RETRO WORLD</title>
+<style>
+html,body{margin:0;height:100%;background:#05060f;overflow:hidden;font-family:"Courier New",monospace;-webkit-user-select:none;user-select:none;-webkit-tap-highlight-color:transparent}
+body{background:radial-gradient(circle at 50% 30%,#15153a,#05060f 70%)}
+#stage{position:fixed;inset:0;display:flex;align-items:center;justify-content:center}
+canvas{display:block;touch-action:none;box-shadow:0 0 50px #00ffff22;border-radius:6px;cursor:crosshair}
+#snd{position:fixed;left:6px;top:40px;z-index:5;font:700 11px "Courier New",monospace;color:#67ff67;background:#0b0b1ccc;border:1px solid #67ff67;padding:5px 8px;cursor:pointer;border-radius:4px}
+#snd.off{color:#8a8ab0;border-color:#6a6a90}
+
+</style>
+<script>addEventListener('keydown',function(e){if((e.keyCode||e.which)===461&&window.parent!==window){e.preventDefault();window.parent.postMessage({type:'retroworld-tv-back'},'*');}},true);</script></head>
+<body><div id="stage"><canvas id="g"></canvas></div><button id="snd" type="button">SFX: ON</button>
+
+<script>
+'use strict';
+const LW=480,LH=800;
+const cv=document.getElementById('g'),ctx=cv.getContext('2d');
+function fit(){const dpr=Math.min(2,window.devicePixelRatio||1),s=Math.min(innerWidth/LW,innerHeight/LH);cv.style.width=(LW*s)+'px';cv.style.height=(LH*s)+'px';cv.width=Math.round(LW*s*dpr);cv.height=Math.round(LH*s*dpr);ctx.setTransform(cv.width/LW,0,0,cv.height/LH,0,0)}
+addEventListener('resize',fit);addEventListener('orientationchange',()=>setTimeout(fit,120));fit();
+function ptr(e){const r=cv.getBoundingClientRect();return{x:(e.clientX-r.left)/r.width*LW,y:(e.clientY-r.top)/r.height*LH}}
+const LS={get(k){try{return localStorage.getItem(k)}catch(e){return null}},set(k,v){try{localStorage.setItem(k,v)}catch(e){}}};
+const GKEY='rw-pipe-panic';
+let sfxOn=LS.get('rwMute')!=='1',AC=null;
+const sndBtn=document.getElementById('snd');
+function sndLabel(){sndBtn.textContent='SFX: '+(sfxOn?'ON':'OFF');sndBtn.className=sfxOn?'':'off'}sndLabel();
+sndBtn.addEventListener('click',e=>{sfxOn=!sfxOn;LS.set('rwMute',sfxOn?'0':'1');sndLabel();e.stopPropagation();ac()});
+function ac(){try{if(!AC)AC=new (window.AudioContext||window.webkitAudioContext)();if(AC.state==='suspended')AC.resume()}catch(e){}}
+addEventListener('pointerdown',ac,{passive:true});addEventListener('keydown',ac);
+function tone(f,d,type,vol,slide,delay){if(!sfxOn||!AC)return;try{const t=AC.currentTime+(delay||0),o=AC.createOscillator(),g=AC.createGain();o.type=type||'square';o.frequency.setValueAtTime(f,t);if(slide)o.frequency.exponentialRampToValueAtTime(Math.max(20,f*slide),t+d);g.gain.setValueAtTime(vol||.06,t);g.gain.exponentialRampToValueAtTime(.0001,t+d);o.connect(g);g.connect(AC.destination);o.start(t);o.stop(t+d+.02)}catch(e){}}
+function noise(d,vol,hp){if(!sfxOn||!AC)return;try{const n=Math.floor(AC.sampleRate*d),b=AC.createBuffer(1,n,AC.sampleRate),a=b.getChannelData(0);for(let i=0;i<n;i++)a[i]=(Math.random()*2-1)*(1-i/n);const s=AC.createBufferSource(),g=AC.createGain(),f=AC.createBiquadFilter();f.type='highpass';f.frequency.value=hp||800;g.gain.value=vol||.08;s.buffer=b;s.connect(f);f.connect(g);g.connect(AC.destination);s.start()}catch(e){}}
+const TAU=Math.PI*2,rnd=(a,b)=>a+Math.random()*(b-a),rint=(a,b)=>Math.floor(rnd(a,b+1)),clamp=(v,a,b)=>v<a?a:v>b?b:v,lerp=(a,b,t)=>a+(b-a)*t;
+function rr(x,y,w,h,r){ctx.beginPath();ctx.moveTo(x+r,y);ctx.arcTo(x+w,y,x+w,y+h,r);ctx.arcTo(x+w,y+h,x,y+h,r);ctx.arcTo(x,y+h,x,y,r);ctx.arcTo(x,y,x+w,y,r);ctx.closePath()}
+function text(s,x,y,size,col,align,font){ctx.font='bold '+size+'px '+(font||'"Courier New",monospace');ctx.textAlign=align||'center';ctx.textBaseline='middle';ctx.fillStyle=col||'#fff';ctx.fillText(s,x,y)}
+function glowText(s,x,y,size,col,glow,align){ctx.save();ctx.shadowColor=glow||col;ctx.shadowBlur=18;text(s,x,y,size,col,align);ctx.restore()}
+let best=parseInt(LS.get(GKEY+'-best')||'0',10)||0;
+function saveBest(v){if(v>best){best=v;LS.set(GKEY+'-best',String(best));return true}return false}
+
+let mode='menu',score=0,t=0,overT=0,won=false,overMsg='';
+const K={};
+function endGame(w,m){if(mode!=='play')return;won=!!w;mode=w?'win':'over';overMsg=m||'';overT=0;saveBest(score);tone(w?880:180,.5,w?'square':'sawtooth',.1,w?1.5:.5)}
+function bgFill(a,b){const g=ctx.createLinearGradient(0,0,0,LH);g.addColorStop(0,a);g.addColorStop(1,b);ctx.fillStyle=g;ctx.fillRect(0,0,LW,LH)}
+function hud(l,r,c){ctx.fillStyle='#0b0b1ecc';ctx.fillRect(0,0,LW,44);ctx.fillStyle='#ffffff22';ctx.fillRect(0,43,LW,2);text(l,12,23,16,c||'#ffe85c','left');text(r,LW-12,23,16,'#fff','right')}
+function startGame(){mode='play';score=0;overT=0;onStart()}
+const META={"title": "PIPE PANIC", "sub": "PLUMBING PUZZLE", "help": ["Tap tiles to place the next pipe piece", "Build a path before the water starts", "Reach the target length \u00b7 5 levels"], "c1": "#00e5ff", "c2": "#2a7fff", "win": "WATERTIGHT!"};
+
+let G,N=7,CS=64,GX0=16,GY0=150,flowT,flowCells,state_,lvlP,queue,fluid,flowSpd,startC,startD,len_,okLen,leak;
+const SHAPES={s:[[0,1],[2,3]],l:[[0,1],[1,2],[2,3],[3,0]],c:[[0,2],[1,3]],x:[[0,2],[1,3]]};
+// dirs 0=up 1=right 2=down 3=left
+const DX=[0,1,0,-1],DY=[-1,0,1,0];
+const PIPES=[{n:'h',e:[1,3]},{n:'v',e:[0,2]},{n:'ur',e:[0,1]},{n:'rd',e:[1,2]},{n:'dl',e:[2,3]},{n:'lu',e:[3,0]},{n:'x',e:[0,1,2,3],cross:true}];
+function rndPipe(){const r=Math.random();return r<.25?0:r<.5?1:r<.9?rint(2,5):6}
+function onInit(){G=[];queue=[]}
+function onStart(){lvlP=1;begin()}
+function begin(){G=[];for(let y=0;y<N;y++){G.push([]);for(let x=0;x<N;x++)G[y].push(null)}
+ startC={x:rint(1,N-2),y:rint(1,N-2)};startD=rint(0,3);G[startC.y][startC.x]={start:true,e:[startD]};
+ // block a few cells
+ for(let i=0;i<Math.min(6,2+lvlP);i++){const x=rint(0,N-1),y=rint(0,N-1);if(!G[y][x])G[y][x]={wall:true,e:[]}}
+ queue=[];for(let i=0;i<5;i++)queue.push(rndPipe());
+ flowT=Math.max(8,22-lvlP*2);state_='build';flowCells=[];fluid=0;len_=0;okLen=6+lvlP*2;flowSpd=Math.max(.9,2.2-lvlP*.15);cur={x:startC.x,y:startC.y,d:startD};fp=0;leak=false}
+let cur,fp;
+function onTap(p){const x=Math.floor((p.x-GX0)/CS),y=Math.floor((p.y-GY0)/CS);if(x<0||y<0||x>=N||y>=N)return;if(state_!=='build'&&state_!=='flow')return;const c=G[y][x];if(c&&(c.wall||c.start||c.fill))return;if(c&&!c.fill){score-=2;score=Math.max(0,score)}G[y][x]={p:queue[0],e:PIPES[queue[0]].e,fill:0};queue.shift();queue.push(rndPipe());tone(400,.05,'square',.05)}
+function onUpdate(dt){if(state_==='build'){flowT-=dt;if(flowT<=0){state_='flow';fp=0}}else if(state_==='flow'){fp+=dt*(flowSpd>0?1/flowSpd:1);while(fp>=1&&state_==='flow'){fp-=1;advance()}}}
+function advance(){// move flow from cur cell in direction cur.d to next
+ const nx=cur.x+DX[cur.d],ny=cur.y+DY[cur.d];if(nx<0||ny<0||nx>=N||ny>=N){leak=true;return stop()}
+ const c=G[ny][nx];if(!c||c.wall){return stop()}
+ const inD=(cur.d+2)%4;if(!c.e.includes(inD)){return stop()}
+ if(c.fill&&!(c.p===6)){return stop()}
+ if(c.p===6){c.fillh=c.fillh||0;c.fillv=c.fillv||0;if(cur.d%2===0){if(c.fillv)return stop();c.fillv=1}else{if(c.fillh)return stop();c.fillh=1}c.fill=(c.fillh&&c.fillv)?1:.5;let out=cur.d;cur={x:nx,y:ny,d:out}}
+ else{c.fill=1;const outD=c.e.find(e=>e!==inD);cur={x:nx,y:ny,d:outD}}
+ len_++;score+=10*lvlP;tone(300+len_*20,.06,'sine',.06)}
+function stop(){state_='done';if(len_>=okLen){score+=len_*5;tone(700,.3,'square',.1,2);if(lvlP>=5){endGame(true,'Pipes connected on all 5 levels!');return}lvlP++;setTimeout(()=>{if(mode==='play')begin()},900)}else{tone(120,.6,'sawtooth',.1,.3);setTimeout(()=>endGame(false,'Flooded after '+len_+' pipes (needed '+okLen+')'),800)}}
+function pipe(c,x,y,fill){const e=c.e;ctx.lineCap='butt';const draw=(col,w)=>{ctx.strokeStyle=col;ctx.lineWidth=w;for(const d of e){ctx.beginPath();ctx.moveTo(x+CS/2,y+CS/2);ctx.lineTo(x+CS/2+DX[d]*CS/2,y+CS/2+DY[d]*CS/2);ctx.stroke()}};
+ if(c.p===6){ctx.strokeStyle='#7a8aa8';ctx.lineWidth=18;ctx.beginPath();ctx.moveTo(x,y+CS/2);ctx.lineTo(x+CS,y+CS/2);ctx.stroke();ctx.beginPath();ctx.moveTo(x+CS/2,y);ctx.lineTo(x+CS/2,y+CS);ctx.stroke();ctx.strokeStyle='#1a2a3a';ctx.lineWidth=8;ctx.beginPath();ctx.moveTo(x,y+CS/2);ctx.lineTo(x+CS,y+CS/2);ctx.stroke();ctx.beginPath();ctx.moveTo(x+CS/2,y);ctx.lineTo(x+CS/2,y+CS);ctx.stroke();ctx.strokeStyle='#00e5ff';ctx.lineWidth=8;if(c.fillh){ctx.beginPath();ctx.moveTo(x,y+CS/2);ctx.lineTo(x+CS,y+CS/2);ctx.stroke()}if(c.fillv){ctx.beginPath();ctx.moveTo(x+CS/2,y);ctx.lineTo(x+CS/2,y+CS);ctx.stroke()}return}
+ draw('#7a8aa8',18);draw('#1a2a3a',8);if(fill)draw('#00e5ff',8);ctx.fillStyle=fill?'#00e5ff':'#7a8aa8';ctx.beginPath();ctx.arc(x+CS/2,y+CS/2,fill?5:9,0,TAU);ctx.fill()}
+function onDraw(){bgFill('#0a1424','#142a44');
+ for(let y=0;y<N;y++)for(let x=0;x<N;x++){const px=GX0+x*CS,py=GY0+y*CS;ctx.fillStyle=(x+y)%2?'#10203a':'#142848';ctx.fillRect(px,py,CS,CS);const c=G[y]&&G[y][x];if(!c)continue;if(c.wall){ctx.fillStyle='#3a2a2a';rr(px+6,py+6,CS-12,CS-12,6);ctx.fill();text('✖',px+CS/2,py+CS/2+1,22,'#755')}else if(c.start){ctx.fillStyle='#ff9a2a';rr(px+8,py+8,CS-16,CS-16,10);ctx.fill();const d=c.e[0];ctx.fillStyle='#00e5ff';ctx.beginPath();ctx.arc(px+CS/2+DX[d]*20,py+CS/2+DY[d]*20,8,0,TAU);ctx.fill();text('S',px+CS/2,py+CS/2+1,20,'#fff')}else pipe(c,px,py,c.fill)}
+ ctx.strokeStyle='#2a4a7a';ctx.lineWidth=2;ctx.strokeRect(GX0,GY0,N*CS,N*CS);
+ // queue
+ text('NEXT',50,86,13,'#9ab');queue.forEach((q,i)=>{const px=90+i*60,py=62;ctx.fillStyle='#0d1a30';rr(px,py,50,50,6);ctx.fill();const sc=ctx.save();ctx.save();ctx.translate(px+25,py+25);ctx.scale(.75,.75);ctx.translate(-CS/2,-CS/2);pipe({e:PIPES[q].e,p:q},0,0,0);ctx.restore();if(i===0){ctx.strokeStyle='#ffe85c';ctx.lineWidth=3;ctx.strokeRect(px,py,50,50)}});
+ hud('SCORE '+score,'LEVEL '+lvlP+'/5');
+ if(state_==='build'){text('FLOW IN '+Math.ceil(flowT)+'s',240,LH-50,22,'#ffe85c');text('Tap tiles to lay pipe · connect '+okLen+'+',240,LH-24,13,'#9ab')}else if(state_==='flow')text('FLOWING…  '+len_+'/'+okLen,240,LH-40,22,'#00e5ff');else if(state_==='done')text(len_>=okLen?'CONNECTED!':'LEAK!',240,LH-40,24,len_>=okLen?'#67ff67':'#ff4b64')}
+
+function step(dt){t+=dt;if(mode==='play')onUpdate(dt);else overT+=dt}
+function overlay(){
+ const big=LW>600?1:.72,cx=LW/2;
+ if(mode==='menu'){ctx.fillStyle='#050510dd';ctx.fillRect(0,0,LW,LH);glowText(META.title,cx,LH*.22,Math.round(54*big),META.c1||'#00ffff',META.c2||'#ff2bd6');text(META.sub||'',cx,LH*.22+46*big,Math.round(18*big),'#ffe85c');
+  const h=META.help||[];h.forEach((l,i)=>text(l,cx,LH*.40+i*30*big,Math.round(16*big),'#c5cae8'));
+  text('BEST '+best,cx,LH*.40+h.length*30*big+34,Math.round(16*big),'#8a90b8');if(Math.sin(t*5)>0)glowText('TAP TO START',cx,LH*.86,Math.round(28*big),'#ffe85c')}
+ else if(mode==='win'||mode==='over'){ctx.fillStyle='#050510cc';ctx.fillRect(0,0,LW,LH);const w=mode==='win';glowText(w?(META.win||'YOU WIN!'):(META.over||'GAME OVER'),cx,LH*.3,Math.round(46*big),w?'#67ff67':'#ff4b64');
+  if(overMsg)text(overMsg,cx,LH*.3+46*big,Math.round(17*big),'#c5cae8');text('SCORE',cx,LH*.48,Math.round(14*big),'#8a90b8');glowText(String(score),cx,LH*.48+46*big,Math.round(52*big),'#ffe85c');text('BEST '+best,cx,LH*.48+96*big,Math.round(16*big),'#fff');
+  if(overT>.8&&Math.sin(t*5)>0)text('TAP TO PLAY AGAIN',cx,LH*.82,Math.round(20*big),'#00ffff')}}
+function draw(){ctx.save();ctx.setTransform(cv.width/LW,0,0,cv.height/LH,0,0);onDraw();overlay();ctx.restore()}
+cv.addEventListener('pointerdown',e=>{ac();const p=ptr(e);if(mode!=='play'){if(mode==='menu'||overT>.8)startGame();return}try{cv.setPointerCapture(e.pointerId)}catch(_){}if(typeof onTap==='function')onTap(p,e)});
+cv.addEventListener('pointermove',e=>{if(mode==='play'&&typeof onMove==='function')onMove(ptr(e),e)});
+const _up=e=>{if(mode==='play'&&typeof onUp==='function')onUp(ptr(e),e)};cv.addEventListener('pointerup',_up);cv.addEventListener('pointercancel',_up);
+addEventListener('keydown',e=>{const k=e.key.toLowerCase();if([' ','arrowup','arrowdown','arrowleft','arrowright'].includes(k))e.preventDefault();if(mode!=='play'){if((k===' '||k==='enter')&&(mode==='menu'||overT>.8))startGame();return}if(K[k])return;K[k]=true;if(typeof onKey==='function')onKey(k,e)});
+addEventListener('keyup',e=>{const k=e.key.toLowerCase();K[k]=false;if(mode==='play'&&typeof onKeyUp==='function')onKeyUp(k,e)});
+let _last=performance.now();function loop(now){requestAnimationFrame(loop);const dt=Math.min(.05,(now-_last)/1000);_last=now;step(dt);draw()}
+if(typeof onInit==='function')onInit();requestAnimationFrame(loop);
+
+/* RETRO WORLD profile bridge: report start / progress / finish to the arcade (trophies, quests, streaks) */
+(()=>{const GID="pipe-panic.html",GT="PIPE PANIC".toUpperCase();let act=false,last=0,fin=false;
+const send=(t,x)=>{try{parent.postMessage(Object.assign({source:'retro-world-game',type:t,gameId:GID,title:GT},x||{}),'*')}catch(e){}};
+const val=()=>{try{return Math.max(0,Math.round(Number(score)||0))}catch(e){return 0}};
+const snap=()=>send('progress',{metric:'score',value:val(),higherBetter:true});
+setInterval(()=>{let m='';try{m=String(mode)}catch(e){return}
+const playing=(m==='play'||m==='clear'||m==='dying'),now=Date.now();
+if(playing&&!act){act=true;fin=false;send('start');snap();last=now}
+if(act&&playing&&now-last>1500){snap();last=now}
+if(act&&!fin&&(m==='win'||m==='over')){fin=true;act=false;send('finish',{metric:'score',value:val(),higherBetter:true,result:m==='win'?'win':'lose'})}
+if(!playing&&m==='menu'){act=false}},250);
+addEventListener('pagehide',()=>{if(act)snap()});})();
+</script></body></html>

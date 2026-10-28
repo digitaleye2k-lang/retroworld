@@ -1,0 +1,100 @@
+<!doctype html><html lang="en"><head><script src="rw-boost.js"></script><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover"><meta name="theme-color" content="#05060f">
+<title>WORD GRID • RETRO WORLD</title>
+<style>
+html,body{margin:0;height:100%;background:#05060f;overflow:hidden;font-family:"Courier New",monospace;-webkit-user-select:none;user-select:none;-webkit-tap-highlight-color:transparent}
+body{background:radial-gradient(circle at 50% 30%,#15153a,#05060f 70%)}
+#stage{position:fixed;inset:0;display:flex;align-items:center;justify-content:center}
+canvas{display:block;touch-action:none;box-shadow:0 0 50px #00ffff22;border-radius:6px;cursor:crosshair}
+#snd{position:fixed;left:6px;top:40px;z-index:5;font:700 11px "Courier New",monospace;color:#67ff67;background:#0b0b1ccc;border:1px solid #67ff67;padding:5px 8px;cursor:pointer;border-radius:4px}
+#snd.off{color:#8a8ab0;border-color:#6a6a90}
+
+</style>
+<script>addEventListener('keydown',function(e){if((e.keyCode||e.which)===461&&window.parent!==window){e.preventDefault();window.parent.postMessage({type:'retroworld-tv-back'},'*');}},true);</script></head>
+<body><div id="stage"><canvas id="g"></canvas></div><button id="snd" type="button">SFX: ON</button>
+
+<script>
+'use strict';
+const LW=480,LH=800;
+const cv=document.getElementById('g'),ctx=cv.getContext('2d');
+function fit(){const dpr=Math.min(2,window.devicePixelRatio||1),s=Math.min(innerWidth/LW,innerHeight/LH);cv.style.width=(LW*s)+'px';cv.style.height=(LH*s)+'px';cv.width=Math.round(LW*s*dpr);cv.height=Math.round(LH*s*dpr);ctx.setTransform(cv.width/LW,0,0,cv.height/LH,0,0)}
+addEventListener('resize',fit);addEventListener('orientationchange',()=>setTimeout(fit,120));fit();
+function ptr(e){const r=cv.getBoundingClientRect();return{x:(e.clientX-r.left)/r.width*LW,y:(e.clientY-r.top)/r.height*LH}}
+const LS={get(k){try{return localStorage.getItem(k)}catch(e){return null}},set(k,v){try{localStorage.setItem(k,v)}catch(e){}}};
+const GKEY='rw-word-grid';
+let sfxOn=LS.get('rwMute')!=='1',AC=null;
+const sndBtn=document.getElementById('snd');
+function sndLabel(){sndBtn.textContent='SFX: '+(sfxOn?'ON':'OFF');sndBtn.className=sfxOn?'':'off'}sndLabel();
+sndBtn.addEventListener('click',e=>{sfxOn=!sfxOn;LS.set('rwMute',sfxOn?'0':'1');sndLabel();e.stopPropagation();ac()});
+function ac(){try{if(!AC)AC=new (window.AudioContext||window.webkitAudioContext)();if(AC.state==='suspended')AC.resume()}catch(e){}}
+addEventListener('pointerdown',ac,{passive:true});addEventListener('keydown',ac);
+function tone(f,d,type,vol,slide,delay){if(!sfxOn||!AC)return;try{const t=AC.currentTime+(delay||0),o=AC.createOscillator(),g=AC.createGain();o.type=type||'square';o.frequency.setValueAtTime(f,t);if(slide)o.frequency.exponentialRampToValueAtTime(Math.max(20,f*slide),t+d);g.gain.setValueAtTime(vol||.06,t);g.gain.exponentialRampToValueAtTime(.0001,t+d);o.connect(g);g.connect(AC.destination);o.start(t);o.stop(t+d+.02)}catch(e){}}
+function noise(d,vol,hp){if(!sfxOn||!AC)return;try{const n=Math.floor(AC.sampleRate*d),b=AC.createBuffer(1,n,AC.sampleRate),a=b.getChannelData(0);for(let i=0;i<n;i++)a[i]=(Math.random()*2-1)*(1-i/n);const s=AC.createBufferSource(),g=AC.createGain(),f=AC.createBiquadFilter();f.type='highpass';f.frequency.value=hp||800;g.gain.value=vol||.08;s.buffer=b;s.connect(f);f.connect(g);g.connect(AC.destination);s.start()}catch(e){}}
+const TAU=Math.PI*2,rnd=(a,b)=>a+Math.random()*(b-a),rint=(a,b)=>Math.floor(rnd(a,b+1)),clamp=(v,a,b)=>v<a?a:v>b?b:v,lerp=(a,b,t)=>a+(b-a)*t;
+function rr(x,y,w,h,r){ctx.beginPath();ctx.moveTo(x+r,y);ctx.arcTo(x+w,y,x+w,y+h,r);ctx.arcTo(x+w,y+h,x,y+h,r);ctx.arcTo(x,y+h,x,y,r);ctx.arcTo(x,y,x+w,y,r);ctx.closePath()}
+function text(s,x,y,size,col,align,font){ctx.font='bold '+size+'px '+(font||'"Courier New",monospace');ctx.textAlign=align||'center';ctx.textBaseline='middle';ctx.fillStyle=col||'#fff';ctx.fillText(s,x,y)}
+function glowText(s,x,y,size,col,glow,align){ctx.save();ctx.shadowColor=glow||col;ctx.shadowBlur=18;text(s,x,y,size,col,align);ctx.restore()}
+let best=parseInt(LS.get(GKEY+'-best')||'0',10)||0;
+function saveBest(v){if(v>best){best=v;LS.set(GKEY+'-best',String(best));return true}return false}
+
+let mode='menu',score=0,t=0,overT=0,won=false,overMsg='';
+const K={};
+function endGame(w,m){if(mode!=='play')return;won=!!w;mode=w?'win':'over';overMsg=m||'';overT=0;saveBest(score);tone(w?880:180,.5,w?'square':'sawtooth',.1,w?1.5:.5)}
+function bgFill(a,b){const g=ctx.createLinearGradient(0,0,0,LH);g.addColorStop(0,a);g.addColorStop(1,b);ctx.fillStyle=g;ctx.fillRect(0,0,LW,LH)}
+function hud(l,r,c){ctx.fillStyle='#0b0b1ecc';ctx.fillRect(0,0,LW,44);ctx.fillStyle='#ffffff22';ctx.fillRect(0,43,LW,2);text(l,12,23,16,c||'#ffe85c','left');text(r,LW-12,23,16,'#fff','right')}
+function startGame(){mode='play';score=0;overT=0;onStart()}
+const META={"title": "WORD GRID", "sub": "GUESS THE 5-LETTER WORD", "help": ["6 tries to find the hidden word", "Green = right place \u00b7 Yellow = wrong place", "Type on your keyboard or tap the keys"], "c1": "#67ff67", "c2": "#ffe85c"};
+
+const WORDS="about above actor adult after again agent agree ahead alarm album alert alien alive alone along alter among angel anger angle angry apart apple apply arena argue arise armor array aside asset avoid awake award aware badge baker basic basis beach beard beast begin being below bench birth black blade blame blank blast blaze bleed blend bless blind block blood bloom board boast bonus boost booth bound brain brake brand brave bread break brick bride brief bring broad brown brush build bunch burst buyer cabin cable candy carry catch cause chain chair chalk chaos charm chart chase cheap check cheek cheer chess chest chief child chill choir civil claim class clean clear clerk click cliff climb clock close cloth cloud clown coach coast color comet couch could count court cover crack craft crane crash crazy cream crime cross crowd crown crush curve cycle daily dance death delay depth derby diary dirty dozen draft drama dream dress drift drink drive eager early earth eight elbow elite email empty enemy enjoy enter entry equal error event every exact exist extra fable faith false fancy fault feast fence fever fiber field fifth fifty fight final first flame flash fleet flesh float flood floor flour fluid focus force forge forty forum frame frank fresh front frost fruit funny ghost giant given glass globe glory glove grace grade grain grand grant grape graph grass great green greet grill grind gross group grown guard guess guest guide habit happy harsh heart heavy hello hence honey honor horse hotel house human humor ideal image imply index inner input issue ivory jelly jewel joint judge juice karma knife knock known label labor large laser later laugh layer learn lease least leave legal lemon level light limit linen liver local logic loose lover lucky lunch magic major maker march match maybe mayor media mercy merge metal meter might minor minus mixed model money month moral motor mount mouse mouth movie music naive nerve never newly night noble noise north novel nurse ocean offer often olive onion opera orbit order other ought outer owner paint panel panic paper party pasta patch pause peace pearl phase phone photo piano piece pilot pitch pixel pizza place plain plane plant plate plaza point polar pound power press price pride prime print prior prize proof proud prove pulse punch pupil queen quest quick quiet quite quote radar radio raise rally ranch range rapid ratio reach react ready realm rebel refer relax reply rider ridge right rigid risky rival river robot rocky rough round route royal rural sadly saint salad sauce scale scare scene scope score scout sense serve seven shade shake shall shape share sharp sheep sheet shelf shell shift shine shirt shock shoot shore short shout sight sigma silly since sixth skill skirt sleep slice slide small smart smile smoke snake solar solid solve sorry sound south space spare speak speed spell spend spice spike spine split spoke sport spray squad stack staff stage stair stake stand stare start state steak steam steel steep stick still stock stone stood store storm story stove straw strip study stuff style sugar suite sunny super sweet swift swing sword table taken taste teach tempo thank theme there thick thing think third those three throw thumb tiger tight timer tired title toast today tooth topic total touch tough tower toxic trace track trade trail train trash treat trend trial tribe trick troop truck truly trust truth twice uncle under union unite unity until upper upset urban usage usual valid value video villa virus visit vital vivid vocal voice wagon waste watch water wheel where which while white whole whose widow width witch woman world worry worse worst worth would wound write wrong yacht young youth zebra".split(' ');
+let ans,gs,cur_,row,keyst,shake_,msg_,revT,flip_;
+const ROWS=6,CW=62,GX=(480-5*CW-4*8)/2,GY=110;
+function onInit(){ans='crane';gs=[];cur_='';keyst={};row=0;shake_=0;msg_='';flip_=0}
+function onStart(){ans=WORDS[Math.floor(Math.random()*WORDS.length)];gs=[];cur_='';keyst={};row=0;shake_=0;msg_='';flip_=0}
+function rate(g,a){const r=Array(5).fill(0),cnt={};for(let i=0;i<5;i++)if(g[i]===a[i])r[i]=2;else cnt[a[i]]=(cnt[a[i]]||0)+1;for(let i=0;i<5;i++)if(r[i]!==2&&cnt[g[i]]>0){r[i]=1;cnt[g[i]]--}return r}
+function submit(){if(flip_>0)return;if(cur_.length<5){shake_=.4;msg_='Not enough letters';msgT2=1;return}const r=rate(cur_,ans);gs.push({w:cur_,r});flip_=1.2;const w=cur_;cur_='';for(let i=0;i<5;i++){const k=w[i];keyst[k]=Math.max(keyst[k]||0,r[i]+1)}
+ tone(400,.1,'square',.06);if(w===ans){score=(7-gs.length)*150+100;setTimeout(()=>endGame(true,'Solved in '+gs.length+' guess'+(gs.length>1?'es':'')),1500)}else if(gs.length>=ROWS){score=gs.reduce((s,g)=>s+g.r.filter(x=>x===2).length*10,0);setTimeout(()=>endGame(false,'The word was '+ans.toUpperCase()),1500)}}
+let msgT2=0;
+function press(k){if(flip_>0||mode!=='play')return;if(k==='enter'){submit();return}if(k==='backspace'){cur_=cur_.slice(0,-1);return}if(/^[a-z]$/.test(k)&&cur_.length<5){cur_+=k;tone(600,.03,'square',.04)}}
+function onKey(k){press(k)}
+const KR=['qwertyuiop','asdfghjkl','↵zxcvbnm⌫'];
+function kpos(){const out=[];KR.forEach((row,ri)=>{const n=row.length,w=ri===2?40:42,gap=5,tw=n*w+(n-1)*gap,x0=(480-tw)/2;[...row].forEach((ch,i)=>out.push({ch,x:x0+i*(w+gap)+(ri===2&&(ch==='↵'||ch==='⌫')?0:0),y:560+ri*64,w:(ch==='↵'||ch==='⌫')?52:w,h:56}))});return out}
+function onTap(p){for(const k of kpos()){if(p.x>=k.x&&p.x<=k.x+k.w&&p.y>=k.y&&p.y<=k.y+k.h){press(k.ch==='↵'?'enter':k.ch==='⌫'?'backspace':k.ch);return}}}
+function onUpdate(dt){if(flip_>0)flip_-=dt;shake_-=dt;msgT2-=dt}
+function onDraw(){bgFill('#0b0b1f','#161638');
+ for(let r=0;r<ROWS;r++){const g=gs[r];for(let c=0;c<5;c++){let x=GX+c*(CW+8),y=GY+r*(CW+8);let letter='',st=-1,sc=1;
+   if(g){letter=g.w[c];st=g.r[c];if(r===gs.length-1&&flip_>0){const q=1-flip_/1.2,d=q*5-c*.8;if(d<0){st=-1}else if(d<1)sc=Math.abs(Math.cos(d*Math.PI/2)*1);if(d<.5&&d>=0)st=-1}}
+   else if(r===gs.length){letter=cur_[c]||'';if(r===gs.length&&shake_>0)x+=Math.sin(shake_*60)*5}
+   ctx.save();ctx.translate(x+CW/2,y+CW/2);ctx.scale(1,Math.max(.05,sc));ctx.fillStyle=st===2?'#2f9a4a':st===1?'#c8a020':st===0?'#3a3a55':'#10102a';rr(-CW/2,-CW/2,CW,CW,8);ctx.fill();if(st<0){ctx.strokeStyle=letter?'#8a90b8':'#2a2a50';ctx.lineWidth=2;ctx.stroke()}text(letter.toUpperCase(),0,2,34,'#fff');ctx.restore()}}
+ for(const k of kpos()){const s=keyst[k.ch]||0;ctx.fillStyle=s===3?'#2f9a4a':s===2?'#c8a020':s===1?'#2a2a3a':'#3a3f66';rr(k.x,k.y,k.w,k.h,8);ctx.fill();text(k.ch==='↵'?'ENTER':k.ch.toUpperCase(),k.x+k.w/2,k.y+k.h/2+1,k.ch==='↵'?11:20,'#fff')}
+ hud('WORD GRID','TRY '+Math.min(ROWS,gs.length+1)+'/'+ROWS);if(msgT2>0)glowText(msg_,240,86,16,'#ff8a3d')}
+
+function step(dt){t+=dt;if(mode==='play')onUpdate(dt);else overT+=dt}
+function overlay(){
+ const big=LW>600?1:.72,cx=LW/2;
+ if(mode==='menu'){ctx.fillStyle='#050510dd';ctx.fillRect(0,0,LW,LH);glowText(META.title,cx,LH*.22,Math.round(54*big),META.c1||'#00ffff',META.c2||'#ff2bd6');text(META.sub||'',cx,LH*.22+46*big,Math.round(18*big),'#ffe85c');
+  const h=META.help||[];h.forEach((l,i)=>text(l,cx,LH*.40+i*30*big,Math.round(16*big),'#c5cae8'));
+  text('BEST '+best,cx,LH*.40+h.length*30*big+34,Math.round(16*big),'#8a90b8');if(Math.sin(t*5)>0)glowText('TAP TO START',cx,LH*.86,Math.round(28*big),'#ffe85c')}
+ else if(mode==='win'||mode==='over'){ctx.fillStyle='#050510cc';ctx.fillRect(0,0,LW,LH);const w=mode==='win';glowText(w?(META.win||'YOU WIN!'):(META.over||'GAME OVER'),cx,LH*.3,Math.round(46*big),w?'#67ff67':'#ff4b64');
+  if(overMsg)text(overMsg,cx,LH*.3+46*big,Math.round(17*big),'#c5cae8');text('SCORE',cx,LH*.48,Math.round(14*big),'#8a90b8');glowText(String(score),cx,LH*.48+46*big,Math.round(52*big),'#ffe85c');text('BEST '+best,cx,LH*.48+96*big,Math.round(16*big),'#fff');
+  if(overT>.8&&Math.sin(t*5)>0)text('TAP TO PLAY AGAIN',cx,LH*.82,Math.round(20*big),'#00ffff')}}
+function draw(){ctx.save();ctx.setTransform(cv.width/LW,0,0,cv.height/LH,0,0);onDraw();overlay();ctx.restore()}
+cv.addEventListener('pointerdown',e=>{ac();const p=ptr(e);if(mode!=='play'){if(mode==='menu'||overT>.8)startGame();return}try{cv.setPointerCapture(e.pointerId)}catch(_){}if(typeof onTap==='function')onTap(p,e)});
+cv.addEventListener('pointermove',e=>{if(mode==='play'&&typeof onMove==='function')onMove(ptr(e),e)});
+const _up=e=>{if(mode==='play'&&typeof onUp==='function')onUp(ptr(e),e)};cv.addEventListener('pointerup',_up);cv.addEventListener('pointercancel',_up);
+addEventListener('keydown',e=>{const k=e.key.toLowerCase();if([' ','arrowup','arrowdown','arrowleft','arrowright'].includes(k))e.preventDefault();if(mode!=='play'){if((k===' '||k==='enter')&&(mode==='menu'||overT>.8))startGame();return}if(K[k])return;K[k]=true;if(typeof onKey==='function')onKey(k,e)});
+addEventListener('keyup',e=>{const k=e.key.toLowerCase();K[k]=false;if(mode==='play'&&typeof onKeyUp==='function')onKeyUp(k,e)});
+let _last=performance.now();function loop(now){requestAnimationFrame(loop);const dt=Math.min(.05,(now-_last)/1000);_last=now;step(dt);draw()}
+if(typeof onInit==='function')onInit();requestAnimationFrame(loop);
+
+/* RETRO WORLD profile bridge: report start / progress / finish to the arcade (trophies, quests, streaks) */
+(()=>{const GID="word-grid.html",GT="WORD GRID".toUpperCase();let act=false,last=0,fin=false;
+const send=(t,x)=>{try{parent.postMessage(Object.assign({source:'retro-world-game',type:t,gameId:GID,title:GT},x||{}),'*')}catch(e){}};
+const val=()=>{try{return Math.max(0,Math.round(Number(score)||0))}catch(e){return 0}};
+const snap=()=>send('progress',{metric:'score',value:val(),higherBetter:true});
+setInterval(()=>{let m='';try{m=String(mode)}catch(e){return}
+const playing=(m==='play'||m==='clear'||m==='dying'),now=Date.now();
+if(playing&&!act){act=true;fin=false;send('start');snap();last=now}
+if(act&&playing&&now-last>1500){snap();last=now}
+if(act&&!fin&&(m==='win'||m==='over')){fin=true;act=false;send('finish',{metric:'score',value:val(),higherBetter:true,result:m==='win'?'win':'lose'})}
+if(!playing&&m==='menu'){act=false}},250);
+addEventListener('pagehide',()=>{if(act)snap()});})();
+</script></body></html>

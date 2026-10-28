@@ -1,0 +1,107 @@
+<!doctype html><html lang="en"><head><script src="rw-boost.js"></script><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover"><meta name="theme-color" content="#05060f">
+<title>REVERSI REBORN • RETRO WORLD</title>
+<style>
+html,body{margin:0;height:100%;background:#05060f;overflow:hidden;font-family:"Courier New",monospace;-webkit-user-select:none;user-select:none;-webkit-tap-highlight-color:transparent}
+body{background:radial-gradient(circle at 50% 30%,#15153a,#05060f 70%)}
+#stage{position:fixed;inset:0;display:flex;align-items:center;justify-content:center}
+canvas{display:block;touch-action:none;box-shadow:0 0 50px #00ffff22;border-radius:6px;cursor:crosshair}
+#snd{position:fixed;left:6px;top:40px;z-index:5;font:700 11px "Courier New",monospace;color:#67ff67;background:#0b0b1ccc;border:1px solid #67ff67;padding:5px 8px;cursor:pointer;border-radius:4px}
+#snd.off{color:#8a8ab0;border-color:#6a6a90}
+
+</style>
+<script>addEventListener('keydown',function(e){if((e.keyCode||e.which)===461&&window.parent!==window){e.preventDefault();window.parent.postMessage({type:'retroworld-tv-back'},'*');}},true);</script></head>
+<body><div id="stage"><canvas id="g"></canvas></div><button id="snd" type="button">SFX: ON</button>
+
+<script>
+'use strict';
+const LW=560,LH=760;
+const cv=document.getElementById('g'),ctx=cv.getContext('2d');
+function fit(){const dpr=Math.min(2,window.devicePixelRatio||1),s=Math.min(innerWidth/LW,innerHeight/LH);cv.style.width=(LW*s)+'px';cv.style.height=(LH*s)+'px';cv.width=Math.round(LW*s*dpr);cv.height=Math.round(LH*s*dpr);ctx.setTransform(cv.width/LW,0,0,cv.height/LH,0,0)}
+addEventListener('resize',fit);addEventListener('orientationchange',()=>setTimeout(fit,120));fit();
+function ptr(e){const r=cv.getBoundingClientRect();return{x:(e.clientX-r.left)/r.width*LW,y:(e.clientY-r.top)/r.height*LH}}
+const LS={get(k){try{return localStorage.getItem(k)}catch(e){return null}},set(k,v){try{localStorage.setItem(k,v)}catch(e){}}};
+const GKEY='rw-reversi-reborn';
+let sfxOn=LS.get('rwMute')!=='1',AC=null;
+const sndBtn=document.getElementById('snd');
+function sndLabel(){sndBtn.textContent='SFX: '+(sfxOn?'ON':'OFF');sndBtn.className=sfxOn?'':'off'}sndLabel();
+sndBtn.addEventListener('click',e=>{sfxOn=!sfxOn;LS.set('rwMute',sfxOn?'0':'1');sndLabel();e.stopPropagation();ac()});
+function ac(){try{if(!AC)AC=new (window.AudioContext||window.webkitAudioContext)();if(AC.state==='suspended')AC.resume()}catch(e){}}
+addEventListener('pointerdown',ac,{passive:true});addEventListener('keydown',ac);
+function tone(f,d,type,vol,slide,delay){if(!sfxOn||!AC)return;try{const t=AC.currentTime+(delay||0),o=AC.createOscillator(),g=AC.createGain();o.type=type||'square';o.frequency.setValueAtTime(f,t);if(slide)o.frequency.exponentialRampToValueAtTime(Math.max(20,f*slide),t+d);g.gain.setValueAtTime(vol||.06,t);g.gain.exponentialRampToValueAtTime(.0001,t+d);o.connect(g);g.connect(AC.destination);o.start(t);o.stop(t+d+.02)}catch(e){}}
+function noise(d,vol,hp){if(!sfxOn||!AC)return;try{const n=Math.floor(AC.sampleRate*d),b=AC.createBuffer(1,n,AC.sampleRate),a=b.getChannelData(0);for(let i=0;i<n;i++)a[i]=(Math.random()*2-1)*(1-i/n);const s=AC.createBufferSource(),g=AC.createGain(),f=AC.createBiquadFilter();f.type='highpass';f.frequency.value=hp||800;g.gain.value=vol||.08;s.buffer=b;s.connect(f);f.connect(g);g.connect(AC.destination);s.start()}catch(e){}}
+const TAU=Math.PI*2,rnd=(a,b)=>a+Math.random()*(b-a),rint=(a,b)=>Math.floor(rnd(a,b+1)),clamp=(v,a,b)=>v<a?a:v>b?b:v,lerp=(a,b,t)=>a+(b-a)*t;
+function rr(x,y,w,h,r){ctx.beginPath();ctx.moveTo(x+r,y);ctx.arcTo(x+w,y,x+w,y+h,r);ctx.arcTo(x+w,y+h,x,y+h,r);ctx.arcTo(x,y+h,x,y,r);ctx.arcTo(x,y,x+w,y,r);ctx.closePath()}
+function text(s,x,y,size,col,align,font){ctx.font='bold '+size+'px '+(font||'"Courier New",monospace');ctx.textAlign=align||'center';ctx.textBaseline='middle';ctx.fillStyle=col||'#fff';ctx.fillText(s,x,y)}
+function glowText(s,x,y,size,col,glow,align){ctx.save();ctx.shadowColor=glow||col;ctx.shadowBlur=18;text(s,x,y,size,col,align);ctx.restore()}
+let best=parseInt(LS.get(GKEY+'-best')||'0',10)||0;
+function saveBest(v){if(v>best){best=v;LS.set(GKEY+'-best',String(best));return true}return false}
+
+let mode='menu',score=0,t=0,overT=0,won=false,overMsg='';
+const K={};
+function endGame(w,m){if(mode!=='play')return;won=!!w;mode=w?'win':'over';overMsg=m||'';overT=0;saveBest(score);tone(w?880:180,.5,w?'square':'sawtooth',.1,w?1.5:.5)}
+function bgFill(a,b){const g=ctx.createLinearGradient(0,0,0,LH);g.addColorStop(0,a);g.addColorStop(1,b);ctx.fillStyle=g;ctx.fillRect(0,0,LW,LH)}
+function hud(l,r,c){ctx.fillStyle='#0b0b1ecc';ctx.fillRect(0,0,LW,44);ctx.fillStyle='#ffffff22';ctx.fillRect(0,43,LW,2);text(l,12,23,16,c||'#ffe85c','left');text(r,LW-12,23,16,'#fff','right')}
+function startGame(){mode='play';score=0;overT=0;onStart()}
+const META={"title": "REVERSI", "sub": "REBORN", "help": ["Place a disc to trap enemy discs in a line", "Trapped discs flip to your colour", "Corners are gold \u2014 most discs wins"], "c1": "#67ff67", "c2": "#ffffff"};
+
+const N=8,CS=64,BX=(560-N*CS)/2,BY=130;let bd,turn,moves,flip,hint,cpuT,passMsg,thinkT;
+const W=[[120,-20,20,5,5,20,-20,120],[-20,-40,-5,-5,-5,-5,-40,-20],[20,-5,15,3,3,15,-5,20],[5,-5,3,3,3,3,-5,5],[5,-5,3,3,3,3,-5,5],[20,-5,15,3,3,15,-5,20],[-20,-40,-5,-5,-5,-5,-40,-20],[120,-20,20,5,5,20,-20,120]];
+function fresh(){const b=Array.from({length:N},()=>Array(N).fill(0));b[3][3]=2;b[4][4]=2;b[3][4]=1;b[4][3]=1;return b}
+function onInit(){bd=fresh();turn=1;moves=[];flip=[]}
+function onStart(){bd=fresh();turn=1;flip=[];passMsg='';thinkT=0;moves=legal(bd,1)}
+const DIRS=[[-1,-1],[-1,0],[-1,1],[0,-1],[0,1],[1,-1],[1,0],[1,1]];
+function flips(b,r,c,p){if(b[r][c])return[];const out=[];for(const [dr,dc] of DIRS){const line=[];let y=r+dr,x=c+dc;while(y>=0&&y<N&&x>=0&&x<N&&b[y][x]===3-p){line.push([y,x]);y+=dr;x+=dc}if(line.length&&y>=0&&y<N&&x>=0&&x<N&&b[y][x]===p)out.push(...line)}return out}
+function legal(b,p){const m=[];for(let r=0;r<N;r++)for(let c=0;c<N;c++){const f=flips(b,r,c,p);if(f.length)m.push({r,c,f})}return m}
+function apply(b,m,p){const nb=b.map(r=>r.slice());nb[m.r][m.c]=p;for(const [y,x] of m.f)nb[y][x]=p;return nb}
+function counts(b){let a=0,c=0;for(const r of b)for(const v of r){if(v===1)a++;else if(v===2)c++}return[a,c]}
+function onTap(p){if(turn!==1||flip.length)return;const c=Math.floor((p.x-BX)/CS),r=Math.floor((p.y-BY)/CS);const m=moves.find(m=>m.r===r&&m.c===c);if(m)play(m,1)}
+function play(m,p){flip=m.f.map(q=>({y:q[0],x:q[1],t:0,to:p}));bd[m.r][m.c]=p;lastM=[m.r,m.c];tone(p===1?500:380,.08,'square',.08)}
+let lastM=null;
+function finishFlips(p){for(const f of flip)bd[f.y][f.x]=f.to;flip=[];turn=3-p;moves=legal(bd,turn);
+ if(!moves.length){const o=legal(bd,3-turn);if(!o.length){const[a,c]=counts(bd);score=a*10+(a>c?500:0);endGame(a>c,a+' - '+c+(a===c?' (draw)':''));return}passMsg=(turn===1?'You have':'CPU has')+' no move — pass';setTimeout(()=>{passMsg=''},1400);turn=3-turn;moves=legal(bd,turn)}thinkT=0}
+function evalB(b){let s=0;for(let r=0;r<N;r++)for(let c=0;c<N;c++){if(b[r][c]===2)s+=W[r][c];else if(b[r][c]===1)s-=W[r][c]}s+=(legal(b,2).length-legal(b,1).length)*6;return s}
+function ab(b,d,al,be,p){const m=legal(b,p);if(d===0||!m.length){if(!m.length&&d>0){const o=legal(b,3-p);if(!o.length){const[a,c]=counts(b);return(c-a)*100}return ab(b,d-1,al,be,3-p)}return evalB(b)}let v=p===2?-1e9:1e9;for(const x of m){const s=ab(apply(b,x,p),d-1,al,be,3-p);if(p===2){v=Math.max(v,s);al=Math.max(al,v)}else{v=Math.min(v,s);be=Math.min(be,v)}if(al>=be)break}return v}
+function cpuPlay(){let bm=null,bs=-1e9;for(const m of moves){const s=ab(apply(bd,m,2),3,-1e9,1e9,1)+Math.random()*4;if(s>bs){bs=s;bm=m}}play(bm,2)}
+function onUpdate(dt){for(const f of flip)f.t+=dt;if(flip.length&&flip[0].t>.45){const p=flip[0].to;finishFlips(p);return}
+ if(turn===2&&!flip.length){thinkT+=dt;if(thinkT>.6){thinkT=-99;cpuPlay()}}}
+function onDraw(){bgFill('#0a2a1a','#06140c');ctx.fillStyle='#1b6b3a';rr(BX-10,BY-10,N*CS+20,N*CS+20,14);ctx.fill();
+ for(let r=0;r<N;r++)for(let c=0;c<N;c++){ctx.fillStyle=(r+c)%2?'#1f7a42':'#238a4a';ctx.fillRect(BX+c*CS,BY+r*CS,CS,CS)}
+ ctx.strokeStyle='#0a3a1e';ctx.lineWidth=2;for(let i=0;i<=N;i++){ctx.beginPath();ctx.moveTo(BX+i*CS,BY);ctx.lineTo(BX+i*CS,BY+N*CS);ctx.moveTo(BX,BY+i*CS);ctx.lineTo(BX+N*CS,BY+i*CS);ctx.stroke()}
+ if(lastM){ctx.strokeStyle='#ffe85c';ctx.lineWidth=3;ctx.strokeRect(BX+lastM[1]*CS+3,BY+lastM[0]*CS+3,CS-6,CS-6)}
+ if(turn===1&&!flip.length&&mode==='play')for(const m of moves){ctx.fillStyle='#ffffff55';ctx.beginPath();ctx.arc(BX+m.c*CS+CS/2,BY+m.r*CS+CS/2,8,0,TAU);ctx.fill()}
+ const disc=(x,y,v,sc)=>{const r=CS/2-7;ctx.save();ctx.translate(x,y);ctx.scale(sc,1);ctx.fillStyle='#0005';ctx.beginPath();ctx.ellipse(2,4,r,r*.9,0,0,TAU);ctx.fill();const g=ctx.createRadialGradient(-8,-8,3,0,0,r);g.addColorStop(0,v===1?'#555':'#fff');g.addColorStop(1,v===1?'#050505':'#c8c8d8');ctx.fillStyle=g;ctx.beginPath();ctx.arc(0,0,r,0,TAU);ctx.fill();ctx.restore()};
+ const fl=new Map();for(const f of flip)fl.set(f.y*8+f.x,f);
+ for(let r=0;r<N;r++)for(let c=0;c<N;c++){const v=bd[r][c];if(!v)continue;const f=fl.get(r*8+c);let sc=1,vv=v;if(f){const q=Math.min(1,f.t/.45);sc=Math.abs(Math.cos(q*Math.PI));vv=q<.5?3-f.to:f.to}disc(BX+c*CS+CS/2,BY+r*CS+CS/2,vv,Math.max(.04,sc))}
+ const[a,cc]=counts(bd);hud('YOU '+a,'CPU '+cc);text(turn===1?'YOUR MOVE (BLACK)':'CPU THINKING…',LW/2,76,18,turn===1?'#ffe85c':'#c5cae8');if(passMsg)glowText(passMsg,LW/2,BY+N*CS+40,20,'#ff8a3d')}
+
+function step(dt){t+=dt;if(mode==='play')onUpdate(dt);else overT+=dt}
+function overlay(){
+ const big=LW>600?1:.72,cx=LW/2;
+ if(mode==='menu'){ctx.fillStyle='#050510dd';ctx.fillRect(0,0,LW,LH);glowText(META.title,cx,LH*.22,Math.round(54*big),META.c1||'#00ffff',META.c2||'#ff2bd6');text(META.sub||'',cx,LH*.22+46*big,Math.round(18*big),'#ffe85c');
+  const h=META.help||[];h.forEach((l,i)=>text(l,cx,LH*.40+i*30*big,Math.round(16*big),'#c5cae8'));
+  text('BEST '+best,cx,LH*.40+h.length*30*big+34,Math.round(16*big),'#8a90b8');if(Math.sin(t*5)>0)glowText('TAP TO START',cx,LH*.86,Math.round(28*big),'#ffe85c')}
+ else if(mode==='win'||mode==='over'){ctx.fillStyle='#050510cc';ctx.fillRect(0,0,LW,LH);const w=mode==='win';glowText(w?(META.win||'YOU WIN!'):(META.over||'GAME OVER'),cx,LH*.3,Math.round(46*big),w?'#67ff67':'#ff4b64');
+  if(overMsg)text(overMsg,cx,LH*.3+46*big,Math.round(17*big),'#c5cae8');text('SCORE',cx,LH*.48,Math.round(14*big),'#8a90b8');glowText(String(score),cx,LH*.48+46*big,Math.round(52*big),'#ffe85c');text('BEST '+best,cx,LH*.48+96*big,Math.round(16*big),'#fff');
+  if(overT>.8&&Math.sin(t*5)>0)text('TAP TO PLAY AGAIN',cx,LH*.82,Math.round(20*big),'#00ffff')}}
+function draw(){ctx.save();ctx.setTransform(cv.width/LW,0,0,cv.height/LH,0,0);onDraw();overlay();ctx.restore()}
+cv.addEventListener('pointerdown',e=>{ac();const p=ptr(e);if(mode!=='play'){if(mode==='menu'||overT>.8)startGame();return}try{cv.setPointerCapture(e.pointerId)}catch(_){}if(typeof onTap==='function')onTap(p,e)});
+cv.addEventListener('pointermove',e=>{if(mode==='play'&&typeof onMove==='function')onMove(ptr(e),e)});
+const _up=e=>{if(mode==='play'&&typeof onUp==='function')onUp(ptr(e),e)};cv.addEventListener('pointerup',_up);cv.addEventListener('pointercancel',_up);
+addEventListener('keydown',e=>{const k=e.key.toLowerCase();if([' ','arrowup','arrowdown','arrowleft','arrowright'].includes(k))e.preventDefault();if(mode!=='play'){if((k===' '||k==='enter')&&(mode==='menu'||overT>.8))startGame();return}if(K[k])return;K[k]=true;if(typeof onKey==='function')onKey(k,e)});
+addEventListener('keyup',e=>{const k=e.key.toLowerCase();K[k]=false;if(mode==='play'&&typeof onKeyUp==='function')onKeyUp(k,e)});
+let _last=performance.now();function loop(now){requestAnimationFrame(loop);const dt=Math.min(.05,(now-_last)/1000);_last=now;step(dt);draw()}
+if(typeof onInit==='function')onInit();requestAnimationFrame(loop);
+
+/* RETRO WORLD profile bridge: report start / progress / finish to the arcade (trophies, quests, streaks) */
+(()=>{const GID="reversi-reborn.html",GT="REVERSI REBORN".toUpperCase();let act=false,last=0,fin=false;
+const send=(t,x)=>{try{parent.postMessage(Object.assign({source:'retro-world-game',type:t,gameId:GID,title:GT},x||{}),'*')}catch(e){}};
+const val=()=>{try{return Math.max(0,Math.round(Number(score)||0))}catch(e){return 0}};
+const snap=()=>send('progress',{metric:'score',value:val(),higherBetter:true});
+setInterval(()=>{let m='';try{m=String(mode)}catch(e){return}
+const playing=(m==='play'||m==='clear'||m==='dying'),now=Date.now();
+if(playing&&!act){act=true;fin=false;send('start');snap();last=now}
+if(act&&playing&&now-last>1500){snap();last=now}
+if(act&&!fin&&(m==='win'||m==='over')){fin=true;act=false;send('finish',{metric:'score',value:val(),higherBetter:true,result:m==='win'?'win':'lose'})}
+if(!playing&&m==='menu'){act=false}},250);
+addEventListener('pagehide',()=>{if(act)snap()});})();
+</script></body></html>

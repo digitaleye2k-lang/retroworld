@@ -1,0 +1,117 @@
+<!doctype html><html lang="en"><head><script src="rw-boost.js"></script><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover"><meta name="theme-color" content="#05060f">
+<title>AIR HOCKEY ARENA • RETRO WORLD</title>
+<style>
+html,body{margin:0;height:100%;background:#05060f;overflow:hidden;font-family:"Courier New",monospace;-webkit-user-select:none;user-select:none;-webkit-tap-highlight-color:transparent}
+body{background:radial-gradient(circle at 50% 30%,#15153a,#05060f 70%)}
+#stage{position:fixed;inset:0;display:flex;align-items:center;justify-content:center}
+canvas{display:block;touch-action:none;box-shadow:0 0 50px #00ffff22;border-radius:6px;cursor:crosshair}
+#snd{position:fixed;left:6px;top:40px;z-index:5;font:700 11px "Courier New",monospace;color:#67ff67;background:#0b0b1ccc;border:1px solid #67ff67;padding:5px 8px;cursor:pointer;border-radius:4px}
+#snd.off{color:#8a8ab0;border-color:#6a6a90}
+
+</style>
+<script>addEventListener('keydown',function(e){if((e.keyCode||e.which)===461&&window.parent!==window){e.preventDefault();window.parent.postMessage({type:'retroworld-tv-back'},'*');}},true);</script></head>
+<body><div id="stage"><canvas id="g"></canvas></div><button id="snd" type="button">SFX: ON</button>
+
+<script>
+'use strict';
+const LW=480,LH=800;
+const cv=document.getElementById('g'),ctx=cv.getContext('2d');
+function fit(){const dpr=Math.min(2,window.devicePixelRatio||1),s=Math.min(innerWidth/LW,innerHeight/LH);cv.style.width=(LW*s)+'px';cv.style.height=(LH*s)+'px';cv.width=Math.round(LW*s*dpr);cv.height=Math.round(LH*s*dpr);ctx.setTransform(cv.width/LW,0,0,cv.height/LH,0,0)}
+addEventListener('resize',fit);addEventListener('orientationchange',()=>setTimeout(fit,120));fit();
+function ptr(e){const r=cv.getBoundingClientRect();return{x:(e.clientX-r.left)/r.width*LW,y:(e.clientY-r.top)/r.height*LH}}
+const LS={get(k){try{return localStorage.getItem(k)}catch(e){return null}},set(k,v){try{localStorage.setItem(k,v)}catch(e){}}};
+const GKEY='rw-air-hockey-arena';
+let sfxOn=LS.get('rwMute')!=='1',AC=null;
+const sndBtn=document.getElementById('snd');
+function sndLabel(){sndBtn.textContent='SFX: '+(sfxOn?'ON':'OFF');sndBtn.className=sfxOn?'':'off'}sndLabel();
+sndBtn.addEventListener('click',e=>{sfxOn=!sfxOn;LS.set('rwMute',sfxOn?'0':'1');sndLabel();e.stopPropagation();ac()});
+function ac(){try{if(!AC)AC=new (window.AudioContext||window.webkitAudioContext)();if(AC.state==='suspended')AC.resume()}catch(e){}}
+addEventListener('pointerdown',ac,{passive:true});addEventListener('keydown',ac);
+function tone(f,d,type,vol,slide,delay){if(!sfxOn||!AC)return;try{const t=AC.currentTime+(delay||0),o=AC.createOscillator(),g=AC.createGain();o.type=type||'square';o.frequency.setValueAtTime(f,t);if(slide)o.frequency.exponentialRampToValueAtTime(Math.max(20,f*slide),t+d);g.gain.setValueAtTime(vol||.06,t);g.gain.exponentialRampToValueAtTime(.0001,t+d);o.connect(g);g.connect(AC.destination);o.start(t);o.stop(t+d+.02)}catch(e){}}
+function noise(d,vol,hp){if(!sfxOn||!AC)return;try{const n=Math.floor(AC.sampleRate*d),b=AC.createBuffer(1,n,AC.sampleRate),a=b.getChannelData(0);for(let i=0;i<n;i++)a[i]=(Math.random()*2-1)*(1-i/n);const s=AC.createBufferSource(),g=AC.createGain(),f=AC.createBiquadFilter();f.type='highpass';f.frequency.value=hp||800;g.gain.value=vol||.08;s.buffer=b;s.connect(f);f.connect(g);g.connect(AC.destination);s.start()}catch(e){}}
+const TAU=Math.PI*2,rnd=(a,b)=>a+Math.random()*(b-a),rint=(a,b)=>Math.floor(rnd(a,b+1)),clamp=(v,a,b)=>v<a?a:v>b?b:v,lerp=(a,b,t)=>a+(b-a)*t;
+function rr(x,y,w,h,r){ctx.beginPath();ctx.moveTo(x+r,y);ctx.arcTo(x+w,y,x+w,y+h,r);ctx.arcTo(x+w,y+h,x,y+h,r);ctx.arcTo(x,y+h,x,y,r);ctx.arcTo(x,y,x+w,y,r);ctx.closePath()}
+function text(s,x,y,size,col,align,font){ctx.font='bold '+size+'px '+(font||'"Courier New",monospace');ctx.textAlign=align||'center';ctx.textBaseline='middle';ctx.fillStyle=col||'#fff';ctx.fillText(s,x,y)}
+function glowText(s,x,y,size,col,glow,align){ctx.save();ctx.shadowColor=glow||col;ctx.shadowBlur=18;text(s,x,y,size,col,align);ctx.restore()}
+let best=parseInt(LS.get(GKEY+'-best')||'0',10)||0;
+function saveBest(v){if(v>best){best=v;LS.set(GKEY+'-best',String(best));return true}return false}
+
+let mode='menu',score=0,t=0,overT=0,won=false,overMsg='';
+const K={};
+function endGame(w,m){if(mode!=='play')return;won=!!w;mode=w?'win':'over';overMsg=m||'';overT=0;saveBest(score);tone(w?880:180,.5,w?'square':'sawtooth',.1,w?1.5:.5)}
+function bgFill(a,b){const g=ctx.createLinearGradient(0,0,0,LH);g.addColorStop(0,a);g.addColorStop(1,b);ctx.fillStyle=g;ctx.fillRect(0,0,LW,LH)}
+function hud(l,r,c){ctx.fillStyle='#0b0b1ecc';ctx.fillRect(0,0,LW,44);ctx.fillStyle='#ffffff22';ctx.fillRect(0,43,LW,2);text(l,12,23,16,c||'#ffe85c','left');text(r,LW-12,23,16,'#fff','right')}
+function startGame(){mode='play';score=0;overT=0;onStart()}
+const META={"title": "AIR HOCKEY", "sub": "ARENA", "help": ["Move your finger / mouse to slide the mallet", "Hit the puck into the red goal", "First to 7 goals wins"], "c1": "#00e5ff", "c2": "#ff4b64", "win": "CHAMPION!"};
+
+const TX0=20,TX1=460,TY0=60,TY1=780,GW=170,PR=17,MR=34;let puck,me,cpu,sc,serveT,cpuT,lastP={x:240,y:600},mvel={x:0,y:0},lvl,rally;
+function onInit(){puck={x:240,y:420,vx:0,vy:0};me={x:240,y:690};cpu={x:240,y:150,vx:0,vy:0};sc=[0,0]}
+function onStart(){sc=[0,0];lvl=0;resetPuck(1);me={x:240,y:690};cpu={x:240,y:150,vx:0,vy:0}}
+function resetPuck(dir){puck={x:240,y:TY0+(TY1-TY0)/2+dir*60,vx:0,vy:0};serveT=1;rally=0}
+function onMove(p){me.tx=clamp(p.x,TX0+MR,TX1-MR);me.ty=clamp(p.y,(TY0+TY1)/2+MR*.6,TY1-MR)}
+function onTap(p){onMove(p)}
+function onKey(k){}
+function collide(m,mvx,mvy,mr){const dx=puck.x-m.x,dy=puck.y-m.y,d=Math.hypot(dx,dy),mm=mr+PR;if(d<mm&&d>0){const nx=dx/d,ny=dy/d;puck.x=m.x+nx*mm;puck.y=m.y+ny*mm;const rv=(puck.vx-mvx)*nx+(puck.vy-mvy)*ny;if(rv<0){puck.vx-=1.9*rv*nx;puck.vy-=1.9*rv*ny}
+  const sp=Math.hypot(puck.vx,puck.vy);if(sp<260){puck.vx=nx*260;puck.vy=ny*260}const mx=1500;if(sp>mx){puck.vx*=mx/sp;puck.vy*=mx/sp}rally++;tone(300+Math.min(500,sp*.3),.06,'triangle',.1);noise(.04,.06,1500)}}
+function onUpdate(dt){
+ // player mallet follows pointer
+ if(me.tx!==undefined){const ox=me.x,oy=me.y,k=Math.min(1,dt*30);me.x+=(me.tx-me.x)*k;me.y+=(me.ty-me.y)*k;mvel.x=(me.x-ox)/dt;mvel.y=(me.y-oy)/dt}
+ if(K.arrowleft||K.a)me.tx=clamp((me.tx??me.x)-14,TX0+MR,TX1-MR);if(K.arrowright||K.d)me.tx=clamp((me.tx??me.x)+14,TX0+MR,TX1-MR);if(K.arrowup||K.w)me.ty=clamp((me.ty??me.y)-14,(TY0+TY1)/2+MR*.6,TY1-MR);if(K.arrowdown||K.s)me.ty=clamp((me.ty??me.y)+14,(TY0+TY1)/2+MR*.6,TY1-MR);
+ // cpu
+ const sp=300+lvl*70+(sc[0]-sc[1])*25;let tx=240,ty=130;
+ if(puck.y<(TY0+TY1)/2||Math.abs(puck.vy)<80&&puck.y<TY0+380){ // attack
+   const behind=puck.y>cpu.y;tx=behind?puck.x:puck.x+(puck.x<240?-30:30);ty=behind?puck.y-40:puck.y-60;if(behind&&Math.abs(cpu.x-puck.x)<60){ty=puck.y+30;tx=puck.x+rnd(-10,10)}}
+ else{tx=clamp(puck.x+puck.vx*.12,TX0+80,TX1-80);ty=110+Math.max(0,Math.min(1,puck.vy/600))*40}
+ const ddx=tx-cpu.x,ddy=ty-cpu.y,dl=Math.hypot(ddx,ddy)||1,mv=Math.min(dl,sp*dt);const ox=cpu.x,oy=cpu.y;cpu.x+=ddx/dl*mv;cpu.y+=ddy/dl*mv;cpu.x=clamp(cpu.x,TX0+MR,TX1-MR);cpu.y=clamp(cpu.y,TY0+MR,(TY0+TY1)/2-MR*.6);cpu.vx=(cpu.x-ox)/dt;cpu.vy=(cpu.y-oy)/dt;
+ if(serveT>0){serveT-=dt;return}
+ const sub=3;for(let s=0;s<sub;s++){const h=dt/sub;puck.x+=puck.vx*h;puck.y+=puck.vy*h;
+  collide(me,mvel.x,mvel.y,MR);collide(cpu,cpu.vx,cpu.vy,MR);
+  if(puck.x<TX0+PR){puck.x=TX0+PR;puck.vx*=-.95;tone(200,.04,'square',.05)}if(puck.x>TX1-PR){puck.x=TX1-PR;puck.vx*=-.95;tone(200,.04,'square',.05)}
+  const inG=Math.abs(puck.x-240)<GW/2-PR*.3;
+  if(puck.y<TY0+PR){if(inG&&puck.y<TY0-PR){goal(0);return}if(!inG){puck.y=TY0+PR;puck.vy*=-.95}}
+  if(puck.y>TY1-PR){if(inG&&puck.y>TY1+PR){goal(1);return}if(!inG){puck.y=TY1-PR;puck.vy*=-.95}}}
+ const f=Math.pow(.992,dt*60);puck.vx*=f;puck.vy*=f}
+function goal(w){sc[w]++;if(w===0){score+=100+Math.min(100,rally*5)}tone(w===0?700:150,.35,'square',.1,w===0?2:.5);noise(.2,.1,600);
+ if(sc[0]>=7){score+=sc[0]*50;endGame(true,'Final '+sc[0]+' - '+sc[1]);return}if(sc[1]>=7){endGame(false,'Final '+sc[0]+' - '+sc[1]);return}
+ lvl=Math.min(5,Math.floor((sc[0]+sc[1])/3));resetPuck(w===0?1:-1)}
+function onDraw(){bgFill('#06102a','#0b1d44');
+ ctx.fillStyle='#0a3a7a';rr(TX0-10,TY0-10,TX1-TX0+20,TY1-TY0+20,26);ctx.fill();ctx.fillStyle='#0f56b0';rr(TX0,TY0,TX1-TX0,TY1-TY0,18);ctx.fill();
+ ctx.strokeStyle='#ffffff55';ctx.lineWidth=3;ctx.beginPath();ctx.moveTo(TX0,(TY0+TY1)/2);ctx.lineTo(TX1,(TY0+TY1)/2);ctx.stroke();ctx.beginPath();ctx.arc(240,(TY0+TY1)/2,64,0,TAU);ctx.stroke();
+ ctx.strokeStyle='#ff4b6466';ctx.beginPath();ctx.arc(240,TY0,GW/2+20,0,Math.PI);ctx.stroke();ctx.strokeStyle='#00e5ff66';ctx.beginPath();ctx.arc(240,TY1,GW/2+20,Math.PI,TAU);ctx.stroke();
+ ctx.fillStyle='#02020a';ctx.fillRect(240-GW/2,TY0-14,GW,16);ctx.fillRect(240-GW/2,TY1-2,GW,16);ctx.fillStyle='#ff4b64';ctx.fillRect(240-GW/2,TY0-14,GW,3);ctx.fillStyle='#00e5ff';ctx.fillRect(240-GW/2,TY1+11,GW,3);
+ // mallets
+ for(const [m,c1,c2] of[[cpu,'#ff4b64','#a01228'],[me,'#00e5ff','#0a7a9a']]){ctx.fillStyle='#0006';ctx.beginPath();ctx.arc(m.x+4,m.y+6,MR,0,TAU);ctx.fill();const g=ctx.createRadialGradient(m.x-8,m.y-8,4,m.x,m.y,MR);g.addColorStop(0,c1);g.addColorStop(1,c2);ctx.fillStyle=g;ctx.beginPath();ctx.arc(m.x,m.y,MR,0,TAU);ctx.fill();ctx.fillStyle='#fff4';ctx.beginPath();ctx.arc(m.x,m.y,MR*.45,0,TAU);ctx.fill()}
+ ctx.fillStyle='#0006';ctx.beginPath();ctx.arc(puck.x+3,puck.y+5,PR,0,TAU);ctx.fill();ctx.fillStyle='#222';ctx.beginPath();ctx.arc(puck.x,puck.y,PR,0,TAU);ctx.fill();ctx.strokeStyle='#ffe85c';ctx.lineWidth=3;ctx.beginPath();ctx.arc(puck.x,puck.y,PR-3,0,TAU);ctx.stroke();
+ hud('YOU '+sc[0],'CPU '+sc[1]);text('FIRST TO 7',LW/2,23,13,'#8a90b8');if(serveT>0&&mode==='play')text('GET READY',240,420,30,'#ffe85c')}
+
+function step(dt){t+=dt;if(mode==='play')onUpdate(dt);else overT+=dt}
+function overlay(){
+ const big=LW>600?1:.72,cx=LW/2;
+ if(mode==='menu'){ctx.fillStyle='#050510dd';ctx.fillRect(0,0,LW,LH);glowText(META.title,cx,LH*.22,Math.round(54*big),META.c1||'#00ffff',META.c2||'#ff2bd6');text(META.sub||'',cx,LH*.22+46*big,Math.round(18*big),'#ffe85c');
+  const h=META.help||[];h.forEach((l,i)=>text(l,cx,LH*.40+i*30*big,Math.round(16*big),'#c5cae8'));
+  text('BEST '+best,cx,LH*.40+h.length*30*big+34,Math.round(16*big),'#8a90b8');if(Math.sin(t*5)>0)glowText('TAP TO START',cx,LH*.86,Math.round(28*big),'#ffe85c')}
+ else if(mode==='win'||mode==='over'){ctx.fillStyle='#050510cc';ctx.fillRect(0,0,LW,LH);const w=mode==='win';glowText(w?(META.win||'YOU WIN!'):(META.over||'GAME OVER'),cx,LH*.3,Math.round(46*big),w?'#67ff67':'#ff4b64');
+  if(overMsg)text(overMsg,cx,LH*.3+46*big,Math.round(17*big),'#c5cae8');text('SCORE',cx,LH*.48,Math.round(14*big),'#8a90b8');glowText(String(score),cx,LH*.48+46*big,Math.round(52*big),'#ffe85c');text('BEST '+best,cx,LH*.48+96*big,Math.round(16*big),'#fff');
+  if(overT>.8&&Math.sin(t*5)>0)text('TAP TO PLAY AGAIN',cx,LH*.82,Math.round(20*big),'#00ffff')}}
+function draw(){ctx.save();ctx.setTransform(cv.width/LW,0,0,cv.height/LH,0,0);onDraw();overlay();ctx.restore()}
+cv.addEventListener('pointerdown',e=>{ac();const p=ptr(e);if(mode!=='play'){if(mode==='menu'||overT>.8)startGame();return}try{cv.setPointerCapture(e.pointerId)}catch(_){}if(typeof onTap==='function')onTap(p,e)});
+cv.addEventListener('pointermove',e=>{if(mode==='play'&&typeof onMove==='function')onMove(ptr(e),e)});
+const _up=e=>{if(mode==='play'&&typeof onUp==='function')onUp(ptr(e),e)};cv.addEventListener('pointerup',_up);cv.addEventListener('pointercancel',_up);
+addEventListener('keydown',e=>{const k=e.key.toLowerCase();if([' ','arrowup','arrowdown','arrowleft','arrowright'].includes(k))e.preventDefault();if(mode!=='play'){if((k===' '||k==='enter')&&(mode==='menu'||overT>.8))startGame();return}if(K[k])return;K[k]=true;if(typeof onKey==='function')onKey(k,e)});
+addEventListener('keyup',e=>{const k=e.key.toLowerCase();K[k]=false;if(mode==='play'&&typeof onKeyUp==='function')onKeyUp(k,e)});
+let _last=performance.now();function loop(now){requestAnimationFrame(loop);const dt=Math.min(.05,(now-_last)/1000);_last=now;step(dt);draw()}
+if(typeof onInit==='function')onInit();requestAnimationFrame(loop);
+
+/* RETRO WORLD profile bridge: report start / progress / finish to the arcade (trophies, quests, streaks) */
+(()=>{const GID="air-hockey-arena.html",GT="AIR HOCKEY ARENA".toUpperCase();let act=false,last=0,fin=false;
+const send=(t,x)=>{try{parent.postMessage(Object.assign({source:'retro-world-game',type:t,gameId:GID,title:GT},x||{}),'*')}catch(e){}};
+const val=()=>{try{return Math.max(0,Math.round(Number(score)||0))}catch(e){return 0}};
+const snap=()=>send('progress',{metric:'score',value:val(),higherBetter:true});
+setInterval(()=>{let m='';try{m=String(mode)}catch(e){return}
+const playing=(m==='play'||m==='clear'||m==='dying'),now=Date.now();
+if(playing&&!act){act=true;fin=false;send('start');snap();last=now}
+if(act&&playing&&now-last>1500){snap();last=now}
+if(act&&!fin&&(m==='win'||m==='over')){fin=true;act=false;send('finish',{metric:'score',value:val(),higherBetter:true,result:m==='win'?'win':'lose'})}
+if(!playing&&m==='menu'){act=false}},250);
+addEventListener('pagehide',()=>{if(act)snap()});})();
+</script></body></html>

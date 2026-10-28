@@ -1,0 +1,112 @@
+<!doctype html><html lang="en"><head><script src="rw-boost.js"></script><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover"><meta name="theme-color" content="#05060f">
+<title>CHECKERS CLUB • RETRO WORLD</title>
+<style>
+html,body{margin:0;height:100%;background:#05060f;overflow:hidden;font-family:"Courier New",monospace;-webkit-user-select:none;user-select:none;-webkit-tap-highlight-color:transparent}
+body{background:radial-gradient(circle at 50% 30%,#15153a,#05060f 70%)}
+#stage{position:fixed;inset:0;display:flex;align-items:center;justify-content:center}
+canvas{display:block;touch-action:none;box-shadow:0 0 50px #00ffff22;border-radius:6px;cursor:crosshair}
+#snd{position:fixed;left:6px;top:40px;z-index:5;font:700 11px "Courier New",monospace;color:#67ff67;background:#0b0b1ccc;border:1px solid #67ff67;padding:5px 8px;cursor:pointer;border-radius:4px}
+#snd.off{color:#8a8ab0;border-color:#6a6a90}
+
+</style>
+<script>addEventListener('keydown',function(e){if((e.keyCode||e.which)===461&&window.parent!==window){e.preventDefault();window.parent.postMessage({type:'retroworld-tv-back'},'*');}},true);</script></head>
+<body><div id="stage"><canvas id="g"></canvas></div><button id="snd" type="button">SFX: ON</button>
+
+<script>
+'use strict';
+const LW=560,LH=760;
+const cv=document.getElementById('g'),ctx=cv.getContext('2d');
+function fit(){const dpr=Math.min(2,window.devicePixelRatio||1),s=Math.min(innerWidth/LW,innerHeight/LH);cv.style.width=(LW*s)+'px';cv.style.height=(LH*s)+'px';cv.width=Math.round(LW*s*dpr);cv.height=Math.round(LH*s*dpr);ctx.setTransform(cv.width/LW,0,0,cv.height/LH,0,0)}
+addEventListener('resize',fit);addEventListener('orientationchange',()=>setTimeout(fit,120));fit();
+function ptr(e){const r=cv.getBoundingClientRect();return{x:(e.clientX-r.left)/r.width*LW,y:(e.clientY-r.top)/r.height*LH}}
+const LS={get(k){try{return localStorage.getItem(k)}catch(e){return null}},set(k,v){try{localStorage.setItem(k,v)}catch(e){}}};
+const GKEY='rw-checkers-club';
+let sfxOn=LS.get('rwMute')!=='1',AC=null;
+const sndBtn=document.getElementById('snd');
+function sndLabel(){sndBtn.textContent='SFX: '+(sfxOn?'ON':'OFF');sndBtn.className=sfxOn?'':'off'}sndLabel();
+sndBtn.addEventListener('click',e=>{sfxOn=!sfxOn;LS.set('rwMute',sfxOn?'0':'1');sndLabel();e.stopPropagation();ac()});
+function ac(){try{if(!AC)AC=new (window.AudioContext||window.webkitAudioContext)();if(AC.state==='suspended')AC.resume()}catch(e){}}
+addEventListener('pointerdown',ac,{passive:true});addEventListener('keydown',ac);
+function tone(f,d,type,vol,slide,delay){if(!sfxOn||!AC)return;try{const t=AC.currentTime+(delay||0),o=AC.createOscillator(),g=AC.createGain();o.type=type||'square';o.frequency.setValueAtTime(f,t);if(slide)o.frequency.exponentialRampToValueAtTime(Math.max(20,f*slide),t+d);g.gain.setValueAtTime(vol||.06,t);g.gain.exponentialRampToValueAtTime(.0001,t+d);o.connect(g);g.connect(AC.destination);o.start(t);o.stop(t+d+.02)}catch(e){}}
+function noise(d,vol,hp){if(!sfxOn||!AC)return;try{const n=Math.floor(AC.sampleRate*d),b=AC.createBuffer(1,n,AC.sampleRate),a=b.getChannelData(0);for(let i=0;i<n;i++)a[i]=(Math.random()*2-1)*(1-i/n);const s=AC.createBufferSource(),g=AC.createGain(),f=AC.createBiquadFilter();f.type='highpass';f.frequency.value=hp||800;g.gain.value=vol||.08;s.buffer=b;s.connect(f);f.connect(g);g.connect(AC.destination);s.start()}catch(e){}}
+const TAU=Math.PI*2,rnd=(a,b)=>a+Math.random()*(b-a),rint=(a,b)=>Math.floor(rnd(a,b+1)),clamp=(v,a,b)=>v<a?a:v>b?b:v,lerp=(a,b,t)=>a+(b-a)*t;
+function rr(x,y,w,h,r){ctx.beginPath();ctx.moveTo(x+r,y);ctx.arcTo(x+w,y,x+w,y+h,r);ctx.arcTo(x+w,y+h,x,y+h,r);ctx.arcTo(x,y+h,x,y,r);ctx.arcTo(x,y,x+w,y,r);ctx.closePath()}
+function text(s,x,y,size,col,align,font){ctx.font='bold '+size+'px '+(font||'"Courier New",monospace');ctx.textAlign=align||'center';ctx.textBaseline='middle';ctx.fillStyle=col||'#fff';ctx.fillText(s,x,y)}
+function glowText(s,x,y,size,col,glow,align){ctx.save();ctx.shadowColor=glow||col;ctx.shadowBlur=18;text(s,x,y,size,col,align);ctx.restore()}
+let best=parseInt(LS.get(GKEY+'-best')||'0',10)||0;
+function saveBest(v){if(v>best){best=v;LS.set(GKEY+'-best',String(best));return true}return false}
+
+let mode='menu',score=0,t=0,overT=0,won=false,overMsg='';
+const K={};
+function endGame(w,m){if(mode!=='play')return;won=!!w;mode=w?'win':'over';overMsg=m||'';overT=0;saveBest(score);tone(w?880:180,.5,w?'square':'sawtooth',.1,w?1.5:.5)}
+function bgFill(a,b){const g=ctx.createLinearGradient(0,0,0,LH);g.addColorStop(0,a);g.addColorStop(1,b);ctx.fillStyle=g;ctx.fillRect(0,0,LW,LH)}
+function hud(l,r,c){ctx.fillStyle='#0b0b1ecc';ctx.fillRect(0,0,LW,44);ctx.fillStyle='#ffffff22';ctx.fillRect(0,43,LW,2);text(l,12,23,16,c||'#ffe85c','left');text(r,LW-12,23,16,'#fff','right')}
+function startGame(){mode='play';score=0;overT=0;onStart()}
+const META={"title": "CHECKERS", "sub": "CLUB", "help": ["Tap a piece, then tap where to move it", "Captures are compulsory \u2014 chain jumps!", "Reach the far row to crown a king"], "c1": "#ff7a7a", "c2": "#ffe85c"};
+
+const N=8,CS=64,BX=(560-N*CS)/2,BY=130;let bd,turn,mv,sel,thinkT,anim,lastC,mustMsg;
+function fresh(){const b=Array.from({length:N},()=>Array(N).fill(0));for(let r=0;r<3;r++)for(let c=0;c<N;c++)if((r+c)%2===1)b[r][c]=2;for(let r=5;r<N;r++)for(let c=0;c<N;c++)if((r+c)%2===1)b[r][c]=1;return b}
+// 1=player (moves up), 2=cpu (moves down); kings = 3 (player) / 4 (cpu)
+const own=(v,p)=>v&&((v-1)%2+1)===p;
+function onInit(){bd=fresh();turn=1;mv=[];sel=null}
+function onStart(){bd=fresh();turn=1;sel=null;thinkT=0;anim=null;mv=moves(bd,1);lastC=null}
+function king(v){return v>2}
+function jumps(b,r,c,p,path,seen){const v=b[r][c],res=[];const dirs=king(v)?[[-1,-1],[-1,1],[1,-1],[1,1]]:(p===1?[[-1,-1],[-1,1]]:[[1,-1],[1,1]]);
+ for(const [dr,dc] of dirs){const r1=r+dr,c1=c+dc,r2=r+2*dr,c2=c+2*dc;if(r2<0||r2>=N||c2<0||c2>=N)continue;const m=b[r1][c1];if(m&&!own(m,p)&&!b[r2][c2]&&!(seen||[]).includes(r1*8+c1)){const nb=b.map(x=>x.slice());nb[r][c]=0;nb[r1][c1]=0;let nv=v;if((p===1&&r2===0)||(p===2&&r2===7))nv=p+2;const crowned=nv!==v;nb[r2][c2]=nv;const np=[...path,[r2,c2]],ns=[...(seen||[]),r1*8+c1];
+   const more=crowned?[]:jumps(nb,r2,c2,p,np,ns);if(more.length)res.push(...more);else res.push({path:np,caps:ns.length,crowned})}}return res}
+function moves(b,p){let caps=[];for(let r=0;r<N;r++)for(let c=0;c<N;c++)if(own(b[r][c],p)){const j=jumps(b,r,c,p,[[r,c]],[]);if(j.length)caps.push(...j)}
+ if(caps.length)return caps;const out=[];for(let r=0;r<N;r++)for(let c=0;c<N;c++){const v=b[r][c];if(!own(v,p))continue;const dirs=king(v)?[[-1,-1],[-1,1],[1,-1],[1,1]]:(p===1?[[-1,-1],[-1,1]]:[[1,-1],[1,1]]);for(const [dr,dc] of dirs){const r1=r+dr,c1=c+dc;if(r1>=0&&r1<N&&c1>=0&&c1<N&&!b[r1][c1])out.push({path:[[r,c],[r1,c1]],caps:0,crowned:(p===1&&r1===0&&!king(v))||(p===2&&r1===7&&!king(v))})}}return out}
+function applyM(b,m,p){const nb=b.map(x=>x.slice());const[r0,c0]=m.path[0];let v=nb[r0][c0];nb[r0][c0]=0;for(let i=1;i<m.path.length;i++){const[r,c]=m.path[i],[pr,pc]=m.path[i-1];if(Math.abs(r-pr)===2)nb[(r+pr)/2][(c+pc)/2]=0}const[re,ce]=m.path[m.path.length-1];if((p===1&&re===0)||(p===2&&re===7))v=p+2;nb[re][ce]=v;return nb}
+function evalB(b){let s=0;for(let r=0;r<N;r++)for(let c=0;c<N;c++){const v=b[r][c];if(!v)continue;const p=((v-1)%2)+1,k=king(v);let x=k?5.5:3+(p===2?r:7-r)*.12;if(c===0||c===7)x+=.2;s+=p===2?x:-x}return s}
+function ab(b,d,al,be,p){const m=moves(b,p);if(!m.length)return p===2?-1000-d:1000+d;if(d===0)return evalB(b);let v=p===2?-1e9:1e9;for(const x of m){const s=ab(applyM(b,x,p),d-1,al,be,3-p);if(p===2){v=Math.max(v,s);al=Math.max(al,v)}else{v=Math.min(v,s);be=Math.min(be,v)}if(al>=be)break}return v}
+function sq(p){return{r:Math.floor((p.y-BY)/CS),c:Math.floor((p.x-BX)/CS)}}
+function onTap(p){if(turn!==1||anim)return;const{r,c}=sq(p);if(r<0||r>=N||c<0||c>=N)return;
+ if(sel){const m=mv.find(m=>m.path[0][0]===sel[0]&&m.path[0][1]===sel[1]&&m.path[m.path.length-1][0]===r&&m.path[m.path.length-1][1]===c);if(m){doMove(m,1);return}}
+ if(own(bd[r][c],1)&&mv.some(m=>m.path[0][0]===r&&m.path[0][1]===c)){sel=[r,c];tone(500,.04,'square',.05)}else{sel=null;if(own(bd[r][c],1)&&mv[0]&&mv[0].caps)mustMsg=1.3}}
+function doMove(m,p){anim={m,p,t:0};sel=null}
+function onUpdate(dt){if(mustMsg>0)mustMsg-=dt;
+ if(anim){anim.t+=dt;if(anim.t>.35+.15*(anim.m.path.length-2)){bd=applyM(bd,anim.m,anim.p);lastC=anim.m.path[anim.m.path.length-1];tone(anim.m.caps?300:450,.1,'square',.08);if(anim.m.caps)noise(.08,.08,900);const p=anim.p;anim=null;turn=3-p;mv=moves(bd,turn);thinkT=0;
+   if(!mv.length){const a=bd.flat().filter(v=>v&&((v-1)%2)===0).length;if(turn===2){score=1000+a*50;endGame(true,'The CPU has no moves left')}else{score=a*20;endGame(false,'You have no moves left')}}}return}
+ if(turn===2){thinkT+=dt;if(thinkT>.6){thinkT=-99;let bm=null,bs=-1e9;for(const m of mv){const s=ab(applyM(bd,m,2),5,-1e9,1e9,1)+Math.random()*.15;if(s>bs){bs=s;bm=m}}doMove(bm,2)}}}
+function onDraw(){bgFill('#1a0f08','#0a0604');ctx.fillStyle='#5a3a1a';rr(BX-12,BY-12,N*CS+24,N*CS+24,10);ctx.fill();
+ for(let r=0;r<N;r++)for(let c=0;c<N;c++){ctx.fillStyle=(r+c)%2?'#6b3f1d':'#e8c890';ctx.fillRect(BX+c*CS,BY+r*CS,CS,CS)}
+ if(lastC){ctx.strokeStyle='#ffe85c88';ctx.lineWidth=3;ctx.strokeRect(BX+lastC[1]*CS+3,BY+lastC[0]*CS+3,CS-6,CS-6)}
+ if(sel){ctx.fillStyle='#ffe85c66';ctx.fillRect(BX+sel[1]*CS,BY+sel[0]*CS,CS,CS);for(const m of mv)if(m.path[0][0]===sel[0]&&m.path[0][1]===sel[1]){const e=m.path[m.path.length-1];ctx.fillStyle='#67ff6799';ctx.beginPath();ctx.arc(BX+e[1]*CS+CS/2,BY+e[0]*CS+CS/2,12,0,TAU);ctx.fill()}}
+ else if(turn===1&&mode==='play'&&!anim&&mv.length){const seen=new Set();for(const m of mv){const k=m.path[0].join();if(seen.has(k))continue;seen.add(k);ctx.strokeStyle=mv[0].caps?'#ff8a3d':'#ffffff55';ctx.lineWidth=3;ctx.strokeRect(BX+m.path[0][1]*CS+4,BY+m.path[0][0]*CS+4,CS-8,CS-8)}}
+ const piece=(x,y,v)=>{const p=((v-1)%2)+1,r=CS/2-9;ctx.fillStyle='#0006';ctx.beginPath();ctx.ellipse(x+2,y+5,r,r*.9,0,0,TAU);ctx.fill();const g=ctx.createRadialGradient(x-8,y-8,3,x,y,r);g.addColorStop(0,p===1?'#ff7a7a':'#555');g.addColorStop(1,p===1?'#b01020':'#0a0a0a');ctx.fillStyle=g;ctx.beginPath();ctx.arc(x,y,r,0,TAU);ctx.fill();ctx.strokeStyle=p===1?'#ffb0b0':'#888';ctx.lineWidth=2;ctx.beginPath();ctx.arc(x,y,r-7,0,TAU);ctx.stroke();if(king(v)){text('♛',x,y+1,24,'#ffe85c')}};
+ for(let r=0;r<N;r++)for(let c=0;c<N;c++){const v=bd[r][c];if(!v)continue;if(anim){const[r0,c0]=anim.m.path[0];if(r===r0&&c===c0)continue}piece(BX+c*CS+CS/2,BY+r*CS+CS/2,v)}
+ if(anim){const path=anim.m.path,seg=Math.min(path.length-2,Math.floor(anim.t/(.35/(1+0))*(1/(path.length-1))*(path.length-1)/ (path.length-1)*(1)) );const tt=anim.t/(.35+.15*(path.length-2))*(path.length-1);const i=Math.min(path.length-2,Math.floor(tt)),f=Math.min(1,tt-i);const a=path[i],b=path[i+1];const x=lerp(a[1],b[1],f)*CS+BX+CS/2,y=lerp(a[0],b[0],f)*CS+BY+CS/2-Math.sin(f*Math.PI)*14;piece(x,y,bd[path[0][0]][path[0][1]])}
+ const a=bd.flat().filter(v=>v&&((v-1)%2)===0).length,c=bd.flat().filter(v=>v&&((v-1)%2)===1).length;hud('YOU '+a,'CPU '+c);text(turn===1?(mv[0]&&mv[0].caps?'YOU MUST CAPTURE!':'YOUR MOVE (RED)'):'CPU THINKING…',LW/2,76,18,turn===1?'#ffe85c':'#c5cae8');
+ if(mustMsg>0)glowText('Capture is compulsory',LW/2,BY+N*CS+38,20,'#ff8a3d')}
+
+function step(dt){t+=dt;if(mode==='play')onUpdate(dt);else overT+=dt}
+function overlay(){
+ const big=LW>600?1:.72,cx=LW/2;
+ if(mode==='menu'){ctx.fillStyle='#050510dd';ctx.fillRect(0,0,LW,LH);glowText(META.title,cx,LH*.22,Math.round(54*big),META.c1||'#00ffff',META.c2||'#ff2bd6');text(META.sub||'',cx,LH*.22+46*big,Math.round(18*big),'#ffe85c');
+  const h=META.help||[];h.forEach((l,i)=>text(l,cx,LH*.40+i*30*big,Math.round(16*big),'#c5cae8'));
+  text('BEST '+best,cx,LH*.40+h.length*30*big+34,Math.round(16*big),'#8a90b8');if(Math.sin(t*5)>0)glowText('TAP TO START',cx,LH*.86,Math.round(28*big),'#ffe85c')}
+ else if(mode==='win'||mode==='over'){ctx.fillStyle='#050510cc';ctx.fillRect(0,0,LW,LH);const w=mode==='win';glowText(w?(META.win||'YOU WIN!'):(META.over||'GAME OVER'),cx,LH*.3,Math.round(46*big),w?'#67ff67':'#ff4b64');
+  if(overMsg)text(overMsg,cx,LH*.3+46*big,Math.round(17*big),'#c5cae8');text('SCORE',cx,LH*.48,Math.round(14*big),'#8a90b8');glowText(String(score),cx,LH*.48+46*big,Math.round(52*big),'#ffe85c');text('BEST '+best,cx,LH*.48+96*big,Math.round(16*big),'#fff');
+  if(overT>.8&&Math.sin(t*5)>0)text('TAP TO PLAY AGAIN',cx,LH*.82,Math.round(20*big),'#00ffff')}}
+function draw(){ctx.save();ctx.setTransform(cv.width/LW,0,0,cv.height/LH,0,0);onDraw();overlay();ctx.restore()}
+cv.addEventListener('pointerdown',e=>{ac();const p=ptr(e);if(mode!=='play'){if(mode==='menu'||overT>.8)startGame();return}try{cv.setPointerCapture(e.pointerId)}catch(_){}if(typeof onTap==='function')onTap(p,e)});
+cv.addEventListener('pointermove',e=>{if(mode==='play'&&typeof onMove==='function')onMove(ptr(e),e)});
+const _up=e=>{if(mode==='play'&&typeof onUp==='function')onUp(ptr(e),e)};cv.addEventListener('pointerup',_up);cv.addEventListener('pointercancel',_up);
+addEventListener('keydown',e=>{const k=e.key.toLowerCase();if([' ','arrowup','arrowdown','arrowleft','arrowright'].includes(k))e.preventDefault();if(mode!=='play'){if((k===' '||k==='enter')&&(mode==='menu'||overT>.8))startGame();return}if(K[k])return;K[k]=true;if(typeof onKey==='function')onKey(k,e)});
+addEventListener('keyup',e=>{const k=e.key.toLowerCase();K[k]=false;if(mode==='play'&&typeof onKeyUp==='function')onKeyUp(k,e)});
+let _last=performance.now();function loop(now){requestAnimationFrame(loop);const dt=Math.min(.05,(now-_last)/1000);_last=now;step(dt);draw()}
+if(typeof onInit==='function')onInit();requestAnimationFrame(loop);
+
+/* RETRO WORLD profile bridge: report start / progress / finish to the arcade (trophies, quests, streaks) */
+(()=>{const GID="checkers-club.html",GT="CHECKERS CLUB".toUpperCase();let act=false,last=0,fin=false;
+const send=(t,x)=>{try{parent.postMessage(Object.assign({source:'retro-world-game',type:t,gameId:GID,title:GT},x||{}),'*')}catch(e){}};
+const val=()=>{try{return Math.max(0,Math.round(Number(score)||0))}catch(e){return 0}};
+const snap=()=>send('progress',{metric:'score',value:val(),higherBetter:true});
+setInterval(()=>{let m='';try{m=String(mode)}catch(e){return}
+const playing=(m==='play'||m==='clear'||m==='dying'),now=Date.now();
+if(playing&&!act){act=true;fin=false;send('start');snap();last=now}
+if(act&&playing&&now-last>1500){snap();last=now}
+if(act&&!fin&&(m==='win'||m==='over')){fin=true;act=false;send('finish',{metric:'score',value:val(),higherBetter:true,result:m==='win'?'win':'lose'})}
+if(!playing&&m==='menu'){act=false}},250);
+addEventListener('pagehide',()=>{if(act)snap()});})();
+</script></body></html>
