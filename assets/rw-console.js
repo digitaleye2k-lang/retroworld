@@ -1,6 +1,6 @@
 (()=>{
 'use strict';
-const VK='rw_view',TK='rw_xmb_theme',SK='rw_xmb_snd';
+const VK='rw_view2',TK='rw_xmb_theme',SK='rw_xmb_snd';
 const ls={get(k,d){try{return localStorage.getItem(k)||d}catch(e){return d}},set(k,v){try{localStorage.setItem(k,v)}catch(e){}}};
 const CATS=[['new',"WHAT'S NEW",'✦'],['all','ALL GAMES','▦'],['epic3d','EPIC & 3D','🌌'],['arcade','ARCADE','🕹'],['puzzle','PUZZLE','🧩'],['shooter','SHOOTER','🎯'],['space','SPACE','🚀'],['sports','SPORTS','⚽'],['survival','SURVIVAL','☠'],['board','BOARD','♟'],['platform','PLATFORM','🏃'],['fighting','FIGHTING','🥊'],['driving','DRIVING','🏎'],['defense','DEFENSE','🛡'],['premium','PREMIUM','🔒'],['settings','SETTINGS','⚙']];
 const THEMES={AUTO:null,BLUE:215,PURPLE:268,TEAL:182,CRIMSON:350,GOLD:38};
@@ -53,7 +53,7 @@ function bgFrame(){raf=requestAnimationFrame(bgFrame);if(!on||document.hidden||d
  for(let i=0;i<6;i++){const y0=bh*(.38+i*.09),amp=bh*(.06+.02*i),f=.006+i*.0016,sp=bt*(.6+i*.18)+i*1.7;const g=bx.createLinearGradient(0,y0-amp,0,bh);g.addColorStop(0,'hsla('+(h+i*9)+',90%,'+(55+i*3)+'%,'+(.10-i*.01)+')');g.addColorStop(1,'hsla('+(h+30)+',90%,40%,0)');bx.fillStyle=g;bx.beginPath();bx.moveTo(0,bh);for(let x=0;x<=bw;x+=8){bx.lineTo(x,y0+Math.sin(x*f+sp)*amp+Math.sin(x*f*2.3-sp*1.3)*amp*.35)}bx.lineTo(bw,bh);bx.closePath();bx.fill();bx.strokeStyle='hsla('+(h+i*9)+',95%,75%,.16)';bx.lineWidth=1.2;bx.beginPath();for(let x=0;x<=bw;x+=8){const y=y0+Math.sin(x*f+sp)*amp+Math.sin(x*f*2.3-sp*1.3)*amp*.35;x?bx.lineTo(x,y):bx.moveTo(x,y)}bx.stroke()}
  for(let i=0;i<26;i++){const x=((i*137.5+bt*14*(1+i%3))%bw),y=(i*61.3+Math.sin(bt+i)*18)%(bh*.9);bx.fillStyle='rgba(255,255,255,'+(.06+.08*((i%5)/5))+')';bx.fillRect(x,y,1.6,1.6)}bx.globalCompositeOperation='source-over'}
 function setView(v){ls.set(VK,v);const c=v==='console';document.body.classList.toggle('rw-console',c);on=c;if(c){build();readGames();render();applyTheme();if(!raf)bgFrame();window.scrollTo(0,0)}else{window.scrollTo(0,0)}}
-function init(){const hash=location.hash,q=/[?&]view=(classic|console)/.exec(location.search);let v=q?q[1]:ls.get(VK,'console');if(!q&&/^#(games|epic|news|about)/.test(hash))v='classic';
+function init(){const hash=location.hash,q=/[?&]view=(classic|console)/.exec(location.search);let v=q?q[1]:ls.get(VK,'classic');if(!q&&/^#(games|epic|news|about)/.test(hash))v='classic';
  const go=()=>{if(v==='console')setView('console');else{build();document.body.classList.remove('rw-console');on=false}};
  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',go);else go()}
 window.RWConsole={set:setView};init();
