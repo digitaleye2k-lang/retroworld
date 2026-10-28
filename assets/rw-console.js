@@ -11,7 +11,7 @@ const $=id=>document.getElementById(id);
 const esc=s=>String(s||'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 const skin=()=>ls.get(KK,'ps4');
 function hueFor(k){if(k==='xbox')return 112;if(k==='nebula')return 280;if(k==='crimson')return 352;const h=new Date().getHours();return h>=5&&h<11?190:h<17?215:h<21?266:226}
-function dockItems(){return[{ic:'🎲',lb:'RANDOM GAME',k:'r',run:rand},{ic:'🏆',lb:'PROFILE & TROPHIES',k:'t',run:()=>{if(window.RWP&&RWP.openProfile)RWP.openProfile()}},{ic:'🎨',lb:'STYLE: '+(SKINS.find(s=>s[0]===skin())||SKINS[0])[1],k:'k',run:cycleSkin},{ic:ls.get(MK,'on')==='on'?'🎵':'🔕',lb:'AMBIENT MUSIC',k:'m',run:()=>{ls.set(MK,ls.get(MK,'on')==='on'?'off':'on');syncMusic();renderDock()}},{ic:ls.get(SK,'on')==='on'?'🔊':'🔇',lb:'CLICK SOUNDS',k:'n',run:()=>{ls.set(SK,ls.get(SK,'on')==='on'?'off':'on');renderDock()}},{ic:'🖥',lb:'CLASSIC VIEW',k:'v',run:()=>setView('classic')}]}
+function dockItems(){return[{ic:'🎲',lb:'RANDOM GAME',k:'r',run:rand},{ic:'🏆',lb:'PROFILE & TROPHIES',k:'t',run:showProf},{ic:'🎨',lb:'STYLE: '+(SKINS.find(s=>s[0]===skin())||SKINS[0])[1],k:'k',run:cycleSkin},{ic:ls.get(MK,'on')==='on'?'🎵':'🔕',lb:'AMBIENT MUSIC',k:'m',run:()=>{ls.set(MK,ls.get(MK,'on')==='on'?'off':'on');syncMusic();renderDock()}},{ic:ls.get(SK,'on')==='on'?'🔊':'🔇',lb:'CLICK SOUNDS',k:'n',run:()=>{ls.set(SK,ls.get(SK,'on')==='on'?'off':'on');renderDock()}},{ic:'🖥',lb:'CLASSIC VIEW',k:'v',run:()=>setView('classic')}]}
 // ---- PlayStation-style ambient music (generative, WebAudio) ----
 const MK='rw_xmb_music';
 const Amb=(()=>{let c=null,m=null,rev=null,t=null,nxt=0,step=0,run=false;
@@ -34,7 +34,7 @@ function syncMusic(){const ga=document.body.classList.contains('game-active');if
 function adStrip(host,cls){if(window.RETROWORLD_TV_DEVICE||!document.querySelector('script[src*="adsbygoogle"]'))return null;const w=document.createElement('div');w.className=cls||'x-ad';w.innerHTML='<small>ADVERTISEMENT</small>';const ins=document.createElement('ins');ins.className='adsbygoogle';ins.style.cssText='display:block;width:100%';ins.setAttribute('data-ad-client','ca-pub-7935805760564580');ins.setAttribute('data-ad-slot','4713461465');ins.setAttribute('data-ad-format','auto');ins.setAttribute('data-full-width-responsive','true');w.appendChild(ins);w.style.cssText='height:0;overflow:hidden;margin:0;padding:0;border:0';new MutationObserver(()=>{if(ins.getAttribute('data-ad-status')==='filled')w.style.cssText=''}).observe(ins,{attributes:true,attributeFilter:['data-ad-status']});host.appendChild(w);try{(window.adsbygoogle=window.adsbygoogle||[]).push({})}catch(e){}return w}
 window.RWAd=adStrip;
 function build(){if(built)return;built=true;readGames();const r=document.createElement('div');r.id='rwXmb';r.setAttribute('aria-label','Retro World console menu');
- r.innerHTML='<div id="xBgFill"></div><div id="xArtBg"></div><canvas id="xBg"></canvas><div id="xShade"></div><div class="x-main"><div class="x-top"><div class="x-prof"><span class="x-av" id="xAv">🎮</span><b id="xName">RETRO WORLD</b></div><div class="x-status"><span id="xClock"></span><button class="x-pill" id="xClassic" type="button" title="Back to the normal website (V)">CLASSIC VIEW</button></div></div><div class="x-tabs" id="xTabs"></div><div class="x-hero" id="xHero"></div><div class="x-row" id="xRow"></div><div class="x-dock" id="xDock"></div><div class="x-pads" id="xPads"></div></div>';
+ r.innerHTML='<div id="xBgFill"></div><div id="xArtBg"></div><canvas id="xBg"></canvas><div id="xShade"></div><div class="x-main"><div class="x-top"><div class="x-prof"><span class="x-av" id="xAv">🎮</span><b id="xName">RETRO WORLD</b></div><div class="x-status"><span id="xClock"></span><button class="x-pill" id="xClassic" type="button" title="Back to the normal website (V)">CLASSIC VIEW</button></div></div><div class="x-tabs" id="xTabs"></div><div class="x-hero" id="xHero"></div><div class="x-row" id="xRow"></div><div class="x-dock" id="xDock"></div><div class="x-pads" id="xPads"></div></div><div id="xProf" hidden></div>';
  document.body.appendChild(r);
  $('xClassic').addEventListener('click',()=>setView('classic'));
  $('xTabs').addEventListener('click',e=>{const t=e.target.closest('.x-tab');if(t)selCat(+t.dataset.i)});
@@ -68,15 +68,57 @@ function applySkin(){const r=$('rwXmb');if(!r)return;const k=skin();r.dataset.sk
  else bg='radial-gradient(1200px 700px at 78% 12%,hsl('+(h+18)+',85%,34%) 0%,transparent 60%),linear-gradient(165deg,hsl('+h+',82%,24%),hsl('+(h+12)+',88%,8%))';
  $('xBgFill').style.background=bg}
 function modalOpen(){if(document.body.classList.contains('game-active'))return true;for(const el of document.body.children){if(el.id==='rwXmb'||el.tagName==='SCRIPT')continue;const cs=getComputedStyle(el);if(cs.position==='fixed'&&cs.display!=='none'&&cs.visibility!=='hidden'&&el.offsetWidth>200&&el.offsetHeight>150&&(parseInt(cs.zIndex)||0)>=85)return true}return false}
+
+// ---- console player profile ----
+let profOpen=false,profI=0;
+const PROF_ROWS=['avatar','acc','theme','color','anim','title','motto','rand','full','close'];
+function profData(){const p=window.RWP&&RWP.active&&RWP.active();return p}
+function profCycle(list,cur,d){let i=list.indexOf(cur);if(i<0)i=0;return list[(i+d+list.length)%list.length]}
+function profChange(row,d){const p=profData(),R=window.RWP;if(!p||!R||!R.idn)return;const I=R.idn,pk=a=>a[Math.floor(Math.random()*a.length)];
+ if(row==='avatar'){const ids=I.avatars.map(a=>a.id);p.avatar=profCycle(ids,p.avatar,d)}
+ else if(row==='acc')p.acc=profCycle(I.accs,p.acc||'',d);
+ else if(row==='theme')p.theme=profCycle(I.themes.map(t=>t.id),p.theme||'',d);
+ else if(row==='color')p.accent=profCycle(I.colors,p.accent||'',d);
+ else if(row==='anim')p.anim=profCycle(I.anims.map(a=>a[0]),p.anim||'',d);
+ else if(row==='title')p.title=profCycle(I.titles,p.title||'',d);
+ else if(row==='motto')p.motto=profCycle(I.mottos,p.motto||'',d);
+ else if(row==='rand'){p.avatar=pk(I.avatars).id;p.acc=pk(I.accs);p.theme=pk(I.themes).id;p.accent=pk(I.colors);p.anim=pk(I.anims)[0];p.title=pk(I.titles);p.motto=pk(I.mottos)}
+ R.save();try{I.render(p);I.refresh()}catch(e){}renderProf()}
+function pesc(t){return String(t).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]))}
+function renderProf(){const el=$('xProf');if(!el)return;const R=window.RWP,p=profData();
+ if(!p||!R||!R.idn){el.innerHTML='<div class="xp-box"><h2>NO PLAYER PROFILE YET</h2><p>Create one to save scores, trophies and your own look.</p><div class="xp-btns"><button class="xp-b kf" data-r="create">＋ CREATE PROFILE</button><button class="xp-b" data-r="close">BACK</button></div></div>';profI=0;return}
+ const I=R.idn,av=R.avatar(p.avatar),acc=p.accent||av.accent,th=I.themes.find(t=>t.id===(p.theme||''))||I.themes[0];
+ const a=R.agg(p),defs=R.defs||[],earned=defs.filter(d=>p.trophies&&p.trophies[d.id]);
+ const val={avatar:av.icon+' '+av.name,acc:p.acc||'NONE',theme:th.n,color:p.accent?'●':'AUTO',anim:(I.anims.find(x=>x[0]===(p.anim||''))||I.anims[0])[1],title:p.title||'NONE',motto:p.motto||'NONE'};
+ const lab={avatar:'CHARACTER',acc:'ACCESSORY',theme:'CARD THEME',color:'GLOW',anim:'ANIMATION',title:'TITLE',motto:'MOTTO'};
+ const g=glyphs();
+ const rows=PROF_ROWS.map((r,i)=>{const f=i===profI?' kf':'';if(lab[r])return '<div class="xp-r'+f+'" data-i="'+i+'"><span>'+lab[r]+'</span><b'+(r==='color'&&p.accent?' style="color:'+p.accent+'"':'')+'>◀ '+pesc(val[r])+' ▶</b></div>';
+  const t={rand:'🎲 SURPRISE ME',full:'📋 FULL PROFILE, SAVE & EXPORT',close:'◀ BACK TO MENU'}[r];return '<button class="xp-b'+f+'" data-i="'+i+'">'+t+'</button>'}).join('');
+ const st=[['GAMES PLAYED',a.plays],['DIFFERENT GAMES',a.unique],['WINS',a.wins],['TOTAL POINTS',a.points],['BEST SCORE',a.maxScore],['CHALLENGES',a.challenges],['TOKENS',a.tokens],['TROPHIES',earned.length+' / '+defs.length]].map(x=>'<div class="xp-s"><b>'+(typeof x[1]==='number'?x[1].toLocaleString():x[1])+'</b><small>'+x[0]+'</small></div>').join('');
+ const tr=earned.slice(0,24).map(d=>'<span class="xp-t on" title="'+pesc(d.name)+'">'+d.icon+'</span>').join('')||'<small style="color:#9aa3cc;font:700 11px monospace">PLAY GAMES TO EARN TROPHIES 🏆</small>';
+ el.innerHTML='<div class="xp-box" style="--ac:'+acc+'"><div class="xp-card" style="background:'+th.c+'"><div class="xp-av" data-acc="'+pesc(p.acc||'')+'" data-anim="'+pesc(p.anim||'')+'">'+av.icon+'</div><div class="xp-nm">'+pesc(p.name)+'</div><div class="xp-gn">'+pesc(p.genre)+' PLAYER • '+pesc(av.game)+'</div>'+(p.title?'<div class="xp-ti">« '+pesc(p.title)+' »</div>':'')+(p.motto?'<div class="xp-mo">“'+pesc(p.motto)+'”</div>':'')+'</div><div class="xp-right"><div class="xp-stats">'+st+'</div><div class="xp-trs">'+tr+'</div><div class="xp-list">'+rows+'</div></div></div><div class="xp-hint">◀ ▶ '+'CHANGE   ▲ ▼ MOVE   '+g.A+' SELECT   '+g.B+' BACK</div>';
+ const f=el.querySelector('.kf');if(f&&f.scrollIntoView)f.scrollIntoView({block:'nearest'})}
+function showProf(){const el=$('xProf');if(!el)return;profOpen=true;profI=0;el.hidden=false;renderProf();updTop()}
+function hideProf(){profOpen=false;const el=$('xProf');if(el)el.hidden=true;updTop();focus&&focus(true)}
+function updTop(){try{const p=profData(),av=p&&RWP.avatar(p.avatar),e=$('xAv');if(e&&av){e.textContent=av.icon+(p.acc||'')}}catch(x){}}
+function profNav(k){const p=profData();if(!p||!(window.RWP&&RWP.idn)){if(k==='A'){hideProf();if(RWP&&RWP.openOnboarding)RWP.openOnboarding()}else if(k==='B')hideProf();return}
+ const r=PROF_ROWS[profI];
+ if(k==='U')profI=(profI-1+PROF_ROWS.length)%PROF_ROWS.length;else if(k==='D')profI=(profI+1)%PROF_ROWS.length;
+ else if(k==='L'||k==='l'){if(!['rand','full','close'].includes(r))profChange(r,-1);return}
+ else if(k==='R'||k==='r'){if(!['rand','full','close'].includes(r))profChange(r,1);return}
+ else if(k==='X'){profChange('rand',0);return}
+ else if(k==='B'||k==='E'||k==='S'){hideProf();return}
+ else if(k==='A'){if(r==='close')hideProf();else if(r==='full'){hideProf();if(RWP.openProfile)RWP.openProfile()}else if(r==='rand')profChange('rand',0);else profChange(r,1);return}
+ tick&&tick(700);renderProf()}
 let zone='row',dockI=0;
 function dockFocus(){const ds=document.querySelectorAll('#xDock .x-d');ds.forEach((d,i)=>d.classList.toggle('kf',zone==='dock'&&i===dockI))}
 function setZone(z){zone=z;dockFocus()}
 function dockMove(d){const n=dockItems().length;dockI=(dockI+d+n)%n;dockFocus();tick(700)}
 function dockAct(){const it=dockItems()[dockI];tick(900);if(it)it.run()}
-function nav(k){ // k: L R U D A B X Y S(start) E(select) P(L2) N(R2) l(L1) r(R1)
+function nav(k){ if(profOpen){profNav(k);return} // k: L R U D A B X Y S(start) E(select) P(L2) N(R2) l(L1) r(R1)
  if(zone==='dock'){if(k==='L')dockMove(-1);else if(k==='R')dockMove(1);else if(k==='A')dockAct();else if(k==='U'||k==='B'||k==='E')setZone('row');return}
- if(k==='L')move(-1);else if(k==='R')move(1);else if(k==='D'){if(cat>=CATS.length-1)setZone('dock');else selCat(cat+1)}else if(k==='U')selCat(cat-1);else if(k==='A')act();else if(k==='X')rand();else if(k==='Y')cycleSkin();else if(k==='S'){if(window.RWP&&RWP.openProfile)RWP.openProfile()}else if(k==='E')setZone('dock');else if(k==='P')move(-5);else if(k==='N')move(5);else if(k==='l')selCat(cat-1);else if(k==='r')selCat(cat+1)}
-function key(e){if(!on)return;const tg=e.target;if(tg&&/^(INPUT|TEXTAREA|SELECT)$/.test(tg.tagName))return;if(modalOpen())return;const k=e.key,dk=dockItems().find(d=>d.k===k.toLowerCase());
+ if(k==='L')move(-1);else if(k==='R')move(1);else if(k==='D'){if(cat>=CATS.length-1)setZone('dock');else selCat(cat+1)}else if(k==='U')selCat(cat-1);else if(k==='A')act();else if(k==='X')rand();else if(k==='Y')cycleSkin();else if(k==='S'){showProf()}else if(k==='E')setZone('dock');else if(k==='P')move(-5);else if(k==='N')move(5);else if(k==='l')selCat(cat-1);else if(k==='r')selCat(cat+1)}
+function key(e){if(!on)return;if(profOpen){const m={ArrowLeft:'L',ArrowRight:'R',ArrowUp:'U',ArrowDown:'D',Enter:'A',' ':'A',Escape:'B',Backspace:'B',BrowserBack:'B'}[e.key];if(m||e.keyCode===461){profNav(m||'B');e.preventDefault()}return}const tg=e.target;if(tg&&/^(INPUT|TEXTAREA|SELECT)$/.test(tg.tagName))return;if(modalOpen())return;const k=e.key,dk=dockItems().find(d=>d.k===k.toLowerCase());
  if(k==='Tab'){setZone(zone==='dock'?'row':'dock');e.preventDefault();return}
  if(k==='Escape'||k==='Backspace'||k==='BrowserBack'||e.keyCode===461){if(zone==='dock'){setZone('row');e.preventDefault();return}if((k==='BrowserBack'||e.keyCode===461)&&/web0s|webos/i.test(navigator.userAgent)){try{window.close()}catch(x){}}e.preventDefault();return}
  if(zone==='dock'){if(k==='ArrowRight')dockMove(1);else if(k==='ArrowLeft')dockMove(-1);else if(k==='Enter'||k===' ')dockAct();else if(k==='ArrowUp')setZone('row');else if(dk)dk.run();else return;e.preventDefault();return}
@@ -100,5 +142,6 @@ function setView(v){ls.set(VK,v);const c=v==='console',mb=v==='mobile';document.
 function init(){const q=/[?&]view=(classic|console|mobile)/.exec(location.search);let v=q?q[1]:ls.get(VK,'');if(!q&&/[?&]tv=(1|on|true)/i.test(location.search))v='console';if(!v&&window.RETROWORLD_TV_DEVICE)v='console';if(!v){v=(matchMedia('(max-width:640px)').matches&&('ontouchstart' in window||navigator.maxTouchPoints>0))?'mobile':'classic'}if(!q&&/^#(games|epic|news|about|play=)/.test(location.hash))v='classic';
  const go=()=>{const tvb=document.getElementById('tvModeBtn');if(tvb)tvb.addEventListener('click',e=>{e.stopImmediatePropagation();e.preventDefault();setView(document.body.classList.contains('rw-console')?'classic':'console')},true);const mbb=document.getElementById('mobileModeBtn');if(mbb)mbb.addEventListener('click',()=>setView('mobile'));if(v!=='classic')setView(v)};
  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',go);else go()}
+document.addEventListener('click',e=>{const t=e.target;if(!t.closest)return;if(t.closest('.x-prof')&&on){showProf();return}const b=t.closest('#xProf [data-r],#xProf [data-i]');if(!b)return;if(b.dataset.r==='create'){hideProf();if(RWP.openOnboarding)RWP.openOnboarding();return}if(b.dataset.r==='close'){hideProf();return}profI=+b.dataset.i;profNav('A')});
 window.RWConsole={set:setView};init();
 })();

@@ -96,3 +96,31 @@ body.rw-console.game-active #rwXmb{visibility:hidden}
 @media (min-width:2300px){#rwXmb.x-tv .x-main{zoom:1.8}}
 .x-toast{position:fixed;left:50%;bottom:26px;transform:translateX(-50%);z-index:95;background:rgba(10,14,30,.92);color:#fff;border:1px solid rgba(255,255,255,.4);border-radius:999px;padding:12px 22px;font:600 14px/1 "Segoe UI",Arial,sans-serif;letter-spacing:.06em;box-shadow:0 10px 30px rgba(0,0,0,.5)}
 body.rw-console #tvModeHint,body.rw-mobile #tvModeHint{display:none!important}
+
+#xProf{position:fixed;inset:0;z-index:50;background:rgba(4,6,16,.9);backdrop-filter:blur(14px);display:flex;flex-direction:column;align-items:center;justify-content:center;padding:3vh 3vw;gap:2vh;overflow:auto}
+#xProf[hidden]{display:none}
+.xp-box{display:grid;grid-template-columns:minmax(260px,32%) 1fr;gap:2.4vw;width:min(1200px,100%);max-height:84vh}
+.xp-box:not(:has(.xp-card)){display:block;text-align:center;color:#fff}
+.xp-card{border-radius:22px;padding:4vh 2vw;display:flex;flex-direction:column;align-items:center;gap:1.2vh;border:2px solid var(--ac,#0ff);box-shadow:0 0 40px color-mix(in srgb,var(--ac,#0ff) 40%,transparent);color:#fff;text-align:center;align-self:start}
+.xp-av{position:relative;font-size:clamp(60px,9vw,120px);width:1.5em;height:1.5em;display:grid;place-items:center;border-radius:24px;background:radial-gradient(circle,color-mix(in srgb,var(--ac) 45%,#000),#0a0b18);border:3px solid var(--ac);box-shadow:0 0 30px var(--ac)}
+.xp-av::after{content:attr(data-acc);position:absolute;top:-.3em;right:-.3em;font-size:.4em;filter:drop-shadow(0 2px 3px #000)}
+.xp-av[data-anim=bounce]{animation:idnBounce 1s ease-in-out infinite}.xp-av[data-anim=spin]{animation:idnSpin 3s linear infinite}.xp-av[data-anim=float]{animation:idnFloat 3s ease-in-out infinite}.xp-av[data-anim=pulse]{animation:idnPulse 1.3s ease-in-out infinite}.xp-av[data-anim=wiggle]{animation:idnWig .6s ease-in-out infinite}.xp-av[data-anim=glitch]{animation:idnGl 1.6s steps(2) infinite}
+@keyframes idnBounce{50%{transform:translateY(-10px)}}@keyframes idnSpin{to{transform:rotate(360deg)}}@keyframes idnFloat{50%{transform:translateY(-6px) rotate(4deg)}}@keyframes idnPulse{50%{transform:scale(1.12)}}@keyframes idnWig{25%{transform:rotate(-8deg)}75%{transform:rotate(8deg)}}@keyframes idnGl{0%,90%{transform:none}93%{transform:translate(3px,-2px) skewX(8deg)}96%{transform:translate(-3px,2px)}}
+.xp-nm{font:900 clamp(20px,2.6vw,36px) system-ui,sans-serif;letter-spacing:2px;text-shadow:0 2px 8px #000}
+.xp-gn{font:700 clamp(10px,1.1vw,15px) "Courier New",monospace;color:var(--ac)}
+.xp-ti{font:900 clamp(11px,1.3vw,17px) "Courier New",monospace;letter-spacing:2px;color:#fff}
+.xp-mo{font:italic clamp(11px,1.2vw,16px) "Courier New",monospace;color:#e0e4ff}
+.xp-right{display:flex;flex-direction:column;gap:1.4vh;min-height:0;overflow:auto;padding:4px}
+.xp-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+.xp-s{background:#ffffff12;border:1px solid #ffffff22;border-radius:12px;padding:1.2vh .6vw;text-align:center;color:#fff}.xp-s b{display:block;font:900 clamp(16px,2vw,28px) system-ui;color:var(--ac)}.xp-s small{font:700 clamp(7px,.8vw,11px) "Courier New",monospace;color:#9aa3cc;letter-spacing:1px}
+.xp-trs{display:flex;flex-wrap:wrap;gap:6px;font-size:clamp(16px,2vw,26px)}.xp-t{filter:grayscale(1) opacity(.3)}.xp-t.on{filter:none;text-shadow:0 0 10px var(--ac)}
+.xp-list{display:flex;flex-direction:column;gap:6px}
+.xp-r,.xp-b{display:flex;justify-content:space-between;align-items:center;background:#ffffff0f;border:2px solid transparent;border-radius:12px;padding:.8vh 1.2vw;color:#fff;font:700 clamp(10px,1.15vw,16px) "Courier New",monospace;cursor:pointer;text-align:left}
+.xp-r b{color:#fff}.xp-b{justify-content:center}
+.xp-r.kf,.xp-b.kf{border-color:var(--ac,#0ff);background:color-mix(in srgb,var(--ac,#0ff) 22%,#10122a);box-shadow:0 0 18px color-mix(in srgb,var(--ac,#0ff) 55%,transparent);transform:scale(1.015)}
+.xp-hint{font:700 clamp(9px,1vw,13px) "Courier New",monospace;color:#9aa3cc;letter-spacing:1px}
+.xp-box h2{font:900 clamp(20px,3vw,40px) system-ui;margin:0 0 1vh}.xp-box p{color:#b8bfe6}.xp-btns{display:flex;gap:10px;justify-content:center;margin-top:2vh}
+.x-prof{cursor:pointer}
+@media(max-width:800px){.xp-box{grid-template-columns:1fr}.xp-stats{grid-template-columns:repeat(2,1fr)}}
+
+.xp-list{gap:4px}.xp-stats{grid-template-columns:repeat(4,1fr)}.xp-s{padding:.8vh .4vw}

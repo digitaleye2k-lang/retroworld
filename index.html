@@ -1596,6 +1596,33 @@ html[data-vault="rainbow"] .hero h1,html[data-vault="rainbow"] .section-title{an
 .profile-avatar-large.vf-rainbow{border-color:#ff2bd6!important;animation:vaultHue 3s linear infinite;box-shadow:0 0 22px #00e5ff}
 .profile-avatar-large.vf-glitch{border-color:#00ffd5!important;box-shadow:3px 0 #ff2bd6,-3px 0 #00e5ff}
 #vaultTitle{color:var(--yellow);font-size:10px;letter-spacing:2px;margin-top:4px}
+
+.profile-identity-card{background:var(--idn-bg,linear-gradient(160deg,#14162c,#0a0b18));transition:background .3s}
+.profile-avatar-large{position:relative}
+.profile-avatar-large::after{content:attr(data-acc);position:absolute;top:-12px;right:-12px;font-size:26px;filter:drop-shadow(0 2px 3px #000);pointer-events:none}
+.profile-avatar-large[data-acc=""]::after{display:none}
+.profile-avatar-large[data-anim=bounce]{animation:idnBounce 1s ease-in-out infinite}
+.profile-avatar-large[data-anim=spin]{animation:idnSpin 3s linear infinite}
+.profile-avatar-large[data-anim=float]{animation:idnFloat 3s ease-in-out infinite}
+.profile-avatar-large[data-anim=pulse]{animation:idnPulse 1.3s ease-in-out infinite}
+.profile-avatar-large[data-anim=wiggle]{animation:idnWig .6s ease-in-out infinite}
+.profile-avatar-large[data-anim=glitch]{animation:idnGl 1.6s steps(2) infinite}
+@keyframes idnBounce{50%{transform:translateY(-10px)}}@keyframes idnSpin{to{transform:rotate(360deg)}}@keyframes idnFloat{50%{transform:translateY(-6px) rotate(4deg)}}@keyframes idnPulse{50%{transform:scale(1.12);box-shadow:0 0 28px var(--avatar-accent)}}@keyframes idnWig{25%{transform:rotate(-8deg)}75%{transform:rotate(8deg)}}@keyframes idnGl{0%,90%{transform:none}93%{transform:translate(3px,-2px) skewX(8deg)}96%{transform:translate(-3px,2px)}}
+.idn-title{margin-top:4px;font:900 9px "Courier New",monospace;letter-spacing:1px;color:var(--avatar-accent,#0ff);text-align:center}
+.idn-motto{margin-top:3px;font:italic 10px "Courier New",monospace;color:#c9cff0;text-align:center;min-height:12px}
+.idn-tabs{display:flex;flex-wrap:wrap;gap:5px;margin:8px 0}
+.idn-tab,.idn-rand,.idn-chip,.idn-cat{appearance:none;border:1px solid #34385f;background:#0a0b18;color:#dfe3ff;font:700 9px "Courier New",monospace;padding:7px 9px;cursor:pointer;border-radius:3px}
+.idn-tab.on,.idn-cat.on,.idn-chip.on{border-color:#0ff;background:#12203a;color:#fff;box-shadow:0 0 10px #0ff4}
+.idn-rand{margin-left:auto;border-color:#ff42d0;color:#ff9be6}.idn-rand:hover{background:#2a1230}
+.idn-cats,.idn-row{display:flex;flex-wrap:wrap;gap:5px;margin:5px 0 8px}
+.idn-lbl{font:900 8px "Courier New",monospace;letter-spacing:1.5px;color:#7f87b5;margin-top:6px}
+.idn-search{width:100%;box-sizing:border-box;background:#070814;border:1px solid #34385f;color:#fff;padding:7px;font:11px "Courier New",monospace;margin-bottom:7px}
+.idn-chip.sw{width:30px;height:30px;padding:0;border-radius:50%;font-size:15px}
+.idn-chip.th{width:54px;height:34px;padding:0;color:#fff;font-size:7px;text-shadow:0 1px 2px #000}
+.idn-chip.ac{font-size:18px;padding:4px 8px;min-width:36px}
+.avatar-grid{max-height:300px;overflow:auto;padding-right:3px}
+.avatar-choice:hover .avatar-icon{transform:scale(1.15) rotate(-5deg)}.avatar-choice .avatar-icon{transition:transform .15s}
+.idn-more{grid-column:1/-1;text-align:center;color:#7f87b5;font:9px "Courier New",monospace;padding:6px}
 </style>
 <link rel="stylesheet" href="tv/tv-enhancements.css">
 <script>if(!window.RETROWORLD_TV_DEVICE){const a=document.createElement('script');a.async=true;a.crossOrigin="anonymous";a.src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7935805760564580";document.head.appendChild(a);}</script>
@@ -2435,12 +2462,29 @@ html[data-vault="rainbow"] .hero h1,html[data-vault="rainbow"] .section-title{an
 <div class="profile-avatar-large" id="profileAvatarLarge">✈️</div>
 <div class="profile-identity-name" id="profileIdentityName">PLAYER 1</div>
 <div class="profile-identity-genre" id="profileIdentityGenre">ARCADE PLAYER</div>
+<div class="idn-title" id="idnTitle"></div><div class="idn-motto" id="idnMotto"></div>
 </div>
 <div class="profile-identity-controls">
 <div class="profile-identity-title">BUILD YOUR PLAYER CARD</div>
-<div class="profile-identity-sub">Choose a game-inspired profile picture and your favourite RETRO WORLD genre. Both are saved locally with this profile and included when you export your save.</div>
+<div class="profile-identity-sub">Pick a character, dress it up, add a title and motto. Everything is saved with this profile and included when you export your save.</div>
+<div class="idn-tabs" role="tablist"><button type="button" class="idn-tab on" data-tab="char">🎭 CHARACTER</button><button type="button" class="idn-tab" data-tab="style">🎨 STYLE</button><button type="button" class="idn-tab" data-tab="text">💬 TITLE &amp; MOTTO</button><button type="button" class="idn-rand" id="idnRandom">🎲 SURPRISE ME</button></div>
+<div class="idn-pane" data-pane="char">
 <div class="profile-genre-row"><label for="profileGenreSelect">FAVOURITE GENRE</label><select id="profileGenreSelect" aria-label="Choose favourite game genre"></select></div>
-<div class="avatar-grid" id="profileAvatarGrid" aria-label="Choose a game-inspired profile picture"></div>
+<div class="idn-cats" id="idnCats"></div>
+<input type="search" id="idnSearch" class="idn-search" placeholder="🔍 search characters…" aria-label="Search characters">
+<div class="avatar-grid" id="profileAvatarGrid" aria-label="Choose a profile picture"></div>
+</div>
+<div class="idn-pane" data-pane="style" hidden>
+<div class="idn-lbl">ACCESSORY</div><div class="idn-row" id="idnAccs"></div>
+<div class="idn-lbl">CARD THEME</div><div class="idn-row" id="idnThemes"></div>
+<div class="idn-lbl">GLOW COLOUR</div><div class="idn-row" id="idnColors"></div>
+<div class="idn-lbl">ANIMATION</div><div class="idn-row" id="idnAnims"></div>
+</div>
+<div class="idn-pane" data-pane="text" hidden>
+<div class="idn-lbl">TITLE</div><div class="idn-row" id="idnTitles"></div>
+<div class="idn-lbl">MOTTO</div><div class="idn-row" id="idnMottos"></div>
+<input type="text" id="idnMottoIn" class="idn-search" maxlength="40" placeholder="…or write your own motto (40 chars)" aria-label="Custom motto">
+</div>
 </div>
 </div>
 <div class="profile-serial-box">
@@ -3212,25 +3256,140 @@ const PROFILE_KEY='retroWorldProfilesV1';
 
 const PROFILE_GENRES=['ARCADE','DRIVING','SHOOTER','SURVIVAL','FIGHTING','PUZZLE','SPORTS','PLATFORM','SPACE','CARDS','DEFENSE','PREMIUM'];
 const PROFILE_AVATARS=[
- {id:'skyraid',icon:'✈️',name:'SKY PILOT',game:"SKY RAID '92",genre:'SHOOTER',accent:'#35efff'},
- {id:'podrush',icon:'🏎️',name:'POD RACER',game:'NEON POD RUSH',genre:'DRIVING',accent:'#ff42d0'},
- {id:'ninja',icon:'🥷',name:'SHADOW NINJA',game:'NINJA TOWER',genre:'FIGHTING',accent:'#b889ff'},
- {id:'jewel',icon:'💎',name:'JEWEL ACE',game:'JEWEL MATRIX',genre:'PUZZLE',accent:'#45f0ff'},
- {id:'snake',icon:'🐍',name:'NEON SNAKE',game:'NEON SNAKE',genre:'ARCADE',accent:'#70ff79'},
- {id:'pong',icon:'🏓',name:'PADDLE PRO',game:'RETRO PONG',genre:'SPORTS',accent:'#ffe65b'},
- {id:'golf',icon:'🪐',name:'ORBIT GOLFER',game:'GALACTIC GOLF',genre:'SPORTS',accent:'#72b7ff'},
- {id:'hellbyte',icon:'☠️',name:'HELL RUNNER',game:"HELLBYTE '93",genre:'SHOOTER',accent:'#ff5368'},
- {id:'pinball',icon:'🎱',name:'PINBALL WIZ',game:'NEON PINBALL',genre:'ARCADE',accent:'#ff9d4a'},
- {id:'racer',icon:'🏁',name:'PIXEL RACER',game:'PIXEL RACER',genre:'DRIVING',accent:'#65ffff'},
- {id:'dungeon',icon:'🗝️',name:'DUNGEON HERO',game:'DUNGEON DASH',genre:'PLATFORM',accent:'#d6ff67'},
- {id:'galaxy',icon:'🚀',name:'STAR FIGHTER',game:'GALAXY DEFENDER',genre:'SPACE',accent:'#9c8cff'}
+ {id:'skyraid',icon:'✈️',name:'SKY PILOT',game:"SKY RAID '92",genre:'SHOOTER',accent:'#35efff',cat:'HEROES'},
+ {id:'podrush',icon:'🏎️',name:'POD RACER',game:'NEON POD RUSH',genre:'DRIVING',accent:'#ff42d0',cat:'HEROES'},
+ {id:'ninja',icon:'🥷',name:'SHADOW NINJA',game:'NINJA TOWER',genre:'FIGHTING',accent:'#b889ff',cat:'HEROES'},
+ {id:'jewel',icon:'💎',name:'JEWEL ACE',game:'JEWEL MATRIX',genre:'PUZZLE',accent:'#45f0ff',cat:'HEROES'},
+ {id:'snake',icon:'🐍',name:'NEON SNAKE',game:'NEON SNAKE',genre:'ARCADE',accent:'#70ff79',cat:'HEROES'},
+ {id:'pong',icon:'🏓',name:'PADDLE PRO',game:'RETRO PONG',genre:'SPORTS',accent:'#ffe65b',cat:'HEROES'},
+ {id:'golf',icon:'🪐',name:'ORBIT GOLFER',game:'GALACTIC GOLF',genre:'SPORTS',accent:'#72b7ff',cat:'HEROES'},
+ {id:'hellbyte',icon:'☠️',name:'HELL RUNNER',game:"HELLBYTE '93",genre:'SHOOTER',accent:'#ff5368',cat:'HEROES'},
+ {id:'pinball',icon:'🎱',name:'PINBALL WIZ',game:'NEON PINBALL',genre:'ARCADE',accent:'#ff9d4a',cat:'HEROES'},
+ {id:'racer',icon:'🏁',name:'PIXEL RACER',game:'PIXEL RACER',genre:'DRIVING',accent:'#65ffff',cat:'HEROES'},
+ {id:'dungeon',icon:'🗝️',name:'DUNGEON HERO',game:'DUNGEON DASH',genre:'PLATFORM',accent:'#d6ff67',cat:'HEROES'},
+ {id:'galaxy',icon:'🚀',name:'STAR FIGHTER',game:'GALAXY DEFENDER',genre:'SPACE',accent:'#9c8cff',cat:'HEROES'},
+ {id:'joystick',icon:'🕹️',name:'STICK MASTER',game:'ARCADE CLASSIC',genre:'ARCADE',accent:'#ff6a6a',cat:'HEROES'},
+ {id:'trophy',icon:'🏆',name:'CHAMPION',game:'HIGH SCORE',genre:'ARCADE',accent:'#ffd34d',cat:'HEROES'},
+ {id:'crown',icon:'👑',name:'ARCADE ROYALTY',game:'HALL OF FAME',genre:'ARCADE',accent:'#ffc83d',cat:'HEROES'},
+ {id:'ghost',icon:'👻',name:'PIXEL GHOST',game:'MAZE CHASE',genre:'ARCADE',accent:'#9fd0ff',cat:'HEROES'},
+ {id:'target',icon:'🎯',name:'SHARPSHOOTER',game:'TARGET RANGE',genre:'SHOOTER',accent:'#ff5a5a',cat:'HEROES'},
+ {id:'bomb',icon:'💣',name:'BOMBER',game:'BOMB SQUAD',genre:'PUZZLE',accent:'#ff9d4a',cat:'HEROES'},
+ {id:'dice',icon:'🎲',name:'LUCKY ROLLER',game:'DICE DUEL',genre:'PUZZLE',accent:'#e4e8ff',cat:'HEROES'},
+ {id:'cards',icon:'🃏',name:'WILD CARD',game:'CARD SHARK',genre:'PUZZLE',accent:'#c77dff',cat:'HEROES'},
+ {id:'cat',icon:'🐱',name:'NEON CAT',game:'ANIMALS CREW',genre:'ARCADE',accent:'#ffb3e6',cat:'ANIMALS'},
+ {id:'dog',icon:'🐶',name:'TURBO PUP',game:'ANIMALS CREW',genre:'PLATFORM',accent:'#ffcf8a',cat:'ANIMALS'},
+ {id:'fox',icon:'🦊',name:'CYBER FOX',game:'ANIMALS CREW',genre:'PLATFORM',accent:'#ff8a3d',cat:'ANIMALS'},
+ {id:'panda',icon:'🐼',name:'PANDA PLAYER',game:'ANIMALS CREW',genre:'PUZZLE',accent:'#e8f0ff',cat:'ANIMALS'},
+ {id:'frog',icon:'🐸',name:'HOPPER',game:'ANIMALS CREW',genre:'PLATFORM',accent:'#7dff6a',cat:'ANIMALS'},
+ {id:'lion',icon:'🦁',name:'ARCADE LION',game:'ANIMALS CREW',genre:'FIGHTING',accent:'#ffc04d',cat:'ANIMALS'},
+ {id:'tiger',icon:'🐯',name:'TIGER BYTE',game:'ANIMALS CREW',genre:'FIGHTING',accent:'#ff9a2e',cat:'ANIMALS'},
+ {id:'wolf',icon:'🐺',name:'LONE WOLF',game:'ANIMALS CREW',genre:'SHOOTER',accent:'#a9b8ff',cat:'ANIMALS'},
+ {id:'bear',icon:'🐻',name:'BEAR HUG',game:'ANIMALS CREW',genre:'FIGHTING',accent:'#d9a066',cat:'ANIMALS'},
+ {id:'koala',icon:'🐨',name:'CHILL KOALA',game:'ANIMALS CREW',genre:'PUZZLE',accent:'#b8c4d6',cat:'ANIMALS'},
+ {id:'unicorn',icon:'🦄',name:'UNICORN',game:'ANIMALS CREW',genre:'ARCADE',accent:'#ff9bf0',cat:'ANIMALS'},
+ {id:'dragon',icon:'🐉',name:'DRAGON LORD',game:'ANIMALS CREW',genre:'FIGHTING',accent:'#ff5a3d',cat:'ANIMALS'},
+ {id:'owl',icon:'🦉',name:'NIGHT OWL',game:'ANIMALS CREW',genre:'PUZZLE',accent:'#c9a86b',cat:'ANIMALS'},
+ {id:'penguin',icon:'🐧',name:'PENGUIN',game:'ANIMALS CREW',genre:'SPORTS',accent:'#7fd9ff',cat:'ANIMALS'},
+ {id:'octopus',icon:'🐙',name:'OCTO-GAMER',game:'ANIMALS CREW',genre:'PUZZLE',accent:'#ff6fb5',cat:'ANIMALS'},
+ {id:'shark',icon:'🦈',name:'PIXEL SHARK',game:'ANIMALS CREW',genre:'SHOOTER',accent:'#59b6ff',cat:'ANIMALS'},
+ {id:'bat',icon:'🦇',name:'NIGHT BAT',game:'ANIMALS CREW',genre:'PLATFORM',accent:'#8a6bff',cat:'ANIMALS'},
+ {id:'monkey',icon:'🐵',name:'CHEEKY MONKEY',game:'ANIMALS CREW',genre:'PLATFORM',accent:'#d9a066',cat:'ANIMALS'},
+ {id:'rabbit',icon:'🐰',name:'SPEEDY BUNNY',game:'ANIMALS CREW',genre:'DRIVING',accent:'#ffd0e6',cat:'ANIMALS'},
+ {id:'turtle',icon:'🐢',name:'SHELL RACER',game:'ANIMALS CREW',genre:'DRIVING',accent:'#6fe08a',cat:'ANIMALS'},
+ {id:'bee',icon:'🐝',name:'BUZZ BEE',game:'ANIMALS CREW',genre:'SHOOTER',accent:'#ffe14d',cat:'ANIMALS'},
+ {id:'butterfly',icon:'🦋',name:'NEON WINGS',game:'ANIMALS CREW',genre:'ARCADE',accent:'#6fd6ff',cat:'ANIMALS'},
+ {id:'trex',icon:'🦖',name:'T-REX',game:'ANIMALS CREW',genre:'PLATFORM',accent:'#7fe05a',cat:'ANIMALS'},
+ {id:'phoenix',icon:'🐦\u200d🔥',name:'PHOENIX',game:'ANIMALS CREW',genre:'FIGHTING',accent:'#ff7a2e',cat:'ANIMALS'},
+ {id:'alien',icon:'👽',name:'ALIEN',game:'MONSTERS CREW',genre:'SPACE',accent:'#7dff9c',cat:'MONSTERS'},
+ {id:'invader',icon:'👾',name:'SPACE INVADER',game:'MONSTERS CREW',genre:'SHOOTER',accent:'#c77dff',cat:'MONSTERS'},
+ {id:'robot',icon:'🤖',name:'ROBO-PLAYER',game:'MONSTERS CREW',genre:'SPACE',accent:'#8ad0ff',cat:'MONSTERS'},
+ {id:'skull',icon:'💀',name:'SKULL KING',game:'MONSTERS CREW',genre:'FIGHTING',accent:'#e8e8ff',cat:'MONSTERS'},
+ {id:'devil',icon:'😈',name:'IMP',game:'MONSTERS CREW',genre:'FIGHTING',accent:'#ff4d6a',cat:'MONSTERS'},
+ {id:'zombie',icon:'🧟',name:'ZOMBIE',game:'MONSTERS CREW',genre:'SHOOTER',accent:'#8fd66a',cat:'MONSTERS'},
+ {id:'vampire',icon:'🧛',name:'COUNT PIXEL',game:'MONSTERS CREW',genre:'FIGHTING',accent:'#d94d6a',cat:'MONSTERS'},
+ {id:'goblin',icon:'👺',name:'GOBLIN',game:'MONSTERS CREW',genre:'PLATFORM',accent:'#ff6a4d',cat:'MONSTERS'},
+ {id:'ogre',icon:'👹',name:'OGRE',game:'MONSTERS CREW',genre:'FIGHTING',accent:'#ff5a5a',cat:'MONSTERS'},
+ {id:'clown',icon:'🤡',name:'JESTER',game:'MONSTERS CREW',genre:'ARCADE',accent:'#ff6fd0',cat:'MONSTERS'},
+ {id:'mummy',icon:'🧻',name:'MUMMY',game:'MONSTERS CREW',genre:'PLATFORM',accent:'#e8dcc0',cat:'MONSTERS'},
+ {id:'slime',icon:'🟢',name:'SLIME',game:'MONSTERS CREW',genre:'PUZZLE',accent:'#6bff8a',cat:'MONSTERS'},
+ {id:'yeti',icon:'🦣',name:'MAMMOTH',game:'MONSTERS CREW',genre:'FIGHTING',accent:'#bcd0ff',cat:'MONSTERS'},
+ {id:'tentacle',icon:'🦑',name:'KRAKEN',game:'MONSTERS CREW',genre:'SHOOTER',accent:'#7a6bff',cat:'MONSTERS'},
+ {id:'spider',icon:'🕷️',name:'WEB CRAWLER',game:'MONSTERS CREW',genre:'PLATFORM',accent:'#b0b0c8',cat:'MONSTERS'},
+ {id:'scorpion',icon:'🦂',name:'STINGER',game:'MONSTERS CREW',genre:'FIGHTING',accent:'#ff9a3d',cat:'MONSTERS'},
+ {id:'wizard',icon:'🧙',name:'WIZARD',game:'FANTASY CREW',genre:'PUZZLE',accent:'#a98bff',cat:'FANTASY'},
+ {id:'fairy',icon:'🧚',name:'PIXIE',game:'FANTASY CREW',genre:'PLATFORM',accent:'#ff9be6',cat:'FANTASY'},
+ {id:'mermaid',icon:'🧜',name:'MERMAID',game:'FANTASY CREW',genre:'SPORTS',accent:'#6fe0ff',cat:'FANTASY'},
+ {id:'elf',icon:'🧝',name:'ELF ARCHER',game:'FANTASY CREW',genre:'SHOOTER',accent:'#7dff9c',cat:'FANTASY'},
+ {id:'genie',icon:'🧞',name:'GENIE',game:'FANTASY CREW',genre:'PUZZLE',accent:'#6fb8ff',cat:'FANTASY'},
+ {id:'knight',icon:'🛡️',name:'KNIGHT',game:'FANTASY CREW',genre:'FIGHTING',accent:'#c0c8e8',cat:'FANTASY'},
+ {id:'sword',icon:'⚔️',name:'BLADE MASTER',game:'FANTASY CREW',genre:'FIGHTING',accent:'#d0d8ff',cat:'FANTASY'},
+ {id:'bow',icon:'🏹',name:'RANGER',game:'FANTASY CREW',genre:'SHOOTER',accent:'#d9a066',cat:'FANTASY'},
+ {id:'potion',icon:'🧪',name:'ALCHEMIST',game:'FANTASY CREW',genre:'PUZZLE',accent:'#6bff8a',cat:'FANTASY'},
+ {id:'crystal',icon:'🔮',name:'ORACLE',game:'FANTASY CREW',genre:'PUZZLE',accent:'#c77dff',cat:'FANTASY'},
+ {id:'castle',icon:'🏰',name:'CASTLE LORD',game:'FANTASY CREW',genre:'PLATFORM',accent:'#ffc0a0',cat:'FANTASY'},
+ {id:'magic',icon:'✨',name:'SPARKLE',game:'FANTASY CREW',genre:'ARCADE',accent:'#fff09a',cat:'FANTASY'},
+ {id:'rainbow',icon:'🌈',name:'RAINBOW',game:'FANTASY CREW',genre:'ARCADE',accent:'#ff9be6',cat:'FANTASY'},
+ {id:'dino',icon:'🦕',name:'LONG NECK',game:'FANTASY CREW',genre:'PLATFORM',accent:'#7fe0a0',cat:'FANTASY'},
+ {id:'pirate',icon:'🏴\u200d☠️',name:'PIRATE',game:'FANTASY CREW',genre:'SHOOTER',accent:'#e8e8ff',cat:'FANTASY'},
+ {id:'treasure',icon:'💰',name:'TREASURE HUNTER',game:'FANTASY CREW',genre:'PLATFORM',accent:'#ffd34d',cat:'FANTASY'},
+ {id:'ufo',icon:'🛸',name:'UFO PILOT',game:'SPACE CREW',genre:'SPACE',accent:'#7dffd0',cat:'SPACE'},
+ {id:'astro',icon:'👨\u200d🚀',name:'ASTRONAUT',game:'SPACE CREW',genre:'SPACE',accent:'#e8f0ff',cat:'SPACE'},
+ {id:'moon',icon:'🌙',name:'MOON WALKER',game:'SPACE CREW',genre:'SPACE',accent:'#fff0b0',cat:'SPACE'},
+ {id:'sun',icon:'☀️',name:'SOLAR FLARE',game:'SPACE CREW',genre:'SPACE',accent:'#ffb02e',cat:'SPACE'},
+ {id:'comet',icon:'☄️',name:'COMET',game:'SPACE CREW',genre:'SPACE',accent:'#ff8a5a',cat:'SPACE'},
+ {id:'star',icon:'⭐',name:'SUPERSTAR',game:'SPACE CREW',genre:'ARCADE',accent:'#ffe14d',cat:'SPACE'},
+ {id:'galaxy2',icon:'🌌',name:'DEEP SPACE',game:'SPACE CREW',genre:'SPACE',accent:'#8a7bff',cat:'SPACE'},
+ {id:'satellite',icon:'🛰️',name:'SATELLITE',game:'SPACE CREW',genre:'SPACE',accent:'#9cc8ff',cat:'SPACE'},
+ {id:'earth',icon:'🌍',name:'HOME PLANET',game:'SPACE CREW',genre:'SPACE',accent:'#5ac8ff',cat:'SPACE'},
+ {id:'saturn',icon:'🪐',name:'RINGED ONE',game:'SPACE CREW',genre:'SPACE',accent:'#ffd09a',cat:'SPACE'},
+ {id:'bolt',icon:'⚡',name:'THUNDER',game:'SPACE CREW',genre:'SHOOTER',accent:'#fff04d',cat:'SPACE'},
+ {id:'rocket2',icon:'🚀',name:'LIFTOFF',game:'SPACE CREW',genre:'SPACE',accent:'#ff6a6a',cat:'SPACE'},
+ {id:'pizza',icon:'🍕',name:'PIZZA PLAYER',game:'FOOD CREW',genre:'ARCADE',accent:'#ffb04d',cat:'FOOD'},
+ {id:'burger',icon:'🍔',name:'BURGER BOSS',game:'FOOD CREW',genre:'ARCADE',accent:'#ffc04d',cat:'FOOD'},
+ {id:'donut',icon:'🍩',name:'DONUT',game:'FOOD CREW',genre:'ARCADE',accent:'#ff9bd0',cat:'FOOD'},
+ {id:'icecream',icon:'🍦',name:'SCOOP',game:'FOOD CREW',genre:'ARCADE',accent:'#ffe0f0',cat:'FOOD'},
+ {id:'taco',icon:'🌮',name:'TACO TIME',game:'FOOD CREW',genre:'ARCADE',accent:'#ffd05a',cat:'FOOD'},
+ {id:'cherry',icon:'🍒',name:'CHERRY POP',game:'FOOD CREW',genre:'PUZZLE',accent:'#ff4d6a',cat:'FOOD'},
+ {id:'apple',icon:'🍎',name:'APPLE ACE',game:'FOOD CREW',genre:'PUZZLE',accent:'#ff5a5a',cat:'FOOD'},
+ {id:'banana',icon:'🍌',name:'BANANA',game:'FOOD CREW',genre:'PLATFORM',accent:'#ffe14d',cat:'FOOD'},
+ {id:'popcorn',icon:'🍿',name:'POPCORN',game:'FOOD CREW',genre:'ARCADE',accent:'#fff0c0',cat:'FOOD'},
+ {id:'cookie',icon:'🍪',name:'COOKIE',game:'FOOD CREW',genre:'PUZZLE',accent:'#d9a066',cat:'FOOD'},
+ {id:'cake',icon:'🎂',name:'PARTY CAKE',game:'FOOD CREW',genre:'ARCADE',accent:'#ff9bd0',cat:'FOOD'},
+ {id:'coffee',icon:'☕',name:'CAFFEINATED',game:'FOOD CREW',genre:'ARCADE',accent:'#c98a5a',cat:'FOOD'},
+ {id:'fries',icon:'🍟',name:'FRY GUY',game:'FOOD CREW',genre:'ARCADE',accent:'#ffd04d',cat:'FOOD'},
+ {id:'watermelon',icon:'🍉',name:'MELON',game:'FOOD CREW',genre:'PUZZLE',accent:'#ff6a7a',cat:'FOOD'},
+ {id:'soccer',icon:'⚽',name:'STRIKER',game:'SPORTS CREW',genre:'SPORTS',accent:'#e8f0ff',cat:'SPORTS'},
+ {id:'basket',icon:'🏀',name:'HOOP STAR',game:'SPORTS CREW',genre:'SPORTS',accent:'#ff9a3d',cat:'SPORTS'},
+ {id:'football',icon:'🏈',name:'QUARTERBACK',game:'SPORTS CREW',genre:'SPORTS',accent:'#c98a5a',cat:'SPORTS'},
+ {id:'tennis',icon:'🎾',name:'ACE SERVER',game:'SPORTS CREW',genre:'SPORTS',accent:'#d6ff4d',cat:'SPORTS'},
+ {id:'bowling',icon:'🎳',name:'STRIKE!',game:'SPORTS CREW',genre:'SPORTS',accent:'#b8a0ff',cat:'SPORTS'},
+ {id:'boxing',icon:'🥊',name:'KNOCKOUT',game:'SPORTS CREW',genre:'FIGHTING',accent:'#ff4d5a',cat:'SPORTS'},
+ {id:'skate',icon:'🛹',name:'SKATER',game:'SPORTS CREW',genre:'SPORTS',accent:'#6fe0ff',cat:'SPORTS'},
+ {id:'surf',icon:'🏄',name:'SURFER',game:'SPORTS CREW',genre:'SPORTS',accent:'#4dd0ff',cat:'SPORTS'},
+ {id:'medal',icon:'🥇',name:'GOLD MEDAL',game:'SPORTS CREW',genre:'SPORTS',accent:'#ffd34d',cat:'SPORTS'},
+ {id:'dart',icon:'🎯',name:'BULLSEYE',game:'SPORTS CREW',genre:'SPORTS',accent:'#ff5a5a',cat:'SPORTS'},
+ {id:'bike',icon:'🚴',name:'CYCLIST',game:'SPORTS CREW',genre:'DRIVING',accent:'#7dff9c',cat:'SPORTS'},
+ {id:'moto',icon:'🏍️',name:'BIKER',game:'SPORTS CREW',genre:'DRIVING',accent:'#ff6a3d',cat:'SPORTS'}
 ];
+const IDN_CATS=['ALL','HEROES','ANIMALS','MONSTERS','FANTASY','SPACE','FOOD','SPORTS'];
+const IDN_ACCS=['','👑','🎩','🕶️','🎧','🎀','😇','🔥','❄️','⚡','🌸','🏴‍☠️','🎓','🦾','💫','🍀'];
+const IDN_THEMES=[{id:'',n:'DEFAULT',c:'linear-gradient(160deg,#14162c,#0a0b18)'},{id:'sunset',n:'SUNSET',c:'linear-gradient(160deg,#ff6a3d,#7a1fa2 70%,#1a0b2e)'},{id:'ocean',n:'OCEAN',c:'linear-gradient(160deg,#00c6ff,#0043a8 70%,#05102a)'},{id:'candy',n:'CANDY',c:'linear-gradient(160deg,#ff9bd0,#a855f7 70%,#2a0b3a)'},{id:'toxic',n:'TOXIC',c:'linear-gradient(160deg,#9dff3d,#0a7a4a 70%,#04160e)'},{id:'lava',n:'LAVA',c:'linear-gradient(160deg,#ffd34d,#ff3d1f 55%,#2a0505)'},{id:'galaxy',n:'GALAXY',c:'radial-gradient(circle at 30% 20%,#7a4dff,#1a0b4a 60%,#03030f)'},{id:'gold',n:'GOLD',c:'linear-gradient(160deg,#fff09a,#c98a1a 60%,#3a2405)'},{id:'ice',n:'ICE',c:'linear-gradient(160deg,#e8fbff,#6fc3ff 60%,#0b2a4a)'},{id:'mono',n:'MONO',c:'linear-gradient(160deg,#4a4a5a,#0a0a10)'}];
+const IDN_COLORS=['','#ff3d7f','#ff9d4a','#ffe14d','#70ff79','#35efff','#5a8bff','#b889ff','#ff9be6','#ffffff'];
+const IDN_ANIMS=[['','NONE'],['bounce','BOUNCE'],['float','FLOAT'],['pulse','PULSE'],['wiggle','WIGGLE'],['spin','SPIN'],['glitch','GLITCH']];
+const IDN_TITLES=['','ROOKIE','BUTTON MASHER','HIGH SCORE HUNTER','COMBO KING','PIXEL WARRIOR','BOSS SLAYER','SPEEDRUN GOBLIN','COZY GAMER','NIGHT OWL','LAST LIFE LEGEND','COIN COLLECTOR','ARCADE WIZARD','NEON NINJA','RETRO LEGEND','CHAOS AGENT'];
+const IDN_MOTTOS=['','Insert coin to continue','One more game…','Press START','Git gud','Born to respawn','Pixels never die','GG, no re-do','Snacks + high scores','Play loud, play proud','Still not tired','Level up daily'];
 function avatarDef(id){return PROFILE_AVATARS.find(a=>a.id===id)||PROFILE_AVATARS[0]}
 function ensureProfileIdentity(p){
  if(!p||typeof p!=='object')return p;
  if(!PROFILE_AVATARS.some(a=>a.id===p.avatar))p.avatar='skyraid';
  p.genre=String(p.genre||avatarDef(p.avatar).genre||'ARCADE').toUpperCase();
  if(!PROFILE_GENRES.includes(p.genre))p.genre='ARCADE';
+ if(!IDN_ACCS.includes(p.acc))p.acc='';
+ if(!IDN_THEMES.some(t=>t.id===p.theme))p.theme='';
+ if(!IDN_COLORS.includes(p.accent))p.accent='';
+ if(!IDN_ANIMS.some(a=>a[0]===p.anim))p.anim='';
+ p.title=IDN_TITLES.includes(p.title)?p.title:'';
+ p.motto=String(p.motto||'').replace(/[<>]/g,'').slice(0,40);
  return p
 }
 
@@ -3943,7 +4102,7 @@ function onboardingSeen(){try{return localStorage.getItem(ONBOARDING_SEEN_KEY)==
 function markOnboardingSeen(){try{localStorage.setItem(ONBOARDING_SEEN_KEY,'1')}catch(e){}}
 function renderOnboardingChoices(){
  if(onboardingGenre&&!onboardingGenre.options.length){PROFILE_GENRES.forEach(g=>{const o=document.createElement('option');o.value=g;o.textContent=g;onboardingGenre.appendChild(o)});onboardingGenre.value='ARCADE'}
- if(onboardingAvatarGrid&&!onboardingAvatarGrid.children.length){PROFILE_AVATARS.forEach(a=>{const b=document.createElement('button');b.type='button';b.className='onboarding-avatar'+(a.id===onboardingAvatar?' selected':'');b.dataset.avatar=a.id;b.style.setProperty('--avatar-accent',a.accent);const f=document.createElement('span');f.className='face';f.textContent=a.icon;const l=document.createElement('small');l.textContent=a.name;b.append(f,l);b.addEventListener('click',()=>{onboardingAvatar=a.id;[...onboardingAvatarGrid.children].forEach(el=>el.classList.toggle('selected',el===b));if(onboardingGenre&&onboardingGenre.value==='ARCADE')onboardingGenre.value=a.genre});onboardingAvatarGrid.appendChild(b)})}
+ if(onboardingAvatarGrid&&!onboardingAvatarGrid.children.length){PROFILE_AVATARS.slice(0,32).forEach(a=>{const b=document.createElement('button');b.type='button';b.className='onboarding-avatar'+(a.id===onboardingAvatar?' selected':'');b.dataset.avatar=a.id;b.style.setProperty('--avatar-accent',a.accent);const f=document.createElement('span');f.className='face';f.textContent=a.icon;const l=document.createElement('small');l.textContent=a.name;b.append(f,l);b.addEventListener('click',()=>{onboardingAvatar=a.id;[...onboardingAvatarGrid.children].forEach(el=>el.classList.toggle('selected',el===b));if(onboardingGenre&&onboardingGenre.value==='ARCADE')onboardingGenre.value=a.genre});onboardingAvatarGrid.appendChild(b)})}
 }
 function openOnboarding(force=false){if(!onboardingModal)return;if(!force&&(hasLocalProfiles()||onboardingSeen()))return;renderOnboardingChoices();if(onboardingError)onboardingError.textContent='';onboardingModal.classList.add('open');onboardingModal.setAttribute('aria-hidden','false');document.body.classList.add('onboarding-open');setTimeout(()=>{const t=window.RETROWORLD_TV?.isEnabled()?document.getElementById('tvQuickCreate'):onboardingName; t?.focus()},120)}
 function closeOnboarding(){if(!onboardingModal)return;onboardingModal.classList.remove('open');onboardingModal.setAttribute('aria-hidden','true');document.body.classList.remove('onboarding-open')}
@@ -3966,25 +4125,38 @@ function refreshProfileButton(){
    refreshPremiumAccessUI(null);return
  }
  const av=avatarDef(p.avatar);
- if(profileBtn){profileBtn.style.setProperty('--avatar-accent',av.accent);profileBtn.title=p.name+' • '+p.genre+' • '+av.game}
- if(profileHeaderAvatar){profileHeaderAvatar.textContent=av.icon;profileHeaderAvatar.style.setProperty('--avatar-accent',av.accent)}
+ if(profileBtn){profileBtn.style.setProperty('--avatar-accent',p.accent||av.accent);profileBtn.title=p.name+' • '+p.genre+' • '+av.game}
+ if(profileHeaderAvatar){profileHeaderAvatar.textContent=av.icon+(p.acc||'');profileHeaderAvatar.style.setProperty('--avatar-accent',p.accent||av.accent)}
  if(profileHeaderName)profileHeaderName.textContent=p.name;
  if(profileHeaderGenre)profileHeaderGenre.textContent=p.genre+' PLAYER';
  refreshPremiumAccessUI(p)
 }
 
+let idnCat='ALL',idnTab='char',idnQ='';
+function idnSet(k,v){const q=activeProfile();if(!q)return;q[k]=v;saveProfiles();renderAvatarChooser(q);refreshProfileButton()}
+function idnChip(host,label,on,cls,fn,style){const b=document.createElement('button');b.type='button';b.className='idn-chip '+(cls||'')+(on?' on':'');b.textContent=label;if(style)b.style.cssText=style;b.addEventListener('click',fn);host.appendChild(b);return b}
 function renderAvatarChooser(p){
- if(!p)return;ensureProfileIdentity(p);const av=avatarDef(p.avatar);
- if(profileAvatarLarge){profileAvatarLarge.textContent=av.icon;profileAvatarLarge.style.setProperty('--avatar-accent',av.accent)}
+ if(!p)return;ensureProfileIdentity(p);const av=avatarDef(p.avatar);const acc=p.accent||av.accent;
+ if(profileAvatarLarge){profileAvatarLarge.textContent=av.icon;profileAvatarLarge.style.setProperty('--avatar-accent',acc);profileAvatarLarge.dataset.acc=p.acc||'';profileAvatarLarge.dataset.anim=p.anim||''}
+ const card=profileAvatarLarge&&profileAvatarLarge.parentNode;if(card){const t=IDN_THEMES.find(t=>t.id===p.theme);if(t&&t.id)card.style.setProperty('--idn-bg',t.c);else card.style.removeProperty('--idn-bg')}
  if(profileIdentityName)profileIdentityName.textContent=p.name;
- if(profileIdentityGenre){profileIdentityGenre.textContent=p.genre+' PLAYER • '+av.game;profileIdentityGenre.style.setProperty('--avatar-accent',av.accent)}
+ if(profileIdentityGenre){profileIdentityGenre.textContent=p.genre+' PLAYER • '+av.game;profileIdentityGenre.style.setProperty('--avatar-accent',acc)}
+ const ti=document.getElementById('idnTitle'),mo=document.getElementById('idnMotto');
+ if(ti){ti.textContent=p.title?'« '+p.title+' »':'';ti.style.setProperty('--avatar-accent',acc)}
+ if(mo)mo.textContent=p.motto?'“'+p.motto+'”':'';
  if(profileGenreSelect){
   if(!profileGenreSelect.options.length)PROFILE_GENRES.forEach(g=>{const o=document.createElement('option');o.value=g;o.textContent=g;profileGenreSelect.appendChild(o)});
   profileGenreSelect.value=p.genre
  }
+ document.querySelectorAll('.idn-tab').forEach(t=>{t.classList.toggle('on',t.dataset.tab===idnTab)});
+ document.querySelectorAll('.idn-pane').forEach(e=>{e.hidden=e.dataset.pane!==idnTab});
+ const cats=document.getElementById('idnCats');
+ if(cats){cats.innerHTML='';IDN_CATS.forEach(c=>{const b=document.createElement('button');b.type='button';b.className='idn-cat'+(c===idnCat?' on':'');b.textContent=c;b.addEventListener('click',()=>{idnCat=c;renderAvatarChooser(activeProfile())});cats.appendChild(b)})}
  if(profileAvatarGrid){
   profileAvatarGrid.innerHTML='';
-  PROFILE_AVATARS.forEach(a=>{
+  const q=idnQ.toLowerCase();
+  const list=PROFILE_AVATARS.filter(a=>(idnCat==='ALL'||a.cat===idnCat)&&(!q||(a.name+' '+a.game+' '+a.cat).toLowerCase().includes(q)));
+  list.forEach(a=>{
    const b=document.createElement('button');b.type='button';b.className='avatar-choice'+(a.id===p.avatar?' selected':'');b.dataset.avatar=a.id;b.style.setProperty('--avatar-accent',a.accent);
    const icon=document.createElement('span');icon.className='avatar-icon';icon.textContent=a.icon;
    const strong=document.createElement('strong');strong.textContent=a.name;
@@ -3992,9 +4164,23 @@ function renderAvatarChooser(p){
    b.append(icon,strong,small);
    b.addEventListener('click',()=>{const q=activeProfile();if(!q)return;q.avatar=a.id;saveProfiles();renderAvatarChooser(q);refreshProfileButton();showProfileToast(a.icon+' PROFILE PICTURE SELECTED<br><b>'+a.name+'</b>')});
    profileAvatarGrid.appendChild(b)
-  })
+  });
+  if(!list.length){const d=document.createElement('div');d.className='idn-more';d.textContent='NO MATCHES';profileAvatarGrid.appendChild(d)}
  }
+ const H=id=>{const e=document.getElementById(id);if(e)e.innerHTML='';return e};
+ let e;
+ if(e=H('idnAccs'))IDN_ACCS.forEach(x=>idnChip(e,x||'∅',p.acc===x,'ac',()=>idnSet('acc',x)));
+ if(e=H('idnThemes'))IDN_THEMES.forEach(t=>idnChip(e,t.n,p.theme===t.id,'th',()=>idnSet('theme',t.id),'background:'+t.c));
+ if(e=H('idnColors'))IDN_COLORS.forEach(c=>idnChip(e,c?'':'A',p.accent===c,'sw',()=>idnSet('accent',c),c?'background:'+c:''));
+ if(e=H('idnAnims'))IDN_ANIMS.forEach(a=>idnChip(e,a[1],p.anim===a[0],'',()=>idnSet('anim',a[0])));
+ if(e=H('idnTitles'))IDN_TITLES.forEach(t=>idnChip(e,t||'NONE',p.title===t,'',()=>idnSet('title',t)));
+ if(e=H('idnMottos'))IDN_MOTTOS.forEach(t=>idnChip(e,t||'NONE',p.motto===t,'',()=>{idnSet('motto',t);const i=document.getElementById('idnMottoIn');if(i)i.value=t}));
+ const mi=document.getElementById('idnMottoIn');if(mi&&document.activeElement!==mi)mi.value=p.motto||''
 }
+document.addEventListener('click',ev=>{const t=ev.target.closest&&ev.target.closest('.idn-tab');if(t){idnTab=t.dataset.tab;const q=activeProfile();if(q)renderAvatarChooser(q)}});
+(function(){const s=document.getElementById('idnSearch');if(s)s.addEventListener('input',()=>{idnQ=s.value.trim();const q=activeProfile();if(q)renderAvatarChooser(q)});
+const m=document.getElementById('idnMottoIn');if(m)m.addEventListener('input',()=>{const q=activeProfile();if(!q)return;q.motto=m.value.replace(/[<>]/g,'').slice(0,40);saveProfiles();const mo=document.getElementById('idnMotto');if(mo)mo.textContent=q.motto?'“'+q.motto+'”':''});
+const r=document.getElementById('idnRandom');if(r)r.addEventListener('click',()=>{const q=activeProfile();if(!q)return;const pk=a=>a[Math.floor(Math.random()*a.length)];q.avatar=pk(PROFILE_AVATARS).id;q.acc=pk(IDN_ACCS);q.theme=pk(IDN_THEMES).id;q.accent=pk(IDN_COLORS);q.anim=pk(IDN_ANIMS)[0];q.title=pk(IDN_TITLES);q.motto=pk(IDN_MOTTOS);saveProfiles();renderAvatarChooser(q);refreshProfileButton();showProfileToast('🎲 <b>NEW LOOK!</b>')})})();
 
 function renderProfile(){
   const p=activeProfile();if(!p)return;
@@ -4646,7 +4832,7 @@ function openAdminV3(){renderAdminSelectV3();adminViewerModal.classList.add('ope
 profileAdminExport.addEventListener('click',()=>{const p=activeProfile();if(!p)return;const q=buildAdminSubmissionV3(p),safe=p.name.toLowerCase().replace(/[^a-z0-9]+/g,'-');downloadJsonV3(q,'retro-world-admin-'+safe+'-'+p.serial.toLowerCase()+'.json');showProfileToast('ADMIN SUBMISSION CREATED<br><b>'+p.serial+'</b>')});adminViewerBtn.addEventListener('click',openAdminV3);adminViewerClose.addEventListener('click',closeAdminV3);adminViewerModal.addEventListener('click',e=>{if(e.target===adminViewerModal)closeAdminV3()});adminImportSubmission.addEventListener('click',()=>adminSubmissionFile.click());adminSubmissionSelect.addEventListener('change',()=>{const s=adminStoreV3();renderAdminV3(s[adminSubmissionSelect.value]||null)});adminDeleteSubmission.addEventListener('click',()=>{const serial=adminSubmissionSelect.value;if(!serial)return;const s=adminStoreV3();delete s[serial];saveAdminStoreV3(s);renderAdminSelectV3();showProfileToast('ADMIN SNAPSHOT DELETED')});adminSubmissionFile.addEventListener('change',()=>{const f=adminSubmissionFile.files&&adminSubmissionFile.files[0];if(!f)return;const r=new FileReader();r.onload=()=>{try{const q=normalizeSubmissionV3(JSON.parse(String(r.result||''))),s=adminStoreV3();s[q.player.serial]=q;saveAdminStoreV3(s);renderAdminSelectV3(q.player.serial);showProfileToast('SUBMISSION IMPORTED<br><b>'+q.player.serial+'</b>')}catch(e){showProfileToast('INVALID PLAYER SUBMISSION')}adminSubmissionFile.value=''};r.readAsText(f)});
 window.__profileAdminDebug={openChooser:openProfileChooserV3,select:selectProfileV3,adminStore:adminStoreV3,normalize:normalizeSubmissionV3,build:()=>activeProfile()?buildAdminSubmissionV3(activeProfile()):null};
 
-window.RWP={active:activeProfile,save:saveProfiles,agg:aggregates,defs:TROPHY_DEFS,titles:TITLES,toast:showProfileToast,evaluate:evaluateTrophies,render:renderProfile,openProfile:openProfile,closeProfile:closeProfile,openOnboarding:openOnboarding,dayKey:localDayKey,fmt:fmtNumber,cs:challengeStats,unlocked:premiumGameUnlocked,avatar:avatarDef,premium:PREMIUM_GAMES,ensureDaily:ensureDailyChallenges};
+window.RWP={idn:{avatars:PROFILE_AVATARS,accs:IDN_ACCS,themes:IDN_THEMES,colors:IDN_COLORS,anims:IDN_ANIMS,titles:IDN_TITLES,mottos:IDN_MOTTOS,render:renderAvatarChooser,refresh:refreshProfileButton},agg:aggregates,active:activeProfile,save:saveProfiles,agg:aggregates,defs:TROPHY_DEFS,titles:TITLES,toast:showProfileToast,evaluate:evaluateTrophies,render:renderProfile,openProfile:openProfile,closeProfile:closeProfile,openOnboarding:openOnboarding,dayKey:localDayKey,fmt:fmtNumber,cs:challengeStats,unlocked:premiumGameUnlocked,avatar:avatarDef,premium:PREMIUM_GAMES,ensureDaily:ensureDailyChallenges};
 window.dispatchEvent(new Event('rw-bridge-ready'));
 })();
 </script><script>
@@ -4688,7 +4874,7 @@ window.dispatchEvent(new Event('rw-bridge-ready'));
 })();
 </script>
 <script src="tv/tv-enhancements.js?v=2" defer></script>
-<link rel="stylesheet" href="assets/rw-console.css?v=7"><link rel="stylesheet" href="assets/rw-mobile.css?v=1"><script src="assets/rw-mobile.js?v=1" defer></script><script src="assets/rw-console.js?v=8" defer></script><script src="assets/retro-upgrade.js" defer></script><script src="assets/rw-trophy.js" defer></script><script src="assets/rw-appeal.js" defer></script>
+<link rel="stylesheet" href="assets/rw-console.css?v=9"><link rel="stylesheet" href="assets/rw-mobile.css?v=1"><script src="assets/rw-mobile.js?v=1" defer></script><script src="assets/rw-console.js?v=10" defer></script><script src="assets/retro-upgrade.js" defer></script><script src="assets/rw-trophy.js" defer></script><script src="assets/rw-appeal.js" defer></script>
 <div id="rwNotice" style="display:none;position:fixed;left:10px;right:10px;bottom:10px;z-index:99999;max-width:720px;margin:auto;background:#0e1424;color:#e9edf6;border:1px solid #344059;border-radius:12px;padding:12px 14px;font:13px/1.5 system-ui,Arial,sans-serif;box-shadow:0 6px 24px rgba(0,0,0,.5)">Retro World stores your game progress and settings on your device, and ads (Google AdSense / AdMob) may use cookies or advertising IDs. See the <a href="privacy.html" style="color:#79eed4">Privacy Policy</a> and <a href="advertising.html" style="color:#79eed4">Advertising Policy</a>. <button id="rwNoticeOk" style="margin-left:8px;background:#79eed4;color:#082119;border:0;border-radius:8px;padding:6px 12px;font-weight:700;cursor:pointer">OK</button></div><script>(function(){var n=document.getElementById('rwNotice'),ok=false;try{ok=localStorage.getItem('rwNoticeOk')==='1'}catch(e){}if(!ok)n.style.display='block';document.getElementById('rwNoticeOk').onclick=function(){n.style.display='none';try{localStorage.setItem('rwNoticeOk','1')}catch(e){}}})();</script><script>
 (function(){
 const ITEMS=[
