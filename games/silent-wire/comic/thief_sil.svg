@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 168 180"><rect width="168" height="180" fill="#8a8574"/>
+<g stroke="#5c584a" stroke-width="1">
+<line x1="0" y1="40" x2="168" y2="40"/><line x1="0" y1="70" x2="168" y2="70"/><line x1="0" y1="100" x2="168" y2="100"/><line x1="0" y1="130" x2="168" y2="130"/><line x1="0" y1="160" x2="168" y2="160"/></g>
+<g font-family="Courier New,monospace" font-size="9" fill="#3b382e"><text x="4" y="38">6'0</text><text x="4" y="68">5'9</text><text x="4" y="98">5'6</text><text x="4" y="128">5'3</text></g>
+<g fill="#1a1813"><path d="M22 180c4-30 24-46 50-52l12 8 12-8c26 6 46 22 50 52z"/><path d="M72 128c-2-8-2-14-2-22h28c0 8 0 14-2 22l-12 8z"/>
+<ellipse cx="84" cy="88" rx="25" ry="31"/><path d="M54 74c0-20 14-30 30-30 18 0 32 8 34 24 6 2 10 5 10 8-10 2-30 2-44 0-14 0-24 0-30-2z"/></g>
+<rect x="44" y="150" width="80" height="22" fill="#e6dfc8" stroke="#1a1813" stroke-width="2"/>
+<text x="84" y="166" text-anchor="middle" font-family="Courier New,monospace" font-weight="700" font-size="12" fill="#1a1813">No. 4471</text></svg>
