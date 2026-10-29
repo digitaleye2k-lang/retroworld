@@ -9,7 +9,7 @@ android {
         versionCode 2
         versionName '1.1.0'
         manifestPlaceholders = [admobAppId: ADMOB_APP_ID]
-        resValue 'string', 'admob_banner_id', ADMOB_BANNER_ID
+        resValue 'string', 'admob_native_id', ADMOB_NATIVE_ID
         resValue 'string', 'admob_interstitial_id', ADMOB_INTERSTITIAL_ID
     }
     signingConfigs {

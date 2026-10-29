@@ -29,7 +29,17 @@ import com.google.android.gms.ads.AdError;
 import com.google.android.gms.ads.AdListener;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdSize;
-import com.google.android.gms.ads.AdView;
+import com.google.android.gms.ads.AdLoader;
+import com.google.android.gms.ads.nativead.MediaView;
+import com.google.android.gms.ads.nativead.NativeAd;
+import com.google.android.gms.ads.nativead.NativeAdOptions;
+import com.google.android.gms.ads.nativead.NativeAdView;
+import android.graphics.Color;
+import android.graphics.drawable.GradientDrawable;
+import android.view.Gravity;
+import android.widget.Button;
+import android.widget.ImageView;
+import android.widget.TextView;
 import com.google.android.gms.ads.FullScreenContentCallback;
 import com.google.android.gms.ads.LoadAdError;
 import com.google.android.gms.ads.MobileAds;
@@ -52,7 +62,14 @@ public class MainActivity extends Activity {
     private ValueCallback<Uri[]> filePathCb;
     private long lastBack = 0;
     // ---- AdMob ----
-    private AdView banner;
+    private FrameLayout banner;      // holder for the native ad card
+    private NativeAdView nativeView;
+    private NativeAd nativeAd;
+    private TextView nHead, nBody;
+    private Button nCta;
+    private ImageView nIcon;
+    private MediaView nMedia;
+    private long lastNative = 0;
     private InterstitialAd interstitial;
     private final AtomicBoolean adsStarted = new AtomicBoolean(false);
     private final Handler h = new Handler();
@@ -71,7 +88,8 @@ public class MainActivity extends Activity {
         LinearLayout col = new LinearLayout(this);
         col.setOrientation(LinearLayout.VERTICAL);
         col.addView(web, new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, 0, 1f));
-        banner = new AdView(this);
+        banner = new FrameLayout(this);
+        buildNativeView();
         banner.setVisibility(View.GONE);
         col.addView(banner, new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
         root.addView(col, new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
@@ -152,17 +170,66 @@ public class MainActivity extends Activity {
     private void initAds() {
         if (!adsStarted.compareAndSet(false, true)) return;
         MobileAds.initialize(this, st -> runOnUiThread(() -> {
-            DisplayMetrics dm = getResources().getDisplayMetrics();
-            int w = (int) (dm.widthPixels / dm.density);
-            banner.setAdUnitId(getString(R.string.admob_banner_id));
-            banner.setAdSize(AdSize.getCurrentOrientationAnchoredAdaptiveBannerAdSize(this, w));
-            banner.setAdListener(new AdListener() { @Override public void onAdFailedToLoad(LoadAdError e) { banner.setVisibility(View.GONE); } @Override public void onAdLoaded() { if (!inGame) banner.setVisibility(View.VISIBLE); } });
-            banner.loadAd(new AdRequest.Builder().build());
+            loadNative();
             loadInterstitial();
             pollGameState();
         }));
     }
+    private boolean realInterstitial() { return !getString(R.string.admob_interstitial_id).contains("3940256099942544"); }
+    private int dp(int v) { return (int) (v * getResources().getDisplayMetrics().density + .5f); }
+    private void buildNativeView() {
+        nativeView = new NativeAdView(this);
+        LinearLayout card = new LinearLayout(this);
+        card.setOrientation(LinearLayout.HORIZONTAL);
+        card.setGravity(Gravity.CENTER_VERTICAL);
+        card.setPadding(dp(10), dp(8), dp(10), dp(8));
+        GradientDrawable bg = new GradientDrawable(); bg.setColor(0xFF1C1E23); bg.setStroke(dp(1), 0xFF2E3138);
+        card.setBackground(bg);
+        nMedia = new MediaView(this);
+        card.addView(nMedia, new LinearLayout.LayoutParams(dp(100), dp(56)));
+        nIcon = new ImageView(this); nIcon.setVisibility(View.GONE);
+        LinearLayout txt = new LinearLayout(this); txt.setOrientation(LinearLayout.VERTICAL);
+        LinearLayout.LayoutParams tp = new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1f); tp.leftMargin = dp(10); tp.rightMargin = dp(8);
+        LinearLayout top = new LinearLayout(this); top.setGravity(Gravity.CENTER_VERTICAL);
+        TextView badge = new TextView(this); badge.setText("Ad"); badge.setTextSize(10); badge.setTextColor(0xFF00391A); badge.setTypeface(null, android.graphics.Typeface.BOLD);
+        GradientDrawable bb = new GradientDrawable(); bb.setColor(0xFF7BD88F); bb.setCornerRadius(dp(4)); badge.setBackground(bb); badge.setPadding(dp(5), dp(1), dp(5), dp(1));
+        top.addView(badge);
+        nHead = new TextView(this); nHead.setTextColor(0xFFE8EAED); nHead.setTextSize(14); nHead.setMaxLines(1); nHead.setEllipsize(android.text.TextUtils.TruncateAt.END); nHead.setTypeface(null, android.graphics.Typeface.BOLD);
+        LinearLayout.LayoutParams hp = new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1f); hp.leftMargin = dp(6);
+        top.addView(nHead, hp);
+        nBody = new TextView(this); nBody.setTextColor(0xFF9AA0A6); nBody.setTextSize(12); nBody.setMaxLines(2); nBody.setEllipsize(android.text.TextUtils.TruncateAt.END);
+        txt.addView(top); txt.addView(nBody);
+        card.addView(txt, tp);
+        nCta = new Button(this); nCta.setAllCaps(false); nCta.setTextSize(13); nCta.setTextColor(0xFF00391A); nCta.setMinHeight(0); nCta.setMinimumHeight(0); nCta.setPadding(dp(14), dp(8), dp(14), dp(8));
+        GradientDrawable cb = new GradientDrawable(); cb.setColor(0xFF7BD88F); cb.setCornerRadius(dp(18)); nCta.setBackground(cb);
+        card.addView(nCta, new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+        nativeView.addView(card);
+        nativeView.setMediaView(nMedia); nativeView.setHeadlineView(nHead); nativeView.setBodyView(nBody); nativeView.setCallToActionView(nCta); nativeView.setIconView(nIcon);
+        nativeView.setVisibility(View.GONE);
+        banner.addView(nativeView, new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+    }
+    private void loadNative() {
+        lastNative = System.currentTimeMillis();
+        AdLoader loader = new AdLoader.Builder(this, getString(R.string.admob_native_id))
+            .forNativeAd(ad -> {
+                if (isDestroyed()) { ad.destroy(); return; }
+                if (nativeAd != null) nativeAd.destroy();
+                nativeAd = ad;
+                nHead.setText(ad.getHeadline());
+                nBody.setText(ad.getBody() == null ? "" : ad.getBody());
+                nCta.setText(ad.getCallToAction() == null ? "Open" : ad.getCallToAction());
+                if (ad.getMediaContent() != null) nMedia.setMediaContent(ad.getMediaContent());
+                nativeView.setNativeAd(ad);
+                nativeView.setVisibility(View.VISIBLE);
+                if (!inGame) banner.setVisibility(View.VISIBLE);
+            })
+            .withAdListener(new AdListener() { @Override public void onAdFailedToLoad(LoadAdError e) { if (nativeAd == null) banner.setVisibility(View.GONE); } })
+            .withNativeAdOptions(new NativeAdOptions.Builder().build())
+            .build();
+        loader.loadAd(new AdRequest.Builder().build());
+    }
     private void loadInterstitial() {
+        if (!realInterstitial()) return;
         InterstitialAd.load(this, getString(R.string.admob_interstitial_id), new AdRequest.Builder().build(), new InterstitialAdLoadCallback() {
             @Override public void onAdLoaded(InterstitialAd ad) { interstitial = ad; }
             @Override public void onAdFailedToLoad(LoadAdError e) { interstitial = null; }
@@ -176,7 +243,7 @@ public class MainActivity extends Activity {
             else if (!g && inGame) {
                 inGame = false; banner.setVisibility(View.VISIBLE);
                 long n = System.currentTimeMillis();
-                if (interstitial != null && n - gameStart > 90_000 && n - lastInterstitial > 240_000) {
+                if (realInterstitial() && interstitial != null && n - gameStart > 90_000 && n - lastInterstitial > 240_000) {
                     final InterstitialAd ad = interstitial; interstitial = null; lastInterstitial = n;
                     ad.setFullScreenContentCallback(new FullScreenContentCallback() {
                         @Override public void onAdDismissedFullScreenContent() { loadInterstitial(); immersive(); }
@@ -185,6 +252,7 @@ public class MainActivity extends Activity {
                     ad.show(MainActivity.this);
                 }
             }
+            if (!inGame && System.currentTimeMillis() - lastNative > 90_000) loadNative();
             h.postDelayed(this::pollGameState, 1200);
         });
     }
@@ -196,9 +264,9 @@ public class MainActivity extends Activity {
     }
     @Override public void onWindowFocusChanged(boolean f) { super.onWindowFocusChanged(f); if (f) immersive(); }
     @Override protected void onSaveInstanceState(Bundle o) { super.onSaveInstanceState(o); web.saveState(o); }
-    @Override protected void onPause() { super.onPause(); web.onPause(); if (banner != null) banner.pause(); }
-    @Override protected void onResume() { super.onResume(); web.onResume(); immersive(); if (banner != null) banner.resume(); }
-    @Override protected void onDestroy() { h.removeCallbacksAndMessages(null); if (banner != null) banner.destroy(); if (web != null) { root.removeView(web); web.destroy(); } super.onDestroy(); }
+    @Override protected void onPause() { super.onPause(); web.onPause();  }
+    @Override protected void onResume() { super.onResume(); web.onResume(); immersive();  }
+    @Override protected void onDestroy() { h.removeCallbacksAndMessages(null); if (nativeAd != null) nativeAd.destroy(); if (web != null) { root.removeView(web); web.destroy(); } super.onDestroy(); }
 
     @Override protected void onActivityResult(int req, int res, Intent data) {
         if (req == FILE_REQ && filePathCb != null) {
