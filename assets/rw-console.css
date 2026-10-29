@@ -142,7 +142,7 @@ body.rw-console #tvModeHint,body.rw-mobile #tvModeHint{display:none!important}
 html.rw-lite #rwXmb *,html.rw-lite #xProf,html.rw-lite #xTro{backdrop-filter:none!important;-webkit-backdrop-filter:none!important;text-shadow:none!important;animation:none!important}
 html.rw-lite #rwXmb *{transition-duration:.1s!important;will-change:auto!important}
 html.rw-lite .x-abg{filter:none!important;transform:none!important;inset:0!important;opacity:.55!important;transition:none!important}
-html.rw-lite #xBg{display:none!important}
+html.rw-lite:not(.rw-fxon) #xBg{display:none!important}
 html.rw-lite .x-tile,html.rw-lite .x-hero *,html.rw-lite .x-d{box-shadow:none!important}
 html.rw-lite .x-tile.on{outline:4px solid #fff;outline-offset:2px;transform:none!important}
 html.rw-lite #xProf{background:#070a18!important}html.rw-lite #xTro{background:#0a0b1e!important}
