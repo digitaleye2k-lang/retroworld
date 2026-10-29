@@ -53,6 +53,13 @@ function onTap(p){onMove(p)}
 function onKey(k){}
 function collide(m,mvx,mvy,mr){const dx=puck.x-m.x,dy=puck.y-m.y,d=Math.hypot(dx,dy),mm=mr+PR;if(d<mm&&d>0){const nx=dx/d,ny=dy/d;puck.x=m.x+nx*mm;puck.y=m.y+ny*mm;const rv=(puck.vx-mvx)*nx+(puck.vy-mvy)*ny;if(rv<0){puck.vx-=1.9*rv*nx;puck.vy-=1.9*rv*ny}
   const sp=Math.hypot(puck.vx,puck.vy);if(sp<260){puck.vx=nx*260;puck.vy=ny*260}const mx=1500;if(sp>mx){puck.vx*=mx/sp;puck.vy*=mx/sp}rally++;tone(300+Math.min(500,sp*.3),.06,'triangle',.1);noise(.04,.06,1500)}}
+function unstick(m,mr){ // corner pin fix: never let a mallet and the wall trap the puck
+ let dx=puck.x-m.x,dy=puck.y-m.y,d=Math.hypot(dx,dy)||.01;const mm=mr+PR;if(d>=mm-.5)return;
+ const nx=dx/d,ny=dy/d;const isMe=(m===me);
+ m.x=clamp(puck.x-nx*mm,TX0+mr,TX1-mr);m.y=isMe?clamp(puck.y-ny*mm,(TY0+TY1)/2+mr*.6,TY1-mr):clamp(puck.y-ny*mm,TY0+mr,(TY0+TY1)/2-mr*.6);
+ dx=puck.x-m.x;dy=puck.y-m.y;d=Math.hypot(dx,dy)||.01;
+ if(d<mm-.5){const cx=240-puck.x,cy=(TY0+TY1)/2-puck.y,l=Math.hypot(cx,cy)||1;puck.x+=cx/l*(mm-d+3);puck.y+=cy/l*(mm-d+3);puck.vx=cx/l*520;puck.vy=cy/l*520;puck.x=clamp(puck.x,TX0+PR,TX1-PR);tone(260,.05,'square',.06)}
+}
 function onUpdate(dt){
  // player mallet follows pointer
  if(me.tx!==undefined){const ox=me.x,oy=me.y,k=Math.min(1,dt*30);me.x+=(me.tx-me.x)*k;me.y+=(me.ty-me.y)*k;mvel.x=(me.x-ox)/dt;mvel.y=(me.y-oy)/dt}
@@ -69,7 +76,7 @@ function onUpdate(dt){
   if(puck.x<TX0+PR){puck.x=TX0+PR;puck.vx*=-.95;tone(200,.04,'square',.05)}if(puck.x>TX1-PR){puck.x=TX1-PR;puck.vx*=-.95;tone(200,.04,'square',.05)}
   const inG=Math.abs(puck.x-240)<GW/2-PR*.3;
   if(puck.y<TY0+PR){if(inG&&puck.y<TY0-PR){goal(0);return}if(!inG){puck.y=TY0+PR;puck.vy*=-.95}}
-  if(puck.y>TY1-PR){if(inG&&puck.y>TY1+PR){goal(1);return}if(!inG){puck.y=TY1-PR;puck.vy*=-.95}}}
+  if(puck.y>TY1-PR){if(inG&&puck.y>TY1+PR){goal(1);return}if(!inG){puck.y=TY1-PR;puck.vy*=-.95}}unstick(me,MR);unstick(cpu,MR)}
  const f=Math.pow(.992,dt*60);puck.vx*=f;puck.vy*=f}
 function goal(w){sc[w]++;if(w===0){score+=100+Math.min(100,rally*5)}tone(w===0?700:150,.35,'square',.1,w===0?2:.5);noise(.2,.1,600);
  if(sc[0]>=7){score+=sc[0]*50;endGame(true,'Final '+sc[0]+' - '+sc[1]);return}if(sc[1]>=7){endGame(false,'Final '+sc[0]+' - '+sc[1]);return}
