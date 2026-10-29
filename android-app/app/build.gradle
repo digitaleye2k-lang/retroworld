@@ -6,8 +6,11 @@ android {
         applicationId 'eu.cc.retroworld'
         minSdk 24
         targetSdk 34
-        versionCode 1
-        versionName '1.0.0'
+        versionCode 2
+        versionName '1.1.0'
+        manifestPlaceholders = [admobAppId: ADMOB_APP_ID]
+        resValue 'string', 'admob_banner_id', ADMOB_BANNER_ID
+        resValue 'string', 'admob_interstitial_id', ADMOB_INTERSTITIAL_ID
     }
     signingConfigs {
         release {
@@ -23,5 +26,11 @@ android {
             minifyEnabled false
         }
     }
+    buildFeatures { buildConfig true }
     compileOptions { sourceCompatibility JavaVersion.VERSION_17; targetCompatibility JavaVersion.VERSION_17 }
+}
+
+dependencies {
+    implementation 'com.google.android.gms:play-services-ads:23.3.0'
+    implementation 'com.google.android.ump:user-messaging-platform:3.0.0'
 }

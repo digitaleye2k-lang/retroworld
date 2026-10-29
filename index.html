@@ -1626,7 +1626,7 @@ html[data-vault="rainbow"] .hero h1,html[data-vault="rainbow"] .section-title{an
 .news-teaser{margin:44px 0;padding:22px;border:2px solid #3a3566;background:#0a0918}.news-teaser .nt-list{margin:14px 0;padding:0;list-style:none}.news-teaser .nt-list li{padding:9px 0;border-bottom:1px dashed #2b2750}.news-teaser .nt-list a{color:#dfe3ff;text-decoration:none}.news-teaser .nt-list a:hover{color:var(--cyan)}.news-teaser .nt-all{display:inline-block;margin-top:6px;color:var(--cyan);font-weight:700;text-decoration:none;letter-spacing:1px}
 </style>
 <link rel="stylesheet" href="tv/tv-enhancements.css">
-<script>if(!window.RETROWORLD_TV_DEVICE){const a=document.createElement('script');a.async=true;a.crossOrigin="anonymous";a.src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7935805760564580";document.head.appendChild(a);}</script>
+<script>window.RW_NO_ADS=/RetroWorldApp/.test(navigator.userAgent);if(!window.RETROWORLD_TV_DEVICE&&!window.RW_NO_ADS){const a=document.createElement('script');a.async=true;a.crossOrigin="anonymous";a.src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7935805760564580";document.head.appendChild(a);}</script>
 <meta property="og:title" content="Retro World — 106 Free Retro Browser Games"><meta property="og:site_name" content="Retro World"><meta name="twitter:title" content="Retro World — 106 Free Retro Browser Games"><meta name="twitter:image" content="https://retroworld.eu.cc/assets/og-image.jpg">
 <meta property="og:description" content="106 free retro games in your browser: Neon Survivors, Grid Guardians, Bubble Pop, Sky Hop, Beat Up Mafia and more. No download.">
 <meta property="og:type" content="website"><meta property="og:url" content="https://retroworld.eu.cc/">
@@ -4521,11 +4521,11 @@ const RW_ADS={client:'ca-pub-7935805760564580',banner:'4713461465',side:'4441998
 function rwAdIns(slot,style,extra){const ins=document.createElement('ins');ins.className='adsbygoogle';ins.style.cssText=style;ins.setAttribute('data-ad-client',RW_ADS.client);ins.setAttribute('data-ad-slot',slot);if(extra)for(const k in extra)ins.setAttribute(k,extra[k]);return ins}
 function rwAdPush(){try{(window.adsbygoogle=window.adsbygoogle||[]).push({})}catch(e){}}
 function mountBannerAd(){const sec=document.getElementById('rwBannerSection'),slot=document.getElementById('rwBannerSlot');if(!sec||!slot)return;
-  if(!RW_ADS.banner||window.RETROWORLD_TV_DEVICE){sec.hidden=true;return}
+  if(!RW_ADS.banner||window.RETROWORLD_TV_DEVICE||window.RW_NO_ADS){sec.hidden=true;return}
   slot.innerHTML='';slot.appendChild(rwAdIns(RW_ADS.banner,'display:block;width:100%;min-height:90px',{'data-ad-format':'auto','data-full-width-responsive':'true'}));sec.hidden=false;rwAdPush()}
 window.addEventListener('load',()=>setTimeout(mountBannerAd,600));
 function mountMultiAd(){const sec=document.getElementById('rwMultiSection'),slot=document.getElementById('rwMultiSlot');if(!sec||!slot)return;
-  if(!RW_ADS.multi||window.RETROWORLD_TV_DEVICE){sec.hidden=true;return}
+  if(!RW_ADS.multi||window.RETROWORLD_TV_DEVICE||window.RW_NO_ADS){sec.hidden=true;return}
   slot.innerHTML='';slot.appendChild(rwAdIns(RW_ADS.multi,'display:block',{'data-ad-format':'autorelaxed'}));sec.hidden=false;rwAdPush()}
 window.addEventListener('load',()=>setTimeout(mountMultiAd,1400));
 
