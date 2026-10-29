@@ -1624,6 +1624,7 @@ html[data-vault="rainbow"] .hero h1,html[data-vault="rainbow"] .section-title{an
 .avatar-choice:hover .avatar-icon{transform:scale(1.15) rotate(-5deg)}.avatar-choice .avatar-icon{transition:transform .15s}
 .idn-more{grid-column:1/-1;text-align:center;color:#7f87b5;font:9px "Courier New",monospace;padding:6px}
 .news-teaser{margin:44px 0;padding:22px;border:2px solid #3a3566;background:#0a0918}.news-teaser .nt-list{margin:14px 0;padding:0;list-style:none}.news-teaser .nt-list li{padding:9px 0;border-bottom:1px dashed #2b2750}.news-teaser .nt-list a{color:#dfe3ff;text-decoration:none}.news-teaser .nt-list a:hover{color:var(--cyan)}.news-teaser .nt-all{display:inline-block;margin-top:6px;color:var(--cyan);font-weight:700;text-decoration:none;letter-spacing:1px}
+.rw-app-banner{display:flex;gap:12px;align-items:center;flex-wrap:wrap;justify-content:center;margin:14px auto;width:min(1180px,94vw);padding:12px 16px;border:1px solid #2f6b46;background:linear-gradient(90deg,#0d2a1b,#0a1a2a);border-radius:12px;font-size:13px;color:#dfeee6}.rw-app-banner a{background:#7bd88f;color:#00391a;font-weight:800;text-decoration:none;padding:8px 16px;border-radius:20px;letter-spacing:.5px}.rw-app-banner a.alt{background:transparent;color:#7bd88f;border:1px solid #7bd88f}body.rw-console .rw-app-banner,body.rw-mobile .rw-app-banner{display:none!important}
 </style>
 <link rel="stylesheet" href="tv/tv-enhancements.css">
 <script>window.RW_NO_ADS=/RetroWorldApp/.test(navigator.userAgent);if(!window.RETROWORLD_TV_DEVICE&&!window.RW_NO_ADS){const a=document.createElement('script');a.async=true;a.crossOrigin="anonymous";a.src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7935805760564580";document.head.appendChild(a);}</script>
@@ -1887,7 +1888,7 @@ html[data-vault="rainbow"] .hero h1,html[data-vault="rainbow"] .section-title{an
 </div></div></div></div></section>
 
 
-<section aria-label="Advertisement" class="retro-ad-slot" id="rwBannerSection" hidden>
+<aside class="rw-app-banner" id="rwAppBanner"><span>📱 <b>NEW:</b> Retro World <b>Beta 2.0</b> Android app — new look &amp; easy mobile interface.</span><a href="https://files.catbox.moe/r5ijst.apk" target="_blank" rel="noopener noreferrer">⬇ TRY IT NOW</a><a class="alt" href="news.html">READ MORE</a></aside><section aria-label="Advertisement" class="retro-ad-slot" id="rwBannerSection" hidden>
 <div class="retro-ad-label">ADVERTISEMENT</div>
 <div class="retro-ad-inner" id="rwBannerSlot"></div>
 </section>
@@ -2214,7 +2215,7 @@ html[data-vault="rainbow"] .hero h1,html[data-vault="rainbow"] .section-title{an
 <button class="play" data-game="ring-king.html">PLAY NOW</button></article>
 </section>
 
-<section class="news-teaser" id="news" aria-labelledby="newsTitle"><div class="news-kicker">:: DIGITAL EYE BULLETIN // LATEST</div><h2 class="news-heading" id="newsTitle">NEWS &amp; UPDATES</h2><ul class="nt-list"><li><a href="news.html">A brand-new Trophy Room: levels, streaks, weekly quests</a></li><li><a href="news.html">Save game, weapon shops, snow and weapon icons</a></li><li><a href="news.html">Bigger map, sea, sky, weather and 13 missions</a></li></ul><a class="nt-all" href="news.html">READ ALL NEWS &amp; UPDATES →</a></section>
+<section class="news-teaser" id="news" aria-labelledby="newsTitle"><div class="news-kicker">:: DIGITAL EYE BULLETIN // LATEST</div><h2 class="news-heading" id="newsTitle">NEWS &amp; UPDATES</h2><ul class="nt-list"><li><a href="news.html"><b style="color:#7bd88f">NEW · Retro World Beta 2.0 Android app — new look &amp; easier mobile interface</b></a></li><li><a href="news.html">A brand-new Trophy Room: levels, streaks, weekly quests</a></li><li><a href="news.html">Save game, weapon shops, snow and weapon icons</a></li><li><a href="news.html">Bigger map, sea, sky, weather and 13 missions</a></li></ul><a class="nt-all" href="news.html">READ ALL NEWS &amp; UPDATES →</a></section>
 
 <section class="about" id="about">
 <div class="about-hero">
@@ -4404,6 +4405,7 @@ const betaReportIssue=document.getElementById('betaReportIssue');
 const betaSuggestChange=document.getElementById('betaSuggestChange');
 if(betaReportIssue)betaReportIssue.addEventListener('click',()=>openBetaReport('issue'));
 if(betaSuggestChange)betaSuggestChange.addEventListener('click',()=>openBetaReport('suggestion'));
+try{const bq=/[?&]beta=(issue|suggestion)/.exec(location.search);if(bq)setTimeout(()=>openBetaReport(bq[1]),700)}catch(e){}
 
 function openDustReport(mode='bug'){
   openReport('__dust_iron__');
