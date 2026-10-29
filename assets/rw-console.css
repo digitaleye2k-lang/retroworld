@@ -137,3 +137,14 @@ body.rw-console #tvModeHint,body.rw-mobile #tvModeHint{display:none!important}
 .xt-empty{grid-column:1/-1;text-align:center;color:#9aa3cc;font:700 18px "Courier New",monospace;padding:6vh 0}
 .xt-det{display:flex;gap:1.4vw;align-items:center;width:min(1200px,100%);min-height:11vh;background:#ffffff10;border:2px solid #ffd34d55;border-radius:16px;padding:1.4vh 1.6vw}
 .xt-ic{font-size:clamp(34px,5vw,64px)}.xt-det b{font:900 clamp(14px,1.8vw,24px) system-ui;letter-spacing:1px}.xt-det small{margin-left:12px;color:#ffd34d;font:700 11px "Courier New",monospace}.xt-det p{margin:.4vh 0 0;color:#c9cff0;font:clamp(11px,1.2vw,16px) "Courier New",monospace}
+
+/* ---- LITE mode (TV browsers): no blur/glow/animations, no canvas ---- */
+html.rw-lite #rwXmb *,html.rw-lite #xProf,html.rw-lite #xTro{backdrop-filter:none!important;-webkit-backdrop-filter:none!important;text-shadow:none!important;animation:none!important}
+html.rw-lite #rwXmb *{transition-duration:.1s!important;will-change:auto!important}
+html.rw-lite .x-abg{filter:none!important;transform:none!important;inset:0!important;opacity:.55!important;transition:none!important}
+html.rw-lite #xBg{display:none!important}
+html.rw-lite .x-tile,html.rw-lite .x-hero *,html.rw-lite .x-d{box-shadow:none!important}
+html.rw-lite .x-tile.on{outline:4px solid #fff;outline-offset:2px;transform:none!important}
+html.rw-lite #xProf{background:#070a18!important}html.rw-lite #xTro{background:#0a0b1e!important}
+html.rw-lite .xp-card,html.rw-lite .xt-t.kf,html.rw-lite .x-d.kf{box-shadow:none!important}
+html.rw-lite body.rw-console>main,html.rw-lite body.rw-console>header,html.rw-lite body.rw-console>footer,html.rw-lite body.rw-console>.retro-ad-slot{display:none!important}
