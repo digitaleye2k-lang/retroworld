@@ -141,3 +141,9 @@ body.rw-mobile.game-active #rwMob{visibility:hidden}
 #rwMob .row,#rwMob .pc{box-shadow:0 1px 0 #ffffff12 inset,0 8px 18px -10px #000a}
 #mDetail .ic.lg{border-radius:22.4%}
 #mDetail .ban{box-shadow:0 0 0 .5px #ffffff2e inset,0 12px 26px -12px #000}
+
+/* per-game glossy glyph icons */
+#rwMob .ic.gi{background:radial-gradient(90% 90% at 50% 12%,var(--a),var(--b) 92%)!important;display:grid;place-items:center;filter:none}
+#rwMob .ic.gi u{text-decoration:none;font-size:46px;line-height:1;filter:drop-shadow(0 3px 3px #0008) drop-shadow(0 0 10px #ffffff40);position:relative;z-index:0;transform:translateY(-1px)}
+#rwMob .ic.gi.sm u{font-size:30px}#rwMob .ic.gi.lg u{font-size:46px}
+#rwMob .grid .ic.gi u{font-size:clamp(34px,11vw,56px)}
