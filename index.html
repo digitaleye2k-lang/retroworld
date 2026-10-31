@@ -329,6 +329,19 @@ body.dynamic-bg::after{
 
 
 
+
+#rwTrialPill{position:fixed;top:10px;left:50%;transform:translateX(-50%);z-index:100000;display:flex;align-items:center;gap:12px;padding:8px 8px 8px 16px;border:1px solid #ffd75e;background:rgba(14,10,2,.9);color:#ffd75e;border-radius:999px;font:800 12px/1 "Courier New",monospace;letter-spacing:1.5px;box-shadow:0 0 22px #ffd75e30;backdrop-filter:blur(6px)}
+#rwTrialPill b{font-size:16px;color:#fff;min-width:44px;text-align:center}
+#rwTrialPill button{border:1px solid #ffd75e;background:#2a2008;color:#ffd75e;border-radius:999px;padding:7px 12px;font:800 10px "Courier New",monospace;letter-spacing:1px;cursor:pointer}
+#rwTrialPill.low{border-color:#ff5f7e;color:#ff9fb2;animation:rwTrialPulse 1s infinite}#rwTrialPill.low b{color:#ff5f7e}
+@keyframes rwTrialPulse{50%{box-shadow:0 0 30px #ff5f7e66}}
+#rwTrialEnd{position:fixed;inset:0;z-index:100001;display:grid;place-items:center;background:rgba(2,2,10,.78);backdrop-filter:blur(5px);padding:16px}
+#rwTrialEnd .box{max-width:460px;width:100%;border:2px solid #ffd75e;background:#0e0b18;padding:26px 24px;text-align:center;box-shadow:0 0 40px #ffd75e22;font-family:"Courier New",monospace;color:#e8e6ff}
+#rwTrialEnd .k{color:#ffd75e;letter-spacing:3px;font-size:11px;font-weight:800}#rwTrialEnd h3{margin:10px 0 6px;font-size:24px;letter-spacing:2px;color:#fff}
+#rwTrialEnd p{font-size:13px;line-height:1.6;margin:8px 0;color:#c9c6ea}#rwTrialEnd .need{color:#ffd75e}#rwTrialEnd .need small{color:#9a97c4;font-size:11px}
+#rwTrialEnd .row{display:flex;gap:10px;justify-content:center;margin-top:16px;flex-wrap:wrap}
+#rwTrialEnd button{padding:12px 16px;font:800 12px "Courier New",monospace;letter-spacing:1px;border:2px solid #ffd75e;cursor:pointer}
+#rwTrialEnd .go{background:#ffd75e;color:#1a1200}#rwTrialEnd .no{background:transparent;color:#ffd75e}
 .retro-ad-slot{
   max-width:970px;margin:28px auto 34px;padding:12px;
   border:1px solid #34345f;background:rgba(8,8,23,.92);
@@ -3680,6 +3693,48 @@ function challengeStats(profile){
   return profile.challengeStats;
 }
 
+
+/* ===== FREE 5-MINUTE TRIAL for premium titles ===== */
+var RW_TRIAL_SEC=300,rwTrialTimer=0,rwTrialId='',rwTrialPill=null;
+function rwTrialUsed(){try{return JSON.parse(localStorage.getItem('rwTrialUsed')||'{}')||{}}catch(e){return{}}}
+function rwTrialLeft(id){var u=Number(rwTrialUsed()[id]||0);return Math.max(0,RW_TRIAL_SEC-u)}
+function rwTrialAdd(id,sec){try{var o=rwTrialUsed();o[id]=Math.min(RW_TRIAL_SEC,(Number(o[id])||0)+sec);localStorage.setItem('rwTrialUsed',JSON.stringify(o))}catch(e){}}
+function rwTrialFmt(s){s=Math.max(0,Math.ceil(s));return Math.floor(s/60)+':'+String(s%60).padStart(2,'0')}
+function rwTrialStop(){
+  if(rwTrialTimer){clearInterval(rwTrialTimer);rwTrialTimer=0}
+  if(rwTrialPill){rwTrialPill.remove();rwTrialPill=null}
+  var had=rwTrialId;rwTrialId='';
+  if(had){try{refreshPremiumAccessUI()}catch(e){}}
+}
+function rwTrialStart(id){
+  rwTrialStop();rwTrialId=id;
+  var pill=document.createElement('div');pill.id='rwTrialPill';
+  pill.innerHTML='<span class="t-lab">FREE TRIAL</span><b class="t-time"></b><button type="button">HOW TO UNLOCK</button>';
+  document.body.appendChild(pill);rwTrialPill=pill;
+  var tEl=pill.querySelector('.t-time');
+  function paint(){var l=rwTrialLeft(id);tEl.textContent=rwTrialFmt(l);pill.classList.toggle('low',l<=60)}
+  paint();
+  pill.querySelector('button').addEventListener('click',function(){var g=id;rwTrialStop();closeGame();rwTrialEnded(g,true)});
+  rwTrialTimer=setInterval(function(){
+    if(document.hidden)return;
+    rwTrialAdd(id,1);paint();
+    if(rwTrialLeft(id)<=0){var g=id;rwTrialStop();closeGame();rwTrialEnded(g,false)}
+  },1000);
+}
+function rwTrialEnded(id,early){
+  var cfg=PREMIUM_GAMES[id]||{name:'THIS GAME',tokenNeed:0,trophyNeed:0};
+  var old=document.getElementById('rwTrialEnd');if(old)old.remove();
+  var m=document.createElement('div');m.id='rwTrialEnd';
+  m.innerHTML='<div class="box"><div class="k">'+(early?'PREMIUM GAME':'TRIAL OVER')+'</div><h3>'+cfg.name+'</h3>'
+   +'<p>'+(early?'You can sample it free for a few minutes. To keep playing:':'Hope you enjoyed the sample! To unlock the full game:')+'</p>'
+   +'<p class="need">EARN <b>'+fmtNumber(cfg.tokenNeed)+' CHALLENGE TOKENS</b> + <b>'+cfg.trophyNeed+' TROPHIES</b><br><small>Complete Daily Challenges and play different games to earn them — it is free.</small></p>'
+   +'<div class="row"><button type="button" class="go">SEE HOW TO EARN TOKENS</button><button type="button" class="no">'+(rwTrialLeft(id)>0?'RESUME TRIAL':'BACK TO GAMES')+'</button></div></div>';
+  document.body.appendChild(m);
+  m.querySelector('.go').addEventListener('click',function(){m.remove();var p=activeProfile();if(!p){openOnboarding(true);if(onboardingError)onboardingError.textContent='CREATE A FREE PROFILE TO EARN CHALLENGE TOKENS, TROPHIES AND PREMIUM UNLOCKS.';return}showPremiumRequirements(id)});
+  m.querySelector('.no').addEventListener('click',function(){m.remove();if(rwTrialLeft(id)>0)openGame(id)});
+  m.addEventListener('click',function(e){if(e.target===m)m.remove()});
+  try{refreshPremiumAccessUI()}catch(e){}
+}
 function premiumAccess(profile,gameId=PREMIUM_GAME_ID){
   const cfg=PREMIUM_GAMES[gameId];
   if(!cfg)return{unlocked:true,tokens:0,trophies:0,tokenNeed:0,trophyNeed:0,newlyUnlocked:false,gameId};
@@ -3728,12 +3783,12 @@ function refreshPremiumAccessUI(profile=activeProfile()){
     if(btn){
       btn.classList.toggle('premium-locked-btn',!gate.unlocked);
       btn.classList.toggle('premium-unlocked-btn',gate.unlocked);
-      btn.textContent=gate.unlocked?'★ PLAY PREMIUM':'🔒 VIEW UNLOCK REQUIREMENTS';
+      btn.textContent=gate.unlocked?'★ PLAY PREMIUM':(rwTrialLeft(id)>0?'▶ FREE 5-MIN TRIAL':'🔒 VIEW UNLOCK REQUIREMENTS');
     }
     if(cardStatus){
       cardStatus.innerHTML=gate.unlocked
         ?'★ <b>PREMIUM UNLOCKED</b> — REWARD EARNED ON THIS PROFILE'
-        :'🔒 PREMIUM REWARD — <b>'+fmtNumber(gate.tokens)+' / '+fmtNumber(gate.tokenNeed)+' TOKENS • '+gate.trophies+' / '+gate.trophyNeed+' TROPHIES</b>';
+        :'🔒 PREMIUM REWARD — <b>'+fmtNumber(gate.tokens)+' / '+fmtNumber(gate.tokenNeed)+' TOKENS • '+gate.trophies+' / '+gate.trophyNeed+' TROPHIES</b>'+(rwTrialLeft(id)>0?'<br>▶ TRY IT FREE FOR '+Math.ceil(rwTrialLeft(id)/60)+' MIN — NO PROFILE NEEDED':'');
     }
 
     const reward=document.getElementById(cfg.reward);
@@ -4631,18 +4686,24 @@ function openGame(id){
   }
 
   if(!GAMES[id])return;
+  let trialMode=false;
   if(PREMIUM_GAMES[id]){
     const p=activeProfile();
-    if(!p){
-      openOnboarding(true);
-      if(onboardingError)onboardingError.textContent='CREATE OR IMPORT A PROFILE TO EARN CHALLENGE TOKENS, TROPHIES AND PREMIUM GAME UNLOCKS.';
-      return
+    const gate0=p?premiumAccess(p,id):null;
+    if(!(gate0&&gate0.unlocked)&&rwTrialLeft(id)>0){
+      trialMode=true;   // free sample: no profile or unlock needed
+    }else{
+      if(!p){
+        openOnboarding(true);
+        if(onboardingError)onboardingError.textContent='CREATE OR IMPORT A PROFILE TO EARN CHALLENGE TOKENS, TROPHIES AND PREMIUM GAME UNLOCKS.';
+        return
+      }
+      const gate=premiumAccess(p,id);
+      if(!gate.unlocked){refreshPremiumAccessUI(p);showPremiumRequirements(id);return}
+      const newly=syncPremiumRewards(p);
+      if(newly.length)saveProfiles();
+      refreshPremiumAccessUI(p)
     }
-    const gate=premiumAccess(p,id);
-    if(!gate.unlocked){refreshPremiumAccessUI(p);showPremiumRequirements(id);return}
-    const newly=syncPremiumRewards(p);
-    if(newly.length)saveProfiles();
-    refreshPremiumAccessUI(p)
   }
 
   currentGameId=id;
@@ -4667,9 +4728,11 @@ function openGame(id){
   frame.removeAttribute('srcdoc');
   loadSideAdvertisement();
   frame.src=new URL(GAMES[id],document.baseURI).href;
+  if(trialMode)rwTrialStart(id);
 }
 
 function closeGame(){
+  rwTrialStop();
   gameLoadToken++;
   document.body.classList.remove('game-active');
   hideGameLoading();
