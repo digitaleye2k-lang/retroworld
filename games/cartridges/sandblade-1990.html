@@ -42,10 +42,12 @@ const TW=96,TH=160,RW=10,RH=3,HUDY=510;
 const LEVELS=[
  {n:'THE DUNGEON',rows:["....................","...........FFFHF....","FPFFFF.FFSFFFFFFFxFE"]},
  {n:'THE FALLING STAIRS',rows:["....................","....................","FPFFFFLLFF..FFFF....","................FH..","..................FF","EFFFAFFFFaFFFSFFFxFF"]},
- {n:'THE SULTAN\'S TOWER',rows:["..............................","...............FHaFM...........","FPFFFF.FFFxFLLSFFFFFFAFFFxFFFFE"].map(s=>s.slice(0,30))}
+ {n:'THE SULTAN\'S TOWER',rows:["...............................","...............FHaFM...........","FPFFFF.FFFFFLLSFFFFFFAFFFxFFFFE"]},
+ {n:'THE ARMORY',rows:["............................","............................","FPFFFSFFFxFFLLFF.FFFFFxFSFFFFE"]},
+ {n:'THE VIZIER\'S HALL',rows:["............................","............................","FPFFFFSFFFxFF.FFFLLFFSFFFxFFFHFFFFE"]}
 ];
-LEVELS[1].rows=LEVELS[1].rows.map(s=>s.padEnd(20,'.').slice(0,20));
-LEVELS[2].rows[2]="FPFFFF.FFFxFLLSFFFFFFAFFFxFFFFE".replace('FFFxFLL','FFFFLL').slice(0,30);
+const padRows=a=>{const w=Math.max(...a.map(r=>r.length));return a.map(r=>r.padEnd(w,'.'))};
+LEVELS.forEach(l=>l.rows=padRows(l.rows));
 let L,W,H,map,items,guards,gate,loose,debris,P,cam={x:0,y:0},timeLeft=600,lvl=0,kills=0,msg='',msgT=0,t=0,gameOverT=0,deadT=0,wantJump=false,touchOn=false,sparks=[],shake=0,doneT=0;
 const K={};const FL='FSLABCabcHMPxE';
 function isFloor(c){return FL.includes(c)}
@@ -172,6 +174,8 @@ function draw(){ctx.save();ctx.setTransform(cv.width/LW,0,0,cv.height/LH,0,0);ct
  const c0=Math.floor(cam.x/TW),r0=Math.floor(cam.y/TH);
  // background walls
  for(let r=r0;r<r0+RH+1;r++)for(let c=c0;c<c0+RW+1;c++){brick(c*TW,r*TH,TW,TH,((c*7+r*3)%5===0)?'#2d2442':'#251c38')}
+ // moonlit arched windows
+ for(let r=r0;r<r0+RH;r++)for(let c=c0;c<c0+RW+1;c++){if(c%5===0&&r<H&&(r+c/5)%2===0){const wx=c*TW+TW/2,wy=r*TH+30;ctx.save();ctx.beginPath();ctx.moveTo(wx-24,wy+84);ctx.lineTo(wx-24,wy+24);ctx.arc(wx,wy+24,24,Math.PI,0);ctx.lineTo(wx+24,wy+84);ctx.closePath();const sg=ctx.createLinearGradient(0,wy,0,wy+84);sg.addColorStop(0,'#1d2a5c');sg.addColorStop(1,'#e9a05a');ctx.fillStyle=sg;ctx.fill();ctx.clip();ctx.fillStyle='#fff';for(let i=0;i<5;i++)ctx.fillRect(wx-18+((i*37+c*11)%36),wy+6+((i*23)%30),2,2);ctx.restore();ctx.strokeStyle='#4a3d6a';ctx.lineWidth=5;ctx.beginPath();ctx.moveTo(wx-24,wy+84);ctx.lineTo(wx-24,wy+24);ctx.arc(wx,wy+24,24,Math.PI,0);ctx.lineTo(wx+24,wy+84);ctx.stroke();ctx.fillStyle='#4a3d6a';ctx.fillRect(wx-2,wy,4,84)}}
  // pillars + torches
  for(let r=r0;r<r0+RH;r++)for(let c=c0;c<c0+RW;c++){if(c%5===2&&r<H){ctx.fillStyle='#3a2f55';ctx.fillRect(c*TW+TW/2-9,r*TH,18,TH);ctx.fillStyle='#4a3d6a';ctx.fillRect(c*TW+TW/2-9,r*TH,5,TH)}
   if(c%5===4&&r<H&&(r+c)%2===0){const fx=c*TW+TW/2,fy=r*TH+62;const f=.8+.2*Math.sin(t*14+c);ctx.fillStyle='#ff9a2b22';ctx.beginPath();ctx.arc(fx,fy,60*f,0,TAU);ctx.fill();ctx.fillStyle='#5a4020';ctx.fillRect(fx-3,fy,6,24);ctx.fillStyle='#ff8a1c';ctx.beginPath();ctx.ellipse(fx,fy-4,7*f,12*f,0,0,TAU);ctx.fill();ctx.fillStyle='#ffe070';ctx.beginPath();ctx.ellipse(fx,fy-2,3.5*f,7*f,0,0,TAU);ctx.fill()}}
