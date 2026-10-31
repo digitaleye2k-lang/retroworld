@@ -15,7 +15,7 @@ canvas{display:block;touch-action:none;box-shadow:0 0 50px #00ffff22;border-radi
 <script>
 'use strict';
 const LW=960,LH=600;
-const cv=document.getElementById('g'),ctx=cv.getContext('2d');
+const cv=document.getElementById('g');let ctx=cv.getContext('2d');const PX=2,pc=document.createElement('canvas');pc.width=LW/PX;pc.height=Math.ceil(510/PX);const pctx=pc.getContext('2d');
 function fit(){const dpr=Math.min(2,window.devicePixelRatio||1),s=Math.min(innerWidth/LW,innerHeight/LH);cv.style.width=(LW*s)+'px';cv.style.height=(LH*s)+'px';cv.width=Math.round(LW*s*dpr);cv.height=Math.round(LH*s*dpr);ctx.setTransform(cv.width/LW,0,0,cv.height/LH,0,0)}
 addEventListener('resize',fit);addEventListener('orientationchange',()=>setTimeout(fit,120));fit();
 function ptr(e){const r=cv.getBoundingClientRect();return{x:(e.clientX-r.left)/r.width*LW,y:(e.clientY-r.top)/r.height*LH}}
@@ -170,7 +170,7 @@ function draw(){ctx.save();ctx.setTransform(cv.width/LW,0,0,cv.height/LH,0,0);ct
   ctx.fillStyle='#000a';ctx.fillRect(0,0,LW,LH);glowText('SANDBLADE',480,150,84,'#ffb24a','#ff6a00');text('1990',480,215,34,'#ffe8b0');
   text('A tribute to the classic cinematic platformers',480,272,16,'#c5cae8');text('← → run · ↑ jump / grab ledges · ↓ crouch · SPACE sword · SHIFT parry',480,330,15,'#fff');
   text('Beat the guards · avoid spikes · reach the exit before time runs out',480,360,15,'#c5cae8');text('Hold ↑ near a ledge to climb · falling 3 floors is fatal',480,386,15,'#c5cae8');text('BEST '+best,480,430,16,'#8a90b8');if(Math.sin(t*5)>0)glowText('TAP TO START',480,500,28,'#ffe85c');ctx.restore();return}
- ctx.save();ctx.beginPath();ctx.rect(0,0,LW,HUDY);ctx.clip();const sx=(Math.random()-.5)*shake,sy=(Math.random()-.5)*shake;ctx.translate(-cam.x+sx,-cam.y+sy);
+ const mainCtx=ctx;ctx=pctx;ctx.setTransform(1/PX,0,0,1/PX,0,0);ctx.clearRect(0,0,LW,HUDY);ctx.save();ctx.beginPath();ctx.rect(0,0,LW,HUDY);ctx.clip();const sx=(Math.random()-.5)*shake,sy=(Math.random()-.5)*shake;ctx.translate(-cam.x+sx,-cam.y+sy);
  const c0=Math.floor(cam.x/TW),r0=Math.floor(cam.y/TH);
  // background walls
  for(let r=r0;r<r0+RH+1;r++)for(let c=c0;c<c0+RW+1;c++){brick(c*TW,r*TH,TW,TH,((c*7+r*3)%5===0)?'#2d2442':'#251c38')}
@@ -199,7 +199,7 @@ function draw(){ctx.save();ctx.setTransform(cv.width/LW,0,0,cv.height/LH,0,0);ct
   if(P.st==='climb'){const k=Math.min(1,P.climbT/.55);const edge=P.hd>0?P.tc*TW:(P.tc+1)*TW;const px=edge-P.hd*20+P.hd*(20+16)*k,py=P.hk*TH+145-145*k;figure(px,py,P.hd,k<.7?'hang':'idle',t,{cloth:'#f4f0e6',legs:'#e8e0d0',belt:'#3060d0',dark:'#2a1a0a',sword:false})}
   else figure(P.x,P.y,P.face,P.st,P.rt*1.0+t*0,{cloth:'#f4f0e6',legs:'#e8e0d0',belt:'#3060d0',dark:'#2a1a0a',sword:!P.sheath||P.swing>0||P.parry>0,swing:P.swing,parry:P.parry,wind:false});ctx.globalAlpha=1}
  for(const s of sparks){ctx.fillStyle='#ffe85c';for(let i=0;i<6;i++){const a=i*1.05+s.t*8;ctx.fillRect(s.x+Math.cos(a)*(.25-s.t)*120,s.y+Math.sin(a)*(.25-s.t)*120,4,4)}}
- ctx.restore();
+ ctx.restore();ctx=mainCtx;ctx.imageSmoothingEnabled=false;ctx.drawImage(pc,0,0,pc.width,pc.height,0,0,pc.width*PX,pc.height*PX);
  // vignette
  const vg=ctx.createRadialGradient(480,255,200,480,255,620);vg.addColorStop(0,'#0000');vg.addColorStop(1,'#000b');ctx.fillStyle=vg;ctx.fillRect(0,0,LW,HUDY);
  // HUD
