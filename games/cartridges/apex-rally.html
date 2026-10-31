@@ -158,7 +158,8 @@ function buildTrack(T){
   for(let k=0;k<M;k++){const th=k/M*TAU;
     const r=(1+p[0]*Math.cos(2*th+p[1])+p[2]*Math.sin(3*th+p[3])+p[4]*Math.cos(5*th+p[5])+p[6]*Math.sin(7*th+p[7]))*T.R;
     raw[k*3]=Math.cos(th)*r*T.sx;raw[k*3+2]=Math.sin(th)*r*T.sz;
-    raw[k*3+1]=T.H*(.6*Math.sin(2*th+T.q[0])+.4*Math.sin(3*th+T.q[1])+.15*Math.sin(5*th+T.q[2]))}
+    raw[k*3+1]=T.H*(.6*Math.sin(2*th+T.q[0])+.4*Math.sin(3*th+T.q[1])+.15*Math.sin(5*th+T.q[2]));
+    if(T.sea>-900){const lo=Math.max(T.sea,.1)+2.2,u=raw[k*3+1]-lo;raw[k*3+1]=lo+Math.log(1+Math.exp(u*.55))/.55}}
   const cum=new Float64Array(M+1);for(let k=0;k<M;k++){const a=k*3,b=((k+1)%M)*3;cum[k+1]=cum[k]+Math.hypot(raw[b]-raw[a],raw[b+2]-raw[a+2])}
   const L=cum[M],N=Math.round(L/SP),P=[];let k=0;
   for(let j=0;j<N;j++){const s=j/N*L;while(cum[k+1]<s)k++;const t=(s-cum[k])/(cum[k+1]-cum[k]),a=k*3,b=((k+1)%M)*3;P.push({x:lerp(raw[a],raw[b],t),y:lerp(raw[a+1],raw[b+1],t),z:lerp(raw[a+2],raw[b+2],t)})}
