@@ -738,7 +738,7 @@ function drawHUD(){const y0=VH;ctx.drawImage(hudBg,0,y0);const c1='#ffc830',c2='
  txt('AMMO',5,y0+5,7,'#8a8a96');txt('HEALTH',56,y0+5,7,'#8a8a96');txt('ARMS',123,y0+5,7,'#8a8a96');txt('ARMOR',250,y0+5,7,'#8a8a96');
  const w=WEAP[P.w];const am=w.am>=0?P.ammo[w.am]:'--';txt(am,28,y0+12,18,P.ammo[w.am]<10&&w.am>=0?'#ff5030':c2,'c',1);
  txt(Math.max(0,Math.ceil(P.hp))+'%',85,y0+12,18,P.hp<=25?'#ff5030':c2,'c',1);
- for(let i=1;i<7;i++){const n=i+1,xx=124+((i-1)%3)*16,yy=y0+13+(((i-1)/3)|0)*11;txt(n,xx,yy,10,P.owned[i]?c1:'#55555e',null,1)}
+ for(let i=1;i<7;i++){const n=i+1,xx=124+((i-1)%3)*16,yy=y0+11+(((i-1)/3)|0)*10;txt(n,xx,yy,9,P.owned[i]?c1:'#55555e',null,1)}
  drawFace(RW/2,y0+STB/2-1);
  txt(Math.ceil(P.armor)+'%',279,y0+12,18,P.atype===2?'#5090ff':P.armor>0?'#40d060':'#808088','c',1);
  for(let k=0;k<3;k++){const kx=316,ky=y0+7+k*9;ctx.fillStyle=P.keys[k]?['#e02020','#3060ff','#f0d020'][k]:'#2a2a30';ctx.fillRect(kx+3,ky,10,6);ctx.fillStyle='rgba(255,255,255,.3)';if(P.keys[k])ctx.fillRect(kx+3,ky,10,1)}
@@ -797,10 +797,11 @@ function drawInter(){const g=ctx;g.fillStyle='#08080c';g.fillRect(0,0,RW,RH);con
  rows.forEach((r,i)=>{if(t>.4+i*.35){txt(r[0],90,76+i*20,11,'#ff9060',null,1);txt(r[1],RW-90,76+i*20,11,'#ffffff','r',1)}});
  if(t>2.4){txt('SCORE  '+score,RW/2,186,12,'#ffe080','c',1);if(((t*2)|0)%2)txt(TOUCH?'TAP TO CONTINUE':'PRESS FIRE / ENTER TO CONTINUE',RW/2,208,9,'#ffffff','c',1)}}
 const fmtT=s=>((s/60)|0)+':'+('0'+((s%60)|0)).slice(-2);
-function drawDead(){const g=ctx,k=Math.min(1,deathT/1.5);g.fillStyle='rgba(120,0,0,'+(k*.55).toFixed(2)+')';g.fillRect(0,0,RW,VH);if(deathT>1){txt('YOU DIED',RW/2,60,26,'#ff3020','c',1);txt('SCORE  '+score,RW/2,100,12,'#ffe080','c',1);if(((deathT*2)|0)%2||deathT<2)txt(TOUCH?'TAP TO RETRY LEVEL':'PRESS FIRE / ENTER TO RETRY LEVEL',RW/2,128,9,'#ffffff','c',1);txt('ESC FOR MENU',RW/2,142,8,'#b0b0b0','c',1)}}
+function drawDead(){htClearTop();const g=ctx,k=Math.min(1,deathT/1.5);g.fillStyle='rgba(120,0,0,'+(k*.55).toFixed(2)+')';g.fillRect(0,0,RW,VH);if(deathT>1){txt('YOU DIED',RW/2,60,26,'#ff3020','c',1);txt('SCORE  '+score,RW/2,100,12,'#ffe080','c',1);if(((deathT*2)|0)%2||deathT<2)txt(TOUCH?'TAP TO RETRY LEVEL':'PRESS FIRE / ENTER TO RETRY LEVEL',RW/2,128,9,'#ffffff','c',1);txt('ESC FOR MENU',RW/2,142,8,'#b0b0b0','c',1)}}
 function drawWin(){const t=performance.now()/1000;drawSkyBg(t,.8);stepFire();ctx.drawImage(fcv,0,0,RW,RH);ctx.fillStyle='rgba(0,0,0,.5)';ctx.fillRect(30,16,RW-60,RH-60);ctx.save();ctx.textAlign='center';ctx.textBaseline='middle';ctx.font='bold 30px Impact,"Arial Black",sans-serif';ctx.lineWidth=4;ctx.strokeStyle='#000';ctx.strokeText('HELL IS CONQUERED',RW/2,44);ctx.fillStyle='#ffd040';ctx.fillText('HELL IS CONQUERED',RW/2,44);ctx.restore();
  txt('THE CYBERDEMON LIES DEAD. THE GATES ARE SEALED.',RW/2,72,8,'#e0d0c0','c',1);txt('FINAL SCORE',RW/2,100,11,'#ff9060','c',1);txt(score,RW/2,116,24,'#ffffff','c',1);txt('SKILL: '+DIFFS[diff].n,RW/2,150,9,'#ffd040','c',1);if(((t*2)|0)%2)txt(TOUCH?'TAP FOR MENU':'PRESS FIRE / ENTER FOR MENU',RW/2,176,9,'#fff','c',1)}
-function drawPause(){ctx.fillStyle='rgba(0,0,0,.6)';ctx.fillRect(0,0,RW,VH);txt('PAUSED',RW/2,28,18,'#ffd040','c',1);drawMenuItems(menuItems,62,20,11)}
+function htClearTop(){if(HT.on)HT.g.clearRect(0,0,HT.cv.width,Math.ceil(VH*HT.k))}
+function drawPause(){htClearTop();ctx.fillStyle='rgba(0,0,0,.6)';ctx.fillRect(0,0,RW,VH);txt('PAUSED',RW/2,28,18,'#ffd040','c',1);drawMenuItems(menuItems,62,20,11)}
 function drawTouch(){if(!TOUCH||mode!=='play')return;const g=ctx;g.save();g.globalAlpha=.4;const btn=(x,y,r,l,on)=>{g.fillStyle=on?'#ff8040':'#202028';g.beginPath();g.arc(x,y,r,0,TAU);g.fill();g.strokeStyle='#fff';g.lineWidth=1;g.stroke();g.globalAlpha=.85;txt(l,x,y-4,r>20?10:8,'#fff','c');g.globalAlpha=.4};
  for(const b of TBTN)btn(b.x,b.y,b.r,b.l,tAct&&tAct.has&&tAct.has(b.id));
  if(tMove){g.beginPath();g.fillStyle='#202028';g.arc(tMove.ox,tMove.oy,22,0,TAU);g.fill();g.stroke();g.fillStyle='#fff';g.beginPath();g.arc(clamp(tMove.x,tMove.ox-22,tMove.ox+22),clamp(tMove.y,tMove.oy-22,tMove.oy+22),9,0,TAU);g.fill()}g.restore()}
