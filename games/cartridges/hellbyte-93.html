@@ -807,6 +807,31 @@ function renderFrame(){gT=performance.now()/1000;
  render3D();ctx.putImageData(frameImg,0,0);
  if(mode!=='dead'&&!automap)drawWeapon();drawOverlays();if(automap)drawAutomap();drawHUD();drawTouch();
  if(mode==='dead')drawDead();if(mode==='pause')drawPause()}
+// ---------- external art pack (hb93/*.png) overrides the procedural fallback art
+const ART='hb93/';
+function ldImg(p){return new Promise(r=>{const i=new Image();i.onload=()=>r(i);i.onerror=()=>r(null);i.src=ART+p})}
+function imgPix(i,w,h){const c=document.createElement('canvas');c.width=w;c.height=h;const g=c.getContext('2d',{willReadFrequently:true});g.imageSmoothingEnabled=false;g.drawImage(i,0,0,w,h);return g.getImageData(0,0,w,h).data}
+const packC=(r,g,b,e)=>(((e?254:255)<<24)|(b<<16)|(g<<8)|r)>>>0;
+function artSpr(s,img,em){if(!img)return;const w=s.w,h=s.h,d=imgPix(img,w,h),o=new Uint32Array(w*h);for(let i=0;i<w*h;i++){if(d[i*4+3]<128)continue;const r=d[i*4],g=d[i*4+1],b=d[i*4+2];o[i]=packC(r,g,b,em&&em(r,g,b))}s.d=o}
+function artTex(img,w,h,col,em){const d=imgPix(img,w,h),o=new Uint32Array(w*h);for(let y=0;y<h;y++)for(let x=0;x<w;x++){const i=(y*w+x)*4,r=d[i],g=d[i+1],b=d[i+2];o[col?x*h+y:y*w+x]=packC(r,g,b,em&&em(r,g,b))}return o}
+async function loadArt(){
+ try{const jobs=[];
+ const WN={1:'brick',2:'tech_panel',3:'hellstone',4:'green_marble',5:'metal',6:'door',7:'door_red',8:'door_blue',9:'door_yellow',10:'exit_off',11:'switch',12:'computer',13:'skulls',14:'wood',15:'blue_stone',16:'pipes',17:'hazard',18:'exit_on',19:'red_brick',20:'blue_tech_panel'};
+ const wem={3:(r,g,b)=>r>205&&g>70&&b<70,12:(r,g,b)=>g>190&&r<200&&b<170,18:()=>true};
+ for(const k in WN)jobs.push(ldImg('textures/walls/'+String(k).padStart(2,'0')+'_'+WN[k]+'.png').then(i=>{if(i)WT[k]=artTex(i,64,64,true,wem[k])}));
+ const FN={0:'concrete',1:'grate',2:'flesh',5:'marble',6:'plank',7:'diamond_plate',8:'ash'};
+ for(const k in FN)jobs.push(ldImg('textures/floors/'+k+'_'+FN[k]+'.png').then(i=>{if(i)FT[k]=artTex(i,64,64,false)}));
+ for(let f=0;f<4;f++){jobs.push(ldImg('textures/floors/3_lava_'+f+'.png').then(i=>{if(i)FT[3][f]=artTex(i,64,64,false,()=>true)}));jobs.push(ldImg('textures/floors/4_slime_'+f+'.png').then(i=>{if(i)FT[4][f]=artTex(i,64,64,false)}))}
+ const CN={0:'tile',1:'light_panel',2:'hell',4:'metal'};
+ for(const k in CN)jobs.push(ldImg('textures/ceilings/'+k+'_'+CN[k]+'.png').then(i=>{if(i)CT[k]=artTex(i,64,64,false,k==1?(r,g,b)=>r+g+b>690:null)}));
+ jobs.push(ldImg('textures/sky_hell.png').then(i=>{if(i){const o=artTex(i,256,64,false);SKY.set(o)}}));
+ for(const m in SP.mon)for(const f in SP.mon[m])jobs.push(ldImg('sprites/monsters/'+m+'/'+f+'.png').then(i=>artSpr(SP.mon[m][f],i)));
+ for(const k in SP.fx)SP.fx[k].forEach((s,i)=>jobs.push(ldImg('sprites/effects/'+k+'_'+i+'.png').then(im=>artSpr(s,im,k==='blood'||k==='puff'?null:()=>true))));
+ for(const k in SP.item)jobs.push(ldImg('sprites/items/'+k+'.png').then(i=>artSpr(SP.item[k],i)));
+ const dem={torch:(r,g,b)=>r>200&&g>110&&b<170,cand:(r,g,b)=>r>200&&g>110&&b<170,lamp:(r,g,b)=>r>225&&g>225&&b>170};
+ for(const k in SP.dec){const v=SP.dec[k];if(Array.isArray(v))v.forEach((s,i)=>jobs.push(ldImg('sprites/decor/'+k+'_'+i+'.png').then(im=>artSpr(s,im,dem[k]))));else jobs.push(ldImg('sprites/decor/'+k+'.png').then(im=>artSpr(v,im,dem[k])))}
+ for(const k in WS)for(const f of['idle','fire','punch'])if(WS[k][f])jobs.push(ldImg('weapons/'+k+'_'+f+'.png').then(im=>{if(im){const[c,g]=mkc(160,120);g.drawImage(im,0,0);WS[k][f]=c}}));
+ await Promise.all(jobs);window.__artLoaded=true}catch(e){console.warn('art pack failed',e)}}
 // ---------- main: input, menus, loop
 const GID='hellbyte-93.html',DKEY='rwDifficulty:'+GID,DNAMES=['easy','normal','hard','nightmare'];
 try{const v=localStorage.getItem(DKEY);const i=DNAMES.indexOf(v);if(i>=0)diff=i;if(localStorage.getItem('retroWorldSFX')==='off')muted=true}catch(e){}
@@ -876,7 +901,7 @@ function frame(now){const dt=Math.min(.066,(now-last)/1000);last=now;pollPad();
  requestAnimationFrame(frame)}
 function fit(){const w=innerWidth,h=innerHeight,k=Math.min(w/RW,h/RH);cv.style.width=Math.floor(RW*k)+'px';cv.style.height=Math.floor(RH*k)+'px'}
 addEventListener('resize',fit);fit();
-buildTextures();buildSprites();buildTitleMenu();syncState();
+buildTextures();buildSprites();loadArt();buildTitleMenu();syncState();
 window.HB={addMon,renderFrame,render3D,drawHUD,get decorMask(){return decorMask},hasLOS,blockedAt,solidCell,startLevel,startNew,get P(){return P},get ents(){return ents},get mode(){return mode},set mode(v){mode=v;syncState()},get LV(){return LV},get fxs(){return fxs},get projs(){return projs},nextLevel,pause,useAction,tryFire,hurt,explode,get diff(){return diff},set diff(v){diff=v},set automap(v){automap=v},keys,dmgMon,bfs,get wall(){return wall},get doors(){return doors},get score(){return score},updateWorld};
 requestAnimationFrame(frame);
 const RETRO_LOCAL_STATS=(()=>{
