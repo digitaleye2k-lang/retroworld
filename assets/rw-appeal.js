@@ -6,7 +6,7 @@
   const titleOf=c=>c?($('h3',c)||{}).textContent.trim():'';
   const tagsOf=c=>c?(($('.tags',c)||{}).textContent||'').trim():'';
   const thumbOf=id=>id==='beat-up-mafia.html'?'games/beat-up-mafia/preview.jpg':'assets/thumbs/'+id.replace(/\.html$/,'')+'.jpg';
-  const NEW=['lonely-universe.html','jungle-gunship.html','raptor-run.html','air-hockey-arena.html','connect-four-clash.html','reversi-reborn.html','checkers-club.html','rock-blaster.html','pellet-chase.html','slice-frenzy.html','neon-survivors.html','grid-guardians.html','bubble-pop.html','sky-hop.html','neon-sudoku.html','beat-up-mafia.html','silent-wire.html','sandblade-1990.html','centre-court-tennis.html','snooker-club.html','strike-zone-bowling.html','hoops-showdown.html','penalty-keeper.html','turbo-table-tennis.html'];
+  const NEW=['apex-rally.html','lonely-universe.html','jungle-gunship.html','raptor-run.html','air-hockey-arena.html','connect-four-clash.html','reversi-reborn.html','checkers-club.html','rock-blaster.html','pellet-chase.html','slice-frenzy.html','neon-survivors.html','grid-guardians.html','bubble-pop.html','sky-hop.html','neon-sudoku.html','beat-up-mafia.html','silent-wire.html','sandblade-1990.html','centre-court-tennis.html','snooker-club.html','strike-zone-bowling.html','hoops-showdown.html','penalty-keeper.html','turbo-table-tennis.html'];
   const PICKS=['neon-pod-rush.html','hellbyte-93.html','captain-leap.html','pixel-chess.html','neon-pinball.html','metro-brawler.html','galactic-golf.html','castle-cannon.html','ring-king.html','sky-raid-92.html'];
   function rail(title,sub,ids,badge){
     const r=document.createElement('div');r.className='rw-rail';
