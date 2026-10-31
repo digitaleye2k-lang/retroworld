@@ -745,9 +745,9 @@ function drawHUD(){const y0=VH;ctx.drawImage(hudBg,0,y0);const c1='#ffc830',c2='
  for(let k=0;k<3;k++){const kx=316,ky=y0+7+k*9;ctx.fillStyle=P.keys[k]?['#e02020','#3060ff','#f0d020'][k]:'#2a2a30';ctx.fillRect(kx+3,ky,10,6);ctx.fillStyle='rgba(255,255,255,.3)';if(P.keys[k])ctx.fillRect(kx+3,ky,10,1)}
  const nm=['BULL','SHEL','RCKT','CELL'];for(let i=0;i<4;i++){const yy=y0+5+i*7;txt(nm[i],340,yy,7,'#a0a0aa');txt(P.ammo[i],384,yy,7,i===w.am?c1:'#d0d0d8','r');txt('/'+P.max[i],390,yy,7,'#707078')}}
 function drawWeapon(){const k=['fist','pistol','shotgun','chain','rocket','plasma','bfg'][P.w],W=WS[k];if(!W)return;let img=W.idle;const rate=WEAP[P.w].rate;
- if(P.fire>0){const el=rate-P.fire;if(P.w===0)img=W.punch;else if(P.w===3||P.w===5)img=((gT*20)|0)&1?W.fire:W.idle;else if(el<rate*.35||(P.w===6&&P.charge>0))img=W.fire}
+ if(P.fire>0){const el=rate-P.fire;if(P.w===0)img=W.idle;else if(P.w===3||P.w===5)img=((gT*20)|0)&1?W.fire:W.idle;else if(el<rate*.35||(P.w===6&&P.charge>0))img=W.fire}
  if(P.w===6&&P.charge>0)img=W.fire;
- const S=1.3,w=160*S,h=120*S;let ox=Math.sin(P.bobT*.5)*7*P.bob,oy=Math.abs(Math.cos(P.bobT*.5))*5*P.bob+P.recoil*10+P.wph*150;if(P.w===0&&P.fire>0){oy-=Math.sin((1-P.fire/rate)*Math.PI)*14}
+ let S=1.3,pk=0;if(P.w===0&&P.fire>0){pk=Math.sin(Math.min(1,(1-P.fire/rate))*Math.PI);pk=Math.pow(pk,.6);S=1.3*(1+.3*pk)}const w=160*S,h=120*S;let ox=Math.sin(P.bobT*.5)*7*P.bob,oy=Math.abs(Math.cos(P.bobT*.5))*5*P.bob+P.recoil*10+P.wph*150;if(pk>0){oy-=pk*34;ox*=.3}
  const L=lit[((P.y|0)*N+(P.x|0))]||.6;const br=Math.min(1,.5+L*.6+flashL*.6);
  wc.clearRect(0,0,160,120);wc.globalCompositeOperation='source-over';wc.drawImage(img,0,0);wc.globalCompositeOperation='source-atop';wc.fillStyle='rgba(0,0,0,'+(1-br).toFixed(2)+')';wc.fillRect(0,0,160,120);
  if(P.zerk&&P.w===0){wc.fillStyle='rgba(200,0,0,.25)';wc.fillRect(0,0,160,120)}
