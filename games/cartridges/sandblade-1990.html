@@ -73,7 +73,7 @@ const padRows=a=>{const w=Math.max(...a.map(r=>r.length));return a.map(r=>r.padE
 LEVELS.forEach(l=>l.rows=padRows(l.rows));
 let L,W,H,map,items,guards,gate,loose,debris,P,cam={x:0,y:0},timeLeft=600,lvl=0,kills=0,msg='',msgT=0,t=0,gameOverT=0,deadT=0,wantJump=false,touchOn=false,sparks=[],shake=0,doneT=0;
 const K={};const FL='FSLABCabcHMPxENGZYRTK';const KM={N:1,G:2,Z:3,Y:4,R:5,T:6,K:7},LST=[1,1,0,1,0,0,1,0,1,0,0,1],HPK=[2,2,3,3,5,2,3,3];
-const FLP=[[4,5,6,7],[],[],[],[4,5,6,7,8,9],[4,5,6],[4,5,6],[]];
+const _fa=(x=[])=>[...Array(16).keys()].filter(i=>!x.includes(i)),FLP=[_fa(),[],_fa([6,7]),_fa([5,6,9]),_fa(),[4,5,6],_fa(),_fa([6])];
 const GP=[{r:135,v:195,w:.5,s:.14,d:1},{r:135,v:230,w:.42,s:.14,d:1},{r:140,v:200,w:.5,s:.14,d:1},{r:135,v:195,w:.5,s:.14,d:1},{r:155,v:125,w:.85,s:.24,d:2},{r:135,v:195,w:.5,s:.14,d:1},{r:200,v:170,w:.5,s:.16,d:1},{r:135,v:235,w:.4,s:.14,d:1}];
 function mkG(kd,c,r,n){const hp=HPK[kd]+(n%2)+(lvl>=7?1:0);return{kind:kd,x:c*TW+TW/2,y:(r+1)*TH,face:-1,hp:hp,mx:hp,st:'idle',t:rnd(.3,1),stag:0,parry:0,atk:0,hit:0,alive:true,flash:0,dying:0}}
 function isFloor(c){return FL.includes(c)}
