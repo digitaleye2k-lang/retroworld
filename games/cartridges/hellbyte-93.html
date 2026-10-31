@@ -6,8 +6,9 @@ canvas{display:block;image-rendering:auto;cursor:crosshair;touch-action:none;out
 'use strict';
 var score=0,state='title';
 const RW=427,RH=240,STB=36,VH=RH-STB,HZ=VH>>1,TAU=Math.PI*2,N=64;
-const cv=document.getElementById('cv'),ctx=cv.getContext('2d',{alpha:false});cv.width=RW;cv.height=RH;ctx.imageSmoothingEnabled=false;
-const frameImg=ctx.createImageData(RW,VH),buf=new Uint32Array(frameImg.data.buffer);
+const cv=document.getElementById('cv'),ctx=cv.getContext('2d',{alpha:false});let RS=2,WR=RW*RS,VR=VH*RS;cv.width=RW*RS;cv.height=RH*RS;ctx.imageSmoothingEnabled=false;
+let frameImg=ctx.createImageData(WR,VR),buf=new Uint32Array(frameImg.data.buffer);
+function setRS(v){RS=v;WR=RW*RS;VR=VH*RS;cv.width=RW*RS;cv.height=RH*RS;frameImg=ctx.createImageData(WR,VR);buf=new Uint32Array(frameImg.data.buffer);zbuf=new Float32Array(WR);skyU=new Int32Array(WR);if(typeof fit==='function')fit()}
 const clamp=(v,a,b)=>v<a?a:v>b?b:v,hyp=Math.hypot,rnd=(a,b)=>a+Math.random()*(b-a),ri=(a,b)=>Math.floor(a+Math.random()*(b-a+1)),pick=a=>a[(Math.random()*a.length)|0];
 function mulberry(a){return function(){a|=0;a=a+0x6D2B79F5|0;let t=Math.imul(a^a>>>15,1|a);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296}}
 // ---------- audio
@@ -647,28 +648,28 @@ function updateWorld(dt,inp){gtime+=dt;
  flashL=Math.max(0,flashL-dt*2.5);shake=Math.max(0,shake-dt*2.2);dmgFlash=Math.max(0,dmgFlash-dt*1.6);pickFlash=Math.max(0,pickFlash-dt*2)}
 function endLevel(){const k=ents.filter(e=>e.k==='mon').length;const par=60+curLevel*30;lvStat.kills=P.kills;lvStat.time=P.time;lvStat.par=60*(2+curLevel);const kp=lvStat.total?P.kills/lvStat.total:1,ip=lvStat.items?P.items/lvStat.items:1;lvStat.kp=kp;lvStat.ip=ip;lvStat.bonus=Math.round(1000+kp*1500+ip*500+(P.secrets>=lvStat.secrets&&lvStat.secrets?1000:0)+Math.max(0,lvStat.par-P.time)*10);score+=lvStat.bonus;mode='inter';interT=0;syncState()}
 // ---------- renderer
-const FOVK=.5*RW/VH,zbuf=new Float32Array(RW),skyU=new Int32Array(RW),ftab=[],ctab=[];
+const FOVK=.5*RW/VH,ftab=[],ctab=[];let zbuf=new Float32Array(WR),skyU=new Int32Array(WR),HR=HZ*RS;
 let TR=1,TG=1,TB=1,flickV=1,camH=.5,hzv=HZ,gT=0,automap=false;
 function shade(col,f){if((col>>>24)===254)f=1.05;let r=(col&255)*f*TR,g=((col>>8)&255)*f*TG,b=((col>>16)&255)*f*TB;if(r>255)r=255;if(g>255)g=255;if(b>255)b=255;return 0xFF000000|((b|0)<<16)|((g|0)<<8)|(r|0)}
 const fogF=d=>{const v=1.28-d*.062;return v<.14?.14:v};
 function render3D(){const a=P.ang,dirX=Math.cos(a),dirY=Math.sin(a),plX=-dirY*FOVK,plY=dirX*FOVK;let px=P.x,py=P.y;
  const th=LV.th;TR=th.tint[0];TG=th.tint[1];TB=th.tint[2];flickV=.55+.45*Math.abs(Math.sin(gT*13)*Math.sin(gT*5.3+1));
  camH=mode==='dead'?Math.max(.1,.5-deathT*.9):.5;
- let bob=P.bob*Math.sin(P.bobT*1.0)*2.2,sk=shake>0?(Math.random()-.5)*shake*5:0;hzv=Math.round(HZ+bob+sk+(mode==='dead'?0:0));
+ let bob=P.bob*Math.sin(P.bobT*1.0)*2.2,sk=shake>0?(Math.random()-.5)*shake*5:0;hzv=Math.round(HZ+bob+sk);HR=Math.round((HZ+bob+sk)*RS);
  const fr=(gT*3|0)&3;ftab[0]=FT[0];ftab[1]=FT[1];ftab[2]=FT[2];ftab[3]=FT[3][fr];ftab[4]=FT[4][fr];ftab[5]=FT[5];ftab[6]=FT[6];ftab[7]=FT[7];ftab[8]=FT[8];
  ctab[0]=CT[0];ctab[1]=CT[1];ctab[2]=CT[2];ctab[3]=CT[0];ctab[4]=CT[4];
  const fl=flashL;
  // sky columns
- for(let x=0;x<RW;x++){const cx=2*x/RW-1,ra=Math.atan2(dirY+plY*cx,dirX+plX*cx);skyU[x]=((ra/TAU+1)*512)&255}
+ for(let x=0;x<WR;x++){const cx=2*x/WR-1,ra=Math.atan2(dirY+plY*cx,dirX+plX*cx);skyU[x]=((ra/TAU+1)*512)&255}
  // floor & ceiling
- for(let y=0;y<VH;y++){const isF=y>hzv,p=isF?y-hzv:hzv-y;if(p===0){for(let x=0;x<RW;x++)buf[y*RW+x]=0xFF000000;continue}
-  const rd=VH*(isF?camH:1-camH)/p,ff=fogF(rd),fa=fl*(1.15-rd*.1>0?1.15-rd*.1:0)*.8;let fx=px+rd*(dirX-plX),fy=py+rd*(dirY-plY);const sx=rd*2*plX/RW,sy=rd*2*plY/RW;let o=y*RW;
-  for(let x=0;x<RW;x++,fx+=sx,fy+=sy,o++){const cx=fx|0,cy=fy|0,c=(cx<0||cy<0||cx>=N||cy>=N)?0:cy*N+cx;let L=lit[c];if(flk[c])L*=flickV;const f=L*ff+fa*(L+.4);
+ for(let y=0;y<VR;y++){const isF=y>HR,p=isF?y-HR:HR-y;if(p===0){for(let x=0;x<WR;x++)buf[y*WR+x]=0xFF000000;continue}
+  const rd=VR*(isF?camH:1-camH)/p,ff=fogF(rd),fa=fl*(1.15-rd*.1>0?1.15-rd*.1:0)*.8;let fx=px+rd*(dirX-plX),fy=py+rd*(dirY-plY);const sx=rd*2*plX/WR,sy=rd*2*plY/WR;let o=y*WR;
+  for(let x=0;x<WR;x++,fx+=sx,fy+=sy,o++){const cx=fx|0,cy=fy|0,c=(cx<0||cy<0||cx>=N||cy>=N)?0:cy*N+cx;let L=lit[c];if(flk[c])L*=flickV;const f=L*ff+fa*(L+.4);
    if(isF){const t=ftab[flr[c]]||ftab[0];buf[o]=shade(t[((fy*64)&63)*64+((fx*64)&63)],f)}
-   else{const id=cei[c];if(id===9){const sv=(y*63/(hzv||1))|0;buf[o]=shade(SKY[(sv>63?63:sv)*256+skyU[x]],.9)}else{const t=ctab[id]||ctab[0];buf[o]=shade(t[((fy*64)&63)*64+((fx*64)&63)],f)}}}}
+   else{const id=cei[c];if(id===9){const sv=(y*63/(HR||1))|0;buf[o]=shade(SKY[(sv>63?63:sv)*256+skyU[x]],.9)}else{const t=ctab[id]||ctab[0];buf[o]=shade(t[((fy*64)&63)*64+((fx*64)&63)],f)}}}}
  // walls
  seen[(py|0)*N+(px|0)]=1;
- for(let x=0;x<RW;x++){const camx=2*x/RW-1,rdx=dirX+plX*camx,rdy=dirY+plY*camx;let mx=px|0,my=py|0;const ddx=Math.abs(1/(rdx||1e-9)),ddy=Math.abs(1/(rdy||1e-9));let sx,sy,sdx,sdy,side=0,perp=0,hit=0,tex=1,pd=null,prev=my*N+mx;
+ for(let x=0;x<WR;x++){const camx=2*x/WR-1,rdx=dirX+plX*camx,rdy=dirY+plY*camx;let mx=px|0,my=py|0;const ddx=Math.abs(1/(rdx||1e-9)),ddy=Math.abs(1/(rdy||1e-9));let sx,sy,sdx,sdy,side=0,perp=0,hit=0,tex=1,pd=null,prev=my*N+mx;
   if(rdx<0){sx=-1;sdx=(px-mx)*ddx}else{sx=1;sdx=(mx+1-px)*ddx}if(rdy<0){sy=-1;sdy=(py-my)*ddy}else{sy=1;sdy=(my+1-py)*ddy}
   for(let it=0;it<70;it++){if(sdx<sdy){perp=sdx;sdx+=ddx;mx+=sx;side=0}else{perp=sdy;sdy+=ddy;my+=sy;side=1}
    if(mx<0||my<0||mx>=N||my>=N){hit=1;tex=1;break}const c=my*N+mx;seen[c]=1;
@@ -676,16 +677,16 @@ function render3D(){const a=P.ang,dirX=Math.cos(a),dirY=Math.sin(a),plX=-dirY*FO
    const di=dIdx[c];if(di){const d=doors[di-1];if(d.open<=.001){hit=1;tex=d.tex;break}if(d.open<1&&!pd){pd={d,dist:perp,side,mx,my,sx,sy}}}
    prev=c}
   if(!hit){zbuf[x]=99;continue}
-  const dist=perp<.05?.05:perp,wh=VH/dist,top=hzv-wh*(1-camH),bot=hzv+wh*camH;
+  const dist=perp<.05?.05:perp,wh=VR/dist,top=HR-wh*(1-camH),bot=HR+wh*camH;
   const wallX0=side===0?py+dist*rdy:px+dist*rdx,wx=wallX0-Math.floor(wallX0);let tx=(wx*64)|0;if((side===0&&rdx>0)||(side===1&&rdy<0))tx=63-tx;
   const t=WT[tex]||WT[1],L0=lit[prev]*(flk[prev]?flickV:1);let f=(L0*fogF(dist)+fl*Math.max(0,1.15-dist*.1)*.8*(L0+.4))*(side?.8:1);
-  let ds=Math.ceil(top),de=Math.floor(bot);if(ds<0)ds=0;if(de>=VH)de=VH-1;const stp=64/wh;let tp=(ds-top)*stp;const to=tx<<6;
-  for(let y=ds;y<=de;y++,tp+=stp)buf[y*RW+x]=shade(t[to+((tp|0)&63)],f);
+  let ds=Math.ceil(top),de=Math.floor(bot);if(ds<0)ds=0;if(de>=VR)de=VR-1;const stp=64/wh;let tp=(ds-top)*stp;const to=tx<<6;
+  for(let y=ds;y<=de;y++,tp+=stp)buf[y*WR+x]=shade(t[to+((tp|0)&63)],f);
   zbuf[x]=dist;
-  if(pd){const d=pd.d,pdist=pd.dist<.05?.05:pd.dist,pwh=VH/pdist,ptop=hzv-pwh*(1-camH),pbot=hzv+pwh*camH-d.open*pwh;const wxx0=pd.side===0?py+pdist*rdy:px+pdist*rdx,wxx=wxx0-Math.floor(wxx0);let ptx=(wxx*64)|0;if((pd.side===0&&rdx>0)||(pd.side===1&&rdy<0))ptx=63-ptx;
+  if(pd){const d=pd.d,pdist=pd.dist<.05?.05:pd.dist,pwh=VR/pdist,ptop=HR-pwh*(1-camH),pbot=HR+pwh*camH-d.open*pwh;const wxx0=pd.side===0?py+pdist*rdy:px+pdist*rdx,wxx=wxx0-Math.floor(wxx0);let ptx=(wxx*64)|0;if((pd.side===0&&rdx>0)||(pd.side===1&&rdy<0))ptx=63-ptx;
    const pt=WT[d.tex]||WT[6],pc=(pd.my*N+pd.mx),pprev=pd.side===0?pd.my*N+(pd.mx-pd.sx):(pd.my-pd.sy)*N+pd.mx;const pl=lit[pprev]||lit[pc]||.5;const pf=(pl*fogF(pdist)+fl*Math.max(0,1.15-pdist*.1)*.8*(pl+.4))*(pd.side?.8:1);
-   let ps=Math.ceil(ptop),pe=Math.floor(pbot);if(ps<0)ps=0;if(pe>=VH)pe=VH-1;const pst=64/pwh;const po=ptx<<6;
-   for(let y=ps;y<=pe;y++){const v=(y-(ptop-d.open*pwh))*pst;buf[y*RW+x]=shade(pt[po+(((v|0)<0?0:(v|0))&63)],pf)}
+   let ps=Math.ceil(ptop),pe=Math.floor(pbot);if(ps<0)ps=0;if(pe>=VR)pe=VR-1;const pst=64/pwh;const po=ptx<<6;
+   for(let y=ps;y<=pe;y++){const v=(y-(ptop-d.open*pwh))*pst;buf[y*WR+x]=shade(pt[po+(((v|0)<0?0:(v|0))&63)],pf)}
    if(d.open<.6)zbuf[x]=Math.min(zbuf[x],pdist)}}
  // sprites
  const list=[],invDet=1/(plX*dirY-dirX*plY);
@@ -702,9 +703,9 @@ function render3D(){const a=P.ang,dirX=Math.cos(a),dirY=Math.sin(a),plX=-dirY*FO
  for(const p of projs){const arr=SP.fx[p.sk];if(!arr)continue;const s=arr[((gT-p.t0)*10|0)%arr.length];add(s,p.x,p.y,p.kind==='rocket'?.25:.3,p.kind==='bfg'?.9:p.kind==='rocket'?.35:.4,null)}
  for(const f of fxs){const k=(gT-f.t0)/f.dur,s=f.arr[Math.min(f.arr.length-1,(k*f.arr.length)|0)];if(!s)continue;add(s,f.x,f.y,f.z,f.sc,null)}
  list.sort((A,B)=>B.tY-A.tY);
- for(const q of list){const s=q.s,scr=(RW/2)*(1+q.tX/q.tY),h=q.ws*VH/q.tY,w=h,bot=hzv+VH*(camH-q.z)/q.tY,top=bot-h,x0=Math.round(scr-w/2),x1=Math.round(scr+w/2);if(x1<0||x0>=RW||h<1)continue;
-  const L=lit[((q.y|0)*N+(q.x|0))]||.5,f=L*fogF(q.tY)+fl*Math.max(0,1.1-q.tY*.1)*.7;const ys=Math.max(0,Math.ceil(top)),ye=Math.min(VH-1,Math.floor(bot)),su=s.w/(x1-x0),sv=s.h/(bot-top),sd=s.d,sw=s.w;
-  for(let x=Math.max(0,x0);x<Math.min(RW,x1);x++){if(q.tY>=zbuf[x])continue;const u=((x-x0)*su)|0;for(let y=ys;y<=ye;y++){const v=((y-top)*sv)|0;const col=sd[v*sw+u];if(col)buf[y*RW+x]=shade(col,f)}}}}
+ for(const q of list){const s=q.s,scr=(WR/2)*(1+q.tX/q.tY),h=q.ws*VR/q.tY,w=h,bot=HR+VR*(camH-q.z)/q.tY,top=bot-h,x0=Math.round(scr-w/2),x1=Math.round(scr+w/2);if(x1<0||x0>=WR||h<1)continue;
+  const L=lit[((q.y|0)*N+(q.x|0))]||.5,f=L*fogF(q.tY)+fl*Math.max(0,1.1-q.tY*.1)*.7;const ys=Math.max(0,Math.ceil(top)),ye=Math.min(VR-1,Math.floor(bot)),su=s.w/(x1-x0),sv=s.h/(bot-top),sd=s.d,sw=s.w;
+  for(let x=Math.max(0,x0);x<Math.min(WR,x1);x++){if(q.tY>=zbuf[x])continue;const u=((x-x0)*su)|0;for(let y=ys;y<=ye;y++){const v=((y-top)*sv)|0;const col=sd[v*sw+u];if(col)buf[y*WR+x]=shade(col,f)}}}}
 // ---------- text helper (pixel-perfect, cached)
 const TC=new Map();
 const HT={on:false,k:1,g:null,cv:null};
@@ -750,7 +751,7 @@ function drawWeapon(){const k=['fist','pistol','shotgun','chain','rocket','plasm
  const L=lit[((P.y|0)*N+(P.x|0))]||.6;const br=Math.min(1,.5+L*.6+flashL*.6);
  wc.clearRect(0,0,160,120);wc.globalCompositeOperation='source-over';wc.drawImage(img,0,0);wc.globalCompositeOperation='source-atop';wc.fillStyle='rgba(0,0,0,'+(1-br).toFixed(2)+')';wc.fillRect(0,0,160,120);
  if(P.zerk&&P.w===0){wc.fillStyle='rgba(200,0,0,.25)';wc.fillRect(0,0,160,120)}
- ctx.save();ctx.beginPath();ctx.rect(0,0,RW,VH);ctx.clip();ctx.drawImage(wcv,Math.round((RW-w)/2+ox),Math.round(VH-h+oy+(120-wBot(img))*S+3),w,h);ctx.restore()}
+ ctx.save();ctx.beginPath();ctx.rect(0,0,RW,VH);ctx.clip();ctx.imageSmoothingEnabled=true;ctx.drawImage(wcv,Math.round((RW-w)/2+ox),Math.round(VH-h+oy+(120-wBot(img))*S+3),w,h);ctx.restore()}
 function wBot(im){if(im.__b!==undefined)return im.__b;let b=120;try{const c=document.createElement('canvas');c.width=160;c.height=120;const x=c.getContext('2d');x.drawImage(im,0,0);const d=x.getImageData(0,0,160,120).data;b=0;for(let y=119;y>=0&&!b;y--)for(let xx=0;xx<160;xx++)if(d[(y*160+xx)*4+3]>40){b=y+1;break}}catch(e){b=120}im.__b=b||120;return im.__b}
 const wcv=document.createElement('canvas');wcv.width=160;wcv.height=120;const wc=wcv.getContext('2d');
 function drawOverlays(){const g=ctx;if(dmgFlash>0){g.fillStyle='rgba(200,0,0,'+(Math.min(.6,dmgFlash*.6)).toFixed(2)+')';g.fillRect(0,0,RW,VH)}
@@ -778,7 +779,8 @@ function drawAutomap(){const g=ctx,S=5,cxp=RW/2,cyp=VH/2;g.fillStyle='rgba(0,0,0
 const FW=107,FH=60,fireA=new Uint8Array(FW*FH),fcv=document.createElement('canvas');fcv.width=FW;fcv.height=FH;const fctx=fcv.getContext('2d'),fimg=fctx.createImageData(FW,FH),f32=new Uint32Array(fimg.data.buffer),FPAL=[];
 for(let i=0;i<37;i++){const t=i/36;const r=Math.min(255,t*3*255),gg=Math.max(0,Math.min(255,(t-.3)*2.4*255)),b=Math.max(0,Math.min(255,(t-.93)*7*255));FPAL.push((Math.min(255,i*10)<<24)|(b<<16)|(gg<<8)|r)}
 function stepFire(){for(let x=0;x<FW;x++)fireA[(FH-1)*FW+x]=36;for(let y=1;y<FH;y++)for(let x=0;x<FW;x++){const s=y*FW+x,v=fireA[s];if(!v)fireA[s-FW]=0;else{const r=(Math.random()*3.2)|0,d=s-r+1;{const nv=v-1-(r&1);fireA[d-FW]=nv>0?nv:0}}}for(let i=0;i<FW*FH;i++)f32[i]=FPAL[fireA[i]]>>>0;fctx.putImageData(fimg,0,0)}
-function drawSkyBg(t,dim){for(let y=0;y<VH;y++){const sv=Math.min(63,(y*64/VH)|0);for(let x=0;x<RW;x++){const u=((x*.6+t*8)|0)&255;buf[y*RW+x]=shade(SKY[sv*256+u],dim)}}ctx.putImageData(frameImg,0,0)}
+const sbC=document.createElement('canvas');sbC.width=RW;sbC.height=VH;const sbG=sbC.getContext('2d'),sbI=sbG.createImageData(RW,VH),sbB=new Uint32Array(sbI.data.buffer);
+function drawSkyBg(t,dim){for(let y=0;y<VH;y++){const sv=Math.min(63,(y*64/VH)|0);for(let x=0;x<RW;x++){const u=((x*.6+t*8)|0)&255;sbB[y*RW+x]=shade(SKY[sv*256+u],dim)}}sbG.putImageData(sbI,0,0);ctx.drawImage(sbC,0,0)}
 let menuSel=0,menuItems=[],menuRect=[];
 function drawMenuItems(items,y0,dy,sz){menuRect=[];items.forEach((it,i)=>{const y=y0+i*dy,sel=i===menuSel,lab=typeof it.label==='function'?it.label():it.label;if(sel){ctx.fillStyle='rgba(180,20,10,.45)';ctx.fillRect(RW/2-90,y-3,180,dy-1);txt('>',RW/2-86,y,sz,'#ffd040',null,1);txt('<',RW/2+78,y,sz,'#ffd040',null,1)}txt(lab,RW/2,y,sz,sel?'#ffe070':'#c0b0a0','c',1);menuRect.push([RW/2-90,y-3,180,dy])})}
 function drawTitle(){const t=performance.now()/1000;drawSkyBg(t,.75);stepFire();ctx.drawImage(fcv,0,0,RW,RH);
@@ -806,11 +808,12 @@ function drawTouch(){if(!TOUCH||mode!=='play')return;const g=ctx;g.save();g.glob
  for(const b of TBTN)btn(b.x,b.y,b.r,b.l,tAct&&tAct.has&&tAct.has(b.id));
  if(tMove){g.beginPath();g.fillStyle='#202028';g.arc(tMove.ox,tMove.oy,22,0,TAU);g.fill();g.stroke();g.fillStyle='#fff';g.beginPath();g.arc(clamp(tMove.x,tMove.ox-22,tMove.ox+22),clamp(tMove.y,tMove.oy-22,tMove.oy+22),9,0,TAU);g.fill()}g.restore()}
 const TBTN=[{id:'fire',x:RW-40,y:VH-34,r:25,l:'FIRE'},{id:'use',x:RW-92,y:VH-24,r:17,l:'USE'},{id:'wpn',x:RW-30,y:VH-86,r:15,l:'WPN'},{id:'map',x:RW-78,y:VH-62,r:12,l:'MAP'},{id:'pause',x:RW-12,y:12,r:9,l:'II'}];
-function renderFrame(){gT=performance.now()/1000;if(HT.on)HT.g.clearRect(0,0,HT.cv.width,HT.cv.height);
+let _pe=0,_pn=0;function perfAuto(ms){if(RS<=1)return;_pe=_pe*.95+ms*.05;if(++_pn>90&&_pe>26){_pn=0;_pe=0;setRS(1)}}
+function renderFrame(){gT=performance.now()/1000;ctx.setTransform(RS,0,0,RS,0,0);ctx.imageSmoothingEnabled=false;if(HT.on)HT.g.clearRect(0,0,HT.cv.width,HT.cv.height);
  if(mode==='title'||mode==='diff'||mode==='controls'){if(mode==='controls')drawControls();else drawTitle();return}
  if(mode==='inter'){drawInter();return}
  if(mode==='win'){drawWin();return}
- render3D();ctx.putImageData(frameImg,0,0);
+ const _t0=performance.now();render3D();ctx.putImageData(frameImg,0,0);perfAuto(performance.now()-_t0);
  if(mode!=='dead'&&!automap)drawWeapon();drawOverlays();if(automap)drawAutomap();drawHUD();drawTouch();
  if(mode==='dead')drawDead();if(mode==='pause')drawPause()}
 // ---------- external art pack (hb93/*.png) overrides the procedural fallback art
