@@ -2179,7 +2179,7 @@ html[data-vault="rainbow"] .hero h1,html[data-vault="rainbow"] .section-title{an
 <div class="premium-requirement" id="galacticGateCardStatus">🔒 PREMIUM REWARD — <b>900 CHALLENGE TOKENS + 7 TROPHIES</b></div>
 <button class="play premium-locked-btn" data-game="galactic-golf.html" id="galacticPlayBtn">🔒 VIEW UNLOCK REQUIREMENTS</button></article><article class="card premium-card premium-locked" data-categories="shooter survival arcade premium touch mobile tv" data-premium-game="hellbyte-93.html"><div class="icon">☠</div><h3>HELLBYTE '93</h3>
 <div class="tags">PREMIUM • DOS FPS • SHOOTER</div><div class="compat-tags" aria-label="Device compatibility"><span class="compat-badge compat-touch">TOUCH</span><span class="compat-badge compat-mobile">MOBILE</span><span class="compat-badge compat-tv">TV</span></div>
-<p>Enter a five-sector ray-cast demon campaign with escalating enemies, keys, pickups and a final Core Overseer boss.</p>
+<p>Fight through eight ray-cast levels of tech base to hell: seven weapons, keycard doors, secrets, six demon types, explosive barrels and a Cyberdemon finale.</p>
 <div class="premium-requirement" id="hellbyteGateCardStatus">🔒 PREMIUM REWARD — <b>1,500 CHALLENGE TOKENS + 10 TROPHIES</b></div>
 <button class="play premium-locked-btn" data-game="hellbyte-93.html" id="hellbytePlayBtn">🔒 VIEW UNLOCK REQUIREMENTS</button></article><article class="card" data-categories="driving arcade space touch mobile tv"><div class="icon">⚡</div><h3>NEON POD RUSH</h3>
 <div class="tags">TOP-DOWN RACING • GARAGE • 10 TRACKS</div><div class="compat-tags" aria-label="Device compatibility"><span class="compat-badge compat-touch">TOUCH</span><span class="compat-badge compat-mobile">MOBILE</span><span class="compat-badge compat-tv">TV</span></div>
@@ -3442,7 +3442,7 @@ const TROPHY_DEFS=[
   {id:'word_win',icon:'🔤',name:'WORD MASTER',desc:'Complete Word Tiles Mini.',test:(a,p)=>hasWon(p,'word-tiles-mini.html')},
   {id:'spider_win',icon:'🕷️',name:'WEB MASTER',desc:'Complete Spider Stack.',test:(a,p)=>hasWon(p,'spider-stack.html')},
   {id:'galactic_win',icon:'🪐',name:'GALACTIC GOLFER',desc:'Complete all five Galactic Golf worlds.',test:(a,p)=>hasWon(p,'galactic-golf.html')},
-  {id:'hellbyte_win',icon:'☠️',name:'CORE PURGER',desc:'Complete all 3 sectors of Hellbyte 93.',test:(a,p)=>hasWon(p,'hellbyte-93.html')},
+  {id:'hellbyte_win',icon:'☠️',name:'CORE PURGER',desc:'Complete all 8 levels of Hellbyte 93.',test:(a,p)=>hasWon(p,'hellbyte-93.html')},
 
   {id:'challenge_one',icon:'🎲',name:'CHALLENGE ACCEPTED',desc:'Complete your first daily challenge.',test:a=>a.challenges>=1},
   {id:'challenge_ten',icon:'🎟️',name:'TOKEN COLLECTOR',desc:'Complete 10 daily challenges.',test:a=>a.challenges>=10},
@@ -3652,7 +3652,7 @@ const SCORE_CHALLENGE_POOL=[
   {gameId:'road-blaster-99.html',target:150,label:'Score 150 in Road Blaster 99'},
   {gameId:'block-drop.html',target:300,label:'Score 300 in Block Drop'},
   {gameId:'galactic-golf.html',target:500,label:'Earn 500 points in Galactic Golf'},
-  {gameId:'hellbyte-93.html',target:1800,label:'Score 1,800 in Hellbyte 93'},
+  {gameId:'hellbyte-93.html',target:6000,label:'Score 6,000 in Hellbyte 93'},
   {gameId:'neon-pod-rush.html',target:1200,label:'Score 1,200 in Neon Pod Rush'}
 ];
 const WIN_CHALLENGE_GAMES=[
