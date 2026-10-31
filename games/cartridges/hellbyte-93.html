@@ -1,7 +1,7 @@
 <!doctype html><html lang="en"><head><script src="rw-boost.js"></script><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no"><title>HELLBYTE &#x27;93 • RETRO WORLD</title><style>
 html,body{height:100%;margin:0;background:#020208;overflow:hidden;touch-action:none;-webkit-user-select:none;user-select:none;-webkit-tap-highlight-color:transparent}
 body{display:flex;align-items:center;justify-content:center;font-family:"Courier New",monospace}
-canvas{display:block;image-rendering:pixelated;image-rendering:crisp-edges;cursor:crosshair;touch-action:none;outline:none}
+canvas{display:block;image-rendering:auto;cursor:crosshair;touch-action:none;outline:none}
 </style><script>addEventListener('keydown',function(e){if((e.keyCode||e.which)===461&&window.parent!==window){e.preventDefault();window.parent.postMessage({type:'retroworld-tv-back'},'*');}},true);</script></head><body><canvas id="cv" tabindex="0"></canvas><script>
 'use strict';
 var score=0,state='title';
@@ -746,7 +746,8 @@ function drawWeapon(){const k=['fist','pistol','shotgun','chain','rocket','plasm
  const L=lit[((P.y|0)*N+(P.x|0))]||.6;const br=Math.min(1,.5+L*.6+flashL*.6);
  wc.clearRect(0,0,160,120);wc.globalCompositeOperation='source-over';wc.drawImage(img,0,0);wc.globalCompositeOperation='source-atop';wc.fillStyle='rgba(0,0,0,'+(1-br).toFixed(2)+')';wc.fillRect(0,0,160,120);
  if(P.zerk&&P.w===0){wc.fillStyle='rgba(200,0,0,.25)';wc.fillRect(0,0,160,120)}
- ctx.save();ctx.beginPath();ctx.rect(0,0,RW,VH);ctx.clip();ctx.drawImage(wcv,Math.round((RW-w)/2+ox),Math.round(VH-h+oy+2),w,h);ctx.restore()}
+ ctx.save();ctx.beginPath();ctx.rect(0,0,RW,VH);ctx.clip();ctx.drawImage(wcv,Math.round((RW-w)/2+ox),Math.round(VH-h+oy+(120-wBot(img))*S),w,h);ctx.restore()}
+function wBot(im){if(im.__b!==undefined)return im.__b;let b=120;try{const c=document.createElement('canvas');c.width=160;c.height=120;const x=c.getContext('2d');x.drawImage(im,0,0);const d=x.getImageData(0,0,160,120).data;b=0;for(let y=119;y>=0&&!b;y--)for(let xx=0;xx<160;xx++)if(d[(y*160+xx)*4+3]>40){b=y+1;break}}catch(e){b=120}im.__b=b||120;return im.__b}
 const wcv=document.createElement('canvas');wcv.width=160;wcv.height=120;const wc=wcv.getContext('2d');
 function drawOverlays(){const g=ctx;if(dmgFlash>0){g.fillStyle='rgba(200,0,0,'+(Math.min(.6,dmgFlash*.6)).toFixed(2)+')';g.fillRect(0,0,RW,VH)}
  if(pickFlash>0){g.fillStyle='rgba(255,220,80,'+(pickFlash*.25).toFixed(2)+')';g.fillRect(0,0,RW,VH)}
