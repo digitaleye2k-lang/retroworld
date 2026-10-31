@@ -2,7 +2,7 @@
 html,body{height:100%;margin:0;background:#020208;overflow:hidden;touch-action:none;-webkit-user-select:none;user-select:none;-webkit-tap-highlight-color:transparent}
 body{display:flex;align-items:center;justify-content:center;font-family:"Courier New",monospace}
 canvas{display:block;image-rendering:auto;cursor:crosshair;touch-action:none;outline:none}
-</style><script>addEventListener('keydown',function(e){if((e.keyCode||e.which)===461&&window.parent!==window){e.preventDefault();window.parent.postMessage({type:'retroworld-tv-back'},'*');}},true);</script></head><body><canvas id="cv" tabindex="0"></canvas><script>
+#tcv{position:fixed;left:0;top:0;pointer-events:none;z-index:5;image-rendering:auto}</style><script>addEventListener('keydown',function(e){if((e.keyCode||e.which)===461&&window.parent!==window){e.preventDefault();window.parent.postMessage({type:'retroworld-tv-back'},'*');}},true);</script></head><body><canvas id="cv" tabindex="0"></canvas><canvas id="tcv"></canvas><script>
 'use strict';
 var score=0,state='title';
 const RW=427,RH=240,STB=36,VH=RH-STB,HZ=VH>>1,TAU=Math.PI*2,N=64;
@@ -707,8 +707,12 @@ function render3D(){const a=P.ang,dirX=Math.cos(a),dirY=Math.sin(a),plX=-dirY*FO
   for(let x=Math.max(0,x0);x<Math.min(RW,x1);x++){if(q.tY>=zbuf[x])continue;const u=((x-x0)*su)|0;for(let y=ys;y<=ye;y++){const v=((y-top)*sv)|0;const col=sd[v*sw+u];if(col)buf[y*RW+x]=shade(col,f)}}}}
 // ---------- text helper (pixel-perfect, cached)
 const TC=new Map();
+const HT={on:false,k:1,g:null,cv:null};
+function htInit(){const t=document.getElementById('tcv');if(!t)return;HT.cv=t;HT.g=t.getContext('2d');HT.on=true;htFit()}
+function htFit(){if(!HT.cv)return;const r=cv.getBoundingClientRect(),d=Math.min(2,window.devicePixelRatio||1);const w=Math.max(1,Math.round(r.width*d)),h=Math.max(1,Math.round(r.height*d));if(HT.cv.width!==w||HT.cv.height!==h){HT.cv.width=w;HT.cv.height=h}HT.k=w/RW;const s=HT.cv.style;s.left=r.left+'px';s.top=r.top+'px';s.width=r.width+'px';s.height=r.height+'px'}
 function txt(s,x,y,sz,col,al,sh){s=String(s);const key=sz+'|'+col+'|'+s;let c=TC.get(key);if(!c){const m=document.createElement('canvas'),g=m.getContext('2d');const fnt='bold '+sz+'px "Courier New",Consolas,monospace';g.font=fnt;const w=Math.ceil(g.measureText(s).width)+3,h=Math.ceil(sz*1.3)+3;m.width=w;m.height=h;g.font=fnt;g.fillStyle=col;g.textBaseline='top';g.fillText(s,1,1);const id=g.getImageData(0,0,w,h),d=id.data;for(let i=3;i<d.length;i+=4)d[i]=d[i]>100?255:0;g.putImageData(id,0,0);c=m;if(TC.size>700)TC.clear();TC.set(key,c)}
- const xx=Math.round(al==='c'?x-c.width/2:al==='r'?x-c.width:x),yy=Math.round(y);if(sh){const k2=sz+'|#000|'+s;let c2=TC.get(k2);if(!c2){const m=document.createElement('canvas'),g=m.getContext('2d');m.width=c.width;m.height=c.height;g.drawImage(c,0,0);g.globalCompositeOperation='source-in';g.fillStyle='#000';g.fillRect(0,0,m.width,m.height);c2=m;TC.set(k2,c2)}ctx.drawImage(c2,xx+1,yy+1)}ctx.drawImage(c,xx,yy);return c.width}
+ const xx=Math.round(al==='c'?x-c.width/2:al==='r'?x-c.width:x),yy=Math.round(y);if(HT.on){const K=HT.k,g=HT.g;g.font='bold '+(sz*K)+'px "Courier New",Consolas,monospace';g.textBaseline='top';if(sh){g.fillStyle='#000';g.fillText(s,(xx+2)*K,(yy+2)*K)}g.fillStyle=col;g.fillText(s,(xx+1)*K,(yy+1)*K);return c.width}
+ if(sh){const k2=sz+'|#000|'+s;let c2=TC.get(k2);if(!c2){const m=document.createElement('canvas'),g=m.getContext('2d');m.width=c.width;m.height=c.height;g.drawImage(c,0,0);g.globalCompositeOperation='source-in';g.fillStyle='#000';g.fillRect(0,0,m.width,m.height);c2=m;TC.set(k2,c2)}ctx.drawImage(c2,xx+1,yy+1)}ctx.drawImage(c,xx,yy);return c.width}
 // ---------- HUD
 const hudBg=(()=>{const c=document.createElement('canvas');c.width=RW;c.height=STB;const g=c.getContext('2d');const gr=g.createLinearGradient(0,0,0,STB);gr.addColorStop(0,'#4a4a52');gr.addColorStop(.08,'#34343a');gr.addColorStop(1,'#18181c');g.fillStyle=gr;g.fillRect(0,0,RW,STB);g.fillStyle='#7a7a86';g.fillRect(0,0,RW,1);g.fillStyle='#0a0a0c';g.fillRect(0,1,RW,1);
  for(let i=0;i<RW;i+=3){g.fillStyle='rgba(255,255,255,.025)';g.fillRect(i,2,1,STB)}
@@ -746,7 +750,7 @@ function drawWeapon(){const k=['fist','pistol','shotgun','chain','rocket','plasm
  const L=lit[((P.y|0)*N+(P.x|0))]||.6;const br=Math.min(1,.5+L*.6+flashL*.6);
  wc.clearRect(0,0,160,120);wc.globalCompositeOperation='source-over';wc.drawImage(img,0,0);wc.globalCompositeOperation='source-atop';wc.fillStyle='rgba(0,0,0,'+(1-br).toFixed(2)+')';wc.fillRect(0,0,160,120);
  if(P.zerk&&P.w===0){wc.fillStyle='rgba(200,0,0,.25)';wc.fillRect(0,0,160,120)}
- ctx.save();ctx.beginPath();ctx.rect(0,0,RW,VH);ctx.clip();ctx.drawImage(wcv,Math.round((RW-w)/2+ox),Math.round(VH-h+oy+(120-wBot(img))*S),w,h);ctx.restore()}
+ ctx.save();ctx.beginPath();ctx.rect(0,0,RW,VH);ctx.clip();ctx.drawImage(wcv,Math.round((RW-w)/2+ox),Math.round(VH-h+oy+(120-wBot(img))*S+3),w,h);ctx.restore()}
 function wBot(im){if(im.__b!==undefined)return im.__b;let b=120;try{const c=document.createElement('canvas');c.width=160;c.height=120;const x=c.getContext('2d');x.drawImage(im,0,0);const d=x.getImageData(0,0,160,120).data;b=0;for(let y=119;y>=0&&!b;y--)for(let xx=0;xx<160;xx++)if(d[(y*160+xx)*4+3]>40){b=y+1;break}}catch(e){b=120}im.__b=b||120;return im.__b}
 const wcv=document.createElement('canvas');wcv.width=160;wcv.height=120;const wc=wcv.getContext('2d');
 function drawOverlays(){const g=ctx;if(dmgFlash>0){g.fillStyle='rgba(200,0,0,'+(Math.min(.6,dmgFlash*.6)).toFixed(2)+')';g.fillRect(0,0,RW,VH)}
@@ -801,7 +805,7 @@ function drawTouch(){if(!TOUCH||mode!=='play')return;const g=ctx;g.save();g.glob
  for(const b of TBTN)btn(b.x,b.y,b.r,b.l,tAct&&tAct.has&&tAct.has(b.id));
  if(tMove){g.beginPath();g.fillStyle='#202028';g.arc(tMove.ox,tMove.oy,22,0,TAU);g.fill();g.stroke();g.fillStyle='#fff';g.beginPath();g.arc(clamp(tMove.x,tMove.ox-22,tMove.ox+22),clamp(tMove.y,tMove.oy-22,tMove.oy+22),9,0,TAU);g.fill()}g.restore()}
 const TBTN=[{id:'fire',x:RW-40,y:VH-34,r:25,l:'FIRE'},{id:'use',x:RW-92,y:VH-24,r:17,l:'USE'},{id:'wpn',x:RW-30,y:VH-86,r:15,l:'WPN'},{id:'map',x:RW-78,y:VH-62,r:12,l:'MAP'},{id:'pause',x:RW-12,y:12,r:9,l:'II'}];
-function renderFrame(){gT=performance.now()/1000;
+function renderFrame(){gT=performance.now()/1000;if(HT.on)HT.g.clearRect(0,0,HT.cv.width,HT.cv.height);
  if(mode==='title'||mode==='diff'||mode==='controls'){if(mode==='controls')drawControls();else drawTitle();return}
  if(mode==='inter'){drawInter();return}
  if(mode==='win'){drawWin();return}
@@ -901,7 +905,8 @@ function frame(now){const dt=Math.min(.066,(now-last)/1000);last=now;pollPad();
   music();renderFrame()}catch(err){console.error(err);window.__err=(window.__err||'')+String(err.stack||err)+'\n'}
  requestAnimationFrame(frame)}
 function fit(){const w=innerWidth,h=innerHeight,k=Math.min(w/RW,h/RH);cv.style.width=Math.floor(RW*k)+'px';cv.style.height=Math.floor(RH*k)+'px'}
-addEventListener('resize',fit);fit();
+function fit2(){fit();htFit()}
+addEventListener('resize',fit2);fit();htInit();setTimeout(htFit,200);
 buildTextures();buildSprites();loadArt();buildTitleMenu();syncState();
 window.HB={addMon,renderFrame,render3D,drawHUD,get decorMask(){return decorMask},hasLOS,blockedAt,solidCell,startLevel,startNew,get P(){return P},get ents(){return ents},get mode(){return mode},set mode(v){mode=v;syncState()},get LV(){return LV},get fxs(){return fxs},get projs(){return projs},nextLevel,pause,useAction,tryFire,hurt,explode,get diff(){return diff},set diff(v){diff=v},set automap(v){automap=v},keys,dmgMon,bfs,get wall(){return wall},get doors(){return doors},get score(){return score},updateWorld};
 requestAnimationFrame(frame);
