@@ -721,4 +721,12 @@ window.__apex={wxSet,get wx(){return wx},stepCar,ai:aiInput,cornerV,step(dt,n){f
 sync();
 setTimeout(()=>loadTrack(sel.track,()=>{requestAnimationFrame(t=>{last=t;frame(t)})}),30);
 })();
+
+/* RETRO WORLD profile bridge */
+(()=>{const GID="apex-rally.html",GT="APEX RALLY";let act=false,fin=false;
+const send=(t,x)=>{try{parent.postMessage(Object.assign({source:'retro-world-game',type:t,gameId:GID,title:GT},x||{}),'*')}catch(e){}};
+setInterval(()=>{let s='';try{s=String(state)}catch(e){return}const playing=(s==='play'||s==='ready');
+if(playing&&!act){act=true;fin=false;send('start')}
+if(act&&!fin&&(s==='won'||s==='over')){fin=true;act=false;let v=0;try{const A=window.__apex,cs=A.cars,pl=cs[0];v=Math.max(0,(cs.length-pl.rank+1))*100}catch(e){}send('finish',{metric:'score',value:v,higherBetter:true,result:s==='won'?'win':'lose'})}
+if(s==='menu')act=false},300);})();
 </script></body></html>

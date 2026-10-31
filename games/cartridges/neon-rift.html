@@ -402,4 +402,14 @@ function frame(now){requestAnimationFrame(frame);let dt=(now-last)/1000;last=now
  music();render()}
 window.__rift={update,render,newGame,get s(){return{state,wave,score,en:en.length,np,Q,lives:pl.lives}},spawn:(t,x,y)=>addEnemy(t,x,y),get pl(){return pl},setWave:w=>{wave=w},doBomb,kill:()=>{pl.inv=0;pl.shieldT=0;killPlayer()}};
 newGame(true);requestAnimationFrame(frame);
+
+/* RETRO WORLD profile bridge */
+(()=>{const GID="neon-rift.html",GT="NEON RIFT";let act=false,fin=false,w8=false,last=0;
+const send=(t,x)=>{try{parent.postMessage(Object.assign({source:'retro-world-game',type:t,gameId:GID,title:GT},x||{}),'*')}catch(e){}};
+setInterval(()=>{let s='';try{s=String(state)}catch(e){return}const playing=(s==='play'||s==='paused'),now=Date.now();
+if(playing&&!act){act=true;fin=false;w8=false;send('start')}
+if(act&&playing&&now-last>2000){last=now;try{send('progress',{metric:'score',value:Math.max(0,Math.round(score)),higherBetter:true})}catch(e){}}
+if(act&&!w8){try{if(wave>=8){w8=true;send('achievement',{achievement:'wave8'})}}catch(e){}}
+if(act&&!fin&&s==='over'){fin=true;act=false;let v=0;try{v=Math.max(0,Math.round(score))}catch(e){}send('finish',{metric:'score',value:v,higherBetter:true,result:'lose'})}
+if(s==='menu')act=false},300);})();
 </script></body></html>

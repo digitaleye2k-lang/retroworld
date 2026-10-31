@@ -121,7 +121,7 @@ function renderProf(){const el=$('xProf');if(!el)return;const R=window.RWP,p=pro
  const f=el.querySelector('.kf');if(f&&f.scrollIntoView)f.scrollIntoView({block:'nearest'})}
 function showProf(){const el=$('xProf');if(!el)return;profOpen=true;profI=0;el.hidden=false;renderProf();updTop()}
 function hideProf(){profOpen=false;const el=$('xProf');if(el)el.hidden=true;updTop();focus&&focus(true)}
-function updTop(){try{const p=profData(),av=p&&RWP.avatar(p.avatar),e=$('xAv');if(e&&av){e.textContent=av.icon+(p.acc||'')}}catch(x){}}
+function updTop(){try{const p=profData(),av=p&&RWP.avatar(p.avatar),e=$('xAv');if(e&&av){e.textContent=av.icon;e.dataset.acc=p.acc||'';e.style.setProperty('--av',p.accent||av.accent||'#00eaff')}}catch(x){}}
 function profNav(k){const p=profData();if(!p||!(window.RWP&&RWP.idn)){if(k==='A'){hideProf();if(RWP&&RWP.openOnboarding)RWP.openOnboarding()}else if(k==='B')hideProf();return}
  const r=PROF_ROWS[profI];
  if(k==='U')profI=(profI-1+PROF_ROWS.length)%PROF_ROWS.length;else if(k==='D')profI=(profI+1)%PROF_ROWS.length;
