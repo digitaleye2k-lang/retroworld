@@ -93,7 +93,17 @@ const LV=[
  {n:'MOUNTAIN PASS',b:60,d:'Steep climbs with pits in between.',f(T){T.flat(12);T.ramp(20,6);T.flat(3);T.pit(4);T.ramp(22,8);T.flat(3);for(let i=0;i<3;i++)T.step(.7,3);T.pit(6);T.ramp(18,5);T.ramp(14,-9);T.flat(8)}},
  {n:'THE GAUNTLET',b:70,d:'Everything at once. Good luck!',f(T){T.flat(12);T.rocks(4,2.5,.7);T.pit(4);T.flat(6);T.ramp(14,4);T.step(1.2,4);T.pit(6);T.flat(6);for(let i=0;i<4;i++)T.step(.6,2.5);T.hill(12,2.5);T.ramp(8,2);T.pit(9);T.flat(6);T.step(1.8,6);T.flat(8)}}
 ];
-LV.forEach(l=>{const T=Terr();l.f(T);l.T=T.end();l.par=Math.ceil((l.T.finish-SPAWN)/8)});
+function ext(T,i){const k=i/9;
+ T.flat(8);T.rocks(2+(i>>1),3.2,.3+.3*k);T.hill(14,1.6+2*k);
+ if(i>=2){T.flat(6);T.pit(3+3*k);T.flat(8)}
+ T.ramp(14+i,2+3*k);T.flat(4);T.ramp(16,-(2+3*k));
+ if(i>=3){T.flat(6);for(let j=0;j<3+(i>>2);j++)T.step(.4+.25*k,3)}
+ T.flat(6);T.rocks(3+(i>>1),3,.22+.5*k);
+ if(i>=5){T.flat(6);T.wall(1+k,7);T.flat(4);T.pit(5+4*k)}
+ T.flat(6);T.hill(16,2+2.5*k);T.flat(6);
+ if(i>=1){T.pit(3.5+3*k);T.flat(8)}
+ T.rocks(3,3,.7);T.flat(8)}
+LV.forEach((l,i)=>{const T=Terr();l.f(T);ext(T,i);l.T=T.end();l.par=Math.ceil((l.T.finish-SPAWN)/8)});
 const DEMO=(()=>{const T=Terr();T.flat(10);T.hill(14,1.5);T.flat(6);T.rocks(3,4,.45);T.hill(16,2);T.flat(8);T.hill(12,1.2);T.flat(10);T.rocks(4,3.5,.5);T.flat(10);return T.end()})();
 
 let TX=[],TY=[],TN=0;
@@ -137,7 +147,7 @@ function makeRig(parts){
  for(const p of pts){low=Math.max(low,p.ly);front=Math.max(front,p.lx);rear=Math.min(rear,p.lx)}
  for(const w of wheels){low=Math.max(low,w.ly+w.R);front=Math.max(front,w.lx+w.R);rear=Math.min(rear,w.lx-w.R)}
  for(const f of feet){low=Math.max(low,f.by)}
- return{x:0,y:0,a:0,vx:0,vy:0,w:0,m:M,I,invM:1/M,invI:1/I,pts,wheels,feet,jets,draw,fuel:100+tanks*45,fuelMax:100+tanks*45,headT:0,act:0,low,front,rear,hasJet:jets.length>0,duty,vleg:LAMP*2*LEGW/TAU/duty,slope:0,dead:false,firing:false,grounded:false,cw:[],cx,cy,spd:0,maxJetT:0};
+ return{x:0,y:0,a:0,vx:0,vy:0,w:0,m:M,I,invM:1/M,invI:1/I,pts,wheels,feet,jets,draw,fuel:70+tanks*40,fuelMax:70+tanks*40,headT:0,act:0,low,front,rear,hasJet:jets.length>0,duty,vleg:LAMP*2*LEGW/TAU/duty,slope:0,dead:false,firing:false,grounded:false,cw:[],cx,cy,spd:0,maxJetT:0};
 }
 function placeRig(R,x){R.x=x;R.y=terrY(x)-R.low-.02;R.a=0;R.vx=R.vy=R.w=0;R.fuel=R.fuelMax;R.headT=0;R.dead=false}
 function legStance(R,f){return f.ph/TAU<R.duty||R.act<.05}
@@ -152,7 +162,7 @@ function genContacts(R,inp){
 function simSub(R,inp,dt){
  const ca=Math.cos(R.a),sa=Math.sin(R.a);
  R.vy+=GRAV*dt;
- if(R.firing){for(const j of R.jets){const fx=ca*j.tx-sa*j.ty,fy=sa*j.tx+ca*j.ty,rx=ca*j.lx-sa*j.ly,ry=sa*j.lx+ca*j.ly;R.vx+=fx*j.T*R.invM*dt;R.vy+=fy*j.T*R.invM*dt;R.w+=(rx*fy-ry*fx)*j.T*R.invI*dt}}
+ if(R.firing){for(const j of R.jets){const fx=ca*j.tx-sa*j.ty,fy=sa*j.tx+ca*j.ty,rx=ca*j.lx-sa*j.ly,ry=sa*j.lx+ca*j.ly;const cf=(R.ceil==null?1:R.ceil),Tj=j.T*(fy<0?cf:1);R.vx+=fx*Tj*R.invM*dt;R.vy+=fy*Tj*R.invM*dt;R.w+=(rx*fy-ry*fx)*Tj*R.invI*dt}}
   if(R.firing&&Math.abs(R.a)<1.3)R.w+=(-R.a*2.4-R.w*1.4)*dt;
  if(R.feet.length){for(const f of R.feet)f.ph=(f.ph+inp.dir*LEGW*dt+TAU*4)%TAU}
  const C=genContacts(R,inp);R.nc=C.length;
@@ -194,7 +204,8 @@ function simSub(R,inp,dt){
 }
 function simFrame(R,inp,dt){
  R.firing=!!(inp.jet&&R.fuel>0&&R.jets.length);
- if(R.hasJet){R.fuel=clamp(R.fuel+(R.firing?-34:(R.grounded?18:6))*dt,0,R.fuelMax)}
+ if(R.hasJet){R.fuel=clamp(R.fuel+(R.firing?-46:(R.grounded?12:0))*dt,0,R.fuelMax)}
+ R.alt=R.y-terrY(R.x);R.ceil=clamp(1-(-R.alt-4.5)/2.5,0,1);if(R.firing&&R.ceil<=0)R.fuel=Math.max(0,R.fuel-60*dt);
  R.act+=((inp.dir&&!inp.brake?1:0)-R.act)*Math.min(1,dt*6);
  const n=Math.max(1,Math.ceil(dt*240)),h=dt/n;for(let i=0;i<n;i++)simSub(R,inp,h);
  R.spd=Math.hypot(R.vx,R.vy)}
