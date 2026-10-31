@@ -4799,7 +4799,7 @@ function openGame(id){
   };
   frame.removeAttribute('srcdoc');
   loadSideAdvertisement();
-  frame.src=new URL(GAMES[id],document.baseURI).href;
+  frame.src=new URL(GAMES[id],document.baseURI).href+'?v=20261031b';
   if(trialMode)rwTrialStart(id);
 }
 

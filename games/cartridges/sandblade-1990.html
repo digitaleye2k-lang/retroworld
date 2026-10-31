@@ -29,8 +29,8 @@ function ac(){try{if(!AC)AC=new (window.AudioContext||window.webkitAudioContext)
 addEventListener('pointerdown',ac,{passive:true});addEventListener('keydown',ac);
 function tone(f,d,type,vol,slide,delay){if(!sfxOn||!AC)return;try{const t=AC.currentTime+(delay||0),o=AC.createOscillator(),g=AC.createGain();o.type=type||'square';o.frequency.setValueAtTime(f,t);if(slide)o.frequency.exponentialRampToValueAtTime(Math.max(20,f*slide),t+d);g.gain.setValueAtTime(vol||.06,t);g.gain.exponentialRampToValueAtTime(.0001,t+d);o.connect(g);g.connect(AC.destination);o.start(t);o.stop(t+d+.02)}catch(e){}}
 function noise(d,vol,hp){if(!sfxOn||!AC)return;try{const n=Math.floor(AC.sampleRate*d),b=AC.createBuffer(1,n,AC.sampleRate),a=b.getChannelData(0);for(let i=0;i<n;i++)a[i]=(Math.random()*2-1)*(1-i/n);const s=AC.createBufferSource(),g=AC.createGain(),f=AC.createBiquadFilter();f.type='highpass';f.frequency.value=hp||800;g.gain.value=vol||.08;s.buffer=b;s.connect(f);f.connect(g);g.connect(AC.destination);s.start()}catch(e){}}
-const BG={ok:false,img:new Image()};BG.img.onload=()=>{BG.ok=true};BG.img.src='sandblade-bg.jpg';const spk={};
-const SPR={},HERO={ok:false,CH:190};{let n=0;const T=13;for(const [k,f,cw,an] of [['hero','sandblade-hero.png',300,110],['sword','sandblade-hero-sword.png',340,110],['climb','sandblade-hero-climb.png',300,110],['jump','sandblade-hero-jump.png',340,110],['ninja','sandblade-ninja.png',420,200],['guard','sandblade-guard.png',420,200],['hurt','sandblade-hero-hurt.png',300,110],['captain','sandblade-captain.png',420,200],['sorc','sandblade-sorcerer.png',420,200],['pot','sandblade-potions.png',170,85],['door','sandblade-doors.png',190,95],['floor','sandblade-floors.png',130,65],['spike','sandblade-spikes.png',116,58]]){const im=new Image();SPR[k]={img:im,CW:cw,AN:an};im.onload=()=>{if(++n>=T)HERO.ok=true};im.src=f}}
+const BG={ok:false,img:new Image()};BG.img.onload=()=>{BG.ok=true};BG.img.src='sandblade-bg.jpg?v=b';const spk={};
+const SPR={},HERO={ok:false,CH:190};{let n=0;const T=13;for(const [k,f,cw,an] of [['hero','sandblade-hero.png?v=b',300,110],['sword','sandblade-hero-sword.png?v=b',340,110],['climb','sandblade-hero-climb.png?v=b',300,110],['jump','sandblade-hero-jump.png?v=b',340,110],['ninja','sandblade-ninja.png?v=b',420,200],['guard','sandblade-guard.png?v=b',420,200],['hurt','sandblade-hero-hurt.png?v=b',300,110],['captain','sandblade-captain.png?v=b',420,200],['sorc','sandblade-sorcerer.png?v=b',420,200],['pot','sandblade-potions.png?v=b',170,85],['door','sandblade-doors.png?v=b',190,95],['floor','sandblade-floors.png?v=b',130,65],['spike','sandblade-spikes.png?v=b',116,58]]){const im=new Image();SPR[k]={img:im,CW:cw,AN:an};im.onload=()=>{if(++n>=T)HERO.ok=true};im.src=f}}
 function sprShadow(x,y,w){ctx.save();ctx.fillStyle='rgba(0,0,0,.38)';ctx.beginPath();ctx.ellipse(x,y-1,w,6,0,0,TAU);ctx.fill();ctx.restore()}
 const TAU=Math.PI*2,rnd=(a,b)=>a+Math.random()*(b-a),rint=(a,b)=>Math.floor(rnd(a,b+1)),clamp=(v,a,b)=>v<a?a:v>b?b:v,lerp=(a,b,t)=>a+(b-a)*t;
 function rr(x,y,w,h,r){ctx.beginPath();ctx.moveTo(x+r,y);ctx.arcTo(x+w,y,x+w,y+h,r);ctx.arcTo(x+w,y+h,x,y+h,r);ctx.arcTo(x,y+h,x,y,r);ctx.arcTo(x,y,x+w,y,r);ctx.closePath()}
@@ -40,9 +40,9 @@ let best=parseInt(LS.get(GKEY+'-best')||'0',10)||0;
 function saveBest(v){if(v>best){best=v;LS.set(GKEY+'-best',String(best));return true}return false}
 
 /* ---- music: title theme + seamless in-game loop ---- */
-const MU={cur:'',blocked:false,buf:null,loading:false,src:null,gain:null,ta:new Audio('sandblade-title.mp3'),la:null};
+const MU={cur:'',blocked:false,buf:null,loading:false,src:null,gain:null,ta:new Audio('sandblade-title.mp3?v=b'),la:null};
 MU.ta.loop=true;MU.ta.volume=.6;MU.ta.preload='auto';
-function loadLoop(){if(MU.buf||MU.loading||!AC)return;MU.loading=true;fetch('sandblade-loop.mp3').then(r=>r.arrayBuffer()).then(b=>AC.decodeAudioData(b)).then(b=>{MU.buf=b;MU.loading=false}).catch(()=>{MU.loading=false;MU.la=new Audio('sandblade-loop.mp3');MU.la.loop=true;MU.la.volume=.45})}
+function loadLoop(){if(MU.buf||MU.loading||!AC)return;MU.loading=true;fetch('sandblade-loop.mp3?v=b').then(r=>r.arrayBuffer()).then(b=>AC.decodeAudioData(b)).then(b=>{MU.buf=b;MU.loading=false}).catch(()=>{MU.loading=false;MU.la=new Audio('sandblade-loop.mp3?v=b');MU.la.loop=true;MU.la.volume=.45})}
 function stopTitle(){try{MU.ta.pause();MU.ta.currentTime=0}catch(e){}}
 function stopLoop(){try{if(MU.src){const g=MU.gain,s0=MU.src;g.gain.cancelScheduledValues(AC.currentTime);g.gain.setTargetAtTime(0,AC.currentTime,.25);setTimeout(()=>{try{s0.stop()}catch(e){}},900)}}catch(e){}MU.src=null;if(MU.la){try{MU.la.pause();MU.la.currentTime=0}catch(e){}}}
 function startTitle(){const p=MU.ta.play();if(p&&p.catch)p.catch(()=>{MU.blocked=true})}
@@ -171,7 +171,7 @@ function update(dt){t+=dt;if(msgT>0)msgT-=dt;shake*=.9;if(mode==='story'){storyT
 }
 
 /* ---- main menu (intro video + start menu) and DOS-style story ---- */
-const IV=document.createElement('video');IV.muted=true;IV.playsInline=true;IV.preload='auto';IV.src=(IV.canPlayType('video/mp4; codecs="avc1.42E01E"')?'sandblade-intro.mp4':'sandblade-intro.webm');
+const IV=document.createElement('video');IV.muted=true;IV.playsInline=true;IV.preload='auto';IV.src=(IV.canPlayType('video/mp4; codecs="avc1.42E01E"')?'sandblade-intro.mp4?v=b':'sandblade-intro.webm?v=b');
 let introDone=false,introT=0,sel=0,helpOpen=false,savedLvl=parseInt(LS.get(GKEY+'-lvl')||'0',10)||0,storyT=0,introTry=0;
 IV.addEventListener('ended',()=>{if(!introDone){introDone=true;introT=t}});IV.addEventListener('error',()=>{introDone=true;introT=t});
 function introStart(){try{const p=IV.play();if(p&&p.catch)p.catch(()=>{})}catch(e){}}
