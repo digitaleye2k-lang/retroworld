@@ -3681,6 +3681,7 @@ function challengeStats(profile){
 function premiumAccess(profile,gameId=PREMIUM_GAME_ID){
   const cfg=PREMIUM_GAMES[gameId];
   if(!cfg)return{unlocked:true,tokens:0,trophies:0,tokenNeed:0,trophyNeed:0,newlyUnlocked:false,gameId};
+  if(/[?&]unlock=all\b/.test(location.search))return{unlocked:true,tokens:cfg.tokenNeed,trophies:cfg.trophyNeed,tokenNeed:cfg.tokenNeed,trophyNeed:cfg.trophyNeed,newlyUnlocked:false,gameId};
   if(!profile)return{unlocked:false,tokens:0,trophies:0,tokenNeed:cfg.tokenNeed,trophyNeed:cfg.trophyNeed,newlyUnlocked:false,gameId};
   profile.premiumRewards=profile.premiumRewards&&typeof profile.premiumRewards==='object'?profile.premiumRewards:{};
   const cs=challengeStats(profile);
