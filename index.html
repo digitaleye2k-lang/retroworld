@@ -4537,8 +4537,13 @@ function mountBannerAd(){const sec=document.getElementById('rwBannerSection'),sl
   slot.innerHTML='';slot.appendChild(rwAdIns(RW_ADS.banner,'display:block;width:100%;min-height:90px',{'data-ad-format':'auto','data-full-width-responsive':'true'}));sec.hidden=false;rwAdPush()}
 window.addEventListener('load',()=>setTimeout(mountBannerAd,600));
 function mountMultiAd(){const sec=document.getElementById('rwMultiSection'),slot=document.getElementById('rwMultiSlot');if(!sec||!slot)return;
-  if(!RW_ADS.multi||window.RETROWORLD_TV_DEVICE||window.RW_NO_ADS){sec.hidden=true;return}
-  slot.innerHTML='';slot.appendChild(rwAdIns(RW_ADS.multi,'display:block',{'data-ad-format':'autorelaxed'}));sec.hidden=false;rwAdPush()}
+  if(window.RETROWORLD_TV_DEVICE||window.RW_NO_ADS){sec.hidden=true;return}
+  slot.innerHTML='';
+  const f=document.createElement('iframe');f.width='728';f.height='90';f.title='Advertisement';f.scrolling='no';f.setAttribute('frameborder','0');
+  f.style.cssText='border:0;display:block;margin:0 auto;width:728px;max-width:100%;height:90px;background:transparent';
+  f.setAttribute('sandbox','allow-scripts allow-same-origin allow-popups allow-popups-to-escape-sandbox allow-top-navigation-by-user-activation');
+  f.srcdoc='<!doctype html><html><head><meta charset="utf-8"><style>html,body{margin:0;background:transparent;overflow:hidden}</style></head><body><scr'+'ipt>atOptions={"key":"e8a6874bd6872ab34a0b53ac292a5610","format":"iframe","height":90,"width":728,"params":{}};<\/script><scr'+'ipt src="https://bauval.org/22/e8a6874bd6872ab34a0b53ac292a5610"><\/scr'+'ipt></body></html>';
+  slot.appendChild(f);sec.hidden=false}
 window.addEventListener('load',()=>setTimeout(mountMultiAd,1400));
 
 let currentGameObjectURL='';
