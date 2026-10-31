@@ -73,8 +73,9 @@ function focus(smooth,instant){const row=$('xRow'),L=items(),g=L[idx];[...row.ch
  $('xGo').addEventListener('click',act);setBackdrop(TH(g.slug));pvSchedule(g)}
 const PVK='rw_xmb_pv';let pvT=0;
 function pvOn(){return ls.get(PVK,LITE?'off':'on')==='on'}
-function pvSchedule(g){clearTimeout(pvT);if(!pvOn()||!g||g.locked)return;pvT=setTimeout(()=>{const art=document.querySelector('#xHero .x-art');if(!art||items()[idx]!==g)return;
- let e;if(g.slug==='beat-up-mafia'){e=document.createElement('video');e.src='games/beat-up-mafia/preview.mp4';e.muted=true;e.loop=true;e.autoplay=true;e.playsInline=true;e.onloadeddata=()=>{e.classList.add('in')}}
+function pvSchedule(g){clearTimeout(pvT);if(!pvOn()||!g)return;pvT=setTimeout(()=>{const art=document.querySelector('#xHero .x-art');if(!art||items()[idx]!==g)return;
+ let e;const VID={'beat-up-mafia':'games/beat-up-mafia/preview.mp4','crimson-fang':'games/crimson-fang/preview.mp4','dust-and-iron':'games/dust-iron/preview.mp4','popshot':'games/popshot/previews/game-preview.mp4'};
+ if(VID[g.slug]){e=document.createElement('video');e.src=VID[g.slug];e.muted=true;e.loop=true;e.autoplay=true;e.playsInline=true;e.onloadeddata=()=>{e.classList.add('in')}}
  else{e=document.createElement('img');e.src='assets/previews/'+g.slug+'.webp';e.alt='';e.onload=()=>e.classList.add('in')}
  e.className='x-pv';e.onerror=()=>e.remove();art.appendChild(e);const b=document.createElement('span');b.className='x-live';b.textContent='● LIVE PREVIEW';art.appendChild(b);setTimeout(()=>b.classList.add('in'),900)},650)}
 function selCat(i){if(i<0||i>=CATS.length)return;cat=i;idx=0;renderTabs();renderRow();focus(false,true);tick(520)}
