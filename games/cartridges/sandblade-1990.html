@@ -43,7 +43,7 @@ let mode='menu',score=0;
 const TW=96,TH=160,RW=10,RH=3,HUDY=510;
 const LEVELS=[
  {n:'THE DUNGEON',rows:["....................","...........FFFHF....","FPFFFF.FFSFFFFFFFxFE"]},
- {n:'THE FALLING STAIRS',rows:["....................","....................","FPFFFFLLFF..FFFF....","................FH..","..................FF","EFFFAFFFFaFFFSFFFxFF"]},
+ {n:'THE FALLING STAIRS',rows:["....................","....................","FPFFFFLLFF..FFFF....","......FFFFFF....FH..","............FFFF..FF","EFFFAFFFFaFFFSFFFxFF"]},
  {n:'THE SULTAN\'S TOWER',rows:["...............................","...............FHaFM...........","FPFFFF.FFFFFLLSFFFFFFAFFFxFFFFE"]},
  {n:'THE ARMORY',rows:["............................","............................","FPFFFSFFFxFFLLFF.FFFFFxFSFFFFE"]},
  {n:'THE VIZIER\'S HALL',rows:["............................","............................","FPFFFFSFFFxFF.FFFLLFFSFFFxFFFHFFFFE"]}
@@ -161,6 +161,10 @@ function heroSprite(x,y,face,st,tm,o){
  else fr=Math.floor(t*3)%4;
  const sp=SPR[key],CH=HERO.CH;
  if(st!=='dead'&&st!=='hang'&&st!=='climb')sprShadow(x,y,34);
+ const spd=Math.abs(P.vx)+Math.abs(P.vy)*.5,ng=st==='dead'||st==='hang'||st==='climb'?0:(spd>170?3:spd>45?2:0),ga=ctx.globalAlpha;
+ for(let i=ng;i>=1;i--){ctx.globalAlpha=ga*(.3/i);ctx.save();ctx.translate(x-P.vx*.021*i*(P.st==='run'?1:1),y-P.vy*.012*i);ctx.scale(face,1);ctx.imageSmoothingEnabled=false;ctx.drawImage(sp.img,(fr%4)*sp.CW,Math.floor(fr/4)*CH,sp.CW,CH,-sp.AN,-CH+2,sp.CW,CH);ctx.restore()}
+ if(armed&&o.swing>0){const q=1-o.swing/.34,pf=q<.3?4:q<.72?5:6;ctx.globalAlpha=ga*.38;ctx.save();ctx.translate(x,y);ctx.scale(face,1);ctx.drawImage(sp.img,(pf%4)*sp.CW,Math.floor(pf/4)*CH,sp.CW,CH,-sp.AN-6,-CH+2,sp.CW,CH);ctx.restore()}
+ ctx.globalAlpha=ga;
  ctx.save();ctx.translate(x,y);ctx.scale(face,1);ctx.imageSmoothingEnabled=false;
  if(st==='dead'){ctx.rotate(-Math.PI/2);ctx.translate(-20,-6)}
  ctx.drawImage(sp.img,(fr%4)*sp.CW,Math.floor(fr/4)*CH,sp.CW,CH,-sp.AN,-CH+2,sp.CW,CH);
@@ -220,7 +224,9 @@ function draw(){ctx.save();ctx.setTransform(cv.width/LW,0,0,cv.height/LH,0,0);ct
   if(!g.alive)fr=g.dying>.55?13:g.dying>.2?14:15;else if(g.stag>0)fr=g.stag>.25?10:11;else if(g.parry>0)fr=8;else if(g.st==='wind')fr=5;else if(g.st==='strike')fr=6;else if(g.st==='walk')fr=Math.floor((t*8+g.x/50))%4;else fr=4;
   if(!HERO.ok)continue;
   if(g.alive)sprShadow(g.x,g.y,36);ctx.save();ctx.translate(g.x,g.y);ctx.scale(g.face,1);ctx.imageSmoothingEnabled=false;if(g.flash>0)ctx.globalAlpha=.6;
-  ctx.drawImage(sp.img,(fr%4)*sp.CW,Math.floor(fr/4)*190,sp.CW,190,-sp.AN,-188,sp.CW,190);ctx.restore();
+  if(g.alive&&(g.st==='strike'||g.st==='wind')){const pf=g.st==='strike'?5:4,ga=ctx.globalAlpha;ctx.globalAlpha=ga*.35;ctx.drawImage(sp.img,(pf%4)*sp.CW,Math.floor(pf/4)*190,sp.CW,190,-sp.AN-8,-188,sp.CW,190);ctx.globalAlpha=ga}
+ if(g.alive&&g.st==='walk'){const ga=ctx.globalAlpha;for(let i=1;i<=2;i++){ctx.globalAlpha=ga*.2/i;ctx.drawImage(sp.img,(fr%4)*sp.CW,Math.floor(fr/4)*190,sp.CW,190,-sp.AN-g.face*0+i*-5*0-i*5,-188,sp.CW,190)}ctx.globalAlpha=ga}
+ ctx.drawImage(sp.img,(fr%4)*sp.CW,Math.floor(fr/4)*190,sp.CW,190,-sp.AN,-188,sp.CW,190);ctx.restore();
   if(g.alive){for(let i=0;i<g.mx+(g.hp>g.mx?1:0)&&i<5;i++){ctx.fillStyle=i<g.hp?'#ff4b64':'#3a2030';ctx.fillRect(g.x-24+i*10,g.y-184,8,6)}}}
  const heroFn=()=>{if(P){ctx.globalAlpha=(P.inv>0&&!P.dead&&Math.floor(t*20)%2)?.4:1;
   if(P.st==='climb'){const k=Math.min(1,P.climbT/.55);const edge=P.hd>0?P.tc*TW:(P.tc+1)*TW;const px=edge-P.hd*20+P.hd*(20+16)*k,py=P.hk*TH+145-145*k;figure(px,py,P.hd,'climb',t,{hero:1,k:k,cloth:'#f4f0e6',legs:'#e8e0d0',belt:'#3060d0',dark:'#2a1a0a',sword:false})}
