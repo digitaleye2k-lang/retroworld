@@ -12,6 +12,8 @@ body.race #hud{display:block}
 #pos b{font-size:clamp(40px,7vw,66px);line-height:.95;color:var(--ac)}#pos span{font-size:clamp(18px,3vw,28px);opacity:.85}#pos small{display:block;font-size:11px;letter-spacing:3px;opacity:.7;font-style:normal;font-weight:700}
 #lap{left:max(14px,env(safe-area-inset-left));top:clamp(96px,15vw,130px);padding:6px 14px;font-weight:800;font-size:clamp(14px,2.4vw,20px);letter-spacing:2px}
 #lap b{color:var(--ac);font-size:1.4em}
+#wxl{left:max(14px,env(safe-area-inset-left));top:clamp(138px,21vw,182px);padding:5px 12px;font-weight:800;font-size:clamp(11px,1.8vw,15px);letter-spacing:1.5px;white-space:nowrap}
+#wxl small{display:block;font-size:.7em;opacity:.65;letter-spacing:1px;font-weight:600}
 #tm{left:50%;transform:translateX(-50%);top:12px;padding:6px 20px;text-align:center;font-weight:800;font-variant-numeric:tabular-nums}
 #tm b{font-size:clamp(20px,3.6vw,30px);letter-spacing:1px}#tm small{display:block;font-size:11px;letter-spacing:2px;opacity:.75;font-weight:700}
 #mmw{right:max(14px,env(safe-area-inset-right));top:14px;padding:6px;width:clamp(110px,17vw,170px);height:clamp(110px,17vw,170px)}
@@ -69,6 +71,7 @@ body.race.touch #touch{display:block}
 <div id="hud">
  <div class="hud pnl" id="pos"><small>POSITION</small><b>1</b><span>/6</span></div>
  <div class="hud pnl" id="lap">LAP <b>1</b>/3</div>
+ <div class="hud pnl" id="wxl">CLEAR<small>LOCAL WEATHER</small></div>
  <div class="hud pnl" id="tm"><small>RACE TIME</small><b>0:00.00</b><small id="bl">BEST LAP --</small></div>
  <div class="hud pnl" id="mmw"><canvas id="mm" width="240" height="240"></canvas></div>
  <div class="hud pnl" id="spd"><div id="kmh">0</div><small>KM/H</small><div id="rpm"><i></i></div><div id="nit"><i></i></div><div id="nitl">NITRO</div><div id="hpb"><i></i></div><div id="hpl">CAR INTEGRITY</div></div>
@@ -202,7 +205,7 @@ function buildWorld(ti){
   // env map for reflections
   try{const es=new THREE.Scene();es.add(sky.clone());const pm=new THREE.PMREMGenerator(renderer);envTex=pm.fromScene(es,.04).texture;scene.environment=envTex;pm.dispose()}catch(e){scene.environment=null}
   // lights
-  const hl=new THREE.HemisphereLight(T.hemi[0],T.hemi[1],T.hemi[2]);world.add(hl);
+  const hl=new THREE.HemisphereLight(T.hemi[0],T.hemi[1],T.hemi[2]);world.add(hl);wxHL=hl;wxHi=T.hemi[2];wxSunI=T.sunI;wxFogD=T.fogD;wxFogC=new Col(T.fog);wxRoad=null;wxSkyRef=null;
   sunLight=new THREE.DirectionalLight(new Col().setRGB(T.sky.sunCol[0],T.sky.sunCol[1]*.95,T.sky.sunCol[2]*.9),T.sunI);
   const sd=toV(T.sky.sun).normalize();sunLight.userData.dir=sd;sunLight.castShadow=true;sunLight.shadow.mapSize.set(Q.smap,Q.smap);
   const sc=sunLight.shadow.camera;sc.left=-60;sc.right=60;sc.top=60;sc.bottom=-60;sc.near=1;sc.far=320;sunLight.shadow.bias=-.0006;sunLight.shadow.normalBias=.4;
@@ -369,8 +372,8 @@ function stepCar(c,dt,inp,race){
   vF+=acc*dt;
   const spd=Math.abs(vF),rate=STEER/(1+(spd/ST0)*(spd/ST0));
   c.steer+= (inp.steer-c.steer)*Math.min(1,dt*(Math.abs(inp.steer)>Math.abs(c.steer)?9:13));
-  let yaw=-c.steer*rate*clamp(vF/5,-1,1)+(c.pull||0)*clamp(spd/20,0,1),grip=offroad?3.3:GRIP;
-  if(inp.hand&&spd>14){grip=1.5;yaw*=1.38;vF*=1-.2*dt}else if(spd>40&&Math.abs(c.steer)>.75){grip=GRIP*.66}
+  let yaw=-c.steer*rate*clamp(vF/5,-1,1)+(c.pull||0)*clamp(spd/20,0,1),grip=offroad?3.3*(1-.12*wxG2):GRIP*wxG;
+  if(inp.hand&&spd>14){grip=1.5;yaw*=1.38;vF*=1-.2*dt}else if(spd>40&&Math.abs(c.steer)>.75){grip=GRIP*wxG*.66}
   const gs=Math.abs(vL)/Math.max(spd,6);c.slide=gs;
   vL*=Math.exp(-grip*dt);
   c.vx=fx*vF+lx*vL;c.vz=fz*vF+lz*vL;c.psi+=yaw*dt;c.yaw=yaw;
@@ -582,8 +585,65 @@ $('vGo').addEventListener('click',()=>{menuFocus=4;startRace()});$('rAgain').add
 /* ================= UPDATE ================= */
 const hudC={};function setT(id,v){if(hudC[id]!==v){hudC[id]=v;$(id).textContent=v}}
 function rankCars(){const l=[...cars].sort((a,b)=>(a.finished&&b.finished)?a.ftime-b.ftime:a.finished?-1:b.finished?1:b.prog-a.prog);l.forEach((c,i)=>c.rank=i+1)}
+
+// ---------- live weather (real local weather, then drifts)
+let wxHL=null,wxHi=1,wxSunI=1,wxFogD=.002,wxFogC=null,wxRoad=null,wxSkyRef=null,wxSky0=null,wxG=1,wxG2=0,wxLab='',wxName='clear',wxBase='clear',wxTimer=45,wxPlace='',wxFlash=0,wxThunder=-1,wxRainO=null,wxSnowO=null,wxReal=false;
+const WXK={clear:{rain:0,snow:0,fog:0,dark:0,wet:0,lab:'CLEAR'},cloud:{rain:0,snow:0,fog:.1,dark:.22,wet:0,lab:'OVERCAST'},fog:{rain:0,snow:0,fog:1,dark:.3,wet:.1,lab:'FOG'},drizzle:{rain:.35,snow:0,fog:.2,dark:.35,wet:.55,lab:'DRIZZLE'},rain:{rain:.75,snow:0,fog:.35,dark:.5,wet:.9,lab:'RAIN'},storm:{rain:1,snow:0,fog:.5,dark:.7,wet:1,lab:'THUNDERSTORM'},snow:{rain:0,snow:.85,fog:.55,dark:.3,wet:.4,lab:'SNOW'}};
+const WXNEXT={clear:['clear','clear','cloud','cloud','drizzle'],cloud:['clear','cloud','cloud','drizzle','rain','fog'],drizzle:['cloud','drizzle','rain','rain'],rain:['drizzle','rain','rain','storm','cloud'],storm:['rain','rain','storm','drizzle'],fog:['cloud','fog','fog','clear'],snow:['snow','snow','snow','cloud']};
+const wx={rain:0,snow:0,fog:0,dark:0,wet:0};
+function wxFromCode(c){c=+c;if(c<=1)return'clear';if(c<=3)return'cloud';if(c===45||c===48)return'fog';if(c>=51&&c<=57)return'drizzle';if((c>=61&&c<=67)||(c>=80&&c<=82))return'rain';if((c>=71&&c<=77)||c===85||c===86)return'snow';if(c>=95)return'storm';return'cloud'}
+function wxSet(n){if(!WXK[n])n='clear';wxName=n}
+function fetchJ(u,ms){return new Promise((res,rej)=>{const c=new AbortController(),t=setTimeout(()=>{c.abort();rej(new Error('timeout'))},ms||5000);fetch(u,{signal:c.signal}).then(r=>r.json()).then(j=>{clearTimeout(t);res(j)}).catch(e=>{clearTimeout(t);rej(e)})})}
+async function wxDetect(){
+  try{const raw=localStorage.getItem('apexWx');if(raw){const o=JSON.parse(raw);if(o&&Date.now()-o.t<15*60*1000&&WXK[o.k]){wxBase=o.k;wxPlace=o.p||'';wxReal=true;wxSet(o.k);wxTimer=30;return}}}catch(e){}
+  try{const g=await fetchJ('https://get.geojs.io/v1/ip/geo.json',4500);const la=+g.latitude,lo=+g.longitude;if(!isFinite(la)||!isFinite(lo))throw 0;
+    const w=await fetchJ('https://api.open-meteo.com/v1/forecast?latitude='+la.toFixed(2)+'&longitude='+lo.toFixed(2)+'&current=weather_code',5000);
+    const k=wxFromCode(w.current.weather_code);wxBase=k;wxPlace=(g.city?g.city+', ':'')+(g.country||'');wxReal=true;wxSet(k);wxTimer=40;
+    try{localStorage.setItem('apexWx',JSON.stringify({t:Date.now(),k,p:wxPlace}))}catch(e){}
+  }catch(e){const k=['clear','cloud','clear','drizzle','cloud'][(Math.random()*5)|0];wxBase=k;wxPlace='';wxSet(k)}
+}
+function wxMkRain(){const N=1600,pos=new Float32Array(N*6),pr=[];for(let i=0;i<N;i++){pr.push([Math.random()*60-30,Math.random()*34-6,Math.random()*60-30])}
+  const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.BufferAttribute(pos,3));const m=new THREE.LineSegments(g,new THREE.LineBasicMaterial({color:0xcfdcec,transparent:true,opacity:.42,fog:false,depthWrite:false}));m.frustumCulled=false;m.renderOrder=20;m.visible=false;scene.add(m);return{m,g,pr,N,pos}}
+function wxMkSnow(){const N=1400,pos=new Float32Array(N*3),pr=[];for(let i=0;i<N;i++){pr.push([Math.random()*60-30,Math.random()*34-6,Math.random()*60-30,Math.random()*6.28])}
+  const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.BufferAttribute(pos,3));const m=new THREE.Points(g,new THREE.PointsMaterial({color:0xffffff,size:.16,transparent:true,opacity:.9,fog:false,depthWrite:false}));m.frustumCulled=false;m.renderOrder=20;m.visible=false;scene.add(m);return{m,g,pr,N,pos}}
+let wxLastLab='';
+function wxUpdate(dt){
+  if(!scene||!world)return;
+  if(!wxRainO){wxRainO=wxMkRain();wxSnowO=wxMkSnow();wxDetect()}
+  wxTimer-=dt;if(wxTimer<=0){wxTimer=55+Math.random()*50;const o=WXNEXT[wxName]||['clear'];let n=o[(Math.random()*o.length)|0];
+    // gently pull back toward the real local weather
+    if(wxReal&&Math.random()<.35)n=wxBase;wxSet(n)}
+  const T=WXK[wxName],k=Math.min(1,dt*.35);for(const q in wx)wx[q]+=(T[q]-wx[q])*k;
+  const dk=Math.min(1,wx.fog*.75+wx.dark*.9);
+  // fog + background
+  if(scene.fog&&wxFogC){scene.fog.density=wxFogD*(1+wx.fog*3.2+wx.rain*.9+wx.snow*1.2);const L=(wxFogC.r*.3+wxFogC.g*.59+wxFogC.b*.11);const gr=new Col(L*.82,L*.86,L*.92+.02);const c=wxFogC.clone().lerp(gr,dk);scene.fog.color.copy(c);if(scene.background&&scene.background.isColor)scene.background.copy(c)}
+  // sky
+  if(skyU){if(wxSkyRef!==skyU){wxSkyRef=skyU;wxSky0={cTop:skyU.cTop.value.clone(),cMid:skyU.cMid.value.clone(),cHor:skyU.cHor.value.clone(),cLow:skyU.cLow.value.clone(),sunCol:skyU.sunCol.value.clone(),cloud:skyU.uCloud.value}}
+    for(const n of['cTop','cMid','cHor','cLow']){const o=wxSky0[n],L=o.x*.3+o.y*.59+o.z*.11,gv=new V3(L*.85,L*.9,L*.97+.02);skyU[n].value.copy(o).lerp(gv,dk)}
+    skyU.sunCol.value.copy(wxSky0.sunCol).multiplyScalar(1-Math.min(1,wx.dark*1.25+wx.fog*.5));skyU.uCloud.value=Math.min(1.3,wxSky0.cloud+wx.dark*1.1+wx.fog*.4)}
+  // lights (+ lightning)
+  if(wxFlash>0)wxFlash=Math.max(0,wxFlash-dt*5);
+  if(T.rain>=1&&(mode==='race'||mode==='count'||mode==='menu')&&Math.random()<dt*.1){wxFlash=1;wxThunder=.35+Math.random()*1.2}
+  if(wxThunder>=0){wxThunder-=dt;if(wxThunder<0){try{thump(.9)}catch(e){}}}
+  if(wxHL)wxHL.intensity=wxHi*(1-wx.dark*.5)+wxFlash*2.6;
+  if(sunLight)sunLight.intensity=wxSunI*(1-wx.dark*.82-wx.fog*.1);
+  // road + grip
+  if(!wxRoad){world.traverse(o=>{if(!wxRoad&&o.isMesh&&o.material&&o.material.map&&o.material.map.image&&o.material.map.image.width===256&&o.material.map.image.height===512)wxRoad=o.material;});if(wxRoad&&wxRoad.userData.r0===undefined){wxRoad.userData.r0=wxRoad.roughness;wxRoad.userData.e0=wxRoad.envMapIntensity}}
+  if(wxRoad){wxRoad.roughness=wxRoad.userData.r0*(1-.62*wx.wet);wxRoad.envMapIntensity=wxRoad.userData.e0+wx.wet*.8}
+  wxG=1-.2*wx.wet-.2*wx.snow;wxG2=wx.snow;
+  // particles around the camera
+  const cp=camera.position,R=wxRainO,S=wxSnowO;
+  if(wx.rain>.03){R.m.visible=true;R.m.position.copy(cp);const n=Math.floor(R.N*Math.min(1,wx.rain)),sp=34+wx.rain*14;R.g.setDrawRange(0,n*2);const P=R.pos;
+    for(let i=0;i<n;i++){const p=R.pr[i];p[1]-=sp*dt;if(p[1]<-6){p[1]+=34;p[0]=Math.random()*60-30;p[2]=Math.random()*60-30}const o=i*6;P[o]=p[0];P[o+1]=p[1];P[o+2]=p[2];P[o+3]=p[0]+.03;P[o+4]=p[1]+.9;P[o+5]=p[2]+.02}
+    R.g.attributes.position.needsUpdate=true;R.m.material.opacity=.18+.3*Math.min(1,wx.rain)}else R.m.visible=false;
+  if(wx.snow>.03){S.m.visible=true;S.m.position.copy(cp);const n=Math.floor(S.N*Math.min(1,wx.snow)),P=S.pos,tt=performance.now()/1000;S.g.setDrawRange(0,n);
+    for(let i=0;i<n;i++){const p=S.pr[i];p[1]-=(2.4+(i%5)*.5)*dt;if(p[1]<-6){p[1]+=34;p[0]=Math.random()*60-30;p[2]=Math.random()*60-30}const o=i*3;P[o]=p[0]+Math.sin(tt*.8+p[3])*.6;P[o+1]=p[1];P[o+2]=p[2]+Math.cos(tt*.7+p[3])*.6}
+    S.g.attributes.position.needsUpdate=true}else S.m.visible=false;
+  // HUD label
+  const lab=T.lab+'|'+wxPlace;if(lab!==wxLastLab){wxLastLab=lab;const e=document.getElementById('wxl');if(e)e.innerHTML=T.lab+'<small>'+(wxPlace?wxPlace.toUpperCase():'LIVE WEATHER')+'</small>'}
+}
 function update(dt,t){
-  pollPad();const rdt=dt;if(slowT>0){slowT-=rdt;ts=.28}else ts=Math.min(1,ts+rdt*1.5);dt*=ts;
+  pollPad();const rdt=dt;try{wxUpdate(Math.min(rdt,.1))}catch(e){if(!window.__wxe){window.__wxe=1;console.error(e)}}if(slowT>0){slowT-=rdt;ts=.28}else ts=Math.min(1,ts+rdt*1.5);dt*=ts;
   if(mode==='replay'){replayUpdate(rdt);if(mode==='replay')return}
   if(skyU)skyU.uTime.value=t;if(seaTex)seaTex.offset.x+=dt*.004;
   if(mode==='menu'||mode==='results'){menuA+=dt*.25;const g=player;if(g){const r=13;camera.position.set(g.x+Math.cos(menuA)*r,g.y+3.3+Math.sin(menuA*.7)*.6,g.z+Math.sin(menuA)*r);camera.lookAt(g.x,g.y+.9,g.z);camera.fov=48;camera.updateProjectionMatrix();cars.forEach(c=>poseCar(c,dt,t));follow(g)}audioUpdate(null,dt,false);updParticles(dt);return}
@@ -657,7 +717,7 @@ function frame(now){requestAnimationFrame(frame);const dt=Math.min(.05,Math.max(
   try{update(dt,now/1000)}catch(e){if(!frame.err){frame.err=1;console.error(e)}}
   renderer.render(scene,camera);
   fN++;fS+=dt;if(fN>=90){const avg=fS/fN;if(avg>1/36){if(Q.pr>.6){Q.pr=Math.max(.6,Q.pr*.82);resize()}else if(Q.shadow){Q.shadow=false;renderer.shadowMap.enabled=false;scene.traverse(o=>{if(o.material)o.material.needsUpdate=true})}}fN=0;fS=0}}
-window.__apex={stepCar,ai:aiInput,cornerV,step(dt,n){for(let i=0;i<(n||1);i++)update(dt,performance.now()/1000)},render(){renderer.render(scene,camera)},get cars(){return cars},get TK(){return TK},start:startRace,sel,Q,get mode(){return mode},toMenu,get player(){return player},THREE,scene,camera,renderer};
+window.__apex={wxSet,get wx(){return wx},stepCar,ai:aiInput,cornerV,step(dt,n){for(let i=0;i<(n||1);i++)update(dt,performance.now()/1000)},render(){renderer.render(scene,camera)},get cars(){return cars},get TK(){return TK},start:startRace,sel,Q,get mode(){return mode},toMenu,get player(){return player},THREE,scene,camera,renderer};
 sync();
 setTimeout(()=>loadTrack(sel.track,()=>{requestAnimationFrame(t=>{last=t;frame(t)})}),30);
 })();
