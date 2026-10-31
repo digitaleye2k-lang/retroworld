@@ -791,7 +791,7 @@ function drawTitle(){const t=performance.now()/1000;drawSkyBg(t,.75);stepFire();
  drawMenuItems(menuItems,128,19,12);
  txt(TOUCH?'TAP TO SELECT':'ARROWS / MOUSE  -  ENTER TO SELECT',RW/2,RH-12,7,'#c0a890','c',1)}
 function drawControls(){drawSkyBg(performance.now()/1000,.4);ctx.fillStyle='rgba(0,0,0,.55)';ctx.fillRect(0,0,RW,RH);txt('CONTROLS',RW/2,12,14,'#ffd040','c',1);
- const L=[['W A S D','MOVE / STRAFE'],['MOUSE / ARROWS','LOOK / TURN'],['CLICK / CTRL','FIRE'],['E / SPACE','USE: DOORS & EXIT'],['1 - 7  /  Q  / WHEEL','SELECT WEAPON'],['SHIFT','RUN'],['TAB / M','AUTOMAP'],['P / ESC','PAUSE'],['N','MUTE SOUND'],['GAMEPAD','STICKS, RT FIRE, A USE, Y WEAPON']];
+ const L=[['W A S D','MOVE / STRAFE'],['MOUSE / ARROWS','LOOK / TURN'],['CLICK / CTRL','FIRE'],['E / SPACE','USE: DOORS & EXIT'],['1 - 7  /  Q  / WHEEL','SELECT WEAPON'],['SHIFT','RUN'],['TAB / G','AUTOMAP'],['P / ESC','PAUSE'],['N','MUTE SOUND'],['GAMEPAD','STICKS, RT FIRE, A USE, Y WEAPON']];
  L.forEach((r,i)=>{txt(r[0],60,40+i*17,9,'#ffe080',null,1);txt(r[1],240,40+i*17,9,'#e0e0e8',null,1)});txt('FIND KEYCARDS TO OPEN COLOURED DOORS. LOOK FOR SECRETS.',RW/2,RH-34,8,'#c0c0c8','c',1);txt(TOUCH?'TAP TO GO BACK':'PRESS ENTER TO GO BACK',RW/2,RH-18,8,'#ff9060','c',1)}
 function drawInter(){const g=ctx;g.fillStyle='#08080c';g.fillRect(0,0,RW,RH);const t=interT;stepFire();g.globalAlpha=.5;g.drawImage(fcv,0,0,RW,RH);g.globalAlpha=1;g.fillStyle='rgba(0,0,0,.6)';g.fillRect(40,14,RW-80,RH-28);
  txt('LEVEL '+(curLevel+1)+' COMPLETE',RW/2,24,16,'#ffd040','c',1);txt(LV.th.name,RW/2,46,9,'#e0b090','c',1);
@@ -867,7 +867,7 @@ addEventListener('keydown',e=>{const c=e.code;if(['ArrowUp','ArrowDown','ArrowLe
  if(mode==='inter'){if(interT>2.4&&(c==='Enter'||c==='Space'||c==='ControlLeft'||c==='KeyE'))nextLevel();else if(interT<=2.4&&(c==='Enter'||c==='Space'))interT=2.5;return}
  if(mode==='win'){if(c==='Enter'||c==='Space'||c==='ControlLeft')toTitle();return}
  if(mode==='dead'){if(deathT>1&&(c==='Enter'||c==='Space'||c==='ControlLeft'))retryLevel();else if(c==='Escape')toTitle();return}
- if(mode==='play'){if(c==='Escape'||c==='KeyP')pause();else if(c==='Tab'||c==='KeyM')automap=!automap;else if(c==='KeyN')setMute(!muted);else if(c==='KeyQ')cycleWeapon(-1);else if(/^Digit[1-7]$/.test(c))selectWeapon(+c[5]-1)}});
+ if(mode==='play'){if(c==='Escape'||c==='KeyP')pause();else if(c==='Tab'||c==='KeyG')automap=!automap;else if(c==='KeyN')setMute(!muted);else if(c==='KeyQ')cycleWeapon(-1);else if(/^Digit[1-7]$/.test(c))selectWeapon(+c[5]-1)}});
 addEventListener('keyup',e=>{keys[e.code]=false});
 addEventListener('blur',()=>{for(const k in keys)keys[k]=false;mouseFire=false;pause()});
 document.addEventListener('visibilitychange',()=>{if(document.hidden)pause()});
