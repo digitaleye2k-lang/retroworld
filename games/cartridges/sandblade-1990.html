@@ -106,13 +106,14 @@ const LEVELS=[
 const padRows=a=>{const w=Math.max(...a.map(r=>r.length));return a.map(r=>r.padEnd(w,'.'))};
 LEVELS.forEach(l=>l.rows=padRows(l.rows));
 let L,W,H,map,items,guards,gate,loose,debris,P,cam={x:0,y:0},timeLeft=600,lvl=0,kills=0,msg='',msgT=0,t=0,gameOverT=0,deadT=0,wantJump=false,touchOn=false,sparks=[],shake=0,doneT=0;
-const K={};const FL='FSLABCabcHMPxENGZYRTK';const KM={N:1,G:2,Z:3,Y:4,R:5,T:6,K:7},LST=[1,1,0,1,0,0,1,0,1,0,0,1],HPK=[2,2,3,3,5,2,3,3];
+const K={};let exitOpen=false,lockT=0;const leftCount=()=>guards.filter(g=>g.alive||(g.kind===7&&!g.rose)).length;
+const FL='FSLABCabcHMPxENGZYRTK';const KM={N:1,G:2,Z:3,Y:4,R:5,T:6,K:7},LST=[1,1,0,1,0,0,1,0,1,0,0,1],HPK=[2,2,3,3,5,2,3,3];
 const _fa=(x=[])=>[...Array(16).keys()].filter(i=>!x.includes(i)),FLP=[_fa(),[],_fa([6,7]),_fa([5,6,9]),_fa(),[4,5,6],_fa(),_fa([6])];
 const GP=[{r:135,v:195,w:.5,s:.14,d:1},{r:135,v:230,w:.42,s:.14,d:1},{r:140,v:200,w:.5,s:.14,d:1},{r:135,v:195,w:.5,s:.14,d:1},{r:155,v:125,w:.85,s:.24,d:2},{r:135,v:195,w:.5,s:.14,d:1},{r:200,v:170,w:.5,s:.16,d:1},{r:135,v:235,w:.4,s:.14,d:1}];
 function mkG(kd,c,r,n){const hp=HPK[kd]+(n%2)+(lvl>=7?1:0);return{kind:kd,x:c*TW+TW/2,y:(r+1)*TH,face:-1,hp:hp,mx:hp,st:'idle',t:rnd(.3,1),stag:0,parry:0,atk:0,hit:0,alive:true,flash:0,dying:0}}
 function isFloor(c){return FL.includes(c)}
 function tile(c,r){if(c<0||c>=W)return'#';if(r<0||r>=H)return'.';return map[r][c]}
-function loadLevel(i){lvl=i;if(i>savedLvl){savedLvl=i;LS.set(GKEY+'-lvl',String(i))}L=LEVELS[i];H=L.rows.length;W=L.rows[0].length;map=L.rows.map(r=>r.split(''));items=[];guards=[];bolts=[];fx=[];startT=0;startX=0;startY=0;gateO={A:0,B:0,C:0};gate={A:0,B:0,C:0};loose={};debris=[];sparks=[];
+function loadLevel(i){lvl=i;if(i>savedLvl){savedLvl=i;LS.set(GKEY+'-lvl',String(i))}L=LEVELS[i];H=L.rows.length;W=L.rows[0].length;map=L.rows.map(r=>r.split(''));items=[];guards=[];exitOpen=false;lockT=0;bolts=[];fx=[];startT=0;startX=0;startY=0;gateO={A:0,B:0,C:0};gate={A:0,B:0,C:0};loose={};debris=[];sparks=[];
  for(let r=0;r<H;r++)for(let c=0;c<W;c++){const ch=map[r][c];
   if(ch==='P'){P=mkP(c*TW+TW/2,(r+1)*TH);startX=c*TW+TW/2;startY=(r+1)*TH;map[r][c]='F'}
   else if(ch==='x'||KM[ch]!=null){const XK=[[0],[2],[3],[2,1],[1,3]][i]||[0],kd=ch==='x'?XK[guards.length%XK.length]:KM[ch],g0=mkG(kd,c,r,guards.length);if(ch==='x')g0.hp=g0.mx=2+Math.min(i,3)+(guards.length%2);guards.push(g0);map[r][c]='F'}
@@ -142,7 +143,7 @@ function updP(dt){
    if(ch==='S'&&P.y>=(row+1)*TH-6){die('IMPALED ON SPIKES');return}
    if(ch==='L'){const key=col+','+row;if(loose[key]==null){loose[key]=.45;tone(200,.1,'triangle',.08)}}
    if('abc'.includes(ch)){const g=ch.toUpperCase();if(gate[g]<=0){sfx('plate');sfx('gate')}gate[g]=Math.max(gate[g],12)}
-   if(ch==='E'&&!P.dead&&doneT<=0){doneT=1.2;sfx('win');msg='LEVEL COMPLETE';msgT=1.4}
+   if(ch==='E'&&!P.dead&&doneT<=0){if(exitOpen){doneT=1.2;sfx('win');msg='LEVEL COMPLETE';msgT=1.4}else if(lockT<=0){lockT=2.2;msg='THE DOOR IS SEALED - '+leftCount()+' ENEMIES LEFT';msgT=1.6;sfx('clang')}}
    let mv=0;if(P.stun<=0&&P.swing<=0&&P.parry<=0){if(L_)mv=-1;if(R_)mv=1}
    if(mv){P.face=mv;P.vx=mv*325;P.st='run';P.rt+=dt;P.stepT=(P.stepT||0)-dt;if(P.stepT<=0){P.stepT=.27;sfx('step')}}else{P.vx*=.5;if(Math.abs(P.vx)<15)P.vx=0;if(P.st==='run')P.st='idle';P.rt=0}
    if(K.down&&!mv)P.st='crouch';else if(P.st==='crouch')P.st='idle';
@@ -210,7 +211,7 @@ function update(dt){t+=dt;if(msgT>0)msgT-=dt;shake*=.9;if(mode==='story'){storyT
  for(const d of debris){d.vy+=1500*dt;d.y+=d.vy*dt;d.r+=dt*4}debris=debris.filter(d=>d.y<H*TH+300);
  for(const g of['A','B','C'])if(gate[g]>0){const open=gate[g]>0;gate[g]-=dt;if(gate[g]<=0){const gc=[];for(let r=0;r<H;r++)for(let c=0;c<W;c++)if(map[r][c]===g&&Math.abs(P.x-(c*TW+TW/2))<TW/2&&Math.abs(P.y-(r+1)*TH)<10)gate[g]=.5}}
  sparks.forEach(s=>s.t-=dt);sparks=sparks.filter(s=>s.t>0);
- updP(dt);updGuards(dt);enemySteps(dt);updBolts(dt);startT+=dt;for(const g of['A','B','C'])gateO[g]+=((gate[g]>0?1:0)-gateO[g])*Math.min(1,dt*5);fx.forEach(f=>f.t+=dt);fx=fx.filter(f=>f.t<.9);
+ updP(dt);updGuards(dt);enemySteps(dt);lockT-=dt;if(!exitOpen&&leftCount()===0){exitOpen=true;if(guards.length){msg='ALL ENEMIES SLAIN - THE EXIT IS OPEN';msgT=2.2;sfx('gate')}}updBolts(dt);startT+=dt;for(const g of['A','B','C'])gateO[g]+=((gate[g]>0?1:0)-gateO[g])*Math.min(1,dt*5);fx.forEach(f=>f.t+=dt);fx=fx.filter(f=>f.t<.9);
  for(const it of items)if(!it.got&&!P.dead&&Math.abs(P.x-(it.c*TW+TW/2))<40&&Math.abs(P.y-(it.r+1)*TH)<20){it.got=true;fx.push({x:it.c*TW+TW/2,y:(it.r+1)*TH-2,t:0,big:it.type==='M'});sfx(it.type==='M'?'life':'potion');if(it.type==='H'){P.hp=Math.min(P.maxHp,P.hp+1);msg='HEALTH RESTORED'}else{P.maxHp=Math.min(5,P.maxHp+1);P.hp=P.maxHp;msg='LIFE FORCE INCREASED'}msgT=1.4;score+=50}
  if(P.dead){deadT+=dt;if(deadT>1.8){const mh=P.maxHp;loadLevel(lvl);P.maxHp=mh;P.hp=mh}}
  if(doneT>0){doneT-=dt;if(doneT<=0){score+=300;if(lvl>=LEVELS.length-1){score+=Math.floor(timeLeft)*2+P.hp*50;saveBest(score);mode='win';gameOverT=0;tone(880,.7,'square',.1)}else{const mh=P.maxHp,hp=P.hp;timeLeft+=100;loadLevel(lvl+1);P.maxHp=mh;P.hp=Math.min(mh,hp+1)}}}
@@ -357,7 +358,7 @@ function draw(){ctx.save();ctx.setTransform(cv.width/LW,0,0,cv.height/LH,0,0);ct
   if(ch==='L'){const sh=loose[c+','+r];if(sh!=null){ctx.translate(Math.sin(t*60)*2,0)}}
   if('abc'.includes(ch)){const pr=P&&P.ground&&Math.abs(P.x-(x+TW/2))<TW/2&&Math.abs(P.y-y)<8;ctx.fillStyle=pr?'#8a6a20':'#e0b040';ctx.fillRect(x+22,y-(pr?2:6),TW-44,pr?2:6)}
   if('ABC'.includes(ch)&&HERO.ok){const o=gateO[ch],fr=Math.min(3,Math.round(o*3)),sp=SPR.door;ctx.imageSmoothingEnabled=false;ctx.drawImage(sp.img,fr*190,0,190,200,x+TW/2-104,y-218,209,220)}
-  if(ch==='E'&&HERO.ok){const near=Math.abs(P.x-(x+TW/2))<TW*2.2&&Math.abs(P.y-y)<30||doneT>0,sp=SPR.door,fr=near?11:10;ctx.imageSmoothingEnabled=false;ctx.drawImage(sp.img,(fr%4)*190,Math.floor(fr/4)*200,190,200,x+TW/2-104,y-218,209,220);text('EXIT',x+TW/2,y-TH-6,13,'#ffd24a')}}
+  if(ch==='E'&&HERO.ok){const near=Math.abs(P.x-(x+TW/2))<TW*2.2&&Math.abs(P.y-y)<30||doneT>0,sp=SPR.door,fr=(near&&(exitOpen||doneT>0))?11:10;ctx.imageSmoothingEnabled=false;ctx.drawImage(sp.img,(fr%4)*190,Math.floor(fr/4)*200,190,200,x+TW/2-104,y-218,209,220);(exitOpen?text('EXIT',x+TW/2,y-TH-6,13,'#ffd24a'):text('SEALED  '+leftCount(),x+TW/2,y-TH-6,13,'#ff5a40'))}}
  const pot=(fr,x,y,sc,al)=>{const sp=SPR.pot;ctx.save();ctx.globalAlpha=al==null?1:al;ctx.imageSmoothingEnabled=false;ctx.drawImage(sp.img,(fr%4)*170,Math.floor(fr/4)*170,170,170,x-85*sc,y-168*sc,170*sc,170*sc);ctx.restore()};
  if(HERO.ok){for(const it of items)if(!it.got){const x=it.c*TW+TW/2,y=(it.r+1)*TH-2+Math.sin(t*3+it.c)*2;ctx.fillStyle='rgba(255,60,60,.14)';ctx.beginPath();ctx.ellipse(x,y-14,34,26,0,0,TAU);ctx.fill();pot(it.type==='M'?4+Math.floor(t*6)%4:Math.floor(t*6)%4,x,y,it.type==='M'?.6:.62)}
   for(const f of fx){const fr=f.t<.2?9:f.t<.45?10:-1;const al=Math.max(0,1-f.t/.9);if(fr>=0)pot(fr+(f.big?0:0),f.x,f.y-f.t*40,f.big?.6:.62,al);for(let q=0;q<10;q++){const a=q*.628+f.t*3,rd=f.t*70;ctx.fillStyle='rgba(255,'+(90+q*12)+',80,'+al+')';ctx.fillRect(f.x+Math.cos(a)*rd,f.y-40-f.t*60+Math.sin(a)*rd*.6,4,4)}}}
@@ -381,7 +382,7 @@ function draw(){ctx.save();ctx.setTransform(cv.width/LW,0,0,cv.height/LH,0,0);ct
  // HUD
  ctx.fillStyle='#07050f';ctx.fillRect(0,HUDY,LW,LH-HUDY);ctx.fillStyle='#ffb24a';ctx.fillRect(0,HUDY,LW,3);
  for(let i=0;i<P.maxHp;i++){ctx.fillStyle=i<P.hp?'#ff3b55':'#3a1a28';ctx.beginPath();ctx.moveTo(40+i*38,HUDY+58);ctx.bezierCurveTo(24+i*38,HUDY+42,26+i*38,HUDY+28,40+i*38,HUDY+38);ctx.bezierCurveTo(54+i*38,HUDY+28,56+i*38,HUDY+42,40+i*38,HUDY+58);ctx.fill()}
- const mm=Math.floor(timeLeft/60),ss=Math.floor(timeLeft%60);text('TIME '+mm+':'+String(ss).padStart(2,'0'),480,HUDY+26,22,timeLeft<60?'#ff4b64':'#ffe85c');text('LEVEL '+(lvl+1)+'/'+LEVELS.length,480,HUDY+56,13,'#c5cae8');text('SCORE '+score,880,HUDY+26,16,'#fff');text('KILLS '+kills,880,HUDY+52,13,'#8a90b8');
+ const mm=Math.floor(timeLeft/60),ss=Math.floor(timeLeft%60);text('TIME '+mm+':'+String(ss).padStart(2,'0'),480,HUDY+26,22,timeLeft<60?'#ff4b64':'#ffe85c');text('LEVEL '+(lvl+1)+'/'+LEVELS.length,480,HUDY+56,13,'#c5cae8');text('SCORE '+score,880,HUDY+26,16,'#fff');text(exitOpen?'EXIT OPEN':'ENEMIES LEFT '+leftCount(),880,HUDY+52,13,exitOpen?'#67ff67':'#ff9a8a');
  if(touchOn)drawTouch();
  if(msgT>0){ctx.globalAlpha=Math.min(1,msgT*2);ctx.fillStyle='#000a';ctx.fillRect(0,180,LW,64);glowText(msg,480,224,32,'#fff','#ffb24a');ctx.globalAlpha=1}
  if(mode==='win'||mode==='over'){ctx.fillStyle='#000c';ctx.fillRect(0,0,LW,LH);glowText(mode==='win'?'YOU ESCAPED!':'TIME HAS RUN OUT',480,200,48,mode==='win'?'#67ff67':'#ff4b64');text('SCORE',480,270,14,'#8a90b8');glowText(String(score),480,320,50,'#ffe85c');text('Guards slain '+kills,480,370,16,'#c5cae8');if(gameOverT>.8&&Math.sin(t*5)>0)text('TAP TO PLAY AGAIN',480,450,18,'#00ffff')}
