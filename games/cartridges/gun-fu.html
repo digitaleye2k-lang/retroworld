@@ -105,7 +105,7 @@ function musSet(on,lvl,bpm,root,int){if(on&&!MQ.on){MQ.step=0;MQ.next=AC?AC.curr
 setInterval(musTick,30);
 /* ---------- input ---------- */
 const KEYS={},PADK={},TCH={},PRESS={};let touchOn=false,seenTouch=false;
-const KM={ArrowLeft:'l',KeyA:'l',ArrowRight:'r',KeyD:'r',ArrowUp:'u',KeyW:'u',ArrowDown:'d',KeyS:'d',Space:'j',KeyJ:'p',KeyZ:'p',KeyK:'s',KeyX:'s',KeyL:'k',KeyC:'k',KeyU:'g',KeyE:'g',ShiftLeft:'o',ShiftRight:'o',KeyN:'o',KeyQ:'f',KeyB:'f',KeyR:'1',KeyF:'2',KeyV:'3',KeyT:'4',KeyG:'sp',Escape:'esc',KeyP:'esc',Enter:'ent'};
+const KM={ArrowLeft:'l',KeyA:'l',ArrowRight:'r',KeyD:'r',ArrowUp:'u',KeyW:'u',ArrowDown:'d',KeyS:'d',Space:'j',KeyJ:'p',KeyZ:'p',KeyK:'s',KeyX:'s',KeyL:'k',KeyI:'k',KeyU:'g',KeyE:'g',ShiftLeft:'o',ShiftRight:'o',KeyN:'o',KeyQ:'f',KeyB:'f',KeyR:'1',KeyY:'2',KeyV:'3',KeyT:'4',KeyG:'sp',Escape:'esc',KeyP:'esc',Enter:'ent'};
 function press(a){PRESS[a]=8}
 function held(a){return !!(KEYS[a]||PADK[a]||TCH[a])}
 function took(a){if(PRESS[a]>0){PRESS[a]=0;return true}return false}
@@ -776,7 +776,7 @@ function drawHUD(){const P=G.P;
  if(P.gun){const w=WPN[P.gun.t];text(w.n+' '+P.gun.ammo,140,54,13,w.col,'left');for(let i=0;i<Math.min(P.gun.max,42);i++){ctx.fillStyle=i<P.gun.ammo?w.col:'#333';ctx.fillRect(140+i*3.4,62,2,6)}}
  if(P.sw){text('KATANA',KX(),54,13,'#9ff0ff','left');for(let i=0;i<P.sw.max;i++){ctx.fillStyle=i<P.sw.uses?'#9ff0ff':'#333';ctx.fillRect(KX()+i*6,62,4,6)}}
  bar(16,74,210,8,P.focus/100,'#4ac8ff');text('Q',232,78,11,'#7fe3ff','left');
- bar(16,90,210,11,P.rage/100,P.rampT>0?'#ff3a3a':'#ff9a1a');for(const [v,l] of [[30,'R'],[50,'F'],[100,'V']]){const x=16+210*v/100;ctx.fillStyle=P.rage>=v?'#fff':'#777';ctx.fillRect(x-1,87,2,17);text(l,x,112,11,P.rage>=v?'#ffe14a':'#888')}
+ bar(16,90,210,11,P.rage/100,P.rampT>0?'#ff3a3a':'#ff9a1a');for(const [v,l] of [[30,'R'],[50,'Y'],[100,'V']]){const x=16+210*v/100;ctx.fillStyle=P.rage>=v?'#fff':'#777';ctx.fillRect(x-1,87,2,17);text(l,x,112,11,P.rage>=v?'#ffe14a':'#888')}
  // score
  text(String(G.score).padStart(7,'0'),LW-18,22,24,'#fff','right');
  if(G.cmb>1){const r=rankOf(G.cmb);text(G.cmb+' HIT COMBO',LW-18,52,16,'#ffe14a','right');text('x'+G.mult,LW-18,74,16,'#ff9a3a','right');comic(r,LW-70,112,48,r.length>1?'#ff4a4a':'#ffe14a',0)}
@@ -784,7 +784,7 @@ function drawHUD(){const P=G.P;
  if(G.boss&&!G.boss.dead&&G.boss.hp>0){const b=G.boss;bar(280,20,400,14,b.hp/b.mhp,'#c42a3a');text(b.n,480,48,16,'#fff');if(b.bid===6){ctx.fillStyle='#fff';ctx.fillRect(280+400*.33,18,2,18);ctx.fillRect(280+400*.66,18,2,18)}}
  if(G.go&&!G.lock&&G.goT%50<32&&!G.bossDead){text('GO ►',850,250,40,'#ffe14a');}
  if(G.ban){const a=G.ban.t<20?G.ban.t/20:G.ban.t>170?(200-G.ban.t)/30:1;ctx.globalAlpha=clamp(a,0,1);ctx.fillStyle='rgba(0,0,0,.55)';ctx.fillRect(0,150,LW,150);comic(G.ban.txt,LW/2,190,30,'#ff4a4a',0);comic(G.ban.sub,LW/2,238,56,'#ffe14a',0);text(G.ban.note,LW/2,282,14,'#ddd');ctx.globalAlpha=1}
- if(G.hint>0&&!G.cine){ctx.globalAlpha=Math.min(1,G.hint/60);text('J PUNCH (x3)   K SHOOT   L KICK   U GRAB   SHIFT ROLL   Q BULLET-TIME   R·F·V SPECIALS',LW/2,LH-26,13,'#fff');ctx.globalAlpha=1}
+ if(G.hint>0&&!G.cine){ctx.globalAlpha=Math.min(1,G.hint/60);text('J PUNCH (x3)   K SHOOT   L KICK   U GRAB   SHIFT ROLL   Q BULLET-TIME   R·Y·V·T SPECIALS',LW/2,LH-26,13,'#fff');ctx.globalAlpha=1}
  if(G.cine){const ln=G.cine.lines[Math.min(G.cine.i,G.cine.lines.length-1)];ctx.fillStyle='rgba(0,0,0,.7)';ctx.fillRect(40,LH-140,LW-80,84);ctx.strokeStyle='#ffe14a';ctx.lineWidth=2;ctx.strokeRect(40,LH-140,LW-80,84);text(ln[0],60,LH-122,15,'#ffe14a','left');const n=Math.floor(G.cine.t/1.6);text('"'+ln[1].slice(0,n)+'"',60,LH-92,19,'#fff','left');if(G.cine.t>40&&frameN%60<40)text('PRESS ANY ACTION KEY',LW-60,LH-70,11,'#aaa','right')}
  if(G.cap){const n=Math.floor(G.cap.t/1.2);text(G.cap.txt.slice(0,n),LW/2,LH-70,18,'#ffe14a')}
  if(G.ban2&&G.ban2.t<90){G.ban2.t++;ctx.globalAlpha=1-G.ban2.t/90}
@@ -853,7 +853,7 @@ function chselScreen(){bgScene(1,frameN*.3);ctx.fillStyle='rgba(0,0,0,.6)';ctx.f
  mbtn('DIFFICULTY: '+DIFF[SV.diff].n,40+4*224,100+180+20,210,40,()=>{SV.diff=(SV.diff+1)%3;saveSV()},{size:14});mbtn('◄ BACK',40+4*224,100+180+72,210,40,()=>{scr='title';msel=0});
  if(took('esc')){scr='title';msel=0}}
 function howScreen(){bgScene(2,frameN*.3);ctx.fillStyle='rgba(0,0,0,.78)';ctx.fillRect(0,0,LW,LH);comic('HOW TO PLAY',LW/2,40,40,'#ffe14a',0);
- const L=[['A D / ◄ ►','Move (momentum + skid)'],['W / ▲','Aim up · uppercut with J'],['S / ▼','Crouch · SLIDE while running'],['SPACE','Jump (hold = higher) · twice = FLIP'],['MOUSE','Free aim · LMB shoot · RMB shootdodge'],['J','Punch combo'],['K','Shoot (dual pistols, auto-aim)'],['L','Kick combo'],['U','Grab / disarm / throw'],['SHIFT','Roll · AIR = SHOOTDODGE · +S lean'],['G / tap ◄► twice','SPRINT (faster, wide camera)'],['Q (hold)','Bullet time'],['R','DRAGON SPIN  (30 rage)'],['F','BLOOD RUSH  (50 rage)'],['V','RAMPAGE  (100 rage)'],['T','GUN KATA  (60 rage)'],['P / ESC','Pause']];
+ const L=[['A D / ◄ ►','Move (momentum + skid)'],['W / ▲','Aim up · uppercut with J'],['S / ▼','Crouch · SLIDE while running'],['SPACE','Jump (hold = higher) · twice = FLIP'],['MOUSE','Free aim · LMB shoot · RMB shootdodge'],['J','Punch combo'],['K','Shoot (dual pistols, auto-aim)'],['L','Kick combo'],['U','Grab / disarm / throw'],['SHIFT','Roll · AIR = SHOOTDODGE · +S lean'],['G / tap ◄► twice','SPRINT (faster, wide camera)'],['Q (hold)','Bullet time'],['R','DRAGON SPIN  (30 rage)'],['Y','BLOOD RUSH  (50 rage)'],['V','RAMPAGE  (100 rage)'],['T','GUN KATA  (60 rage)'],['P / ESC','Pause']];
  L.forEach((r,i)=>{text(r[0],40,88+i*22,14,'#ffe14a','left');text(r[1],190,88+i*22,13,'#fff','left')});
  const M=['GUN-FU MOVES','SHIFT in air  →  MAX PAYNE SHOOTDODGE (slow-mo, aim free)','Hold SHIFT + S on ground  →  lean-back shot','Run + DOWN  →  slide-shoot','Space, Space  →  backflip, fire while upside-down','J J J J  →  punch string · J,L  →  kick chains','Mix J / L / K  →  longer combos, bigger multiplier','UP + J  →  launcher · then air kicks','U near enemy  →  disarm, human-shield, throw','GRAB (U) then mash J = punch them to death','Pickups: SMG · SHOTGUN · MAGNUM (limited ammo)','KATANA pickup: cuts armour, limited uses','Armoured foes: shoot the HEAD, hit RIOT shield','guys when they swing, or break the armour.'];
  M.forEach((r,i)=>text(r,520,92+i*25,i?13:15,i?'#fff':'#ff6a6a','left'));
