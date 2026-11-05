@@ -43,7 +43,14 @@ function voice(id,o){if(!sfxOn||!AC)return;const k=id+(o.tag||'');const now=AC.c
   // breath / rasp
   const nn=Math.floor(AC.sampleRate*d),nb=AC.createBuffer(1,nn,AC.sampleRate),na=nb.getChannelData(0);for(let i=0;i<nn;i++)na[i]=(Math.random()*2-1)*(1-i/nn);const ns=AC.createBufferSource(),ng=AC.createGain(),nf=AC.createBiquadFilter();nf.type='bandpass';nf.frequency.value=1600;nf.Q.value=.7;ng.gain.value=o.rasp||.05;ns.buffer=nb;ns.connect(nf);nf.connect(ng);ng.connect(AC.destination);ns.start(t)}catch(e){}}
 Object.assign(VP,{kane:105,thug:96,gun:118,knife:150,shot:85,brute:60,snip:130,boss:70});
+const SMP={},SMT={};
+function smpLoad(k,f){try{fetch(new URL('../../assets/'+f,document.baseURI)).then(r=>r.arrayBuffer()).then(b=>AC.decodeAudioData(b,d=>{SMP[k]=d},()=>{})).catch(()=>{})}catch(e){}}
+function smpInit(){if(!AC||SMP._i)return;SMP._i=1;smpLoad('r1','gun-fu-rico1.mp3');smpLoad('r2','gun-fu-rico2.mp3');smpLoad('h','gun-fu-hit.mp3')}
+function playSmp(k,vol,rate){if(!sfxOn||!AC||!SMP[k])return false;const n=performance.now();if(n-(SMT[k]||0)<70)return true;SMT[k]=n;try{const s=AC.createBufferSource(),g=AC.createGain();s.buffer=SMP[k];s.playbackRate.value=rate||1;g.gain.value=vol||.7;s.connect(g);g.connect(MG||AC.destination);s.start()}catch(e){return false}return true}
+function ricoPlay(){return playSmp(Math.random()<.5?'r1':'r2',.65,.92+Math.random()*.16)}
 const SX={
+ rico(){if(!ricoPlay()){noise(.06,.16,2500,9000);tone(1500,.09,'square',.05,.6)}},
+ hitE(){if(!playSmp('h',.75,.95+Math.random()*.12))SX.shotE()},
  shot(){noise(.09,.2,600,6000);tone(190,.12,'sawtooth',.13,.3);tone(70,.2,'sine',.22,.4)},
  shotE(){noise(.08,.12,500,4000);tone(150,.1,'square',.06,.35)},
  shotgun(){noise(.24,.3,200,2500);tone(60,.28,'sawtooth',.2,.4)},
@@ -64,7 +71,7 @@ const SX={
  boss(){tone(70,1.2,'sawtooth',.2,.5);tone(65,1.2,'square',.1,.5)},
  laser(){tone(1800,.5,'sine',.025,.9)},
  ui(){tone(520,.05,'square',.05)},
- clang(){noise(.06,.16,2500,9000);tone(1500,.09,'square',.05,.6);tone(2300,.12,'sine',.04,.5)},
+ clang(){if(!ricoPlay()){noise(.06,.16,2500,9000);tone(1500,.09,'square',.05,.6);tone(2300,.12,'sine',.04,.5)}},
  go(){tone(440,.08,'square',.06);tone(660,.1,'square',.06,0,.08)},
  land(){noise(.1,.1,100,500);tone(70,.12,'sine',.14,.5)},
  thud(){noise(.12,.14,100,700);tone(60,.2,'sine',.2,.5)},
@@ -92,7 +99,7 @@ function musStep(s,t){const r=MQ.root,p=MQ.pitch,bp=BASSP[MQ.lvl%3],ap=ARPP[(MQ.
  if(i>=2){if(s%16===14||s%16===6)mNoise(t,.25,.1,900);mTone(mf(rt-24)*p,t,.3,'sine',.2,200)}}
 const MUS={};
 function musEl(k){if(!MUS[k]){const a=new Audio(new URL('../../assets/gun-fu-'+(k==='m'?'menu':'game')+'.mp3',document.baseURI).href);a.loop=true;a.preload='auto';try{a.preservesPitch=false;a.mozPreservesPitch=false;a.webkitPreservesPitch=false}catch(e){}MUS[k]=a;try{AC.createMediaElementSource(a).connect(musGain())}catch(e){}}return MUS[k]}
-function musTick(){const want=(AC&&MQ.on&&sfxOn)?(MQ.trk||'m'):null;if(AC&&MQ.gain)MQ.gain.gain.value=.85;for(const k of ['m','g']){if(k===want){const a=musEl(k);try{a.playbackRate=clamp(MQ.pitch||1,.5,1.5)}catch(e){}if(a.paused&&!a.__p){a.__p=1;a.play().then(()=>{a.__p=0}).catch(()=>{a.__p=0})}}else if(MUS[k]&&!MUS[k].paused)MUS[k].pause()}}
+function musTick(){smpInit();const want=(AC&&MQ.on&&sfxOn)?(MQ.trk||'m'):null;if(AC&&MQ.gain)MQ.gain.gain.value=.85;for(const k of ['m','g']){if(k===want){const a=musEl(k);try{a.playbackRate=clamp(MQ.pitch||1,.5,1.5)}catch(e){}if(a.paused&&!a.__p){a.__p=1;a.play().then(()=>{a.__p=0}).catch(()=>{a.__p=0})}}else if(MUS[k]&&!MUS[k].paused)MUS[k].pause()}}
 function musTickOld(){if(!AC||!MQ.on||!sfxOn){return}if(MQ.next<AC.currentTime)MQ.next=AC.currentTime+.05;let g=0;while(MQ.next<AC.currentTime+.2&&g++<8){musStep(MQ.step,MQ.next);MQ.next+=60/(MQ.bpm*MQ.tmul)/4;MQ.step=(MQ.step+1)%64}}
 function musSet(on,lvl,bpm,root,int){if(on&&!MQ.on){MQ.step=0;MQ.next=AC?AC.currentTime+.1:0}MQ.on=on;if(lvl!==undefined)MQ.lvl=lvl;if(bpm)MQ.bpm=bpm;if(root)MQ.root=root;if(int!==undefined)MQ.int=int}
 setInterval(musTick,30);
@@ -354,7 +361,7 @@ function hurtE(e,dmg,kb,o){o=o||{};const P=G.P;if(e.dead||e.dying||e.inv>0&&!o.i
  e.hp-=dmg;e.flash=4;G.hits++;addCombo(1);addScore(8);P.rage=Math.min(100,P.rage+dmg*.28);
  hitstop(o.hs||(o.gun?2:3));shake(o.sh||(o.launch?6:3));camKick(Math.min(.07,.01+dmg*.002),(Math.random()-.5)*.016);
  const hx=e.x,hy=e.y-e.hgt*.6;blood(hx,hy,sgn(kb||P.dir),6+(dmg|0)/3);if(dmg>=14){ring(hx,hy,'#ff3050',70);sparks(hx,hy,8,'#ffe9a0')}
- if(o.gun){SX.shotE();sparks(hx,hy,4)}else if(o.k){SX.kick(o.h||0)}else SX.punch(o.h||0);
+ if(o.gun){SX.hitE();sparks(hx,hy,4)}else if(o.k){SX.kick(o.h||0)}else SX.punch(o.h||0);
  if(o.pop!==false&&!o.gun&&Math.random()<.7)popK(hx,hy-24,o.k?'k':'p',o.k?'#7fe3ff':'#ffe14a',o.h>1?44:34);
  voice(e.vo||'thug',{tag:'p',d:.2,p0:1.2,p1:1.6,p2:.9,v0:Math.random()<.5?'a':'e',v1:'o',vol:.16,rasp:.05,gap:.2});
  if(e.hp<=0){killE(e,kb,o);return}
@@ -383,10 +390,11 @@ function updBullets(){const P=G.P,dt=G.dtW;
  for(const b of G.B){if(b.dead)continue;const sub=Math.ceil(Math.hypot(b.vx,b.vy)*dt/9);const n=Math.max(1,sub);
   for(let s=0;s<n&&!b.dead;s++){b.px=b.x;b.py=b.y;b.x+=b.vx*dt/n;b.y+=b.vy*dt/n;if(b.grav)b.vy+=b.grav*dt/n;
    if(b.own==='P'){for(const e of G.E){if(e.dead||e.dying||e.st==='held'||(b.hit&&b.hit.has(e)))continue;const r=eRect(e);if(b.x>r.x0-b.r&&b.x<r.x1+b.r&&b.y>r.y0-b.r&&b.y<r.y1){hurtE(e,b.dmg,sgn(b.vx)*4,{gun:1,h:0,launch:b.big?6:0,hy:b.y});if(b.pierce){(b.hit=b.hit||new Set()).add(e)}else{b.dead=1;break}}}
-    for(const pr of G.PR){if(!pr.dead&&Math.abs(b.x-pr.x)<20&&b.y>FY-52){pr.hp--;sparks(b.x,b.y,3);if(pr.hp<=0||pr.t==='barrel')breakProp(pr);if(!b.pierce)b.dead=1}}}
+    for(const pr of G.PR){if(!pr.dead&&Math.abs(b.x-pr.x)<20&&b.y>FY-52){pr.hp--;sparks(b.x,b.y,3);SX.rico();if(pr.hp<=0||pr.t==='barrel')breakProp(pr);if(!b.pierce)b.dead=1}}}
    else{const r=pRect();
     if(P.held&&P.held.st==='held'){const h=P.held,hr=eRect(h);if(Math.abs(b.x-h.x)<18&&b.y>hr.y0&&b.y<hr.y1){hurtE(h,b.dmg*1.5,0,{gun:1,ignore:1,pop:false});pop(h.x,h.y-90,'SHIELD!','#7fe3ff',26);b.dead=1;break}}
     if(!P.dead&&b.x>r.x0-b.r&&b.x<r.x1+b.r&&b.y>r.y0-b.r&&b.y<r.y1){if(P.act==='roll'&&P.at>2&&P.at<21){if(!b.nm){b.nm=1;P.focus=Math.min(100,P.focus+10);pop(P.x,P.y-90,'CLOSE CALL!','#7fe3ff',22)}}else if(P.inv<=0&&P.rampT<=0){hurtP(b.dmg,sgn(b.vx)*3,{inv:30});b.dead=1;break}}}}
+  if(b.own==='P'&&b.y>FY-4&&b.vy>.5&&!b.dead){sparks(b.x,FY-2,4,'#ffe9a0');SX.rico();b.dead=1}
   b.life-=dt;if(b.life<=0||b.x<G.cam.x-700||b.x>G.cam.x+700||b.y>FY+20||b.y<-80)b.dead=1}
  G.B=G.B.filter(b=>!b.dead)}
 function updParts(){const dt=G.dtW;for(const p of G.PT){p.l-=dt;p.vy+=p.g*dt;p.x+=p.vx*dt;p.y+=p.vy*dt;if(p.k==='mist'){p.vx*=.96;p.vy*=.96}if(p.k==='bd'&&p.y>FY){splat(p.x,p.c);p.l=0;continue}if(p.y>FY+30){p.y=FY+30;p.vy*=-.2;p.vx*=.6}}if(G.SP)for(const s of G.SP)s.l--;G.PT=G.PT.filter(p=>p.l>0);for(const l of G.LT)l.l--;G.LT=G.LT.filter(l=>l.l>0);for(const p of G.PO)p.l--;G.PO=G.PO.filter(p=>p.l>0)}
