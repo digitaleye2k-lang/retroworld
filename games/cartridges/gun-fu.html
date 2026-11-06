@@ -379,7 +379,7 @@ function drawFig(f,k,p,col){const ga0=ctx.globalAlpha,o=pose(f,k,p),sc=f.sc||1,f
 const DIFF=[{n:'EASY',hp:.7,dm:.6,tok:2},{n:'NORMAL',hp:1,dm:1,tok:2},{n:'HARD',hp:1.35,dm:1.4,tok:3}];
 let SV={un:1,diff:1,hi:0};try{const j=JSON.parse(LS.get('gf_save')||'null');if(j)SV=Object.assign(SV,j)}catch(e){}
 function saveSV(){LS.set('gf_save',JSON.stringify(SV))}
-let scr='title',G=null,paused=false,frameN=0,btns=[],mouse={x:-1,y:-1};
+let scr='intro',G=null,paused=false,frameN=0,btns=[],mouse={x:-1,y:-1};
 const POOL=[['thug','thug','gun'],['thug','gun','knife','sword'],['thug','gun','sword','heavy','brute'],['gun','shot','sword','riot','heavy','thug'],['gun','shot','sword','snip','heavy','riot'],['gun','shot','riot','snip','sword','heavy','brute'],['gun','shot','riot','snip','sword','heavy','brute','thug']];
 const NENC=[5,5,6,6,7,7,8,1];
 function genHall(){const r=srng(4242),waves=[],P1=['thug','thug','thug','knife','sword'],P2=['thug','knife','sword','sword','heavy'],P3=['knife','sword','heavy','riot','brute'];for(let wi=0;wi<7;wi++){const sz=Math.floor(7+wi*1.3),pool=wi<2?P1:wi<5?P2:P3,w=[];for(let i=0;i<sz;i++){let t=pool[(r()*pool.length)|0];if(t==='brute'&&wi<6)t='heavy';w.push([t,i%2?-1:1])}waves.push(w)}return[{x:700,waves,props:[],boss:-1}]}
@@ -1070,7 +1070,7 @@ cv.addEventListener('pointerdown',e=>{ac();const p=ptr(e);mouse.x=p.x;mouse.y=p.
  if(scr==='game'&&G&&G.cine){press('ent')}
  for(let i=btns.length-1;i>=0;i--){const b=btns[i];if(!b.dis&&p.x>=b.x&&p.x<=b.x+b.w&&p.y>=b.y&&p.y<=b.y+b.h){b.cb();return}}
  if(scr==='ctledit'){const k=hitCtl(p);if(k)edp={k,sx:p.x,sy:p.y,moved:0,id:e.pointerId};return}
- if(scr==='story')storyNext();},{passive:true});
+ if(scr==='story')storyNext();if(scr==='intro')introClick();},{passive:true});
 addEventListener('pointermove',e=>{const p=ptr(e);mouse.x=p.x;mouse.y=p.y;mouse.m=e.pointerType==='mouse';if(e.pointerType==='mouse'){MA.sx=p.x;MA.sy=p.y;MA.t=240}if(edp&&e.pointerId===edp.id){if(Math.hypot(p.x-edp.sx,p.y-edp.sy)>10)edp.moved=1;if(edp.moved){const q=[clamp(TC.lh?LW-p.x:p.x,30,LW-30),clamp(p.y,30,LH-30)];if(edp.k==='st')TC.st=q;else TC.pos[edp.k]=q}}const t=tpid[e.pointerId];if(t&&t.t==='s')tStick(p)},{passive:true});
 function tUp(e){const t=tpid[e.pointerId];if(!t)return;if(t.t==='s'){TCH.l=TCH.r=TCH.u=TCH.d=0}else setT(t.k,0);delete tpid[e.pointerId]}
 addEventListener('pointerup',e=>{if(e.pointerType==='mouse')KEYS.s=0;if(edp&&e.pointerId===edp.id){if(!edp.moved&&edp.k!=='st')TC.off[edp.k]=TC.off[edp.k]?0:1;saveTC();edp=null}tUp(e)});addEventListener('pointercancel',tUp);
@@ -1157,19 +1157,93 @@ function toTitle(){G=null;scr='title';mode='menu';msel=0;paused=false;MQ.trk='m'
 function startGame(ch,carry){newGame(ch,carry);scr='game';paused=false;msel=0;mode='play';G.hpT=100}
 /* ---------- story ---------- */
 let ST=null;
+function stGlow(x,y,r,c,a){const g=ctx.createRadialGradient(x,y,0,x,y,r);g.addColorStop(0,c);g.addColorStop(1,'rgba(0,0,0,0)');ctx.save();ctx.globalAlpha=a==null?1:a;ctx.globalCompositeOperation='lighter';ctx.fillStyle=g;ctx.fillRect(x-r,y-r,r*2,r*2);ctx.restore()}
+function stDust(t,n,c,y0,y1){ctx.save();ctx.fillStyle=c;for(let i=0;i<n;i++){const x=(i*211+t*.35*(1+i%3)+Math.sin(t*.02+i)*14)%LW,y=y0+((i*137+t*.18*(1+i%2))%(y1-y0));ctx.globalAlpha=.18+.3*Math.abs(Math.sin(t*.04+i));ctx.fillRect(x,y,2+(i%3===0),2+(i%3===0))}ctx.restore()}
+function stRain(t,a,sl){ctx.save();ctx.strokeStyle='rgba(180,205,255,'+(a||.4)+')';ctx.lineWidth=1.3;ctx.beginPath();for(let i=0;i<130;i++){const x=(i*173+t*(sl||5))%(LW+80)-30,y=(i*97+t*24)%400;ctx.moveTo(x,y);ctx.lineTo(x-5*(sl||5)/5,y+17)}ctx.stroke();ctx.restore()}
+function stVig(a){const g=ctx.createRadialGradient(LW/2,190,170,LW/2,190,640);g.addColorStop(0,'rgba(0,0,0,0)');g.addColorStop(1,'rgba(0,0,0,'+(a||.75)+')');ctx.fillStyle=g;ctx.fillRect(0,0,LW,400)}
+function stGrain(){ctx.save();ctx.globalAlpha=.09;for(let i=0;i<70;i++){ctx.fillStyle=Math.random()<.5?'#fff':'#000';ctx.fillRect(Math.random()*LW,Math.random()*400,2,2)}ctx.restore()}
+function stSky(y0,y1,stops){const g=ctx.createLinearGradient(0,y0,0,y1);stops.forEach((s,i)=>g.addColorStop(i/(stops.length-1),s));ctx.fillStyle=g;ctx.fillRect(0,y0,LW,y1-y0)}
+function stCity(base,seed,col,wc,t,hmax){ctx.fillStyle=col;let x=-10,i=seed;while(x<LW){const w=36+((i*37)%50),h=60+((i*71)%hmax);ctx.fillStyle=col;ctx.fillRect(x,base-h,w,h+4);if(wc){for(let yy=base-h+8;yy<base-8;yy+=12)for(let xx=x+5;xx<x+w-6;xx+=10){if(((xx*7+yy*13+i)%5)<2){ctx.fillStyle=wc;ctx.globalAlpha=.55+.3*Math.sin(t*.03+xx);ctx.fillRect(xx,yy,4,6);ctx.globalAlpha=1}}}x+=w+2+(i%3)*3;i++}}
+function stHeart(t,x,y,i){const p=((t*.8+i*40)%120)/120;ctx.save();ctx.globalAlpha=Math.sin(p*Math.PI)*.8;ctx.fillStyle='#ff6a8a';ctx.font='bold '+(16+i*3)+'px Arial';ctx.textAlign='center';ctx.fillText('♥',x+Math.sin(p*6+i)*12,y-p*70);ctx.restore()}
+function stCard(x,y,w,h,name,tint,t,big){ctx.save();ctx.translate(x+w/2,y+h/2);ctx.rotate(((x*7+y*3)%9-4)*.012);ctx.translate(-w/2,-h/2);ctx.shadowColor='rgba(0,0,0,.6)';ctx.shadowBlur=12;ctx.shadowOffsetY=6;ctx.fillStyle='#efe9da';ctx.fillRect(0,0,w,h);ctx.shadowColor='transparent';ctx.fillStyle='#222';ctx.fillRect(8,12,w-16,h-44);const g=ctx.createLinearGradient(0,12,0,h-32);g.addColorStop(0,tint);g.addColorStop(1,'#111');ctx.fillStyle=g;ctx.fillRect(8,12,w-16,h-44);ctx.fillStyle='#07070a';ctx.beginPath();ctx.arc(w/2,12+(h-44)*.42,(h-44)*.2,0,TAU);ctx.fill();ctx.beginPath();ctx.ellipse(w/2,h-32,(w-16)*.36,(h-44)*.3,0,Math.PI,0);ctx.fill();if(big){ctx.fillStyle='#07070a';ctx.fillRect(w/2-34,12+(h-44)*.12,68,10);ctx.fillRect(w/2-48,12+(h-44)*.2,96,6)}ctx.fillStyle='#c22';ctx.beginPath();ctx.arc(w/2,6,5,0,TAU);ctx.fill();ctx.fillStyle='#222';ctx.font='bold '+(big?15:11)+'px "Courier New",monospace';ctx.textAlign='center';ctx.fillText(name,w/2,h-12);ctx.restore()}
 const PAGES=[
- {bg:'#3a2412',t:'Silas Kane had a quiet life. A wife. A little girl. A small house at the end of a quiet street.',draw(t){const g=ctx.createLinearGradient(0,0,0,400);g.addColorStop(0,'#5a3a20');g.addColorStop(1,'#2a1a10');ctx.fillStyle=g;ctx.fillRect(0,0,LW,400);ctx.fillStyle='#ffd27a';ctx.globalAlpha=.25;ctx.fillRect(660,60,200,180);ctx.globalAlpha=1;ctx.fillStyle='#1a0f08';ctx.fillRect(0,360,LW,40);ctx.strokeStyle='#e8a84a';ctx.lineWidth=4;ctx.strokeRect(660,60,200,180);ctx.beginPath();ctx.moveTo(760,60);ctx.lineTo(760,240);ctx.moveTo(660,150);ctx.lineTo(860,150);ctx.stroke();fig(330,372,'#f4f4ff',1.7,1,'idle',null,{tie:1});fig(470,372,'#ff9ad0',1.6,-1,'idle');fig(405,372,'#ffe14a',.9,1,'idle');ctx.fillStyle='#ff6a8a';ctx.font='36px Arial';ctx.textAlign='center';ctx.fillText('♥',400,150+Math.sin(t*.05)*6)}},
- {bg:'#050812',t:'Then the Family came, for a debt that was never his. The door opened. The lights went out.',draw(t){ctx.fillStyle='#070b18';ctx.fillRect(0,0,LW,400);ctx.fillStyle='#111827';ctx.fillRect(0,360,LW,40);ctx.fillStyle='#1b2540';ctx.fillRect(380,70,200,290);ctx.fillStyle='#fff2c0';ctx.globalAlpha=.18;ctx.beginPath();ctx.moveTo(380,360);ctx.lineTo(580,360);ctx.lineTo(760,400);ctx.lineTo(200,400);ctx.fill();ctx.globalAlpha=1;for(let i=0;i<3;i++)fig(330+i*120,372,'#000',1.7,1,'aim','pistol',{hat:'fedora',dk:'#000',hc:'#111'});if(Math.floor(t/9)%5===0){ctx.fillStyle='rgba(255,255,255,.85)';ctx.fillRect(0,0,LW,400)}}},
- {bg:'#10161e',t:'He lived. They did not. The rain never stopped.',draw(t){ctx.fillStyle='#10161e';ctx.fillRect(0,0,LW,400);ctx.fillStyle='#1c2430';ctx.fillRect(0,350,LW,50);for(let i=0;i<3;i++){const x=560+i*90;ctx.fillStyle='#7a8696';ctx.fillRect(x-4,270-i*8,8,80+i*8);ctx.fillRect(x-24,292-i*8,48,8)}fig(380,372,'#f4f4ff',1.7,1,'crouch','pistolP',{tie:1});ctx.strokeStyle='rgba(170,200,255,.4)';ctx.lineWidth=1.4;ctx.beginPath();for(let i=0;i<90;i++){const x=(i*173+t*5)%(LW+60)-30,y=(i*97+t*22)%400;ctx.moveTo(x,y);ctx.lineTo(x-5,y+16)}ctx.stroke()}},
- {bg:'#000',t:'Seven names. One road of blood. And at the end of it, the man who gave the order: DON MORETTI.',draw(t){ctx.fillStyle='#000';ctx.fillRect(0,0,LW,400);const N=['BIG SAL','VINNY TWO-KNIVES','THE BUTCHER','IRON TONY','LADY VIPER','THE COLONEL','DON MORETTI'];N.forEach((n,i)=>{const a=clamp((t-i*14)/16,0,1);ctx.globalAlpha=a;comic(n,LW/2+(i%2?30:-30),40+i*48,i===6?44:32,i===6?'#ff3a3a':'#fff',0);if(i<6&&t>130+i*10){ctx.strokeStyle='#e22';ctx.lineWidth=6;ctx.beginPath();ctx.moveTo(LW/2-190,40+i*48);ctx.lineTo(LW/2+200,40+i*48-6);ctx.stroke()}ctx.globalAlpha=1})}}];
+ {bg:'#3a2412',t:'Silas Kane had a quiet life. A wife. A little girl. A small house at the end of a quiet street.',draw(t){
+  stSky(0,330,['#7a4a2a','#4a2c18']);ctx.fillStyle='rgba(0,0,0,.09)';for(let x=0;x<LW;x+=30)ctx.fillRect(x,0,13,250);
+  ctx.fillStyle='#2a190d';ctx.fillRect(0,250,LW,84);ctx.fillStyle='#4a2f18';ctx.fillRect(0,246,LW,6);ctx.strokeStyle='rgba(0,0,0,.25)';ctx.lineWidth=2;for(let x=20;x<LW;x+=56){ctx.strokeRect(x,262,44,60)}
+  ctx.fillStyle='#24150a';ctx.fillRect(0,332,LW,70);ctx.strokeStyle='#150b05';ctx.lineWidth=2;for(let i=0;i<10;i++){ctx.beginPath();ctx.moveTo(i*110-60,332);ctx.lineTo(i*180-380,400);ctx.stroke()}
+  // window
+  const wx=650,wy=34,ww=220,wh=180;let g=ctx.createLinearGradient(0,wy,0,wy+wh);g.addColorStop(0,'#5b3a78');g.addColorStop(.55,'#f08a4a');g.addColorStop(1,'#ffd07a');ctx.fillStyle=g;ctx.fillRect(wx,wy,ww,wh);ctx.fillStyle='#ffe7a8';ctx.beginPath();ctx.arc(wx+110,wy+wh-18,34,Math.PI,0);ctx.fill();ctx.fillStyle='#3a2230';ctx.beginPath();ctx.moveTo(wx,wy+wh);ctx.lineTo(wx,wy+130);ctx.quadraticCurveTo(wx+60,wy+105,wx+120,wy+140);ctx.quadraticCurveTo(wx+180,wy+112,wx+ww,wy+135);ctx.lineTo(wx+ww,wy+wh);ctx.fill();
+  ctx.strokeStyle='#caa070';ctx.lineWidth=8;ctx.strokeRect(wx,wy,ww,wh);ctx.lineWidth=5;ctx.beginPath();ctx.moveTo(wx+ww/2,wy);ctx.lineTo(wx+ww/2,wy+wh);ctx.moveTo(wx,wy+wh/2);ctx.lineTo(wx+ww,wy+wh/2);ctx.stroke();
+  ctx.fillStyle='#8a3a3a';ctx.beginPath();ctx.moveTo(wx-24,wy-8);ctx.lineTo(wx+34,wy-8);ctx.quadraticCurveTo(wx+14,wy+90,wx+38,wy+wh+10);ctx.lineTo(wx-24,wy+wh+10);ctx.fill();ctx.beginPath();ctx.moveTo(wx+ww+24,wy-8);ctx.lineTo(wx+ww-34,wy-8);ctx.quadraticCurveTo(wx+ww-14,wy+90,wx+ww-38,wy+wh+10);ctx.lineTo(wx+ww+24,wy+wh+10);ctx.fill();
+  // light shaft
+  ctx.save();ctx.globalCompositeOperation='lighter';g=ctx.createLinearGradient(wx,wy+80,wx-280,400);g.addColorStop(0,'rgba(255,190,110,.4)');g.addColorStop(1,'rgba(255,190,110,0)');ctx.fillStyle=g;ctx.beginPath();ctx.moveTo(wx+10,wy+20);ctx.lineTo(wx+ww-10,wy+20);ctx.lineTo(wx+90,400);ctx.lineTo(wx-420,400);ctx.fill();ctx.restore();
+  // frames on wall
+  for(const f of[[90,70,64,80,'#c9a'],[170,86,52,64,'#9bc'],[250,64,70,56,'#cb9']]){ctx.fillStyle='#caa070';ctx.fillRect(f[0]-5,f[1]-5,f[2]+10,f[3]+10);ctx.fillStyle=f[4];ctx.globalAlpha=.55;ctx.fillRect(f[0],f[1],f[2],f[3]);ctx.globalAlpha=1;ctx.fillStyle='#2a1a10';ctx.beginPath();ctx.arc(f[0]+f[2]/2,f[1]+f[3]*.4,8,0,TAU);ctx.fill();ctx.fillRect(f[0]+f[2]/2-12,f[1]+f[3]*.55,24,f[3]*.4)}
+  // lamp + table
+  ctx.fillStyle='#3a2414';ctx.fillRect(30,300,90,10);ctx.fillRect(40,310,8,40);ctx.fillRect(102,310,8,40);ctx.fillStyle='#ffe3a0';ctx.beginPath();ctx.moveTo(56,300);ctx.lineTo(94,300);ctx.lineTo(86,262);ctx.lineTo(64,262);ctx.fill();ctx.fillStyle='#222';ctx.fillRect(73,300,4,0);stGlow(75,282,130,'rgba(255,200,110,.7)',.6+Math.sin(t*.09)*.06);
+  // rug
+  ctx.fillStyle='#6a2a2a';ctx.beginPath();ctx.ellipse(430,372,250,26,0,0,TAU);ctx.fill();ctx.strokeStyle='#d9a66a';ctx.lineWidth=2;ctx.beginPath();ctx.ellipse(430,372,220,20,0,0,TAU);ctx.stroke();
+  stGlow(430,300,320,'rgba(255,170,90,.25)',1);
+  fig(320,380,'#f4f4ff',1.7,1,'idle',null,{tie:1});fig(500,380,'#ff9ad0',1.6,-1,'idle');fig(412,380-Math.abs(Math.sin(t*.06))*8,'#ffe14a',.95,1,'idle');
+  for(let i=0;i<4;i++)stHeart(t,410,230,i);stDust(t,36,'#ffd9a0',40,330)}},
+ {bg:'#050812',t:'Then the Family came, for a debt that was never his. The door opened. The lights went out.',draw(t){
+  stSky(0,400,['#080c1a','#04060e']);ctx.fillStyle='#0c1224';for(let x=0;x<LW;x+=96)ctx.fillRect(x,0,3,340);ctx.fillStyle='#0a0f1e';ctx.fillRect(0,340,LW,60);
+  const gap=Math.min(170,t*2.2),dx=480-gap/2;// door
+  ctx.fillStyle='#1d140d';ctx.fillRect(360,50,240,300);ctx.fillStyle='#fff3c8';const gg=ctx.createLinearGradient(0,50,0,350);gg.addColorStop(0,'#fff6d8');gg.addColorStop(1,'#ffd890');ctx.fillStyle=gg;ctx.fillRect(dx,58,gap,292);
+  ctx.save();ctx.globalCompositeOperation='lighter';const lg=ctx.createLinearGradient(480,340,480,400);ctx.fillStyle='rgba(255,230,160,.22)';ctx.beginPath();ctx.moveTo(dx,350);ctx.lineTo(dx+gap,350);ctx.lineTo(dx+gap+260,400);ctx.lineTo(dx-260,400);ctx.fill();ctx.restore();
+  ctx.fillStyle='#2a1a10';ctx.beginPath();ctx.moveTo(360,50);ctx.lineTo(dx,58);ctx.lineTo(dx,350);ctx.lineTo(360,350);ctx.fill();
+  const adv=clamp((t-50)/90,0,1);for(let i=0;i<3;i++){const sc=1.2+adv*.6+(i===1?.1:0),x=480+(i-1)*(50+adv*110),y=352+adv*30;ctx.globalAlpha=clamp((t-40-i*10)/20,0,1);fig(x,y,'#000',sc,i===0?1:-1,'aim','pistol',{hat:'fedora',dk:'#000',hc:'#000',flash:0})}ctx.globalAlpha=1;
+  stDust(t,24,'#fff1c0',60,340);
+  if(t>100){const k=Math.floor(t/5);if(k%3===0){ctx.fillStyle='rgba(255,250,220,.9)';ctx.fillRect(0,0,LW,400);for(let i=0;i<10;i++){ctx.strokeStyle='#ffe9a0';ctx.lineWidth=3;ctx.beginPath();const a=(i/10)*TAU,cx=480+(i%3-1)*90,cy=300;ctx.moveTo(cx,cy);ctx.lineTo(cx+Math.cos(a)*90,cy+Math.sin(a)*60);ctx.stroke()}}}
+  if(t>150){ctx.fillStyle='rgba(0,0,0,'+clamp((t-150)/40,0,1)+')';ctx.fillRect(0,0,LW,400)}}},
+ {bg:'#0a1018',t:'He lived. They did not. The rain never stopped.',draw(t){
+  const fl=(t%170)<6?1-((t%170)/6):0;stSky(0,330,['#0b121d','#1c2838']);ctx.fillStyle='#e8f0ff';ctx.globalAlpha=.55;ctx.beginPath();ctx.arc(150,70,30,0,TAU);ctx.fill();ctx.globalAlpha=1;
+  ctx.fillStyle='#202c3c';for(let i=0;i<5;i++){ctx.globalAlpha=.7;ctx.beginPath();ctx.ellipse(70+i*210+Math.sin(t*.003+i)*40,60+(i%2)*30,150,26,0,0,TAU);ctx.fill()}ctx.globalAlpha=1;
+  ctx.fillStyle='#070b12';for(let i=0;i<9;i++){const x=i*120-20,h=80+(i*53%60);ctx.beginPath();ctx.moveTo(x,330);ctx.lineTo(x+20,330-h);ctx.lineTo(x+40,330-h*.55);ctx.lineTo(x+60,330-h*1.1);ctx.lineTo(x+90,330);ctx.fill()}
+  ctx.fillStyle='#101722';ctx.fillRect(0,320,LW,80);ctx.strokeStyle='#05080d';ctx.lineWidth=3;for(let x=0;x<LW;x+=22){ctx.beginPath();ctx.moveTo(x,300);ctx.lineTo(x,330);ctx.stroke();ctx.beginPath();ctx.moveTo(x-5,306);ctx.lineTo(x,298);ctx.lineTo(x+5,306);ctx.stroke()}ctx.beginPath();ctx.moveTo(0,310);ctx.lineTo(LW,310);ctx.stroke();
+  const st=[[520,230,56,120],[620,246,50,106],[724,222,60,130]];for(const s of st){ctx.fillStyle='#8a97a8';ctx.beginPath();ctx.moveTo(s[0]-s[2]/2,s[1]+s[3]+30);ctx.lineTo(s[0]-s[2]/2,s[1]+14);ctx.quadraticCurveTo(s[0],s[1]-14,s[0]+s[2]/2,s[1]+14);ctx.lineTo(s[0]+s[2]/2,s[1]+s[3]+30);ctx.fill();ctx.strokeStyle='#4a5565';ctx.lineWidth=3;ctx.stroke();ctx.fillStyle='#5a6575';ctx.fillRect(s[0]-2,s[1]+30,4,32);ctx.fillRect(s[0]-12,s[1]+40,24,4)}
+  ctx.fillStyle='#d8404a';for(let i=0;i<3;i++){ctx.beginPath();ctx.arc(st[i][0]+(i-1)*8,st[i][1]+st[i][3]+34,4,0,TAU);ctx.fill()}
+  fig(390,376,'#f4f4ff',1.7,1,'crouch',null,{tie:1});
+  ctx.fillStyle='rgba(190,205,225,.07)';for(let i=0;i<4;i++){const x=((t*.4+i*260)%(LW+400))-200;ctx.beginPath();ctx.ellipse(x,340+i*8,260,22,0,0,TAU);ctx.fill()}
+  stRain(t,.45,6);if(fl){ctx.fillStyle='rgba(220,235,255,'+fl*.55+')';ctx.fillRect(0,0,LW,400)}}},
+ {bg:'#1a120a',t:'Seven names. One road of blood. And at the end of it, the man who gave the order: DON MORETTI.',draw(t){
+  ctx.fillStyle='#2a1c10';ctx.fillRect(0,0,LW,400);for(let i=0;i<500;i++){ctx.fillStyle=i%2?'rgba(0,0,0,.18)':'rgba(255,200,130,.07)';ctx.fillRect((i*83)%LW,(i*47)%400,3,3)}ctx.strokeStyle='#4a321c';ctx.lineWidth=14;ctx.strokeRect(14,8,LW-28,386);
+  const N=[['BIG SAL','#4a6a9a'],['VINNY','#6a4a9a'],['BUTCHER','#9a4a4a'],['IRON TONY','#6a7a8a'],['VIPER','#4a9a6a'],['COLONEL','#9a8a4a']];const pos=[[70,34],[240,34],[410,34],[70,196],[240,196],[410,196]];
+  const dp=[760,100];ctx.lineWidth=2.2;ctx.strokeStyle='#d02030';N.forEach((n,i)=>{const a=clamp((t-30-i*6)/30,0,1);if(a<=0)return;const x0=pos[i][0]+60,y0=pos[i][1]+6,x1=x0+(dp[0]-x0)*a,y1=y0+(dp[1]-y0)*a;ctx.beginPath();ctx.moveTo(x0,y0);ctx.quadraticCurveTo((x0+x1)/2,Math.max(y0,y1)+24,x1,y1);ctx.stroke()});
+  N.forEach((n,i)=>{const a=clamp((t-i*12)/14,0,1);if(a<=0)return;ctx.save();ctx.globalAlpha=a;ctx.translate(pos[i][0]+60,pos[i][1]+55);ctx.scale(.7+.3*a,.7+.3*a);ctx.translate(-pos[i][0]-60,-pos[i][1]-55);stCard(pos[i][0],pos[i][1],120,112,n[0],n[1],t);ctx.restore();const xa=clamp((t-150-i*14)/10,0,1);if(xa>0){ctx.strokeStyle='#e22';ctx.lineWidth=7;ctx.beginPath();ctx.moveTo(pos[i][0]+8,pos[i][1]+10);ctx.lineTo(pos[i][0]+8+104*xa,pos[i][1]+10+98*xa);ctx.moveTo(pos[i][0]+112,pos[i][1]+10);ctx.lineTo(pos[i][0]+112-104*xa,pos[i][1]+10+98*xa);ctx.stroke()}});
+  const da=clamp((t-84)/18,0,1);if(da>0){ctx.save();ctx.globalAlpha=da;ctx.translate(dp[0],dp[1]+80);ctx.scale(.6+.4*da,.6+.4*da);ctx.translate(-dp[0],-dp[1]-80);stCard(dp[0]-90,dp[1]-10,180,200,'DON MORETTI','#a82a2a',t,1);ctx.strokeStyle='rgba(255,40,40,'+(.5+.4*Math.sin(t*.12))+')';ctx.lineWidth=4;ctx.strokeRect(dp[0]-92,dp[1]-12,184,204);ctx.restore()}
+  stDust(t,18,'#ffd9a0',0,400)}}];
 const EPAGES=[
- {bg:'#12080a',t:'Moretti fell. The Family fell with him. Seven names, crossed out.',draw(t){const g=ctx.createLinearGradient(0,0,0,400);g.addColorStop(0,'#3a1010');g.addColorStop(1,'#12080a');ctx.fillStyle=g;ctx.fillRect(0,0,LW,400);ctx.fillStyle='#2a1208';ctx.fillRect(0,360,LW,40);fig(380,376,'#ff3a3a',1.7,1,'down',null,{hat:'fedora',lw:7});fig(560,372,'#f4f4ff',1.7,-1,'idle','pistolP',{tie:1})}},
- {bg:'#2a2038',t:'It did not bring them back. But at dawn, for the first time in a long while, Kane could breathe.',draw(t){const g=ctx.createLinearGradient(0,0,0,400);g.addColorStop(0,'#2a2038');g.addColorStop(.7,'#d98a5a');g.addColorStop(1,'#ffcf8a');ctx.fillStyle=g;ctx.fillRect(0,0,LW,400);ctx.fillStyle='#ffe9b0';ctx.beginPath();ctx.arc(480,330,60,Math.PI,0);ctx.fill();ctx.fillStyle='#1a1410';ctx.fillRect(0,350,LW,50);for(let i=0;i<3;i++){const x=640+i*70;ctx.fillStyle='#4a4038';ctx.fillRect(x-4,290,8,60);ctx.fillRect(x-20,306,40,7)}fig(420,372,'#f4f4ff',1.7,1,'idle',null,{tie:1});ctx.globalAlpha=.3+Math.sin(t*.04)*.1;fig(330,372,'#ff9ad0',1.6,1,'idle');fig(280,372,'#ffe14a',.9,1,'idle');ctx.globalAlpha=1}},
- {bg:'#000',t:'GUN FU · THE END?',draw(t){ctx.fillStyle='#000';ctx.fillRect(0,0,LW,400);comic('THE END?',LW/2,150,100,'#ff3b3b',0);text('Thanks for playing.  Try HARD difficulty for the real fight.',LW/2,260,16,'#ccc')}}];
+ {bg:'#12080a',t:'Moretti fell. The Family fell with him. Seven names, crossed out.',draw(t){
+  stSky(0,400,['#1a0a10','#3a1018','#12080a']);stCity(300,5,'#0b0508','#ff5a3a',t,150);
+  ctx.fillStyle='#1a0c0e';ctx.fillRect(0,0,70,400);ctx.fillRect(LW-70,0,70,400);ctx.fillRect(0,0,LW,26);
+  ctx.fillStyle='#2a1208';ctx.fillRect(0,350,LW,50);ctx.fillStyle='rgba(255,60,40,.14)';ctx.fillRect(0,350,LW,4);
+  ctx.strokeStyle='rgba(200,225,255,.55)';ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(70,26);ctx.lineTo(200,120);ctx.lineTo(150,230);ctx.moveTo(LW-70,26);ctx.lineTo(LW-190,110);ctx.lineTo(LW-150,250);ctx.moveTo(200,120);ctx.lineTo(330,60);ctx.moveTo(LW-190,110);ctx.lineTo(LW-320,70);ctx.stroke();
+  for(let i=0;i<14;i++){const x=(i*173)%(LW-200)+100,y=((t*2.2+i*91)%380);ctx.fillStyle='rgba(210,235,255,.7)';ctx.beginPath();ctx.moveTo(x,y);ctx.lineTo(x+6,y+4);ctx.lineTo(x+2,y+12);ctx.fill()}
+  stGlow(480,360,300,'rgba(255,70,40,.35)',1);stRain(t,.3,8);
+  ctx.save();ctx.globalAlpha=.9;fig(360,384,'#ff3a3a',1.7,1,'down',null,{hat:'fedora',lw:7});ctx.restore();ctx.fillStyle='#8a0f18';ctx.beginPath();ctx.ellipse(380,384,70,8,0,0,TAU);ctx.fill();
+  fig(620,380,'#f4f4ff',1.8,-1,'idle','pistolP',{tie:1})}},
+ {bg:'#2a2038',t:'It did not bring them back. But at dawn, for the first time in a long while, Kane could breathe.',draw(t){
+  stSky(0,360,['#241c40','#7a4a78','#e88a5a','#ffd08a']);const sy=330-Math.min(60,t*.18);
+  ctx.save();ctx.translate(480,sy);ctx.rotate(t*.0015);ctx.globalCompositeOperation='lighter';for(let i=0;i<14;i++){ctx.rotate(TAU/14);const g=ctx.createLinearGradient(0,0,0,-520);g.addColorStop(0,'rgba(255,220,150,.3)');g.addColorStop(1,'rgba(255,220,150,0)');ctx.fillStyle=g;ctx.beginPath();ctx.moveTo(-8,0);ctx.lineTo(8,0);ctx.lineTo(34,-520);ctx.lineTo(-34,-520);ctx.fill()}ctx.restore();
+  ctx.fillStyle='#fff0c0';ctx.beginPath();ctx.arc(480,sy,64,0,TAU);ctx.fill();stGlow(480,sy,220,'rgba(255,200,120,.7)',1);
+  stCity(330,9,'rgba(40,24,50,.85)',null,t,110);ctx.fillStyle='#1a1018';ctx.fillRect(0,340,LW,60);ctx.fillStyle='#2a1a20';ctx.fillRect(0,340,LW,5);
+  for(let i=0;i<4;i++){const bx=(t*1.1+i*120)%LW,by=90+i*18+Math.sin(t*.05+i)*6;ctx.strokeStyle='#2a1a28';ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(bx-8,by);ctx.quadraticCurveTo(bx-4,by-6+Math.sin(t*.3+i)*3,bx,by);ctx.quadraticCurveTo(bx+4,by-6+Math.sin(t*.3+i)*3,bx+8,by);ctx.stroke()}
+  fig(560,376,'#f4f4ff',1.8,-1,'idle',null,{tie:1});
+  const a=.28+Math.sin(t*.04)*.1;ctx.globalAlpha=a;stGlow(430,300,120,'rgba(255,220,200,.5)',1);fig(440,376,'#ff9ad0',1.7,1,'idle');fig(385,376,'#ffe14a',1,1,'idle');ctx.globalAlpha=1;
+  stDust(t,40,'#ffe6b0',60,340)}},
+ {bg:'#000',t:'GUN FU · THE END?',draw(t){ctx.fillStyle='#000';ctx.fillRect(0,0,LW,400);stGlow(480,150,360,'rgba(255,40,30,.35)',.7+Math.sin(t*.06)*.2);stRain(t,.15,3);comic('THE END?',LW/2,150,100,'#ff3b3b',0);text('Thanks for playing.  Try HARD difficulty for the real fight.',LW/2,260,16,'#ccc')}}];
 function startStory(kind){if(kind==='c'){startGame(clamp(SV.un-1,0,6),0);return}ST={pg:PAGES,i:0,t:0,end:false,after:()=>{SV.un=Math.max(1,SV.un);startGame(0,0)}};scr='story';mode='menu';MQ.trk='m';musSet(true,0,70,36,0)}
 function startEnding(){ST={pg:EPAGES,i:0,t:0,end:true,after:()=>toTitle()};scr='story';mode='menu';MQ.trk='m';musSet(true,0,70,38,0)}
 function storyNext(){if(!ST)return;const P=ST.pg[ST.i],full=P.t.length*1.6;if(ST.t<full&&ST.t>10){ST.t=full+1;return}ST.i++;ST.t=0;SX.ui();if(ST.i>=ST.pg.length){const a=ST.after;ST=null;a()}}
-function storyScreen(){const P=ST.pg[ST.i];ST.t++;ctx.fillStyle=P.bg;ctx.fillRect(0,0,LW,LH);ctx.save();ctx.beginPath();ctx.rect(0,0,LW,400);ctx.clip();P.draw(ST.t);ctx.restore();ctx.fillStyle='#000';ctx.fillRect(0,400,LW,140);ctx.fillStyle='#ffe14a';ctx.fillRect(0,400,LW,4);
+let IV=null;
+function introEnd(){if(IV){try{IV.pause();IV.removeAttribute('src');IV.load()}catch(e){}IV=null}scr='title';mode='menu';msel=0;MQ.trk='m';try{musSet(true,0,96,38,0)}catch(e){}}
+function introClick(){if(!IV)return introEnd();if(IV.muted&&IV.dataset.need){IV.muted=false;delete IV.dataset.need;try{IV.play()}catch(e){}return}introEnd()}
+function introScreen(){if(!IV){try{IV=document.createElement('video');IV.src=new URL('../../assets/gun-fu-intro.mp4',document.baseURI).href;IV.playsInline=true;IV.preload='auto';IV.onended=introEnd;IV.onerror=introEnd;const pr=IV.play();if(pr&&pr.catch)pr.catch(()=>{if(!IV)return;IV.muted=true;IV.dataset.need=1;IV.play().catch(()=>introEnd())})}catch(e){introEnd();return}}
+ ctx.fillStyle='#000';ctx.fillRect(0,0,LW,LH);if(IV&&IV.readyState>=2)ctx.drawImage(IV,0,0,LW,LH);else text('LOADING…',LW/2,LH/2,16,'#777');
+ if(IV&&IV.dataset.need&&frameN%60<40)text('CLICK FOR SOUND',LW/2,LH-44,16,'#ffe14a');text('CLICK / ESC = SKIP',LW-24,LH-18,12,'#888','right');
+ if(took('esc')||took('ent')||took('p')||took('s')||took('j')||took('k'))introEnd()}
+function storyScreen(){const P=ST.pg[ST.i];ST.t++;ctx.fillStyle=P.bg;ctx.fillRect(0,0,LW,LH);ctx.save();ctx.beginPath();ctx.rect(0,0,LW,400);ctx.clip();ctx.save();{const z=1+Math.min(ST.t,520)*.00018;ctx.translate(LW/2,200);ctx.scale(z,z);ctx.translate(-LW/2,-200)}P.draw(ST.t);ctx.restore();stVig(.7);stGrain();if(ST.t<22){ctx.fillStyle='rgba(0,0,0,'+(1-ST.t/22)+')';ctx.fillRect(0,0,LW,400)}ctx.restore();ctx.fillStyle='#000';ctx.fillRect(0,400,LW,140);ctx.fillStyle='#ffe14a';ctx.fillRect(0,400,LW,4);
  const n=Math.floor(ST.t/1.6),s=P.t.slice(0,n),w=60;let line='',ls=[];for(const word of s.split(' ')){if((line+word).length>w){ls.push(line);line=''}line+=word+' '}ls.push(line);ls.forEach((l,i)=>text(l,LW/2,430+i*28,20,'#fff','center',0));
  if(ST.t>40&&frameN%60<40)text('CLICK / PRESS ANY KEY  ►',LW-24,LH-20,12,'#999','right');text('ESC = SKIP',110,LH-20,12,'#777','left');
  if(took('ent')||took('p')||took('s')||took('k')||took('j'))storyNext();if(took('esc')){const a=ST.after;ST=null;a()}}
@@ -1219,7 +1293,7 @@ function step(){frameN++;if(TC.mode===1&&!padOn)touchOn=true;else if(TC.mode===2
  else{if(MB.length)menuNav()}
  if(G&&scr==='game'&&!paused)G.noteT=G.noteT}
 function render(){ctx.setTransform(CSC,0,0,CSC,0,0);ctx.clearRect(0,0,LW,LH);btns=[];MB=[];
- switch(scr){case'title':titleScreen();break;case'chsel':chselScreen();break;case'how':howScreen();break;case'ctl':ctlScreen();break;case'ctledit':ctlEditScreen();break;case'story':if(ST)storyScreen();break;case'clear':if(G)clearScreen();break;case'gameover':overScreen();break;
+ switch(scr){case'intro':introScreen();break;case'title':titleScreen();break;case'chsel':chselScreen();break;case'how':howScreen();break;case'ctl':ctlScreen();break;case'ctledit':ctlEditScreen();break;case'story':if(ST)storyScreen();break;case'clear':if(G)clearScreen();break;case'gameover':overScreen();break;
   case'game':if(G){drawWorld();drawHUD();if(G.cine&&G.cine.comic!==undefined)drawBossComic()}break}}
 let _acc=0,_last=performance.now();
 function loop(now){requestAnimationFrame(loop);let dt=now-_last;_last=now;if(dt>100)dt=100;_acc+=dt;let n=0;while(_acc>=16.667&&n<3){_acc-=16.667;n++;step()}render()}
