@@ -100,7 +100,7 @@ function musStep(s,t){const r=MQ.root,p=MQ.pitch,bp=BASSP[MQ.lvl%3],ap=ARPP[(MQ.
  if(i>=2){if(s%16===14||s%16===6)mNoise(t,.25,.1,900);mTone(mf(rt-24)*p,t,.3,'sine',.2,200)}}
 const MUS={};
 function musEl(k){if(!MUS[k]){const a=new Audio(new URL('../../assets/gun-fu-'+(k==='m'?'menu':k)+'.mp3',document.baseURI).href);a.loop=true;a.preload='auto';try{a.preservesPitch=false;a.mozPreservesPitch=false;a.webkitPreservesPitch=false}catch(e){}MUS[k]=a;try{(location.protocol!=='file:')&&AC.createMediaElementSource(a).connect(musGain())}catch(e){}}return MUS[k]}
-function musTick(){smpInit();const want=(AC&&MQ.on&&sfxOn)?(MQ.trk||'m'):null;if(AC&&MQ.gain)MQ.gain.gain.value=.85;for(const k of ['m','g0','g1','g2']){if(k===want){const a=musEl(k);try{a.playbackRate=clamp(MQ.pitch||1,.5,1.5)}catch(e){}if(a.paused&&!a.__p){a.__p=1;a.play().then(()=>{a.__p=0}).catch(()=>{a.__p=0})}}else if(MUS[k]&&!MUS[k].paused)MUS[k].pause()}}
+function musTick(){smpInit();const want=(AC&&MQ.on&&sfxOn)?(MQ.trk||'m'):null;if(AC&&MQ.gain)MQ.gain.gain.value=.85;for(const k of ['m','g0','g1','g2','n0','n1','n2']){if(k===want){const a=musEl(k);try{a.playbackRate=clamp(MQ.pitch||1,.5,1.5)}catch(e){}if(a.paused&&!a.__p){a.__p=1;a.play().then(()=>{a.__p=0}).catch(()=>{a.__p=0})}}else if(MUS[k]&&!MUS[k].paused)MUS[k].pause()}}
 function musTickOld(){if(!AC||!MQ.on||!sfxOn){return}if(MQ.next<AC.currentTime)MQ.next=AC.currentTime+.05;let g=0;while(MQ.next<AC.currentTime+.2&&g++<8){musStep(MQ.step,MQ.next);MQ.next+=60/(MQ.bpm*MQ.tmul)/4;MQ.step=(MQ.step+1)%64}}
 function musSet(on,lvl,bpm,root,int){if(on&&!MQ.on){MQ.step=0;MQ.next=AC?AC.currentTime+.1:0}MQ.on=on;if(lvl!==undefined)MQ.lvl=lvl;if(bpm)MQ.bpm=bpm;if(root)MQ.root=root;if(int!==undefined)MQ.int=int}
 setInterval(musTick,30);
@@ -127,11 +127,11 @@ addEventListener('keydown',()=>{padOn=false});
 /* ---------- data ---------- */
 const TH=[
  {n:'BACK ALLEY',k:'alley',s:['#020207','#150a24'],far:'#0a0a16',mid:'#10101c',neon:['#ff2d95','#00e5ff','#ffd23a'],fl:'#101018',fl2:'#050508',rain:1,root:38,bpm:108},
- {n:'NIGHT CLUB',k:'club',s:['#06020a','#1a0a2a'],far:'#12081c',mid:'#1a0c28',neon:['#ff00cc','#00ffee','#7a5cff'],fl:'#0f0916',fl2:'#040208',rain:0,root:40,bpm:124},
+ {n:'NIGHT CLUB',k:'club',s:['#06020a','#1a0a2a'],far:'#12081c',mid:'#1a0c28',neon:['#ff00cc','#00ffee','#7a5cff'],fl:'#0f0916',fl2:'#040208',rain:0,root:40,bpm:146},
  {n:'THE DOCKS',k:'dock',s:['#02060c','#0e2030'],far:'#08121c',mid:'#0e1c2a',neon:['#ff8a3a','#38c8ff','#ffe36a'],fl:'#14120e',fl2:'#060504',rain:1,root:36,bpm:112},
- {n:'SUBWAY',k:'sub',s:['#04060a','#0e1620'],far:'#0e171f',mid:'#16222c',neon:['#3aff9a','#ffee55','#ff4a6a'],fl:'#111519',fl2:'#050709',rain:0,root:41,bpm:120},
+ {n:'SUBWAY',k:'sub',s:['#04060a','#0e1620'],far:'#0e171f',mid:'#16222c',neon:['#3aff9a','#ffee55','#ff4a6a'],fl:'#111519',fl2:'#050709',rain:0,root:41,bpm:138},
  {n:'GRAND CASINO',k:'cas',s:['#080103','#26080e'],far:'#160509',mid:'#210a12',neon:['#ffd23a','#ff2a4a','#ffffff'],fl:'#160709',fl2:'#070203',rain:0,root:43,bpm:116},
- {n:'SKY TOWER',k:'tower',s:['#020410','#081630'],far:'#061226',mid:'#0a1c3a',neon:['#6af0ff','#b8a0ff','#ff6ad0'],fl:'#0c1226',fl2:'#04060e',rain:0,root:35,bpm:128},
+ {n:'SKY TOWER',k:'tower',s:['#020410','#081630'],far:'#061226',mid:'#0a1c3a',neon:['#6af0ff','#b8a0ff','#ff6ad0'],fl:'#0c1226',fl2:'#04060e',rain:0,root:35,bpm:131},
  {n:"THE DON'S MANSION",k:'mans',s:['#090304','#220808'],far:'#130807',mid:'#1e0e09',neon:['#ffb040','#ff3050','#ffe9b0'],fl:'#1e0d0a',fl2:'#080303',rain:0,root:38,bpm:100}
 ];
 const ED={
@@ -392,7 +392,7 @@ function camKick(zp,rk){const c=G.cam;c.zp=Math.max(c.zp||0,zp);c.rk=(c.rk||0)+r
 function lightAt(x,y,r,a){if(G.LT.length<14)G.LT.push({x,y,r,a,l:7})}
 function mkP(){return{item:null,ws:true,sh:0,msh:60,pk:0,pkP:0,vt:0,wl:null,wkC:0,stC:0,mxN:0,mxT:0,spr:0,sprD:0,tapT:0,tapD:0,gun:null,sw:null,hn:0,gcd:0,sword:false,gx:0,sx:1,aimA:0,aimOn:false,fireT:99,rc:0,land:0,coy:0,jumps:0,jh:0,flipT:0,gs:0,last:null,lastT:99,cmbNames:[],cmbTypes:0,diveCd:0,diveReq:0,kstep:-1,kp:null,akimbo:1,glow:null,tgt:null,x:200,y:FY,vx:0,vy:0,dir:1,hp:100,mhp:100,act:null,at:0,onG:true,inv:0,ammo:24,mag:24,cb:0,cbT:0,rage:0,focus:100,held:null,holdT:0,anim:0,flash:0,dead:0,rampT:0,sc:1,w:13,fireCd:0,rollCd:0,hit:new Set(),did:0,col:'#f4f4ff',dk:'#8a8aa0',tie:1,wp:'pistolP',lw:5,hurtT:0,aimU:0}}
 function newGame(ch,carry,cont){const e=genEnc(ch);G={ch,th:TH[ch],t:0,P:mkP(),E:[],B:[],PT:[],PO:[],PR:[],PK:[],LT:[],ts:1,tsT:1,dtW:1,dtP:1,hs:0,shake:0,cam:{x:480,z:1,zT:1,lt:0},enc:e,ei:-1,lock:null,L:ch===7?1e7:e[e.length-1].x+800,score:carry||0,kills:0,cmb:0,cmbT:0,mult:1,maxCmb:0,done:0,fade:50,ban:null,cine:null,go:0,hits:0,dmgTaken:0,boss:null,start:Date.now(),letter:0,vig:0,flashR:0,lost:0,intro:0,spawnQ:[],wave:0,over:0,snap:null,note:null,hint:0};
- score=G.score;G.P.x=160;if(ch===7){G.P.sw={uses:999,max:999};G.P.ws=true;G.P.axe=1}MQ.trk='g'+(ch%3);musSet(true,ch,TH[ch].bpm,TH[ch].root,0);G.ban={t:0,txt:'CHAPTER '+(ch+1),sub:TH[ch].n,note:CH_NOTE[ch]};
+ score=G.score;G.P.x=160;if(ch===7){G.P.sw={uses:999,max:999};G.P.ws=true;G.P.axe=1}MQ.trk=['g0','n2','g2','n0','g1','n1','g0','n1'][ch]||'g0';musSet(true,ch,TH[ch].bpm,TH[ch].root,0);G.ban={t:0,txt:'CHAPTER '+(ch+1),sub:TH[ch].n,note:CH_NOTE[ch]};
  if(ch===0)G.hint=900;mode='play'}
 const CH_NOTE=['"Sal runs the collections. He was at my door that night."','"Vinny works the club. Two knives. Zero mercy."','"The Butcher. They say he never lost a fight."','"Tony guards the Don\'s money. Underground. Nowhere to run."','"Viper deals the cards. She dealt my family their last hand."','"The Colonel. Moretti\'s right hand. He gave the order."','"Home of Don Moretti. This ends tonight."','"One corridor. One hammer. How far can you go?"'];
 /* ---------- fx ---------- */
