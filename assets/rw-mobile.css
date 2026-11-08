@@ -173,3 +173,5 @@ body.rw-mobile.game-active #rwMob{visibility:hidden}
 @keyframes mIn{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
 #rwMob .sc{animation:mIn .5s cubic-bezier(.2,.8,.2,1) both}#rwMob .sc:nth-child(2){animation-delay:.06s}#rwMob .sc:nth-child(3){animation-delay:.12s}#rwMob .sc:nth-child(4){animation-delay:.18s}
 @media(prefers-reduced-motion:reduce){#rwMob .hc:after,#rwMob .sc{animation:none}}
+
+#rwMob .mrate{display:flex;align-items:center;justify-content:space-between;gap:10px;margin:10px 0 4px;padding:10px 12px;border-radius:14px;background:rgba(255,200,40,.1);border:1px solid rgba(255,200,40,.35)}#rwMob .mrate .mr{font-weight:800;color:#ffb300;font-size:15px}#rwMob .mrate .mrb{border:0;border-radius:20px;padding:8px 14px;font-weight:800;background:#ffb300;color:#000;font-size:13px}

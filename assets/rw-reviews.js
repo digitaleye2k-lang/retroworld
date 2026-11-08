@@ -70,7 +70,10 @@ function gid(card){const e=card.querySelector('[data-game],[data-premium-game],[
 function decorate(){document.querySelectorAll('article.card').forEach(card=>{const id=gid(card);if(!id)return;const h=card.querySelector('h3');if(h)titles[id]=h.textContent.replace(/★.*$/,'').trim();let b=card.querySelector('.rwr-btn');if(!b){b=document.createElement('button');b.type='button';b.className='rwr-btn';b.onclick=()=>open(id);card.appendChild(b)}
  const a=avgCache[id],m=mine()[id];const html=a&&a.t?`<span class="s">${stars(a.a)}</span> ${a.a.toFixed(1)} (${a.t}) · RATE`:m?`<span class="s">${stars(m.stars)}</span> YOUR RATING · EDIT`:'☆ RATE &amp; REVIEW';if(b.dataset.h!==html){b.dataset.h=html;b.innerHTML=html}})}
 function playerBtn(){const bar=document.querySelector('#player .playerbar');if(!bar||bar.querySelector('.rwr-bar'))return;const b=document.createElement('button');b.type='button';b.className='rwr-bar';b.textContent='★ RATE THIS GAME';b.onclick=()=>{const t=(document.getElementById('gametitle')||{}).textContent||'';const id=Object.keys(titles).find(k=>titles[k].toUpperCase()===t.trim().toUpperCase());if(id)open(id)};const r=bar.querySelector('#reportGameBtn');bar.insertBefore(b,r?r.nextSibling:null)}
-async function loadAll(){if(!SB)return;try{const rows=await rpc('rw_get_summary');rows.forEach(r=>avgCache[r.game]={a:+r.avg,t:+r.n});LS.set('rw_rv_avg',JSON.stringify(avgCache));decorate()}catch(e){}}
+async function loadAll(){if(!SB)return;try{const rows=await rpc('rw_get_summary');rows.forEach(r=>avgCache[r.game]={a:+r.avg,t:+r.n});LS.set('rw_rv_avg',JSON.stringify(avgCache));decorate();ev()}catch(e){}}
 decorate();playerBtn();loadAll();let _t=0;new MutationObserver(()=>{clearTimeout(_t);_t=setTimeout(()=>{decorate();playerBtn()},500)}).observe(document.body,{childList:true,subtree:true});
-window.RWReviews={open};
+const ev=()=>{try{window.dispatchEvent(new Event('rwr-ready'))}catch(e){}};
+window.RWReviews={open,avgText(id){const a=avgCache[id];return a&&a.t?'★ '+a.a.toFixed(1)+' ('+a.t+')':''},mine(id){const m=mine()[id];return m?m.stars:0},
+ async rate(id,n){const M=mine(),first=!M[id],c=(M[id]&&M[id].c)||'',name=LS.get('rw_rv_name')||'Player';M[id]={stars:n,c,ts:Date.now()};saveMine(M);const L=local();if(c)L[id]=[{n:name,s:n,c,ts:Date.now()}];saveLocal(L);try{await send(id,n,name,c,first)}catch(e){}
+  const a=avgCache[id]||{a:0,t:0};if(first){avgCache[id]={a:(a.a*a.t+n)/(a.t+1),t:a.t+1}}LS.set('rw_rv_avg',JSON.stringify(avgCache));decorate();ev()}};
 })();

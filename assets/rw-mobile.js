@@ -60,7 +60,7 @@ function detail(id){const g=find(id);if(!g)return;const d=$('mDetail');
  const sim=games.filter(x=>x!==g&&x.cats.some(c=>c&&c!=='all'&&g.cats.includes(c))).slice(0,10);
  d.innerHTML='<div class="dh"><button class="back" aria-label="Back">←</button><span>'+esc(TC(g.title))+'</span></div><div class="db"><div class="ban" style="'+img(g)+'"></div><div class="top">'+icn(g,'lg')+'<div><h2>'+esc(TC(g.title))+'</h2><b class="dv">Digital Eye</b><small>'+esc(genre(g))+(g.isNew?' • New':'')+'</small></div></div>'
  +'<div class="stats"><div><b>Free</b><small>No installs</small></div><div><b>🎮</b><small>Controller ready</small></div><div><b>⚡</b><small>Instant play</small></div><div><b>'+(g.locked?'👑':'3+')+'</b><small>'+(g.locked?'Premium':'Everyone')+'</small></div></div>'
- +'<button class="m-cta" data-play="'+g.id+'">'+(g.locked?'🔒 Unlock to play':'▶ Play now')+'</button>'
+ +'<div class="mrate"><span class="mr" data-mr="'+g.id+'">'+((window.RWReviews&&RWReviews.avgText(g.id))||'No ratings yet')+'</span><button class="mrb" data-rate="'+g.id+'" type="button">☆ Rate &amp; review</button></div>'+'<button class="m-cta" data-play="'+g.id+'">'+(g.locked?'🔒 Unlock to play':'▶ Play now')+'</button>'
  +'<h4>About this game</h4><p class="ab">'+esc(g.desc)+'</p><div class="tg">'+(g.tags||'').split(/[•·|,\/]/).map(t=>t.trim()).filter(Boolean).map(t=>'<span>'+esc(t)+'</span>').join('')+'</div>'
  +'<a class="lnk" href="play/'+g.slug+'.html">ⓘ Full details page</a>'
  +(sim.length?'<h4>You might also like</h4><div class="hs">'+sim.map(tile).join('')+'</div>':'')+'</div>';
@@ -71,6 +71,7 @@ function build(){if(built)return;built=true;root=document.createElement('div');r
  document.body.appendChild(root);refreshAv();
  addEventListener('popstate',()=>{if(root&&$('mDetail').classList.contains('open'))closeDetail()});
  root.addEventListener('click',e=>{const t=e.target;let x;
+  if((x=t.closest('[data-rate]'))){e.stopPropagation();window.RWReviews&&RWReviews.open(x.dataset.rate);return}
   if((x=t.closest('[data-play]'))){e.stopPropagation();const g=find(x.dataset.play);if(g)play(g);return}
   if(t.closest('.back')){closeDetail();return}
   if((x=t.closest('[data-tab]'))){tab=x.dataset.tab;closeDetail();render();refreshAv();if(tab==='search')setTimeout(()=>{const q=$('mQ');q&&q.focus()},60);return}
@@ -82,4 +83,5 @@ function build(){if(built)return;built=true;root=document.createElement('div');r
  root.addEventListener('input',e=>{if(e.target.id!=='mQ')return;const q=e.target.value.trim().toLowerCase();const L=q?games.filter(g=>(g.title+' '+g.tags+' '+g.cats.join(' ')).toLowerCase().includes(q)):games.filter(g=>!g.locked).slice(0,18);$('mRes').innerHTML=(q?'':'<h4>Popular right now</h4>')+(L.length?L.map(g=>lrow(g)).join(''):'<div class="none">No games found for “'+esc(q)+'”</div>')})}
 function refreshAv(){try{const b=root.querySelector('.tp .av'),p=window.RWP&&RWP.active&&RWP.active(),a=p&&RWP.avatar&&RWP.avatar(p.avatar);if(b&&a)b.textContent=a.icon}catch(e){}}
 window.RWMobile={show(v){if(v){build();read();render();refreshAv()}}};
+window.addEventListener('rwr-ready',()=>{document.querySelectorAll('[data-mr]').forEach(el=>{const t=window.RWReviews&&RWReviews.avgText(el.dataset.mr);if(t)el.textContent=t})});
 })();
