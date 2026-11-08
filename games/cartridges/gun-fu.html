@@ -1169,7 +1169,7 @@ const TUT=[
  {n:'DODGE ROLL',x:()=>'Press '+kn('dodge')+' to roll. Rolling makes you invincible for a moment.',need:2,c:T=>T.A('roll')},
  {n:'SLIDE',x:()=>'Run, then hold DOWN and press '+kn('dodge')+' or '+kn('kick')+' to slide.',need:1,c:T=>T.A('slide')},
  {n:'FOCUS / SLOW-MO',x:()=>'Hold '+kn('slow')+' to slow time. It uses your blue FOCUS bar.',need:45,c:T=>T.slow-T.b.slow},
- {n:'BULLET TIME',x:()=>'A gunman is shooting! Press '+kn('dodge')+' just as a bullet arrives to trigger MATRIX bullet time. (Can be skipped from the pause menu.)',gun:1,need:1,c:T=>T.A('matrix')},
+ {n:'BULLET TIME',x:()=>'A gunman is shooting! Press '+kn('dodge')+' just as a bullet arrives to trigger MATRIX bullet time. (Skip from the pause menu.)',gun:1,need:1,c:T=>T.A('matrix')},
  {n:'GRAB',x:()=>'Stand next to a foe and press '+kn('grab')+' to grab. Mash '+kn('atk')+' to punch, or move and press '+kn('shoot')+' to execute.',tg:1,need:1,c:T=>T.A('grab')},
  {n:'THROW ITEMS',x:()=>'Pick up the bottle with '+kn('grab')+' (stand over it), then throw it with '+kn('shoot')+' to stun a foe.',tg:1,item:1,need:1,c:T=>T.itemThrown-T.b.itemThrown},
  {n:'KATANA',x:()=>'Katana equipped! With the katana out, '+kn('shoot')+' (or click) SLASHES. Chain slashes.',tg:2,real:1,kat:1,need:4,c:T=>T.S('sl')},
@@ -1212,13 +1212,13 @@ function tutUpdate(){const T=G.tut,P=G.P;if(!T.on){T.on=1;tutStep(0)}
  else{T.dt++;if(T.dt>75)tutStep(T.i+1)}}
 function tutNext(){const T=G.tut;if(T&&!T.fin)tutStep(T.i+1)}
 function tutWrap(s,n){const w=s.split(' '),o=[];let l='';for(const x of w){if((l+' '+x).length>n){o.push(l);l=x}else l=l?l+' '+x:x}if(l)o.push(l);return o}
-function drawTut(){const T=G.tut;if(!T||!T.on)return;const S=TUT[T.i];ctx.save();const w=660,x=(LW-w)/2,y=LH-132,h=96;
+function drawTut(){const T=G.tut;if(!T||!T.on)return;const S=TUT[T.i];ctx.save();const w=420,x=330,y=8,h=96;
  if(T.fin){ctx.fillStyle='rgba(0,0,0,.8)';ctx.fillRect(0,LH/2-70,LW,140);comic('TRAINING COMPLETE',LW/2,LH/2-10,52,'#6aff9a',0);text('You are ready. Good luck, Kane.',LW/2,LH/2+38,18,'#fff');ctx.restore();return}
- ctx.globalAlpha=.9;ctx.fillStyle='#05070f';rr(x,y,w,h,10);ctx.fill();ctx.globalAlpha=1;ctx.lineWidth=3;ctx.strokeStyle=T.done?'#6aff9a':'#ffe14a';rr(x,y,w,h,10);ctx.stroke();
- text('TRAINING '+(T.i+1)+'/'+TUT.length+'  ·  '+S.n,x+16,y+18,15,T.done?'#6aff9a':'#ffe14a','left');
- tutWrap(S.x(),62).slice(0,3).forEach((l,i)=>text(l,x+16,y+42+i*19,14,'#fff','left'));
- const v=Math.min(S.need,Math.max(0,S.c(T)));ctx.fillStyle='#1a2030';ctx.fillRect(x+16,y+h-12,w-32,5);ctx.fillStyle=T.done?'#6aff9a':'#ffe14a';ctx.fillRect(x+16,y+h-12,(w-32)*v/S.need,5);
- text('PAUSE → SKIP STEP',x+w-14,y+18,11,'#7a86a8','right');ctx.restore()}
+ ctx.globalAlpha=.5;ctx.fillStyle='#05070f';rr(x,y,w,h,10);ctx.fill();ctx.globalAlpha=1;ctx.lineWidth=3;ctx.strokeStyle=T.done?'#6aff9a':'#ffe14a';rr(x,y,w,h,10);ctx.stroke();
+ text('TRAINING '+(T.i+1)+'/'+TUT.length+'  ·  '+S.n,x+14,y+17,14,T.done?'#6aff9a':'#ffe14a','left');
+ tutWrap(S.x(),48).slice(0,4).forEach((l,i)=>text(l,x+14,y+36+i*15,12,'#fff','left'));
+ const v=Math.min(S.need,Math.max(0,S.c(T)));ctx.fillStyle='#1a2030';ctx.fillRect(x+14,y+h-9,w-28,4);ctx.fillStyle=T.done?'#6aff9a':'#ffe14a';ctx.fillRect(x+14,y+h-9,(w-28)*v/S.need,4);
+ text('PAUSE: SKIP',x+w-12,y+18,10,'#9aa6c8','right');ctx.restore()}
 function toTitle(){G=null;scr='title';mode='menu';msel=0;paused=false;MQ.trk='m';musSet(true,0,96,38,0)}
 function startGame(ch,carry){newGame(ch,carry);scr='game';paused=false;msel=0;mode='play';G.hpT=100}
 /* ---------- story ---------- */
