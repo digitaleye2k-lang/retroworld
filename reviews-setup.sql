@@ -1,15 +1,5 @@
--- Run once in Supabase (SQL editor) to share ratings + reviews between all players.
-create table if not exists rw_reviews(
-  id bigint generated always as identity primary key,
-  game text not null check (char_length(game) <= 80),
-  device text not null check (char_length(device) <= 80),
-  stars int not null check (stars between 1 and 5),
-  name text not null default 'Player' check (char_length(name) <= 20),
-  comment text not null default '' check (char_length(comment) <= 300),
-  created_at timestamptz not null default now(),
-  unique (game, device)
-);
-alter table rw_reviews enable row level security;
-create policy "anyone can read reviews" on rw_reviews for select using (true);
-create policy "anyone can post a review" on rw_reviews for insert with check (true);
-create policy "devices can update own review" on rw_reviews for update using (true) with check (stars between 1 and 5);
+-- Already applied to the Supabase project used by the site (migration rw_reviews_ratings_and_comments).
+-- Kept here for reference. The site only calls these functions; the table itself has no public policies.
+-- To hide a spam review: update public.rw_reviews set hidden = true where id = <id>;
+-- To delete: delete from public.rw_reviews where id = <id>;
+-- (see the migration in Supabase for the full SQL: table rw_reviews + rw_submit_review, rw_get_reviews, rw_get_counts, rw_get_summary)

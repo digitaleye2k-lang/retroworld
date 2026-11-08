@@ -3,7 +3,7 @@
    comments are stored on the player's device.
    To share COMMENTS between all players, create a free Supabase project, run reviews-setup.sql, then fill in CONFIG below. */
 (()=>{
-const CONFIG={supabaseUrl:'',supabaseKey:''};   // <- paste your Supabase project URL + anon (public) key here
+const CONFIG={supabaseUrl:'https://boyllgyfvdtdxmfmpxks.supabase.co',supabaseKey:'sb_publishable_aCaqIVUczjqoKeCCV62A4g_6B7gBE2l'};
 const CA='https://countapi.mileshilliard.com/api/v1/';
 const LS={get(k){try{return localStorage.getItem(k)}catch(e){return null}},set(k,v){try{localStorage.setItem(k,v)}catch(e){}}};
 const J=(k,d)=>{try{return JSON.parse(LS.get(k)||'')||d}catch(e){return d}};
@@ -32,13 +32,13 @@ const modal=document.createElement('div');modal.id='rwrM';modal.setAttribute('ro
 let cur=null,pick=0,lastSend=0;const titles={},avgCache=J('rw_rv_avg',{});
 const stars=n=>'★'.repeat(Math.round(n))+'☆'.repeat(5-Math.round(n));
 // ---- backend
-async function sbFetch(path,opt){const r=await fetch(CONFIG.supabaseUrl+'/rest/v1/'+path,Object.assign({headers:{apikey:CONFIG.supabaseKey,Authorization:'Bearer '+CONFIG.supabaseKey,'Content-Type':'application/json'}},opt));if(!r.ok)throw new Error('sb '+r.status);return r}
+async function rpc(fn,args){const r=await fetch(CONFIG.supabaseUrl+'/rest/v1/rpc/'+fn,{method:'POST',headers:{apikey:CONFIG.supabaseKey,'Content-Type':'application/json'},body:JSON.stringify(args||{})});if(!r.ok)throw new Error('sb '+r.status);const t=await r.text();return t?JSON.parse(t):null}
 async function loadRatings(id){ // -> {counts:[c1..c5]}
- if(SB){const rows=await(await sbFetch('rw_reviews?game=eq.'+encodeURIComponent(id)+'&select=stars&limit=5000')).json();const c=[0,0,0,0,0];rows.forEach(r=>c[r.stars-1]++);return c}
+ if(SB){const rows=await rpc('rw_get_counts',{p_game:id});const c=[0,0,0,0,0];rows.forEach(r=>c[r.stars-1]=+r.n);return c}
  const c=await Promise.all([1,2,3,4,5].map(n=>fetch(CA+'get/rw_rate_v1_'+id.replace(/[^a-z0-9]/gi,'_')+'_'+n).then(r=>r.ok?r.json():{value:0}).then(d=>Math.max(0,parseInt(d.value,10)||0)).catch(()=>0)));return c}
-async function loadComments(id){const l=(local()[id]||[]).map(x=>Object.assign({mine:1},x));if(!SB)return l;try{const rows=await(await sbFetch('rw_reviews?game=eq.'+encodeURIComponent(id)+'&comment=neq.&select=name,stars,comment,created_at&order=created_at.desc&limit=40')).json();return rows.map(r=>({n:r.name,s:r.stars,c:r.comment,ts:Date.parse(r.created_at)}))}catch(e){return l}}
+async function loadComments(id){const l=(local()[id]||[]).map(x=>Object.assign({mine:1},x));if(!SB)return l;try{const rows=await rpc('rw_get_reviews',{p_game:id});return rows.map(r=>({n:r.name,s:r.stars,c:r.comment,ts:Date.parse(r.created_at)}))}catch(e){return l}}
 async function send(id,stars_,name,comment,first){
- if(SB){await sbFetch('rw_reviews?on_conflict=game,device',{method:'POST',headers:{apikey:CONFIG.supabaseKey,Authorization:'Bearer '+CONFIG.supabaseKey,'Content-Type':'application/json',Prefer:'resolution=merge-duplicates,return=minimal'},body:JSON.stringify({game:id,device:dev,stars:stars_,name:name||'Player',comment:comment||''})});return}
+ if(SB){await rpc('rw_submit_review',{p_game:id,p_device:dev,p_stars:stars_,p_name:name||'Player',p_comment:comment||''});return}
  if(first)fetch(CA+'hit/rw_rate_v1_'+id.replace(/[^a-z0-9]/gi,'_')+'_'+stars_).catch(()=>{})}
 // ---- UI
 function gameName(id){return titles[id]||id.replace(/\.html$/,'').replace(/-/g,' ').toUpperCase()}
@@ -70,7 +70,7 @@ function gid(card){const e=card.querySelector('[data-game],[data-premium-game],[
 function decorate(){document.querySelectorAll('article.card').forEach(card=>{const id=gid(card);if(!id)return;const h=card.querySelector('h3');if(h)titles[id]=h.textContent.replace(/★.*$/,'').trim();let b=card.querySelector('.rwr-btn');if(!b){b=document.createElement('button');b.type='button';b.className='rwr-btn';b.onclick=()=>open(id);card.appendChild(b)}
  const a=avgCache[id],m=mine()[id];const html=a&&a.t?`<span class="s">${stars(a.a)}</span> ${a.a.toFixed(1)} (${a.t}) · RATE`:m?`<span class="s">${stars(m.stars)}</span> YOUR RATING · EDIT`:'☆ RATE &amp; REVIEW';if(b.dataset.h!==html){b.dataset.h=html;b.innerHTML=html}})}
 function playerBtn(){const bar=document.querySelector('#player .playerbar');if(!bar||bar.querySelector('.rwr-bar'))return;const b=document.createElement('button');b.type='button';b.className='rwr-bar';b.textContent='★ RATE THIS GAME';b.onclick=()=>{const t=(document.getElementById('gametitle')||{}).textContent||'';const id=Object.keys(titles).find(k=>titles[k].toUpperCase()===t.trim().toUpperCase());if(id)open(id)};const r=bar.querySelector('#reportGameBtn');bar.insertBefore(b,r?r.nextSibling:null)}
-async function loadAll(){if(!SB)return;try{const rows=await(await sbFetch('rw_reviews?select=game,stars&limit=20000')).json();const g={};rows.forEach(r=>{(g[r.game]=g[r.game]||[0,0]);g[r.game][0]+=r.stars;g[r.game][1]++});Object.keys(g).forEach(k=>avgCache[k]={a:g[k][0]/g[k][1],t:g[k][1]});LS.set('rw_rv_avg',JSON.stringify(avgCache));decorate()}catch(e){}}
+async function loadAll(){if(!SB)return;try{const rows=await rpc('rw_get_summary');rows.forEach(r=>avgCache[r.game]={a:+r.avg,t:+r.n});LS.set('rw_rv_avg',JSON.stringify(avgCache));decorate()}catch(e){}}
 decorate();playerBtn();loadAll();let _t=0;new MutationObserver(()=>{clearTimeout(_t);_t=setTimeout(()=>{decorate();playerBtn()},500)}).observe(document.body,{childList:true,subtree:true});
 window.RWReviews={open};
 })();
