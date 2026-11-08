@@ -1172,7 +1172,7 @@ function hwPlayer(dt){const P=G.P;P.anim+=dt;P.flash=Math.max(0,P.flash-dt);P.in
  if(P.mode==='seat'||P.mode==='stand')G.pvx+=(P.wvx-G.pvx)*.04*dt;
  if(!P.dead&&P.hp>0&&P.v&&P.v.dead)P.v=null}
 /* ---- waves ---- */
-const HWW=[['bike','bike','bike'],['car','bike','bike','bike'],['horse','horse','bike','horse','bike'],['van','car','bike','bike'],['car','car','bike','bike','horse','horse'],['truck','bike','bike','car','horse'],['van','van','car','horse','horse','bike','bike'],['truck','car','car','bike','bike','horse','horse'],['truck','van','car','car','horse','horse','bike','bike','bike']];
+const HWW=[['bike','bike','bike'],['car','bike','bike','bike'],['bike','bike','bike','bike','bike'],['van','car','bike','bike'],['car','car','bike','bike','bike','bike'],['truck','bike','bike','car','bike'],['van','van','car','bike','bike','bike','bike'],['truck','car','car','bike','bike','bike','bike'],['truck','van','car','car','bike','bike','bike','bike','bike']];
 function hwMake(k,side){const P=G.P,ln=(Math.random()*3)|0,x=P.x+side*(640+rnd(0,260)),sp=HWS[k],v=hwVeh(k,x,ln,{});v.vx=sp.b+(side<0?3:-2.5);const R=a=>a[(Math.random()*a.length)|0];
  if(k==='bike')hwRider(v,R(['thug','gun','gun','knife','heavy']),'seat');
  else if(k==='horse')hwRider(v,R(['sword','sword','knife']),'seat');
