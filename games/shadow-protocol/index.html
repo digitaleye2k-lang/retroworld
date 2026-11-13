@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>SHADOW PROTOCOL</title>
+<style>
+  :root { --red: #ff2d3d; --cyan: #4fe3ff; --gold: #ffd23d; }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; height: 100%; background: #020203; overflow: hidden; font-family: 'Segoe UI', Arial, sans-serif; color: #e9edf2; user-select: none; }
+  canvas { display: block; position: fixed; inset: 0; }
+  body.playing canvas { cursor: none; }
+  #ui { position: fixed; inset: 0; display: none; flex-direction: column; align-items: center; justify-content: center; padding: 30px; overflow-y: auto;
+        background: radial-gradient(ellipse at center, rgba(4,5,8,.72), rgba(2,2,3,.94)); }
+  #ui.on { display: flex; }
+  #ui.dim { background: rgba(2,2,4,.8); backdrop-filter: blur(3px); }
+  .logo { font-weight: 900; font-size: clamp(44px, 9vw, 110px); letter-spacing: .06em; line-height: .9; text-align: center; position: relative; text-shadow: 3px 0 0 rgba(255,45,61,.55), -3px 0 0 rgba(79,227,255,.35); }
+  .logo span { display: block; font-weight: 200; letter-spacing: .5em; font-size: .42em; margin-left: .5em; color: #c9ced6; }
+  .logo b { color: #fff; }
+  .logo::after { content: ''; position: absolute; left: -6%; right: -6%; top: 62%; height: 3px; background: var(--red); transform: rotate(-2deg); box-shadow: 0 0 18px var(--red); }
+  .tag { letter-spacing: .5em; font-size: 11px; color: var(--red); margin: 18px 0 28px; }
+  h2 { font-size: 40px; letter-spacing: .25em; font-weight: 900; margin: 0 0 6px; } h2.red { color: var(--red); }
+  h3 { letter-spacing: .3em; font-size: 12px; color: var(--cyan); margin: 18px 0 8px; align-self: center; }
+  .sub { color: #9aa3ad; margin: 0 0 18px; letter-spacing: .08em; } .cr { color: var(--gold); }
+  .menu { display: flex; flex-direction: column; gap: 8px; width: min(420px, 90vw); } .menu.row { flex-direction: row; width: auto; }
+  button, label { font: inherit; color: #e9edf2; background: rgba(255,255,255,.04); border: 1px solid rgba(255,255,255,.12); border-left: 3px solid rgba(255,255,255,.25); padding: 13px 18px; text-align: left; letter-spacing: .22em; font-weight: 800; font-size: 14px; cursor: pointer; transition: all .12s; }
+  button:hover:not(:disabled) { background: rgba(255,45,61,.16); border-left-color: var(--red); padding-left: 26px; color: #fff; }
+  button small { display: block; font-weight: 500; letter-spacing: .06em; font-size: 11px; color: #9aa3ad; margin-top: 3px; }
+  button.danger:hover { background: rgba(255,45,61,.4); } label { display: flex; justify-content: space-between; align-items: center; cursor: default; } input[type=range] { accent-color: var(--red); width: 170px; }
+  .back { margin-top: 20px; }
+  .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); gap: 10px; width: min(1180px, 94vw); }
+  .card { position: relative; min-height: 98px; padding: 12px 14px; letter-spacing: .08em; }
+  .card:hover:not(:disabled) { padding-left: 14px; }
+  .card i { font-style: normal; color: var(--red); font-size: 11px; letter-spacing: .2em; display: block; min-height: 14px; }
+  .card b { display: block; font-size: 15px; letter-spacing: .14em; } .card u { text-decoration: none; display: block; font-size: 10.5px; color: var(--cyan); margin-top: 6px; font-weight: 600; }
+  .card em { position: absolute; right: 12px; top: 8px; font-style: normal; font-size: 30px; font-weight: 900; }
+  .card.locked { opacity: .35; cursor: not-allowed; } .card.sel { border-left-color: var(--cyan); background: rgba(79,227,255,.08); } .card:disabled { cursor: default; }
+  .r0 { color: #8d949e; } .r1 { color: #7fd0ff; } .r2 { color: #52ff8f; } .r3 { color: var(--gold); } .r4 { color: var(--red); text-shadow: 0 0 24px var(--red); }
+  .res { display: flex; gap: 40px; align-items: center; margin: 8px 0 22px; flex-wrap: wrap; justify-content: center; }
+  .stats div { display: flex; justify-content: space-between; gap: 60px; padding: 6px 0; border-bottom: 1px solid rgba(255,255,255,.08); letter-spacing: .14em; font-size: 13px; } .stats span { color: #9aa3ad; } .stats b { color: #fff; }
+  .rank { font-size: 150px; font-weight: 900; line-height: 1; text-align: center; animation: pop .6s cubic-bezier(.2,1.6,.4,1) .3s both; } .rank small { display: block; font-size: 11px; letter-spacing: .4em; color: #9aa3ad; text-shadow: none; }
+  @keyframes pop { from { transform: scale(3); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+  .unl { color: var(--gold); letter-spacing: .1em; font-weight: 700; }
+  .keys { display: flex; flex-wrap: wrap; gap: 6px 16px; justify-content: center; max-width: 900px; margin-top: 30px; font-size: 11px; color: #9aa3ad; letter-spacing: .06em; }
+  kbd { font: inherit; font-weight: 800; color: #fff; border: 1px solid rgba(255,255,255,.3); padding: 1px 6px; margin-right: 6px; border-radius: 2px; }
+
+  /* comic story */
+  #story { position: fixed; inset: 0; z-index: 20; display: none; flex-direction: column; align-items: center; justify-content: center; background: #050506 radial-gradient(rgba(255,255,255,.035) 1px, transparent 1.6px) 0 0/7px 7px; overflow-y: auto; padding: 16px; cursor: pointer; }
+  #story.on { display: flex; }
+  .page { display: grid; grid-template-columns: repeat(6, 1fr); gap: 14px; width: min(1100px, 94vw, 150vh); }
+  .panel { position: relative; border: 4px solid #e9edf2; box-shadow: 6px 6px 0 #000, 0 0 0 2px #000; background: #0a0a0c; overflow: hidden; opacity: 0; transform: scale(.86) rotate(calc(var(--r) * 4)); transition: opacity .25s, transform .4s cubic-bezier(.2,1.5,.4,1); }
+  .panel.show { opacity: 1; transform: scale(1) rotate(var(--r)); }
+  .panel canvas { position: static; width: 100%; height: 100%; display: block; }
+  .panel::after { content: ''; position: absolute; inset: 0; pointer-events: none; background: radial-gradient(rgba(255,255,255,.09) 1px, transparent 1.4px) 0 0/5px 5px; mix-blend-mode: screen; }
+  .cap { position: absolute; z-index: 2; max-width: 62%; background: var(--gold); color: #000; border: 2px solid #000; box-shadow: 3px 3px 0 #000; padding: 6px 10px; font: italic 800 clamp(10px, 1.25vw, 14px)/1.25 'Arial Black', Impact, sans-serif; text-transform: uppercase; letter-spacing: .02em; }
+  .cap.tl { left: 10px; top: 10px; transform: rotate(-1deg); } .cap.br { right: 10px; bottom: 10px; transform: rotate(1deg); background: #fff; }
+  .say { position: absolute; z-index: 2; top: 30%; background: #fff; color: #000; border: 2.5px solid #000; border-radius: 50%/60%; padding: 12px 20px; font: 800 clamp(11px, 1.3vw, 15px) 'Arial Black', Impact, sans-serif; text-transform: uppercase; max-width: 46%; text-align: center; }
+  .say.l { left: 30%; } .say.m { left: 36%; top: 42%; } .say.m::after { left: 14%; transform: skewX(25deg); } .say.r { right: 44%; top: 34%; }
+  .say::after { content: ''; position: absolute; bottom: -14px; width: 0; height: 0; border: 8px solid transparent; border-top: 14px solid #fff; border-bottom: 0; filter: drop-shadow(0 2.5px 0 #000); }
+  .say.l::after { left: 18%; transform: skewX(25deg); } .say.r::after { right: 18%; transform: skewX(-25deg); }
+  .shint { margin-top: 14px; font-size: 11px; letter-spacing: .3em; color: #9aa3ad; }
+  /* intro video */
+  #intro { position: fixed; inset: 0; z-index: 30; display: none; background: #000; align-items: center; justify-content: center; cursor: pointer; }
+  #intro.on { display: flex; }
+  #intro video { width: 100%; height: 100%; object-fit: contain; background: #000; }
+  #intro .begin { display: none; position: absolute; inset: 0; flex-direction: column; align-items: center; justify-content: center; background: #020203; }
+  #intro.wait .begin { display: flex; } #intro.wait video { visibility: hidden; }
+  #intro .begin p { letter-spacing: .5em; font-size: 13px; color: var(--red); margin-top: 34px; animation: blink 1.4s infinite; }
+  #intro .skip { position: absolute; right: 22px; bottom: 18px; font-size: 11px; letter-spacing: .3em; color: rgba(255,255,255,.55); } #intro.wait .skip { display: none; }
+  @keyframes blink { 50% { opacity: .25; } }
+  .menu button small u { text-decoration: underline; color: var(--cyan); cursor: pointer; }
+</style>
+</head>
+<body>
+<canvas id="c"></canvas>
+<div id="ui"></div>
+<div id="story"></div>
+<div id="intro"><video src="video/intro.mp4" preload="auto" playsinline></video><div class="begin"><div class="logo"><span>SHADOW</span><b>PROTOCOL</b></div><p>CLICK OR PRESS ANY KEY TO BEGIN</p></div><div class="skip">CLICK / ESC — SKIP</div></div>
+<script src="js/core.js?v=8"></script>
+<script src="js/data.js?v=8"></script>
+<script src="js/world.js?v=8"></script>
+<script src="js/rig.js?v=8"></script>
+<script src="js/player.js?v=8"></script>
+<script src="js/combat.js?v=8"></script>
+<script src="js/enemy.js?v=8"></script>
+<script src="js/render.js?v=8"></script>
+<script src="js/story.js?v=8"></script>
+<script src="js/game.js?v=8"></script>
+</body>
+</html>
