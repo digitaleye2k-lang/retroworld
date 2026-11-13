@@ -112,7 +112,7 @@ const UI = {
     const d = Save.data, next = Math.min(d.unlocked, MISSIONS.length) - 1;
     this.show(`${this.title}<div class="tag">CINEMATIC TOP-DOWN STICKMAN SHOOTER</div>
       <div class="menu"><button data-a="play:${next}">PLAY <small>${d.unlocked > 1 ? 'CONTINUE — ' : ''}MISSION ${next + 1}: ${MISSIONS[next].name}</small></button>
-      <button data-a="levels">LEVEL SELECT</button><button data-a="loadout">WEAPON LOADOUT</button><button data-a="upgrades">UPGRADES <small>${d.credits} CREDITS</small></button><button data-a="settings:main">SETTINGS</button><button data-a="story">STORY <small>READ THE COMIC · <u data-a="intro">REPLAY INTRO VIDEO</u></small></button></div>
+      <button data-a="levels">LEVEL SELECT</button><button data-a="loadout">WEAPON LOADOUT</button><button data-a="upgrades">UPGRADES <small>${d.credits} CREDITS</small></button><button data-a="settings:main">SETTINGS</button><button data-a="fs">FULLSCREEN <small>${document.fullscreenElement ? 'ON' : 'OFF'} · F11 ALSO WORKS</small></button><button data-a="story">STORY <small>READ THE COMIC · <u data-a="intro">REPLAY INTRO VIDEO</u></small></button></div>
       <div class="keys">${this.keys()}</div>`, 'main');
   },
   keys() { return [['WASD', 'Move'], ['MOUSE', 'Aim'], ['LMB', 'Shoot'], ['RMB', 'Slow-mo dive'], ['SHIFT', 'Slide'], ['SPACE', 'Roll / wall kick'], ['C', 'Focus aim (hold)'], ['V', 'Jump'], ['Q', 'Bullet time'], ['E', 'Takedown'], ['R', 'Reload'], ['F', 'Interact'], ['X', 'Dead Eye'], ['1-3', 'Weapons'], ['ESC', 'Pause']].map(k => `<span><kbd>${k[0]}</kbd>${k[1]}</span>`).join(''); },
@@ -132,7 +132,7 @@ const UI = {
   },
   settings(back) {
     const s = Save.data.settings; this.back = back || this.back; const tg = (k, l) => `<button data-a="toggle:${k}">${l} <small>${s[k] ? 'ON' : 'OFF'}</small></button>`;
-    this.show(`<h2>SETTINGS</h2><div class="menu"><button data-a="diff">DIFFICULTY <small>${DIFF().name} — ${s.diff === 'hard' ? 'enemies hit harder and react faster' : s.diff === 'normal' ? 'balanced; slow health recovery' : 'enemies deal less than half damage, aim worse, react slower; health recovers out of combat'}</small></button><label>MASTER VOLUME <input type="range" min="0" max="100" value="${Math.round(s.vol * 100)}" id="vol"></label>${tg('music', 'MUSIC')}${tg('shake', 'SCREEN SHAKE')}${tg('fx', 'CHROMATIC SLOW-MO FX')}${tg('fps', 'FPS COUNTER')}<button data-a="reset" class="danger">RESET ALL PROGRESS</button></div><button class="back" data-a="${this.back === 'pause' ? 'pausemenu' : 'main'}">BACK</button>`);
+    this.show(`<h2>SETTINGS</h2><div class="menu"><button data-a="diff">DIFFICULTY <small>${DIFF().name} — ${s.diff === 'hard' ? 'enemies hit harder and react faster' : s.diff === 'normal' ? 'balanced; slow health recovery' : 'enemies deal less than half damage, aim worse, react slower; health recovers out of combat'}</small></button><label>MASTER VOLUME <input type="range" min="0" max="100" value="${Math.round(s.vol * 100)}" id="vol"></label>${tg('music', 'MUSIC')}${tg('shake', 'SCREEN SHAKE')}${tg('fx', 'CHROMATIC SLOW-MO FX')}${tg('fps', 'FPS COUNTER')}<button data-a="fs">FULLSCREEN <small>${document.fullscreenElement ? 'ON' : 'OFF'}</small></button><button data-a="reset" class="danger">RESET ALL PROGRESS</button></div><button class="back" data-a="${this.back === 'pause' ? 'pausemenu' : 'main'}">BACK</button>`);
     document.getElementById('vol').oninput = e => { s.vol = e.target.value / 100; Snd.setVol(s.vol); Save.write(); };
   },
   pause() { this.show(`<h2>PAUSED</h2><div class="menu"><button data-a="resume">RESUME</button><button data-a="restart">RESTART MISSION</button><button data-a="settings:pause">SETTINGS</button><button data-a="fs">FULLSCREEN</button><button data-a="quit">QUIT TO MENU</button></div><div class="keys">${this.keys()}</div>`, 'dim'); },
@@ -185,3 +185,4 @@ function boot() {
   })(last);
 }
 addEventListener('DOMContentLoaded', boot);
+document.addEventListener('fullscreenchange', () => { document.querySelectorAll('[data-a="fs"] small').forEach(s => { s.textContent = s.textContent.replace(/^(ON|OFF)/, document.fullscreenElement ? 'ON' : 'OFF'); }); });
