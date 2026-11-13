@@ -68,7 +68,28 @@ const Snd = {
       this.musicGain = ctx.createGain(); this.musicGain.gain.value = 0.5; this.musicGain.connect(this.filter);
       const n = ctx.sampleRate; this.nb = ctx.createBuffer(1, n, n); const d = this.nb.getChannelData(0);
       for (let i = 0; i < n; i++) d[i] = Math.random() * 2 - 1;
+      for (const k of ['sg', 'pump', 'rico1', 'rico2', 'hit']) this.loadSmp(k); // recorded samples shared with Gun Fu
     } catch (e) { this.ctx = null; }
+  },
+  smp: {}, smpT: {},
+  loadSmp(k) { try { fetch('audio/sfx/' + k + '.mp3').then(r => r.arrayBuffer()).then(b => this.ctx.decodeAudioData(b, d => { this.smp[k] = d; }, () => { })).catch(() => { }); } catch (e) { } },
+  // play a recorded sample through the game bus (so slow motion pitches and muffles it); false = not loaded, caller falls back to synth
+  sample(k, vol = .7, rate = 1, delay = 0) {
+    const ctx = this.ctx; if (!ctx || !this.smp[k]) return false;
+    const now = performance.now(); if (!delay && now - (this.smpT[k] || 0) < 70) return true; this.smpT[k] = now; // same 70 ms retrigger guard Gun Fu uses
+    try { const s = ctx.createBufferSource(), g = ctx.createGain(); s.buffer = this.smp[k]; s.playbackRate.value = rate * this.rate; g.gain.value = vol; s.connect(g); g.connect(this.bus); s.start(ctx.currentTime + delay); } catch (e) { return false; }
+    return true;
+  },
+  // Gun Fu's synth voices, ported 1:1: linearly decaying filtered noise + a sliding oscillator
+  gfNoise(d, vol, hp, lp) {
+    const ctx = this.ctx; if (!ctx) return; const n = Math.floor(ctx.sampleRate * d), b = ctx.createBuffer(1, n, ctx.sampleRate), a = b.getChannelData(0);
+    for (let i = 0; i < n; i++) a[i] = (Math.random() * 2 - 1) * (1 - i / n);
+    const s = ctx.createBufferSource(), g = ctx.createGain(), f = ctx.createBiquadFilter(); f.type = lp ? 'lowpass' : 'highpass'; f.frequency.value = lp || hp || 800; g.gain.value = vol * 1.7; s.buffer = b; s.playbackRate.value = this.rate; s.connect(f); f.connect(g); g.connect(this.bus); s.start();
+  },
+  gfTone(f, d, type, vol, slide, delay) {
+    const ctx = this.ctx; if (!ctx) return; const t = ctx.currentTime + (delay || 0), o = ctx.createOscillator(), g = ctx.createGain(), r = this.rate; o.type = type || 'square';
+    o.frequency.setValueAtTime(f * r, t); if (slide) o.frequency.exponentialRampToValueAtTime(Math.max(20, f * slide * r), t + d);
+    g.gain.setValueAtTime(vol * 1.7, t); g.gain.exponentialRampToValueAtTime(.0001, t + d); o.connect(g); g.connect(this.bus); o.start(t); o.stop(t + d + .02);
   },
   setVol(v) { if (this.master) this.master.gain.value = v; },
   setSlow(k) { // 0 normal .. 1 deep slow motion
@@ -100,14 +121,14 @@ const Snd = {
   }
 };
 const SFX = {
-  pistol() { Snd.noise(.13, { f: 3000, f2: 500, g: .5 }); Snd.tone(.09, { f: 190, f2: 60, type: 'square', g: .22 }); },
-  dual() { Snd.noise(.11, { f: 3400, f2: 600, g: .45 }); Snd.tone(.08, { f: 220, f2: 70, type: 'square', g: .2 }); },
-  smg() { Snd.noise(.08, { f: 3800, f2: 900, g: .38 }); Snd.tone(.05, { f: 260, f2: 90, type: 'square', g: .15 }); },
-  ar() { Snd.noise(.14, { f: 2600, f2: 350, g: .55 }); Snd.tone(.1, { f: 150, f2: 50, type: 'sawtooth', g: .22 }); },
-  shotgun() { Snd.noise(.34, { f: 2000, f2: 180, g: .9 }); Snd.tone(.22, { f: 110, f2: 35, type: 'sawtooth', g: .4 }); },
+  pistol() { Snd.gfNoise(.09, .2, 600, 6000); Snd.gfTone(190, .12, 'sawtooth', .13, .3); Snd.gfTone(70, .2, 'sine', .22, .4); }, // Gun Fu pistol shot
+  dual() { Snd.gfNoise(.08, .18, 700, 6500); Snd.gfTone(215, .1, 'sawtooth', .12, .3); Snd.gfTone(80, .16, 'sine', .18, .4); },
+  smg() { Snd.gfNoise(.04, .1, 1500, 7000); Snd.gfTone(210, .05, 'square', .05, .5); }, // Gun Fu SMG
+  ar() { Snd.gfNoise(.1, .22, 500, 5200); Snd.gfTone(160, .13, 'sawtooth', .14, .3); Snd.gfTone(62, .22, 'sine', .24, .4); },
+  shotgun() { if (!Snd.sample('sg', .9, .96 + Math.random() * .08)) { Snd.gfNoise(.24, .3, 200, 2500); Snd.gfTone(60, .28, 'sawtooth', .2, .4); } if (!Snd.sample('pump', .7, 1, .38)) { Snd.gfTone(300, .05, 'square', .05, 0, .38); Snd.gfTone(500, .06, 'square', .05, 0, .53); } }, // Gun Fu shotgun blast + pump
   sniper() { Snd.noise(.5, { f: 2600, f2: 120, g: 1 }); Snd.tone(.4, { f: 95, f2: 28, type: 'sawtooth', g: .5 }); Snd.noise(.7, { f: 6000, type: 'highpass', g: .1, delay: .08 }); },
   silenced() { Snd.noise(.07, { f: 1100, type: 'bandpass', q: 2, g: .22 }); Snd.tone(.04, { f: 300, f2: 120, g: .08 }); },
-  eshot() { Snd.noise(.1, { f: 1900, f2: 400, g: .22 }); Snd.tone(.07, { f: 140, f2: 55, type: 'square', g: .1 }); },
+  eshot() { Snd.gfNoise(.08, .12, 500, 4000); Snd.gfTone(150, .1, 'square', .06, .35); }, // Gun Fu enemy shot
   flame() { Snd.noise(.2, { f: 700, f2: 300, type: 'bandpass', q: .6, g: .26 }); Snd.noise(.12, { f: 2600, type: 'highpass', g: .05 }); },
   ignite() { Snd.noise(.35, { f: 500, f2: 1800, type: 'bandpass', g: .3 }); },
   empty() { Snd.tone(.03, { f: 1800, type: 'square', g: .1 }); },
@@ -117,7 +138,8 @@ const SFX = {
   glass() { Snd.noise(.4, { f: 4200, type: 'highpass', g: .4 }); for (let i = 0; i < 5; i++) Snd.tone(.08 + Math.random() * .1, { f: 2200 + Math.random() * 4000, g: .06, delay: Math.random() * .18 }); },
   light() { Snd.noise(.15, { f: 5000, type: 'highpass', g: .25 }); Snd.tone(.25, { f: 110, f2: 40, type: 'sawtooth', g: .18 }); },
   boom() { Snd.noise(1.0, { f: 700, f2: 40, g: 1.1 }); Snd.tone(.7, { f: 95, f2: 24, g: .9 }); Snd.noise(.25, { f: 3000, f2: 600, g: .5 }); },
-  hit() { Snd.tone(.06, { f: 330, f2: 90, type: 'triangle', g: .22 }); },
+  hit() { if (!Snd.sample('hit', .6, .95 + Math.random() * .12)) Snd.tone(.06, { f: 330, f2: 90, type: 'triangle', g: .22 }); },
+  rico() { if (!Snd.sample(Math.random() < .5 ? 'rico1' : 'rico2', .5, .92 + Math.random() * .16)) { Snd.gfNoise(.06, .16, 2500, 9000); Snd.gfTone(1500, .09, 'square', .05, .6); } },
   head() { Snd.tone(.1, { f: 1500, f2: 600, type: 'triangle', g: .25 }); Snd.noise(.07, { f: 900, g: .25 }); },
   kill() { Snd.tone(.16, { f: 240, f2: 50, type: 'sawtooth', g: .2 }); },
   hurt() { Snd.tone(.2, { f: 160, f2: 50, type: 'sawtooth', g: .35 }); Snd.noise(.12, { f: 600, g: .3 }); },
@@ -133,7 +155,7 @@ const SFX = {
   ui() { Snd.tone(.04, { f: 700, type: 'square', g: .07, dest: Snd.master }); },
   uiOk() { Snd.tone(.06, { f: 520, type: 'square', g: .08, dest: Snd.master }); Snd.tone(.08, { f: 1040, type: 'square', g: .07, delay: .05, dest: Snd.master }); },
   deny() { Snd.tone(.12, { f: 140, type: 'square', g: .1, dest: Snd.master }); },
-  metal() { Snd.tone(.12, { f: 2400 + Math.random() * 1500, type: 'triangle', g: .12 }); Snd.noise(.04, { f: 5000, type: 'highpass', g: .15 }); },
+  metal() { if (!Snd.sample(Math.random() < .5 ? 'rico1' : 'rico2', .55, 1 + Math.random() * .2)) { Snd.tone(.12, { f: 2400 + Math.random() * 1500, type: 'triangle', g: .12 }); Snd.noise(.04, { f: 5000, type: 'highpass', g: .15 }); } },
   wood() { Snd.noise(.08, { f: 700, g: .3 }); Snd.tone(.05, { f: 180, f2: 90, g: .12 }); },
   crash() { Snd.noise(.3, { f: 900, f2: 200, g: .5 }); Snd.tone(.15, { f: 120, f2: 50, g: .3 }); },
   door() { Snd.noise(.12, { f: 500, g: .3 }); Snd.tone(.08, { f: 110, g: .2 }); },

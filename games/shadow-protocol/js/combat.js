@@ -46,7 +46,7 @@ function spawnBullet(o) {
   Bullets.push({ x: o.x, y: o.y, sx: o.x, sy: o.y, ang: o.ang, cx: Math.cos(o.ang), cy: Math.sin(o.ang), speed: o.speed, dmg: o.dmg, owner: o.owner, pen: o.pen || 0, wid: o.wid, deadeye: o.deadeye, src: o.src, flame: o.flame, fire: o.fire, range: o.range, hitSet: o.flame ? new Set() : null, dist: 0, dead: false, near: false, dodged: false, passed: false, over: undefined, lastProp: null, lastE: null, lastDoor: null, wall: false, inWall: false, wake: 0, counted: false });
 }
 function bulletImpact(b, col) {
-  FX.sparks(b.x, b.y, b.ang + Math.PI, 5, col || '#ffd98a', 1.6); FX.dust(b.x, b.y, 1);
+  FX.sparks(b.x, b.y, b.ang + Math.PI, 5, col || '#ffd98a', 1.6); FX.dust(b.x, b.y, 1); if (Math.random() < .22) Snd.play('rico');
   const d = World.dx, hx = b.x - b.cx * 2, hy = b.y - b.cy * 2; d.fillStyle = 'rgba(0,0,0,.9)'; d.beginPath(); d.arc(hx, hy, 1.9, 0, TAU); d.fill(); d.strokeStyle = 'rgba(150,150,160,.35)'; d.lineWidth = 1; d.beginPath(); d.arc(hx, hy, 3, 0, TAU); d.stroke();
 }
 function updateBullets(dt) {

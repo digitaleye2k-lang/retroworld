@@ -62,6 +62,7 @@ function updatePlayer(dt, rdt) {
   if (P.state !== 'takedown' && P.de.mode !== 2) P.aim = Math.atan2(G.wmy - P.y, G.wmx - P.x); // aim is always real-time
   let ix = (Input.down('KeyD') ? 1 : 0) - (Input.down('KeyA') ? 1 : 0), iy = (Input.down('KeyS') ? 1 : 0) - (Input.down('KeyW') ? 1 : 0);
   if (ix && iy) { ix *= .7071; iy *= .7071; }
+  if (Input.touch && (Input.ax || Input.ay)) { ix = Input.ax; iy = Input.ay; } // analog movement stick
   const shiftHit = Input.hit('ShiftLeft') || Input.hit('ShiftRight'), shiftDown = Input.down('ShiftLeft') || Input.down('ShiftRight');
   const space = Input.hit('Space'), nearWall = P.touchT < .2;
   P.focus = Input.down('KeyC') && P.state === 'run';
@@ -257,7 +258,7 @@ function updateDeadEye(rdt) {
   const de = P.de;
   if (de.mode === 1) {
     de.t += rdt; const max = Math.min(6, curW().mag);
-    for (const e of Enemies) if (e.alive && de.marks.length < max && !de.marks.includes(e) && dist(G.wmx, G.wmy, e.x, e.y) < 28 && losClear(P.x, P.y, e.x, e.y)) { de.marks.push(e); Snd.play('mark'); }
+    for (const e of Enemies) if (e.alive && de.marks.length < max && !de.marks.includes(e) && (dist(G.wmx, G.wmy, e.x, e.y) < 28 || (Input.touch && Math.abs(angDiff(P.aim, Math.atan2(e.y - P.y, e.x - P.x))) < .2)) && losClear(P.x, P.y, e.x, e.y)) { de.marks.push(e); Snd.play('mark'); }
     if (!Input.down('KeyX') || de.t > 3.2) { if (de.marks.length) { de.mode = 2; de.i = 0; de.t = .1; } else { de.mode = 0; de.cd = 2; } }
   } else if (de.mode === 2) {
     de.t -= rdt;

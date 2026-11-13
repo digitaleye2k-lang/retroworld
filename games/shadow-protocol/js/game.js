@@ -20,7 +20,7 @@ function startMission(i) {
   G.total = Enemies.length; for (const w of m.waves || []) for (const k in w) G.total += w[k];
   Style.reset(); Cam.x = P.x; Cam.y = P.y; Cam.zoom = 1.25; Cam.trauma = 0;
   G.phase = 'fight'; G.wave = 0; G.waveT = 14; G.surviveT = m.survive || 0; G.introT = 3.4; G.deathT = 0; G.plight = lightAt(P.x, P.y);
-  UI.hide(); G.state = 'play'; Input.clear(); Snd.init();
+  UI.hide(); G.state = 'play'; Input.clear(); Touch.reset(); Snd.init();
 }
 function spawnWave(def) {
   let tiles = World.spawnTiles.filter(t => { const x = t.tx * TS + 20, y = t.ty * TS + 20; return walkT(tIdx(t.tx, t.ty)) && dist(x, y, P.x, P.y) > 480 && !losClear(x, y, P.x, P.y); });
@@ -45,7 +45,7 @@ function updateObjective(dt) {
     }
     if (G.phase === 'exit') { World.exitOpen = true; Style.note(m.survive ? 'EXTRACTION READY' : 'AREA CLEAR', null, 2); }
   } else { G.objective = 'REACH THE EXTRACTION POINT'; if (P.alive && dist(P.x, P.y, World.exit.x, World.exit.y) < World.exit.r) finishMission(); }
-  G.hint = m.tutorial && G.stats.time < HINTS.length * 8 ? HINTS[Math.floor(G.stats.time / 8) % HINTS.length] : '';
+  G.hint = m.tutorial && G.stats.time < HINTS.length * 8 ? (Input.touch ? TOUCH_HINTS : HINTS)[Math.floor(G.stats.time / 8) % HINTS.length] : '';
 }
 function finishMission() {
   const s = G.stats, acc = s.shots ? s.hits / s.shots : 0, par = Math.max(G.total, s.kills) * 330;
@@ -79,7 +79,7 @@ G.tick = function (rdt) {
   let ps = (P.state === 'dive' || P.state === 'jump' || P.state === 'takedown') ? Math.min(1, ws * 1.35) : lerp(1, ws, .4); // player stays far more responsive than the world
   if (P.de.mode) ps = Math.min(ps, .2); if (G.hitstop > 0) ps = .05;
   G.time += dt; G.rt += rdt; G.stats.time += rdt; G.introT -= rdt;
-  View.S = viewScale(); G.wmx = Cam.x + Cam.sx + (Input.mx - View.w / 2) / View.S; G.wmy = Cam.y + Cam.sy + (Input.my - View.h / 2) / View.S; // matches the drawn crosshair even mid-shake
+  View.S = viewScale(); Touch.update(); G.wmx = Cam.x + Cam.sx + (Input.mx - View.w / 2) / View.S; G.wmy = Cam.y + Cam.sy + (Input.my - View.h / 2) / View.S; // matches the drawn crosshair even mid-shake
   G.plT -= rdt; if (G.plT <= 0) { G.plT = .2; G.plight = Math.max(lightAt(P.x, P.y), P.muzzleT > -0.3 ? .8 : 0); }
   updatePlayer(rdt * ps, rdt);
   for (const e of Enemies) e.update(dt);
@@ -100,7 +100,7 @@ G.tick = function (rdt) {
   if (!P.alive && G.state === 'play') { G.deathT -= rdt; if (G.deathT <= 0) { G.state = 'dead'; Snd.setSlow(0); UI.dead(); } }
   if (Input.hit('Escape') || Input.hit('KeyP')) pauseGame();
 };
-function pauseGame() { if (G.state !== 'play') return; G.state = 'pause'; Input.clear(); Snd.setSlow(0); UI.pause(); }
+function pauseGame() { if (G.state !== 'play') return; G.state = 'pause'; Input.clear(); Touch.reset(); Snd.setSlow(0); UI.pause(); }
 
 /* ---------------- menus (DOM overlay) ---------------- */
 const UI = {
@@ -135,7 +135,7 @@ const UI = {
     this.show(`<h2>SETTINGS</h2><div class="menu"><button data-a="diff">DIFFICULTY <small>${DIFF().name} — ${s.diff === 'hard' ? 'enemies hit harder and react faster' : s.diff === 'normal' ? 'balanced; slow health recovery' : 'enemies deal less than half damage, aim worse, react slower; health recovers out of combat'}</small></button><label>MASTER VOLUME <input type="range" min="0" max="100" value="${Math.round(s.vol * 100)}" id="vol"></label>${tg('music', 'MUSIC')}${tg('shake', 'SCREEN SHAKE')}${tg('fx', 'CHROMATIC SLOW-MO FX')}${tg('fps', 'FPS COUNTER')}<button data-a="reset" class="danger">RESET ALL PROGRESS</button></div><button class="back" data-a="${this.back === 'pause' ? 'pausemenu' : 'main'}">BACK</button>`);
     document.getElementById('vol').oninput = e => { s.vol = e.target.value / 100; Snd.setVol(s.vol); Save.write(); };
   },
-  pause() { this.show(`<h2>PAUSED</h2><div class="menu"><button data-a="resume">RESUME</button><button data-a="restart">RESTART MISSION</button><button data-a="settings:pause">SETTINGS</button><button data-a="quit">QUIT TO MENU</button></div><div class="keys">${this.keys()}</div>`, 'dim'); },
+  pause() { this.show(`<h2>PAUSED</h2><div class="menu"><button data-a="resume">RESUME</button><button data-a="restart">RESTART MISSION</button><button data-a="settings:pause">SETTINGS</button><button data-a="fs">FULLSCREEN</button><button data-a="quit">QUIT TO MENU</button></div><div class="keys">${this.keys()}</div>`, 'dim'); },
   dead() { this.show(`<h2 class="red">OPERATIVE DOWN</h2><p class="sub">Style ${Style.score.toLocaleString()} · ${G.stats.kills} kills</p><div class="menu"><button data-a="restart">RETRY</button><button data-a="quit">QUIT TO MENU</button></div>`, 'dim'); },
   results(r) {
     const s = G.stats, t = s.time, row = (a, b) => `<div><span>${a}</span><b>${b}</b></div>`;
@@ -155,6 +155,7 @@ const UI = {
     else if (cmd === 'equip') { const i = d.loadout.indexOf(arg); if (i >= 0) { if (d.loadout.length > 1) d.loadout.splice(i, 1); } else if (d.loadout.length < 3) d.loadout.push(arg); else Snd.play('deny'); Save.write(); this.loadout(); }
     else if (cmd === 'buy') { const u = UPGRADES[arg], lv = d.upgrades[arg] || 0; if (lv < u.max && d.credits >= u.cost[lv]) { d.credits -= u.cost[lv]; d.upgrades[arg] = lv + 1; Save.write(); } else Snd.play('deny'); this.upgrades(); }
     else if (cmd === 'ability') { const ab = ABILITIES[arg]; if (!d.abilities[arg] && d.credits >= ab.cost) { d.credits -= ab.cost; d.abilities[arg] = true; Save.write(); } else Snd.play('deny'); this.upgrades(); }
+    else if (cmd === 'fs') { const el = document.documentElement; try { if (document.fullscreenElement) document.exitFullscreen(); else (el.requestFullscreen || el.webkitRequestFullscreen || (() => { })).call(el); } catch (e) { } }
     else if (cmd === 'diff') { const o = ['easy', 'normal', 'hard']; d.settings.diff = o[(o.indexOf(d.settings.diff) + 1) % 3] || 'easy'; Save.write(); this.settings(); }
     else if (cmd === 'toggle') { d.settings[arg] = !d.settings[arg]; Save.write(); this.settings(); }
     else if (cmd === 'reset') { if (confirm('Erase all progress, unlocks and credits?')) { Save.reset(); Snd.setVol(Save.data.settings.vol); this.main(); } }
@@ -173,7 +174,7 @@ function boot() {
   UI.el.addEventListener('mouseover', e => { if (e.target.closest('button')) Snd.play('ui'); });
   addEventListener('keydown', e => { if (e.code === 'Escape' && G.state === 'pause') { UI.hide(); G.state = 'play'; Input.clear(); } });
   addEventListener('blur', () => pauseGame());
-  G.stats = newStats(); menuBackdrop(); UI.main(); Story.init(); Intro.init();
+  G.stats = newStats(); menuBackdrop(); UI.main(); Story.init(); Intro.init(); Touch.init();
   // launch sequence: click-to-begin splash → intro video → comic prologue (first time only) → main menu
   Intro.start(() => { const go = () => { G.state = 'menu'; UI.main(); }; if (!Save.data.seenStory) Story.show(PROLOGUE, () => { Save.data.seenStory = true; Save.write(); go(); }); else go(); }, true);
   let last = performance.now();

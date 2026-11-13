@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
 <title>SHADOW PROTOCOL</title>
 <style>
   :root { --red: #ff2d3d; --cyan: #4fe3ff; --gold: #ffd23d; }
@@ -69,22 +69,40 @@
   #intro .skip { position: absolute; right: 22px; bottom: 18px; font-size: 11px; letter-spacing: .3em; color: rgba(255,255,255,.55); } #intro.wait .skip { display: none; }
   @keyframes blink { 50% { opacity: .25; } }
   .menu button small u { text-decoration: underline; color: var(--cyan); cursor: pointer; }
+
+  /* touch controls */
+  html, body { touch-action: none; overscroll-behavior: none; -webkit-user-select: none; -webkit-touch-callout: none; }
+  #ui, #story { touch-action: pan-y; }
+  #touch { position: fixed; inset: 0; z-index: 5; display: none; --b: clamp(44px, 13vh, 62px); }
+  body.touch.playing #touch { display: block; }
+  .stick { position: absolute; display: none; width: 108px; height: 108px; margin: -54px 0 0 -54px; border-radius: 50%; border: 2px solid rgba(255,255,255,.28); background: rgba(255,255,255,.05); pointer-events: none; }
+  .stick i { position: absolute; left: 50%; top: 50%; width: 46px; height: 46px; margin: -23px 0 0 -23px; border-radius: 50%; background: rgba(255,255,255,.35); }
+  .stick.r { border-color: rgba(255,45,61,.5); } .stick.r i { background: rgba(255,45,61,.5); }
+  .tb { position: absolute; width: var(--b); height: var(--b); border-radius: 50%; border: 2px solid rgba(255,255,255,.34); background: rgba(8,10,14,.5); color: #fff; font: 800 10px 'Segoe UI', Arial; letter-spacing: .06em; display: flex; align-items: center; justify-content: center; }
+  .tb.dn { background: rgba(79,227,255,.4); border-color: var(--cyan); } .tb.red { border-color: rgba(255,45,61,.7); } .tb.cy { border-color: rgba(79,227,255,.8); }
+  .tb.pause { left: 50%; top: 6px; margin-left: -20px; width: 40px; height: 40px; border-radius: 6px; font-size: 13px; }
+  #rot { display: none; position: absolute; left: 50%; top: 56px; transform: translateX(-50%); background: rgba(0,0,0,.7); border-left: 3px solid var(--gold); padding: 6px 12px; font-size: 11px; letter-spacing: .12em; white-space: nowrap; pointer-events: none; }
+  @media (orientation: portrait) { #rot { display: block; } }
+  body.touch .keys { display: none; }
+  @media (max-height: 520px) { .logo { font-size: 56px; } .tag { margin: 8px 0 12px; } button, label { padding: 8px 14px; font-size: 12px; } h2 { font-size: 26px; } #ui { justify-content: flex-start; } .rank { font-size: 90px; } .stats div { padding: 3px 0; font-size: 11px; } }
 </style>
 </head>
 <body>
 <canvas id="c"></canvas>
 <div id="ui"></div>
+<div id="touch"><div class="stick l"><i></i></div><div class="stick r"><i></i></div><div class="tb " data-k="Space" style="right:calc(12px + 0 * calc(var(--b) + 10px));bottom:calc(42vh + 0 * calc(var(--b) + 10px))">ROLL</div><div class="tb " data-k="ShiftLeft" style="right:calc(12px + 1 * calc(var(--b) + 10px));bottom:calc(42vh + 0 * calc(var(--b) + 10px))">SLIDE</div><div class="tb " data-k="M2" style="right:calc(12px + 2 * calc(var(--b) + 10px));bottom:calc(42vh + 0 * calc(var(--b) + 10px))">DIVE</div><div class="tb cy" data-k="KeyQ" style="right:calc(12px + 0 * calc(var(--b) + 10px));bottom:calc(42vh + 1 * calc(var(--b) + 10px))">BT</div><div class="tb " data-k="KeyV" style="right:calc(12px + 1 * calc(var(--b) + 10px));bottom:calc(42vh + 1 * calc(var(--b) + 10px))">JUMP</div><div class="tb red" data-k="KeyE,KeyF" style="right:calc(12px + 2 * calc(var(--b) + 10px));bottom:calc(42vh + 1 * calc(var(--b) + 10px))">ACT</div><div class="tb " data-k="KeyR" style="left:calc(12px + 0 * calc(var(--b) + 10px));bottom:calc(42vh + 0 * calc(var(--b) + 10px))">RLD</div><div class="tb " data-k="wheel" style="left:calc(12px + 1 * calc(var(--b) + 10px));bottom:calc(42vh + 0 * calc(var(--b) + 10px))">SWAP</div><div class="tb red de" data-k="KeyX" style="left:calc(12px + 2 * calc(var(--b) + 10px));bottom:calc(42vh + 0 * calc(var(--b) + 10px))">DEAD<br>EYE</div><div class="tb pause" data-k="pause">II</div><div id="rot">ROTATE YOUR PHONE SIDEWAYS FOR A WIDER VIEW</div></div>
 <div id="story"></div>
 <div id="intro"><video src="video/intro.mp4" preload="auto" playsinline></video><div class="begin"><div class="logo"><span>SHADOW</span><b>PROTOCOL</b></div><p>CLICK OR PRESS ANY KEY TO BEGIN</p></div><div class="skip">CLICK / ESC — SKIP</div></div>
-<script src="js/core.js?v=9"></script>
-<script src="js/data.js?v=9"></script>
-<script src="js/world.js?v=9"></script>
-<script src="js/rig.js?v=9"></script>
-<script src="js/player.js?v=9"></script>
-<script src="js/combat.js?v=9"></script>
-<script src="js/enemy.js?v=9"></script>
-<script src="js/render.js?v=9"></script>
-<script src="js/story.js?v=9"></script>
-<script src="js/game.js?v=9"></script>
+<script src="js/core.js?v=12"></script>
+<script src="js/data.js?v=12"></script>
+<script src="js/world.js?v=12"></script>
+<script src="js/rig.js?v=12"></script>
+<script src="js/player.js?v=12"></script>
+<script src="js/combat.js?v=12"></script>
+<script src="js/enemy.js?v=12"></script>
+<script src="js/render.js?v=12"></script>
+<script src="js/story.js?v=12"></script>
+<script src="js/touch.js?v=12"></script>
+<script src="js/game.js?v=12"></script>
 </body>
 </html>

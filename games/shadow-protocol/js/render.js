@@ -30,7 +30,7 @@ function initView(canvas) {
   const rs = () => { View.w = canvas.width = innerWidth; View.h = canvas.height = innerHeight; View.L.width = View.F.width = Math.ceil(View.w / 2); View.L.height = View.F.height = Math.ceil(View.h / 2); };
   addEventListener('resize', rs); rs();
 }
-const viewScale = () => Math.min(View.h / 580, View.w / 880) * Cam.zoom;
+const viewScale = () => (Input.touch ? Math.max(Math.min(View.h / 580, View.w / 880), Math.min(View.h / 400, View.w / 640)) : Math.min(View.h / 580, View.w / 880)) * Cam.zoom; // phones zoom in so the stickmen stay readable
 
 function drawProp(x, p) {
   const dmg = 1 - clamp(p.hp / p.maxHp, 0, 1);
@@ -186,8 +186,10 @@ function render() {
 
 function drawHUD(x, w, h, S, camx, camy) {
   if (G.state !== 'play' && G.state !== 'pause') return;
+  const hk = clamp(View.h / 520, .72, 1); x.save(); x.scale(hk, hk); w /= hk; h /= hk; S /= hk; // shrink the HUD on small screens
   const F = (s, wt = 700) => { x.font = `${wt} ${s}px Segoe UI, Arial`; };
   const toScr = (px, py) => [w / 2 + (px - camx) * S, h / 2 + (py - camy) * S];
+  const hintY = Input.touch ? 150 : h - 128;
   // offscreen threat indicators + damage direction
   for (const e of Enemies) if (e.alive && e.alert) { const [sx, sy] = toScr(e.x, e.y); if (sx < 0 || sy < 0 || sx > w || sy > h) { const a = Math.atan2(sy - h / 2, sx - w / 2), r = Math.min(w, h) / 2 - 30; x.save(); x.translate(w / 2 + Math.cos(a) * r, h / 2 + Math.sin(a) * r); x.rotate(a); x.fillStyle = 'rgba(255,45,61,.85)'; x.beginPath(); x.moveTo(10, 0); x.lineTo(-6, -7); x.lineTo(-6, 7); x.fill(); x.restore(); } }
   if (P.hurtT > 0) { x.save(); x.translate(w / 2, h / 2); x.rotate(P.hurtDir); x.strokeStyle = `rgba(255,45,61,${P.hurtT / .6})`; x.lineWidth = 6; x.beginPath(); x.arc(0, 0, 90, -.35, .35); x.stroke(); x.restore(); }
@@ -224,16 +226,17 @@ function drawHUD(x, w, h, S, camx, camy) {
   if (big) { const a = Math.min(1, big.t * 7) * clamp((1.6 - big.t) * 3, 0, 1), sc = 1 + (1 - Math.min(1, big.t * 7)) * .8; x.globalAlpha = a; x.save(); x.translate(w / 2, h * .2); x.scale(sc, sc); F(44, 900); x.fillStyle = 'rgba(255,45,61,.85)'; x.fillText(big.text, 2, 2); x.fillStyle = '#fff'; x.fillText(big.text, 0, 0); if (big.pts) { F(16, 800); x.fillStyle = '#4fe3ff'; x.fillText('+' + big.pts, 0, 26); } x.restore(); x.globalAlpha = 1; }
   // mission title card / hints
   if (G.introT > 0) { const a = clamp(G.introT, 0, 1); x.globalAlpha = a; F(54, 900); x.fillStyle = '#fff'; x.fillText(MISSIONS[G.mi].name, w / 2, h * .4); F(16, 600); x.fillStyle = '#ff2d3d'; x.fillText(MISSIONS[G.mi].sub, w / 2, h * .4 + 32); x.globalAlpha = 1; }
-  if (G.hint) { F(15, 700); const tw = x.measureText(G.hint).width + 36; x.fillStyle = 'rgba(0,0,0,.6)'; x.fillRect(w / 2 - tw / 2, h - 128, tw, 32); x.fillStyle = '#4fe3ff'; x.fillRect(w / 2 - tw / 2, h - 128, 3, 32); x.fillStyle = '#fff'; x.fillText(G.hint, w / 2, h - 107); }
+  if (G.hint) { F(15, 700); const tw = x.measureText(G.hint).width + 36; x.fillStyle = 'rgba(0,0,0,.6)'; x.fillRect(w / 2 - tw / 2, hintY, tw, 32); x.fillStyle = '#4fe3ff'; x.fillRect(w / 2 - tw / 2, hintY, 3, 32); x.fillStyle = '#fff'; x.fillText(G.hint, w / 2, hintY + 21); }
   if (P.de.mode === 1) { F(16, 900); x.fillStyle = '#ff2d3d'; x.fillText(`DEAD EYE — MARK TARGETS (${P.de.marks.length}) — RELEASE X TO EXECUTE`, w / 2, h * .82); }
   if (Save.data.settings.fps) { x.textAlign = 'left'; F(11); x.fillStyle = '#52ff8f'; x.fillText(G.fps.toFixed(0) + ' FPS', pad, 96); x.textAlign = 'center'; }
   // crosshair + reload ring
-  const mx = Input.mx, my = Input.my, sp = 7 + P.bloom * 26 + (P.focus ? -3 : 0) + (Math.hypot(P.vx, P.vy) > 120 ? 4 : 0);
+  const mx = Input.mx / hk, my = Input.my / hk, sp = 7 + P.bloom * 26 + (P.focus ? -3 : 0) + (Math.hypot(P.vx, P.vy) > 120 ? 4 : 0);
   x.strokeStyle = P.de.mode ? '#ff2d3d' : '#fff'; x.lineWidth = 2; x.beginPath(); x.moveTo(mx - sp - 7, my); x.lineTo(mx - sp, my); x.moveTo(mx + sp, my); x.lineTo(mx + sp + 7, my); x.moveTo(mx, my - sp - 7); x.lineTo(mx, my - sp); x.moveTo(mx, my + sp); x.lineTo(mx, my + sp + 7); x.stroke();
   x.fillStyle = '#ff2d3d'; x.fillRect(mx - 1, my - 1, 2, 2);
   if (P.reloadT > 0) {
     const pr = 1 - P.reloadT / P.reloadDur, bw = 90, bx = mx - bw / 2, by = my + 30; x.fillStyle = 'rgba(0,0,0,.6)'; x.fillRect(bx, by, bw, 7); x.fillStyle = P.activeUsed ? 'rgba(255,255,255,.12)' : 'rgba(82,255,143,.55)'; x.fillRect(bx + bw * .45, by, bw * .18, 7);
     x.fillStyle = P.jamT > 0 ? '#ff2d3d' : '#fff'; x.fillRect(bx + bw * pr - 1.5, by - 3, 3, 13); F(9, 800); x.fillStyle = 'rgba(255,255,255,.7)'; x.fillText(P.activeUsed ? 'RELOADING' : 'TAP R IN THE GREEN', mx, by + 20);
   } else if (wp.mag === 0) { F(11, 900); x.fillStyle = '#ff2d3d'; x.fillText(wp.reserve ? 'RELOAD [R]' : 'NO AMMO', mx, my + 36); }
+  x.restore();
 }
 const W_exitArrow = () => World.exitOpen;
