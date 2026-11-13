@@ -8,7 +8,7 @@ const G = {
 };
 const HINTS = ['WASD to move — the mouse aims independently — LEFT CLICK to shoot', 'SHIFT: combat slide. Bullets pass over you while you slide — keep shooting', 'SPACE: dodge roll with invulnerability. Press SPACE during a slide to chain into a roll',
   'C: slow-motion dive (no direction = backwards). Hold SHIFT as you land to slide out of it', 'Q: BULLET TIME. Watch the tracers, step between them, pick your shots', 'Let a bullet barely miss you while moving for a PERFECT DODGE',
-  'E near an enemy: takedown. Slide into them first to knock them down', 'V: jump over desks and crates. SPACE next to a wall mid-air or mid-slide: wall kick', 'Shoot barrels, glass, lights and fuse boxes. F flips desks into cover and opens doors', 'R reloads — tap R again in the green zone for a PERFECT RELOAD. RIGHT CLICK steadies your aim'];
+  'E near an enemy: takedown. Slide into them first to knock them down', 'V: jump over desks and crates. SPACE next to a wall mid-air or mid-slide: wall kick', 'Shoot barrels, glass, lights and fuse boxes. F flips desks into cover and opens doors', 'R reloads — tap R again in the green zone for a PERFECT RELOAD. RIGHT CLICK: slow-motion dive, shoot while you fly. Hold C to steady your aim'];
 
 function newStats() { return { kills: 0, shots: 0, hits: 0, heads: 0, dmg: 0, time: 0, dodges: 0, glass: 0, lights: 0, flips: 0, explosions: 0, env: 0, moves: 0, bt: 0, takedowns: 0, deadeye: 0 }; }
 function clearScene() { Enemies.length = 0; Bullets.length = 0; FX.parts.length = 0; FX.flashes.length = 0; FX.texts.length = 0; G.glows = []; G.timers = []; G.time = 0; G.ws = 1; G.bt = false; G.flash = 0; G.hitstop = 0; G.pdT = 0; G.shock = null; }
@@ -66,7 +66,7 @@ G.tick = function (rdt) {
   // ---- time dilation: world scale vs. player scale ----
   let target = 1;
   if (G.bt) target = .25;
-  if (P.state === 'dive') target = Math.min(target, .5); else if (P.state === 'jump') target = Math.min(target, .8);
+  if (P.state === 'dive') target = Math.min(target, .4); else if (P.state === 'jump') target = Math.min(target, .8);
   if (P.focusSlow) target = Math.min(target, .5);
   if (P.reflexT > 0) target = Math.min(target, .2);
   if (P.state === 'takedown') target = Math.min(target, .4);
@@ -115,7 +115,7 @@ const UI = {
       <button data-a="levels">LEVEL SELECT</button><button data-a="loadout">WEAPON LOADOUT</button><button data-a="upgrades">UPGRADES <small>${d.credits} CREDITS</small></button><button data-a="settings:main">SETTINGS</button><button data-a="story">STORY <small>READ THE COMIC · <u data-a="intro">REPLAY INTRO VIDEO</u></small></button></div>
       <div class="keys">${this.keys()}</div>`, 'main');
   },
-  keys() { return [['WASD', 'Move'], ['MOUSE', 'Aim'], ['LMB', 'Shoot'], ['RMB', 'Focus aim'], ['SHIFT', 'Slide'], ['SPACE', 'Roll / wall kick'], ['C', 'Dive'], ['V', 'Jump'], ['Q', 'Bullet time'], ['E', 'Takedown'], ['R', 'Reload'], ['F', 'Interact'], ['X', 'Dead Eye'], ['1-3', 'Weapons'], ['ESC', 'Pause']].map(k => `<span><kbd>${k[0]}</kbd>${k[1]}</span>`).join(''); },
+  keys() { return [['WASD', 'Move'], ['MOUSE', 'Aim'], ['LMB', 'Shoot'], ['RMB', 'Slow-mo dive'], ['SHIFT', 'Slide'], ['SPACE', 'Roll / wall kick'], ['C', 'Focus aim (hold)'], ['V', 'Jump'], ['Q', 'Bullet time'], ['E', 'Takedown'], ['R', 'Reload'], ['F', 'Interact'], ['X', 'Dead Eye'], ['1-3', 'Weapons'], ['ESC', 'Pause']].map(k => `<span><kbd>${k[0]}</kbd>${k[1]}</span>`).join(''); },
   levels() {
     const d = Save.data;
     this.show(`<h2>LEVEL SELECT</h2><div class="grid">${MISSIONS.map((m, i) => { const open = i < d.unlocked, b = d.best[i]; return `<button class="card ${open ? '' : 'locked'}" ${open ? `data-a="play:${i}"` : 'disabled'}><i>${String(i + 1).padStart(2, '0')}</i><b>${m.name}</b><small>${open ? m.sub : 'LOCKED'}</small>${b ? `<em class="r${b.rank}">${RANKS[b.rank]}</em><u>${b.score.toLocaleString()}</u>` : ''}</button>`; }).join('')}</div><button class="back" data-a="main">BACK</button>`);

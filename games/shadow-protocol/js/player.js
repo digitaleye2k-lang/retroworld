@@ -64,14 +64,14 @@ function updatePlayer(dt, rdt) {
   if (ix && iy) { ix *= .7071; iy *= .7071; }
   const shiftHit = Input.hit('ShiftLeft') || Input.hit('ShiftRight'), shiftDown = Input.down('ShiftLeft') || Input.down('ShiftRight');
   const space = Input.hit('Space'), nearWall = P.touchT < .2;
-  P.focus = Input.down('M2') && P.state === 'run';
+  P.focus = Input.down('KeyC') && P.state === 'run';
   P.focusSlow = P.focus && hasAb('focus') && P.energy > 0 && !G.bt;
   P.stT += dt; const u = P.stT / P.stDur;
   switch (P.state) {
     case 'run': {
       const sp = 215 * (P.focus ? .55 : 1) * (ls ? 1.3 : 1), a = damp(15, dt);
       P.vx = lerp(P.vx, ix * sp, a); P.vy = lerp(P.vy, iy * sp, a);
-      if (shiftHit) startSlide(ix, iy); else if (space) startRoll(ix, iy); else if (Input.hit('KeyC')) startDive(ix, iy); else if (Input.hit('KeyV')) startJump();
+      if (shiftHit) startSlide(ix, iy); else if (space) startRoll(ix, iy); else if (Input.hit('M2')) startDive(ix, iy); else if (Input.hit('KeyV')) startJump();
       P.groundT -= dt; if (P.groundT <= 0) { P.groundT = .25; P.lastGround.x = P.x; P.lastGround.y = P.y; }
       break;
     }
@@ -80,7 +80,7 @@ function updatePlayer(dt, rdt) {
       const sp = P.sp0 * (1 - .62 * u * u); P.vx = P.dirx * sp; P.vy = P.diry * sp;
       P.dustT -= dt; if (P.dustT <= 0) { P.dustT = .03; FX.dust(P.x + P.dirx * 8, P.y + P.diry * 8, 1); }
       if (space) { if (nearWall) wallKick(ix, iy); else startRoll(ix || P.dirx, iy || P.diry); }
-      else if (Input.hit('KeyC')) startDive(ix || P.dirx, iy || P.diry);
+      else if (Input.hit('M2')) startDive(ix || P.dirx, iy || P.diry);
       else if (Input.hit('KeyV')) startJump();
       else if (u >= 1) setState('run');
       break;

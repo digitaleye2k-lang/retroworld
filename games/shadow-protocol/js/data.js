@@ -58,7 +58,7 @@ const UPGRADES = {
   ammo:    { name: 'DEEP POCKETS', desc: '+35% reserve ammunition per level', max: 2, cost: [250, 600] }
 };
 const ABILITIES = {
-  focus:     { name: 'FOCUS MODE', key: 'RMB', cost: 500, desc: 'Holding aim slows time while your aim stays at full speed. Drains energy.' },
+  focus:     { name: 'FOCUS MODE', key: 'C', cost: 500, desc: 'Holding aim slows time while your aim stays at full speed. Drains energy.' },
   phantom:   { name: 'PHANTOM SLIDE', key: 'SHIFT', cost: 600, desc: 'Slides travel 60% farther and bullets almost always pass overhead.' },
   reflex:    { name: 'REFLEX', key: 'AUTO', cost: 800, desc: 'A bullet about to hit you triggers an automatic slow-motion window. 9s cooldown.' },
   deadeye:   { name: 'DEAD EYE', key: 'X', cost: 1200, desc: 'Hold X to mark up to 6 targets in frozen time, release to execute them in sequence. 18s cooldown.' },

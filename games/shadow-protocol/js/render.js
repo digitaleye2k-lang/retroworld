@@ -203,7 +203,7 @@ function drawHUD(x, w, h, S, camx, camy) {
   // abilities
   let ax = pad + 290; const ab = (key, lbl, cd, max, act) => { if (!hasAb(key)) return; x.fillStyle = act ? 'rgba(79,227,255,.25)' : 'rgba(255,255,255,.07)'; x.fillRect(ax, h - 56, 74, 38); x.fillStyle = cd > 0 ? 'rgba(255,255,255,.3)' : '#fff'; F(10, 800); x.fillText(lbl, ax + 6, h - 41); if (cd > 0) { x.fillStyle = '#ffd23d'; x.fillRect(ax, h - 22, 74 * clamp(cd / max, 0, 1), 3); F(10); x.fillText(cd.toFixed(0) + 's', ax + 6, h - 27); } else { x.fillStyle = '#52ff8f'; F(10); x.fillText(act ? 'ACTIVE' : 'READY', ax + 6, h - 27); } ax += 80; };
   ab('deadeye', 'DEAD EYE [X]', P.de.cd, 18, P.de.mode > 0); ab('reflex', 'REFLEX', P.reflexCd, 9, P.reflexT > 0); ab('laststand', 'LAST STAND', P.lastStandCd, 60, P.lastStandT > 0);
-  if (hasAb('focus')) { x.fillStyle = P.focusSlow ? 'rgba(79,227,255,.25)' : 'rgba(255,255,255,.07)'; x.fillRect(ax, h - 56, 74, 38); x.fillStyle = '#fff'; F(10, 800); x.fillText('FOCUS [RMB]', ax + 6, h - 41); ax += 80; }
+  if (hasAb('focus')) { x.fillStyle = P.focusSlow ? 'rgba(79,227,255,.25)' : 'rgba(255,255,255,.07)'; x.fillRect(ax, h - 56, 74, 38); x.fillStyle = '#fff'; F(10, 800); x.fillText('FOCUS [C]', ax + 6, h - 41); ax += 80; }
   // weapon + ammo
   const wp = curW(), wd = WEAPONS[wp.id]; x.textAlign = 'right'; F(13, 800); x.fillStyle = 'rgba(255,255,255,.6)'; x.fillText(wd.name, w - pad, h - 62);
   F(40, 900); x.fillStyle = wp.mag === 0 ? '#ff2d3d' : wp.mag <= wd.mag * .25 ? '#ffd23d' : '#fff'; x.fillText(wp.mag, w - pad - 70, h - 22); F(18, 700); x.fillStyle = 'rgba(255,255,255,.55)'; x.fillText('/ ' + wp.reserve, w - pad, h - 24);
