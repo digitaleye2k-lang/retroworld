@@ -40,7 +40,7 @@
       for (const s of GB.missions.starts()) { const y = s.y - 70 + Math.sin(GB.time * 2.4 + s.x) * 4; ctx.strokeStyle = 'rgba(230,195,90,0.9)'; ctx.lineWidth = 2; ctx.beginPath(); ctx.moveTo(s.x, y + 13); ctx.lineTo(s.x - 9, y); ctx.lineTo(s.x, y - 13); ctx.lineTo(s.x + 9, y); ctx.closePath(); ctx.stroke(); ctx.font = '600 11px Georgia'; ctx.textAlign = 'center'; ctx.fillStyle = 'rgba(230,195,90,0.95)'; ctx.fillText(String(s.id), s.x, y + 4); }
       for (const v of W.viewpoints) if (!GB.save.viewpoints[v.id] && Math.abs(v.x - P.x) < 900) { ctx.strokeStyle = 'rgba(255,255,255,' + (0.35 + 0.25 * Math.sin(GB.time * 2)) + ')'; ctx.lineWidth = 1.5; ctx.beginPath(); ctx.arc(v.x, v.y - 24, 14 + Math.sin(GB.time * 2) * 3, 0, 7); ctx.stroke(); }
       // gadget aim line
-      if (!P.busy() && (I.isDown('gadget') || GB.save.gadget === 'rope') && GB.save.gadget && GB.combat.ammo[GB.save.gadget] > 0 && GB.save.gadget !== 'decoy') {
+      if (!P.busy() && (I.isDown('gadget') || GB.save.gadget === 'rope' || (GB.touch && GB.touch.aiming)) && GB.save.gadget && GB.combat.ammo[GB.save.gadget] > 0 && GB.save.gadget !== 'decoy') {
         const mw = GB.cam.toWorld(I.mouse.x, I.mouse.y); ctx.strokeStyle = 'rgba(255,255,255,0.22)'; ctx.setLineDash([4, 6]); ctx.lineWidth = 1; ctx.beginPath(); ctx.moveTo(P.x, P.y - P.h * 0.75);
         if (GB.save.gadget === 'rope') { const a = Math.atan2(mw.y - (P.y - 30), mw.x - P.x), d = Math.min(360, W.ray(P.x, P.y - 30, a, 360)); ctx.lineTo(P.x + Math.cos(a) * d, P.y - 30 + Math.sin(a) * d); } else ctx.lineTo(mw.x, mw.y);
         ctx.stroke(); ctx.setLineDash([]);
@@ -94,7 +94,7 @@
       if (gdef) { const am = GB.combat.ammo[gdef.id] || 0; text(ctx, gdef.name, 134, VH - 40, 12, am > 0 ? '#e8e2d0' : 'rgba(200,205,215,0.4)'); for (let i = 0; i < GB.prog.gadgetCap(gdef.id); i++) { ctx.fillStyle = i < am ? '#e6c35a' : 'rgba(255,255,255,0.16)'; ctx.fillRect(134 + i * 7, VH - 34, 5, 5); } }
       text(ctx, GB.save.coins + ' florins', 32, VH - 82, 11, '#e6c35a');
       // --- minimap ---
-      const mw = 176, mh = 104, mx = VW - mw - 24, my = VH - mh - 24, sc = 2, tx = P.x / T, ty = P.y / T;
+      const tch = GB.touch && GB.touch.on, mw = tch ? 150 : 176, mh = tch ? 88 : 104, mx = tch ? 24 : VW - mw - 24, my = tch ? 150 : VH - mh - 24, sc = 2, tx = P.x / T, ty = P.y / T;
       ctx.fillStyle = 'rgba(8,8,12,0.62)'; ctx.fillRect(mx - 2, my - 2, mw + 4, mh + 4);
       ctx.save(); ctx.beginPath(); ctx.rect(mx, my, mw, mh); ctx.clip(); ctx.imageSmoothingEnabled = false;
       const ox = mx + mw / 2 - tx * sc, oy2 = my + mh / 2 - (ty - 6) * sc; ctx.globalAlpha = 0.85; ctx.drawImage(mini, ox, oy2, W.w * sc, W.h * sc); ctx.globalAlpha = 1;

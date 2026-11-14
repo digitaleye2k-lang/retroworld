@@ -67,9 +67,10 @@
         .replace('ControlLeft', 'Ctrl').replace('ControlRight', 'RCtrl').replace('AltLeft', 'Alt').replace('Arrow', '');
     },
     keyLabel(action) { return I.label(I.keys[action]); },
+    press(code) { if (!down.has(code)) pressed.add(code); down.add(code); },
+    release(code) { down.delete(code); released.add(code); },
     init(canvas) {
-      const press = code => { if (!down.has(code)) pressed.add(code); down.add(code); };
-      const rel = code => { down.delete(code); released.add(code); };
+      const press = I.press, rel = I.release;
       window.addEventListener('keydown', e => {
         if (I.capture) { if (I.capture(e.code)) { e.preventDefault(); return; } }
         const inField = e.target && (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA');

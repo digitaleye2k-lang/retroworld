@@ -81,7 +81,7 @@
         for (const g of A.guards) if (Math.abs(g.x - P.x) < 900) A.setState(g, 'hunting', { x: P.x, y: P.y });
       },
       objectives: [
-        { text: 'Cross the rooftops to the Slums well', hint: () => `Aim with the mouse and press ${K('gadget')} to fire the rope launcher at a wall or rooftop. Thunder drowns out your noise.`, mk: [205, G], test: () => inT(198, 212, G - 4, G + 2) },
+        { text: 'Cross the rooftops to the Slums well', hint: () => `${GB.touch && GB.touch.on ? 'Hold ' + K('gadget') + ' and drag to aim, release' : 'Aim with the mouse and press ' + K('gadget')} to fire the rope launcher at a wall or rooftop. Thunder drowns out your noise.`, mk: [205, G], test: () => inT(198, 212, G - 4, G + 2) },
         { text: 'Descend into the Hidden District', mk: [222, 75], test: () => { const z = GB.stealth.zone; return z && z.id === 'hq'; } }
       ],
       challenges: [noKills, { text: 'Arrive in under 2:30', bonus: 80, ok: s => s.time <= 150, live: false }, { text: 'Take no damage', bonus: 60, ok: s => s.damage === 0 }]

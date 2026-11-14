@@ -114,6 +114,7 @@
         else if (I.hit('map')) GB.ui.showScreen('map');
       }
     }
+    if (GB.touch) GB.touch.update();
     GB.render.draw(open ? 0 : GB.dt);
     updAudio(rdt);
     I.endFrame();

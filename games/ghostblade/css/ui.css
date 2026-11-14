@@ -931,3 +931,11 @@
   .gb-fail-title::before, .gb-fail-title::after { display: none; }
   .gb-mi:focus, .gb-node:focus, .gb-mrow:focus, .gb-card:focus { transform: none; }
 }
+
+/* ---------- phones in landscape / touch ---------- */
+@media (max-height: 460px) {
+  #ui-root { font-size: clamp(10px, 3.05vh, 13px); }
+  .gb-main .gb-menu { margin-top: 1.5vh; }
+}
+html.gb-touch .gb-hints, html.gb-touch .gb-dlg-hint { display: none; }
+html.gb-touch .gb-mi, html.gb-touch .gb-btn, html.gb-touch .gb-back { touch-action: manipulation; }
