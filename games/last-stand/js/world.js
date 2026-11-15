@@ -58,7 +58,7 @@ const World = {
     cols.forEach((c, i) => c.forEach((v, r) => { this.map[i * ROWS + r] = v; }));
     // place every entity on the surface beneath its column so nothing floats or sinks
     for (const e of ents) if (e.k !== 'capsule' && e.k !== 'icicle' && e.k !== 'pipe' && !(e.k === 'spawn' && (e.e === 'drone'))) { const c = Math.floor(e.x / TS); let r = Math.max(0, Math.floor(e.y / TS) - 1); while (r < ROWS && !(SOLID[this.t(c, r)] || this.t(c, r) === 2)) r++; while (r > 0 && (SOLID[this.t(c, r - 1)] || this.t(c, r - 1) === 2)) r--; e.y = r * TS; }
-    this.ents = ents; this.deco = deco; this.crack = {}; this.bg = Bg.make(L, li);
+    this.ents = ents; this.deco = deco; this.crack = {}; this.bg = Bg.make(L, li); this.bgL = li;
     // decorative scatter
     const rr = seeded(li * 31 + 5);
     for (let c = 2; c < this.cols - 2; c += 1) { if (rr() < .16) { let r = 0; while (r < ROWS && !SOLID[this.t(c, r)]) r++; if (r < ROWS && r > 3) this.deco.push({ k: 'plant', x: c * TS + rr() * TS, y: r * TS, s: .6 + rr() * .8, v: rr() }); } }
@@ -114,13 +114,14 @@ const Bg = {
     return { far, mid };
   },
   draw(cx) {
-    const P = World.L.pal, g = ctx, B = World.bg;
-    const sk = g.createLinearGradient(0, 0, 0, H); sk.addColorStop(0, P.sky[0]); sk.addColorStop(.6, P.sky[1]); sk.addColorStop(1, P.sky[2]); g.fillStyle = sk; g.fillRect(0, 0, W, H);
-    const id = World.L.id;
-    // sun / moon
-    g.save(); g.globalCompositeOperation = 'lighter'; const sx = 700 - (cx * .02) % 200, sy = id === 'desert' ? 150 : 110; const sg = g.createRadialGradient(sx, sy, 4, sx, sy, id === 'desert' ? 260 : 160); sg.addColorStop(0, id === 'fortress' ? 'rgba(255,80,60,.55)' : id === 'desert' ? 'rgba(255,230,160,.8)' : 'rgba(220,240,255,.45)'); sg.addColorStop(1, 'rgba(0,0,0,0)'); g.fillStyle = sg; g.fillRect(0, 0, W, H); g.restore();
-    g.fillStyle = id === 'desert' ? '#fff3c8' : id === 'fortress' ? '#ff7a6a' : '#e8f0ff'; g.beginPath(); g.arc(sx, sy, id === 'desert' ? 44 : 30, 0, TAU); g.fill();
-    if (id === 'factory' || id === 'fortress' || id === 'jungle') { g.fillStyle = 'rgba(255,255,255,.6)'; const rr = seeded(7); for (let i = 0; i < 60; i++) { g.fillRect((rr() * W - cx * .01 + W) % W, rr() * 260, 1.5, 1.5); } }
+    const P = World.L.pal, g = ctx, B = World.bg, id = World.L.id;
+    if (!B.sky) { const c = document.createElement('canvas'); c.width = W; c.height = H; const q = c.getContext('2d');
+      const sk = q.createLinearGradient(0, 0, 0, H); sk.addColorStop(0, P.sky[0]); sk.addColorStop(.6, P.sky[1]); sk.addColorStop(1, P.sky[2]); q.fillStyle = sk; q.fillRect(0, 0, W, H);
+      const sx = 700, sy = id === 'desert' ? 150 : 110; q.globalCompositeOperation = 'lighter'; const sg = q.createRadialGradient(sx, sy, 4, sx, sy, id === 'desert' ? 260 : 160); sg.addColorStop(0, id === 'fortress' ? 'rgba(255,80,60,.55)' : id === 'desert' ? 'rgba(255,230,160,.8)' : 'rgba(220,240,255,.45)'); sg.addColorStop(1, 'rgba(0,0,0,0)'); q.fillStyle = sg; q.fillRect(0, 0, W, H); q.globalCompositeOperation = 'source-over';
+      q.fillStyle = id === 'desert' ? '#fff3c8' : id === 'fortress' ? '#ff7a6a' : '#e8f0ff'; q.beginPath(); q.arc(sx, sy, id === 'desert' ? 44 : 30, 0, TAU); q.fill();
+      if (id === 'factory' || id === 'fortress' || id === 'jungle') { q.fillStyle = 'rgba(255,255,255,.6)'; const rr = seeded(7); for (let k = 0; k < 60; k++) q.fillRect(rr() * W, rr() * 260, 1.5, 1.5); }
+      B.sky = c; }
+    g.drawImage(B.sky, 0, 0);
     const tile = (c, p, y) => { const w = c.width, off = ((cx * p) % w + w) % w; for (let x = -off; x < W; x += w) g.drawImage(c, Math.round(x), y || 0); };
     tile(B.far, .12); g.fillStyle = P.fog; g.fillRect(0, 0, W, H); tile(B.mid, .35, 20);
     g.fillStyle = P.fog; g.fillRect(0, 0, W, H);

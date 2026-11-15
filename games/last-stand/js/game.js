@@ -181,7 +181,7 @@ const G = {
     this.drawFore(g);
     this.drawWeather(g);
     // vignette + flash
-    const vg = g.createRadialGradient(W / 2, H / 2, H * .35, W / 2, H / 2, H * .85); vg.addColorStop(0, 'rgba(0,0,0,0)'); vg.addColorStop(1, 'rgba(0,0,0,.5)'); g.fillStyle = vg; g.fillRect(0, 0, W, H);
+    if (!this.vig) { const c = document.createElement('canvas'); c.width = W; c.height = H; const q = c.getContext('2d'); const vg = q.createRadialGradient(W / 2, H / 2, H * .35, W / 2, H / 2, H * .85); vg.addColorStop(0, 'rgba(0,0,0,0)'); vg.addColorStop(1, 'rgba(0,0,0,.5)'); q.fillStyle = vg; q.fillRect(0, 0, W, H); this.vig = c; } g.drawImage(this.vig, 0, 0);
     if (P.hp < 30 && P.alive) { g.fillStyle = 'rgba(255,0,20,' + (.12 + .08 * Math.sin(this.t * 8)) + ')'; g.fillRect(0, 0, W, H); }
     if (this.fade > 0) { this.fade = Math.max(0, this.fade - 1 / 40); g.fillStyle = 'rgba(0,0,0,' + this.fade + ')'; g.fillRect(0, 0, W, H); }
     if (FX.flashA > 0) { g.globalAlpha = FX.flashA; g.fillStyle = FX.flashC; g.fillRect(0, 0, W, H); g.globalAlpha = 1; }
