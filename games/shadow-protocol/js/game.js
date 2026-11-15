@@ -13,6 +13,7 @@ const HINTS = ['WASD to move — the mouse aims independently — LEFT CLICK to 
 function newStats() { return { kills: 0, shots: 0, hits: 0, heads: 0, dmg: 0, time: 0, dodges: 0, glass: 0, lights: 0, flips: 0, explosions: 0, env: 0, moves: 0, bt: 0, takedowns: 0, deadeye: 0 }; }
 function clearScene() { Enemies.length = 0; Bullets.length = 0; FX.parts.length = 0; FX.flashes.length = 0; FX.texts.length = 0; G.glows = []; G.timers = []; G.time = 0; G.ws = 1; G.bt = false; G.flash = 0; G.hitstop = 0; G.pdT = 0; G.shock = null; }
 function startMission(i) {
+  RWB.send('start');
   const m = MISSIONS[i]; G.mi = i; G.state = 'load'; clearScene(); G.stats = newStats();
   Save.data.loadout = Save.data.loadout.filter(id => WEAPONS[id] && WEAPONS[id].unlock < Save.data.unlocked); if (!Save.data.loadout.length) Save.data.loadout = ['pistol'];
   buildLevel(m); resetPlayer(World.start.x, World.start.y);
@@ -55,6 +56,7 @@ function finishMission() {
   if (newBest) d.best[G.mi] = { score: Style.score, rank: Math.max(rank, prev ? prev.rank : 0) }; else if (rank > prev.rank) prev.rank = rank;
   d.credits += credits; const before = d.unlocked; d.unlocked = Math.min(MISSIONS.length, Math.max(d.unlocked, G.mi + 2));
   const newW = WEAPON_ORDER.filter(id => WEAPONS[id].unlock >= before && WEAPONS[id].unlock < d.unlocked);
+  RWB.send('finish', { metric: 'score', value: Math.round(Style.score), higherBetter: true, result: 'win' }); RWB.ach('m1'); if (G.mi >= 4) RWB.ach('m5'); if (G.mi >= MISSIONS.length - 1) RWB.ach('m10'); if (rank >= 3) RWB.ach('rankS'); if (s.takedowns >= 5) RWB.ach('td5');
   Save.write(); if (G.bt) endBT(); G.state = 'results'; Snd.play('rank'); Snd.setSlow(0);
   UI.results({ rank, credits, acc, newBest, newW });
 }
@@ -97,7 +99,7 @@ G.tick = function (rdt) {
   let eb = 0; for (const b of Bullets) if (b.owner === 'e') eb++;
   const heat = !P.alive ? 0 : clamp(.16 + al * .16 + Math.min(.3, eb * .03) + Math.min(.2, Style.combo * .02) + (P.hp < P.maxHp * .3 ? .15 : 0) + (G.introT > 0 ? .25 : 0) + (World.exitOpen ? .2 : 0), 0, 1);
   Music.update(rdt, heat, 'game');
-  if (!P.alive && G.state === 'play') { G.deathT -= rdt; if (G.deathT <= 0) { G.state = 'dead'; Snd.setSlow(0); UI.dead(); } }
+  if (!P.alive && G.state === 'play') { G.deathT -= rdt; if (G.deathT <= 0) { RWB.send('finish', { metric: 'score', value: Math.round(Style.score), higherBetter: true, result: 'lose' }); G.state = 'dead'; Snd.setSlow(0); UI.dead(); } }
   if (Input.hit('Escape') || Input.hit('KeyP')) pauseGame();
 };
 function pauseGame() { if (G.state !== 'play') return; G.state = 'pause'; Input.clear(); Touch.reset(); Snd.setSlow(0); UI.pause(); }
@@ -186,3 +188,4 @@ function boot() {
 }
 addEventListener('DOMContentLoaded', boot);
 document.addEventListener('fullscreenchange', () => { document.querySelectorAll('[data-a="fs"] small').forEach(s => { s.textContent = s.textContent.replace(/^(ON|OFF)/, document.fullscreenElement ? 'ON' : 'OFF'); }); });
+const RWB = { send(t, x) { try { if (parent !== window) parent.postMessage(Object.assign({ source: 'retro-world-game', type: t, gameId: 'shadow-protocol.html', title: 'SHADOW PROTOCOL' }, x || {}), '*'); } catch (e) { } }, ach(k) { this.send('achievement', { achievement: k }); } };

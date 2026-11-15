@@ -25,8 +25,8 @@ function seeded(str){let h=1779033703^str.length;for(let i=0;i<str.length;i++){h
   return()=>{h=Math.imul(h^h>>>16,2246822507);h=Math.imul(h^h>>>13,3266489909);h^=h>>>16;return(h>>>0)/4294967296}}
 
 /* ---------- tiers / ranks ---------- */
-const TIERS={bronze:{xp:40,col:'#e0904a',name:'BRONZE',rar:'COMMON'},silver:{xp:90,col:'#cfd9ee',name:'SILVER',rar:'RARE'},
-  gold:{xp:200,col:'#ffd23f',name:'GOLD',rar:'EPIC'},platinum:{xp:500,col:'#8ff7ff',name:'PLATINUM',rar:'LEGENDARY'}};
+const TIERS={bronze:{tok:25,xp:40,col:'#e0904a',name:'BRONZE',rar:'COMMON'},silver:{tok:75,xp:90,col:'#cfd9ee',name:'SILVER',rar:'RARE'},
+  gold:{tok:200,xp:200,col:'#ffd23f',name:'GOLD',rar:'EPIC'},platinum:{tok:600,xp:500,col:'#8ff7ff',name:'PLATINUM',rar:'LEGENDARY'}};
 const TIER_ORDER=['bronze','silver','gold','platinum'];
 const RANKS=[[1,'ROOKIE','#9aa0c9'],[3,'ARCADE KID','#67ff67'],[6,'PIXEL PUNK','#00ffff'],[10,'CABINET REGULAR','#4aa8ff'],[15,'HIGH SCORER','#c18bff'],
   [20,'COIN CRUSHER','#ff2bd6'],[25,'ARCADE ACE','#ff8a3d'],[30,'NEON LEGEND','#ffe85c'],[40,'GRAND MASTER','#ff4b64'],[50,'RETRO GOD','#8ff7ff']];
@@ -96,6 +96,8 @@ const allPlayed=(p,ids)=>ids.every(i=>playedN(p,i)>0);
 const cntPlayed=(p,ids)=>ids.filter(i=>playedN(p,i)>0).length;
 const CNT=(p,k)=>(rw(p).cnt[k]||0);
 const lvlOf=p=>levelInfo(totalXp(p)).level;
+const ACH=(p,id,k)=>{const s=st(p,id);return !!(s&&s.achievements&&s.achievements[k])};
+const GF='gun-fu.html',SF='stick-fury.html',SP='shadow-protocol.html',STICKG=[GF,SF,SP];
 const NEWG=['neon-survivors.html','grid-guardians.html','bubble-pop.html','sky-hop.html','neon-sudoku.html'];
 
 /* ---------- new trophies ---------- */
@@ -135,6 +137,27 @@ const NEW_DEFS=[
   N('hop_2500','🌌','ORBIT BOUND','Score 2,500 in Sky Hop.','gold','SCORE',(a,p)=>bestN(p,'sky-hop.html')>=2500,p=>[bestN(p,'sky-hop.html'),2500]),
   N('sudoku_win','🧩','PUZZLE MIND','Solve a Neon Sudoku board.','silver','CHAMPION',(a,p)=>winsN(p,'neon-sudoku.html')>=1,null),
   N('sudoku_10','🧠','SUDOKU SAGE','Solve 10 Neon Sudoku boards.','gold','CHAMPION',(a,p)=>winsN(p,'neon-sudoku.html')>=10,p=>[winsN(p,'neon-sudoku.html'),10]),
+  // stick mania: gun fu, stick fury, shadow protocol
+  N('gf_play','🔫','FIRST BLOOD','Play Gun Fu.','bronze','STICK MANIA',(a,p)=>playedN(p,GF)>=1,null),
+  N('gf_tut','🎓','GUN FU GRADUATE','Finish the Gun Fu tutorial.','bronze','STICK MANIA',(a,p)=>ACH(p,GF,'tut'),null),
+  N('gf_ch1','🚪','KICKED THE DOOR IN','Clear Chapter 1 of Gun Fu.','bronze','STICK MANIA',(a,p)=>ACH(p,GF,'ch1'),null),
+  N('gf_ch3','⚓','DOCKS CLEARED','Clear Chapter 3 of Gun Fu.','silver','STICK MANIA',(a,p)=>ACH(p,GF,'ch3'),null),
+  N('gf_steal','🚗','GRAND THEFT STICKMAN','Steal an enemy car on the Gun Fu highway.','silver','STICK MANIA',(a,p)=>ACH(p,GF,'steal'),null),
+  N('gf_heli','🚁','ANTI-AIR','Shoot down the helicopter gunship in Gun Fu.','gold','STICK MANIA',(a,p)=>ACH(p,GF,'heli'),null),
+  N('gf_hwy','🛣️','KING OF THE ROAD','Beat Diesel Jack on the Gun Fu highway.','gold','STICK MANIA',(a,p)=>ACH(p,GF,'hwy'),null),
+  N('gf_don','🎩','THE UNDERWORLD FALLS','Clear the final chapter of Gun Fu.','platinum','STICK MANIA',(a,p)=>ACH(p,GF,'ch7'),null),
+  N('gf_hall10','🔨','HAMMER TIME','Reach wave 10 in the Gun Fu endless hallway.','gold','STICK MANIA',(a,p)=>ACH(p,GF,'hall10'),null),
+  N('gf_score','💥','BODY COUNT','Score 20,000 in Gun Fu.','silver','SCORE',(a,p)=>bestN(p,GF)>=20000,p=>[bestN(p,GF),20000]),
+  N('sf_win','🥋','FIRST KNOCKOUT','Win a fight in Stick Fury.','bronze','STICK MANIA',(a,p)=>ACH(p,SF,'win')||winsN(p,SF)>=1,null),
+  N('sf_10','👊','DOJO REGULAR','Win 10 fights in Stick Fury.','silver','STICK MANIA',(a,p)=>winsN(p,SF)>=10,p=>[winsN(p,SF),10]),
+  N('sf_arcade','👹','DEMON SLAYER','Clear arcade mode in Stick Fury.','gold','STICK MANIA',(a,p)=>ACH(p,SF,'arcade'),null),
+  N('sp_m1','🕶️','ERASED NO MORE','Complete a mission in Shadow Protocol.','bronze','STICK MANIA',(a,p)=>ACH(p,SP,'m1'),null),
+  N('sp_td','🤫','SILENT HANDS','Do 5 takedowns in one Shadow Protocol mission.','silver','STICK MANIA',(a,p)=>ACH(p,SP,'td5'),null),
+  N('sp_m5','🏢','HALFWAY UP','Complete mission 5 of Shadow Protocol.','silver','STICK MANIA',(a,p)=>ACH(p,SP,'m5'),null),
+  N('sp_s','✨','STYLE OVER EVERYTHING','Earn an S rank in Shadow Protocol.','gold','STICK MANIA',(a,p)=>ACH(p,SP,'rankS'),null),
+  N('sp_all','🗼','PROTOCOL COMPLETE','Finish the last mission of Shadow Protocol.','platinum','STICK MANIA',(a,p)=>ACH(p,SP,'m10'),null),
+  N('stick_all','🕺','STICK MANIAC','Play Gun Fu, Stick Fury and Shadow Protocol.','silver','STICK MANIA',(a,p)=>allPlayed(p,STICKG),p=>[cntPlayed(p,STICKG),3]),
+  N('stick_legend','🏅','STICK LEGEND','Finish Gun Fu, Stick Fury arcade and Shadow Protocol.','platinum','STICK MANIA',(a,p)=>ACH(p,GF,'ch7')&&ACH(p,SF,'arcade')&&ACH(p,SP,'m10'),p=>[(ACH(p,GF,'ch7')?1:0)+(ACH(p,SF,'arcade')?1:0)+(ACH(p,SP,'m10')?1:0),3]),
   // secrets
   N('night_owl','🦉','NIGHT OWL','Play a game between midnight and 5 AM.','silver','SECRET',(a,p)=>!!rw(p).flags.night,null,true),
   N('early_bird','🐦','EARLY BIRD','Play a game between 5 AM and 8 AM.','silver','SECRET',(a,p)=>!!rw(p).flags.early,null,true),
@@ -325,10 +348,10 @@ function onAfter(){
 /* ---------- unlock popups (called from evaluateTrophies) ---------- */
 let unlockQuiet=0;
 function unlocked(list){
-  const p=R.active();if(p){const r=rw(p);list.forEach(t=>{r.recent.unshift({id:t.id,at:Date.now()})});r.recent=r.recent.slice(0,12);r.unseen=(r.unseen||0)+list.length;checkLevel(p)}
+  const p=R.active();if(p){const r=rw(p);list.forEach(t=>{r.recent.unshift({id:t.id,at:Date.now()})});r.recent=r.recent.slice(0,12);r.unseen=(r.unseen||0)+list.length;try{R.cs(p).tokens+=list.reduce((n,t)=>n+((TIERS[t.tier]||TIERS.bronze).tok||0),0)}catch(e){}checkLevel(p)}
   const sorted=list.slice().sort((a,b)=>TIER_ORDER.indexOf(b.tier||'bronze')-TIER_ORDER.indexOf(a.tier||'bronze'));
   sorted.slice(0,3).forEach(t=>{const T=TIERS[t.tier]||TIERS.bronze;
-    popup({icon:t.icon,kicker:'🏆 TROPHY UNLOCKED · '+T.name,title:t.name,sub:t.desc+'  (+'+T.xp+' XP)',tier:t.tier,tab:'trophies'})});
+    popup({icon:t.icon,kicker:'🏆 TROPHY UNLOCKED · '+T.name,title:t.name,sub:t.desc+'  (+'+T.xp+' XP  +'+T.tok+' tokens)',tier:t.tier,tab:'trophies'})});
   if(sorted.length>3)popup({icon:'🏆',kicker:'MORE TROPHIES',title:'+'+(sorted.length-3)+' more unlocked!',sub:'Open the Trophy Room to see them all.',tier:'silver',tab:'trophies'});
   setTimeout(refreshAll,50);
 }
@@ -433,7 +456,7 @@ function tcard(t,p,a,compact){
   let h='<div class="rwt-tc '+t.tier+(has?' has':'')+(secret?' secret':'')+'" style="--c:'+T.col+'" data-id="'+esc(t.id)+'">';
   h+='<div class="rwt-tc-ic">'+(secret?'❓':has?t.icon:'🔒')+'</div><div class="rwt-tc-tx"><b>'+(secret?'SECRET TROPHY':esc(t.name))+'</b><small>'+(secret?'Hidden — discovered by playing in unexpected ways.':esc(t.desc))+'</small>';
   if(pr){const pc=Math.round(100*pr[0]/pr[1]);h+='<div class="rwt-bar"><i style="width:'+pc+'%"></i></div><em>'+R.fmt(pr[0])+' / '+R.fmt(pr[1])+' · '+pc+'%</em>'}
-  h+='</div><div class="rwt-tc-m"><span class="rwt-pill">'+T.rar+'</span><span class="rwt-xpv">+'+T.xp+' XP</span>';
+  h+='</div><div class="rwt-tc-m"><span class="rwt-pill">'+T.rar+'</span><span class="rwt-xpv">+'+T.xp+' XP · +'+T.tok+' 🎟️</span>';
   if(has&&!compact)h+='<button type="button" class="rwt-pin'+(pinned?' on':'')+'" data-pin="'+esc(t.id)+'" title="Pin to showcase">'+(pinned?'📌':'📍')+'</button>';
   h+='</div></div>';return h;
 }
