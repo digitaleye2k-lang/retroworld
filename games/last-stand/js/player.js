@@ -85,7 +85,7 @@ function pHurt(d, dir, silent) {
   G.noHit = false; if (P.hp <= 0) pKill('hp');
 }
 function pKill(why) {
-  if (!P.alive) return; P.alive = false; P.hp = 0; P.deathT = 0; P.vy = why === 'fall' ? 0 : -560; P.vx = -P.face * 200; Snd.play('die'); Cam.add(14); FX.flash(.5, '#ff2030');
+  if (!P.alive) return; P.alive = false; P.hp = 0; P.deathT = 0; P.deathFall = why === 'fall'; P.vy = why === 'fall' ? 0 : -560; P.vx = -P.face * 200; Snd.play('die'); Cam.add(14); FX.flash(.5, '#ff2030');
   if (why !== 'fall') FX.ink(P.x + P.w / 2, P.y + 20, -P.face, 18, '#7a0a14'); G.deaths++;
 }
 function drawPlayer(g) {

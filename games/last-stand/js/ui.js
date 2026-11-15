@@ -33,6 +33,8 @@ const HUD = {
     // banners
     if (G.banner > 0) { const a = Math.min(1, G.banner, (3 - G.banner) * 3); g.globalAlpha = a; g.fillStyle = 'rgba(0,0,0,.6)'; g.fillRect(0, H / 2 - 70, W, 120); txt(g, 'MISSION ' + (G.li + 1), W / 2, H / 2 - 30, 22, '#ff3a3a', 'center'); txt(g, LEVELS[G.li].name, W / 2, H / 2 + 14, 48, '#fff', 'center'); txt(g, LEVELS[G.li].sub, W / 2, H / 2 + 38, 14, '#9fe8ff', 'center'); g.globalAlpha = 1; }
     if (G.boss && b && b.st === 'intro') { const k = Math.floor(G.t * 4) % 2; g.fillStyle = k ? 'rgba(200,0,20,.55)' : 'rgba(120,0,10,.55)'; g.fillRect(0, H / 2 - 80, W, 140); g.fillStyle = '#ffd84a'; for (let i = -2; i < 22; i++) { g.beginPath(); const x0 = i * 60 + (G.t * 120) % 60; g.moveTo(x0, H / 2 - 80); g.lineTo(x0 + 30, H / 2 - 80); g.lineTo(x0 + 10, H / 2 - 66); g.lineTo(x0 - 20, H / 2 - 66); g.fill(); g.beginPath(); g.moveTo(x0, H / 2 + 60); g.lineTo(x0 + 30, H / 2 + 60); g.lineTo(x0 + 10, H / 2 + 46); g.lineTo(x0 - 20, H / 2 + 46); g.fill(); } txt(g, '⚠ WARNING ⚠', W / 2, H / 2 - 22, 30, '#ffd84a', 'center'); txt(g, b.name, W / 2, H / 2 + 22, 44, '#fff', 'center'); txt(g, b.sub, W / 2, H / 2 + 40, 13, '#ffb0b0', 'center'); }
+    if (G.zone) { const z = G.zone, n = (z.alive || 0) + Math.max(0, z.queue); g.fillStyle = 'rgba(160,0,20,.6)'; g.fillRect(W / 2 - 170, 62, 340, 26); txt(g, (G.zoneMsg > 0 && Math.floor(G.t * 6) % 2 ? '⚠ ' : '') + 'AREA LOCKED · HOSTILES LEFT: ' + n, W / 2, 81, 15, '#ffd84a', 'center'); g.fillStyle = 'rgba(255,40,40,' + (.25 + .2 * Math.sin(G.t * 6)) + ')'; g.fillRect(W - 8, 0, 8, H); }
+    if (G.goT > 0 && Math.floor(G.t * 4) % 2) { txt(g, 'GO ►', W - 40, H / 2, 46, '#5aff8a', 'right'); }
     if (G.clearT > .8) { txt(g, 'MISSION COMPLETE', W / 2, H / 2, 54, '#ffd84a', 'center'); }
   }
 };
@@ -111,7 +113,7 @@ const UI = {
   over(g) {
     G.overT = (G.overT || 0) + 1 / 60; if (G.overT < .02) Save.addScore('YOU', G.score, G.li + 1);
     this.backdrop(G.li, 0); g.fillStyle = 'rgba(40,0,0,.5)'; g.fillRect(0, 0, W, H); txt(g, 'GAME OVER', W / 2, 160, 84, '#ff2a3a', 'center'); txt(g, 'SCORE ' + G.score, W / 2, 210, 24, '#fff', 'center'); txt(g, 'MISSION ' + (G.li + 1) + ' · ' + LEVELS[G.li].name, W / 2, 238, 14, '#9fe8ff', 'center');
-    this.button('CONTINUE (SCORE RESETS)', 330, 280, 300, 46, () => { G.score = 0; G.lives = DIFF().lives; G.carry = null; G.load(G.li); RWB.send('start'); });
+    this.button('CONTINUE FROM CHECKPOINT', 330, 280, 300, 46, () => { const cp = G.cp; G.score = 0; G.lives = DIFF().lives; G.carry = null; G.load(G.li, cp); RWB.send('start'); FX.text(P.x + 10, P.y - 30, 'CONTINUE FROM CHECKPOINT', '#7ae0ff', 16); });
     this.button('MAIN MENU', 330, 336, 300, 46, () => { Music.play(0); this.go('title'); });
   },
   clear(g) {

@@ -53,7 +53,9 @@ const World = {
       mines: () => { const c0 = cols.length; for (let i = 0; i < 18; i++) col(g, 1); for (let i = 4; i < 16; i += 3) prop('mine', c0 + i, g); plat(c0 + 6, g - 3, 6); enemy(c0 + 16, g); spawn('drone', c0 + 10, g - 7); prop('tag', c0 + 9, g - 3); },
       flames: () => { const c0 = cols.length; for (let i = 0; i < 18; i++) col(g, 1); prop('flamejet', c0 + 5, g, { ph: 0 }); prop('flamejet', c0 + 9, g, { ph: .9 }); prop('flamejet', c0 + 13, g, { ph: 1.8 }); plat(c0 + 7, g - 4, 5); enemy(c0 + 16, g); }
     };
-    for (const id of L.chunks) { (C[id] || C.flat)(); const c1 = cols.length; if (id !== 'start' && id !== 'check' && id !== 'arena' && rng() < .35 + P() * .5) { let r = 0; const cc = c1 - 3; while (r < ROWS && !(SOLID[cols[cc] && cols[cc][r]] || (cols[cc] && cols[cc][r] === 2))) r++; if (r < ROWS) enemy(cc, r); } ci++; }
+    const ZT = { outpost: 1, turrets: 1, gauntlet: 1, tank: 1, robots: 1, snipers: 1, trees: 1, ruins: 1, crusher: 1, lasers: 1 }; const zones = [];
+    for (const id of L.chunks) { const z0 = cols.length, e0 = ents.length; (C[id] || C.flat)(); const c1 = cols.length; if (id !== 'start' && id !== 'check' && id !== 'arena' && rng() < .35 + P() * .5) { let r = 0; const cc = c1 - 3; while (r < ROWS && !(SOLID[cols[cc] && cols[cc][r]] || (cols[cc] && cols[cc][r] === 2))) r++; if (r < ROWS) enemy(cc, r); } if (ZT[id] && ci > 1) { const zi = zones.length; let n = 0; for (let k = e0; k < ents.length; k++) if (ents[k].k === 'spawn') { ents[k].zone = zi; n++; } if (n) zones.push({ x0: z0 * TS, x1: c1 * TS, id, n }); } ci++; }
+    this.zones = zones;
     this.cols = cols.length; this.W = this.cols * TS; this.map = new Uint8Array(this.cols * ROWS);
     cols.forEach((c, i) => c.forEach((v, r) => { this.map[i * ROWS + r] = v; }));
     // place every entity on the surface beneath its column so nothing floats or sinks

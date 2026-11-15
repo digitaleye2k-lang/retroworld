@@ -23,7 +23,7 @@ function enemyUpdate(e, dt) {
   const dx = P.x + P.w / 2 - (e.x + e.w / 2), adx = Math.abs(dx), see = seesP(e, d.ai === 'sniper' ? 820 : 600), fk = DIFF().fire;
   if (d.ai !== 'shield' || !e.shieldUp || e.burst > 0) e.face = dx > 0 ? 1 : -1;
   e.fireT -= dt;
-  const walk = (sp) => { if (!groundAhead(e, sgn(sp)) && e.ground) { e.vx = 0; return false; } e.vx = sp; e.run += dt * 12 * Math.abs(sp) / 120; return true; };
+  const walk = (sp) => { const dir = sgn(sp); if (e.ground && World.solidPx(dir > 0 ? e.x + e.w + 6 : e.x - 6, e.y + e.h - 10) && !World.solidPx(dir > 0 ? e.x + e.w + 6 : e.x - 6, e.y + e.h - 140) && d.ai !== 'heavy') { e.vy = -780; e.vx = sp; return true; } if (!groundAhead(e, dir) && e.ground) { const fx = dir > 0 ? e.x + e.w + 8 : e.x - 8, land = World.surfaceY(fx, e.y + e.h + 4); if (land != null && land - (e.y + e.h) < 7 * TS && World.t(Math.floor(fx / TS), Math.floor(land / TS)) !== 6 && (P.y + P.h >= e.y + e.h - 8 || !see)) { e.vx = sp; return true; } e.vx = 0; return false; } e.vx = sp; e.run += dt * 12 * Math.abs(sp) / 120; return true; };
   switch (d.ai) {
     case 'soldier': {
       if (e.burst > 0) { e.vx = 0; e.burstT -= dt; if (e.burstT <= 0) { e.burst--; e.burstT = .14; eShoot(e, e.aim + rnd(-.05, .05), { dmg: 10, spd: 470 }); } }

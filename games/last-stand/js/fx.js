@@ -6,7 +6,7 @@ const Cam = {
   update(dt, P) {
     const look = P.face * 120 + P.vx * .18;
     let tx = P.x + P.w / 2 - W / 2 + look, ty = clamp(P.y - H * .58, -60, ROWS * TS - H);
-    const minX = this.lockL != null ? this.lockL : 0, maxX = this.lockR != null ? this.lockR - W : World.W - W;
+    const minX = this.lockL != null ? this.lockL : 0; let maxX = this.lockR != null ? this.lockR - W : World.W - W; if (this.zoneR != null) maxX = Math.min(maxX, this.zoneR - W);
     tx = clamp(tx, minX, Math.max(minX, maxX));
     if (G.maxCamX != null && this.lockL == null) tx = Math.max(tx, G.maxCamX - 340);
     this.x += (tx - this.x) * damp(this.lockL != null ? 3 : 5, dt); this.y += (ty - this.y) * damp(3.2, dt);

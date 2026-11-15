@@ -6,23 +6,43 @@ const G = {
     this.li = li; if (!keep) { this.score = 0; this.lives = DIFF().lives; this.carry = null; }
     this.load(li); RWB.send('start');
   },
-  load(li) {
-    World.build(li); FX.reset(); Haz.reset(); Boss.b = null; Cam.lockL = Cam.lockR = null;
+  load(li, cpStart) {
+    World.build(li); FX.reset(); Haz.reset(); Boss.b = null; Cam.lockL = Cam.lockR = Cam.zoneR = null; this.zone = null; this.zi = 0; this.zoneMsg = 0;
     this.E = []; this.B = []; this.GR = []; this.EG = []; this.PK = []; this.PR = []; this.special = null; this.boss = false; this.bossIntro = 0; this.clearT = 0; this.levelT = 0; this.kills = 0; this.deaths = 0; this.noHit = true; this.maxCamX = 0; this.cp = 0; this.spawnT = 4;
     for (const e of World.ents) { if (e.k === 'spawn') continue; this.PR.push(Object.assign({ t: 0, alive: true }, e)); }
     this.spawns = World.ents.filter(e => e.k === 'spawn').map(e => Object.assign({ done: false }, e)); this.tags = 0; this.tagTotal = this.PR.filter(p => p.k === 'tag').length; this.fade = 1;
     P = mkPlayer(World.checkpoints[0], 10 * TS); const sy = World.surfaceY(P.x + 10, 0); P.y = (sy || 13 * TS) - P.h;
     if (this.carry) { P.inv2 = Object.assign({ rifle: Infinity }, this.carry.inv); P.cur = this.carry.cur in P.inv2 ? this.carry.cur : 'rifle'; P.gren = this.carry.gren; P.sp = this.carry.sp; }
+    if (cpStart > 0 && World.checkpoints[cpStart] != null) { this.cp = cpStart; P.x = World.checkpoints[cpStart]; const sy2 = World.surfaceY(P.x + 10, 0); P.y = (sy2 || 13 * TS) - P.h; for (const s of this.spawns) if (s.x < P.x + 200) s.done = true; this.zi = World.zones.findIndex(z => z.x0 > P.x); if (this.zi < 0) this.zi = World.zones.length; for (const p of this.PR) if (p.k === 'bossTrigger') p.alive = true; }
     Cam.x = clamp(P.x - W / 2 + 120, 0, World.W - W); Cam.y = clamp(P.y - H * .58, -60, ROWS * TS - H);
     this.state = 'play'; this.banner = 3; Music.intensity = 1; Music.play(LEVELS[li].music); this.t = 0; Amb.cur = null; Amb.set(LEVELS[li].id);
   },
   respawn() {
-    const cx = World.checkpoints[this.cp] || World.checkpoints[0];
-    const keepInv = P.inv2, cur = P.cur; P = mkPlayer(cx, 0); const sy = World.surfaceY(cx + 10, 0); P.y = (sy || 13 * TS) - P.h; P.inv = 2.4;
-    P.inv2 = keepInv; if (cur !== 'rifle') { delete P.inv2[cur]; } P.cur = 'rifle'; P.gren = Math.max(3, P.gren || 0);
+    // classic arcade respawn: drop back in where you fell, never behind the camera
+    let cx = P.safeX != null ? P.safeX : P.x + P.w / 2;
+    cx = clamp(cx, Cam.x + 60, Cam.x + W - 80); if (World.surfaceY(cx, 0) == null || World.t(Math.floor(cx / TS), Math.floor((World.surfaceY(cx, 0) || 0) / TS)) === 6) cx = P.safeX != null ? clamp(P.safeX, Cam.x + 40, Cam.x + W - 60) : cx;
+    let tries = 0; while (World.surfaceY(cx, 0) == null && tries++ < 40) cx += 16;
+    const keepInv = P.inv2, cur = P.cur, gren = P.gren, sp = P.sp, face = P.face; P = mkPlayer(cx - 10, 0); P.y = Cam.y - 40; P.vy = 200; P.face = face; P.inv = 2.6; P.sp = sp; P.safeX = cx;
+    P.inv2 = keepInv; if (cur !== 'rifle') { delete P.inv2[cur]; } P.cur = 'rifle'; P.gren = Math.max(3, gren || 0);
     if (this.boss) { P.x = Cam.lockL + 120; P.y = FLOOR - P.h - 40; }
-    this.E = this.E.filter(e => Math.abs(e.x - P.x) > 500 || e.k === 'turret' || this.boss); this.B = this.B.filter(b => b.own === 'p');
+    this.B = this.B.filter(b => b.own === 'p'); for (const e of this.E) if (e.alive && e.k !== 'turret' && Math.abs(e.x - P.x) < 160 && !this.boss) { e.x += sgn(e.x - P.x || 1) * 120; }
     FX.text(P.x + 10, P.y - 20, 'BACK IN ACTION', '#7ae0ff', 18);
+  },
+  updZones(dt) {
+    const Z = World.zones; this.zoneMsg = Math.max(0, this.zoneMsg - dt);
+    if (!this.zone && !this.boss) { const z = Z[this.zi]; if (z && P.x > z.x0 + 4 * TS) {
+        this.zone = z; z.queue = 2 + Math.floor(this.li * .8) + (z.id === 'gauntlet' ? 3 : 0); z.qT = 1.2; z.left = []; Cam.zoneR = Math.max(z.x1 + 120, Cam.x + W + 40);
+        for (const s of this.spawns) if (s.zone === this.zi && !s.done) { s.done = true; s.e && (s.ent = spawnEnemy(s.e, s.x, s.y)); }
+        for (const e of this.E) if (e.alive && e.x + e.w > Cam.x && e.x < Cam.zoneR) e.zoneTag = this.zi;
+        for (const s of this.spawns) if (s.zone === this.zi && s.ent) s.ent.zoneTag = this.zi;
+        this.zoneMsg = 2; Snd.play('alarm'); } }
+    const z = this.zone; if (!z) return;
+    if (z.queue > 0) { z.qT -= dt; if (z.qT <= 0) { z.qT = rnd(1.1, 2.0); z.queue--; const side = Math.random() < .7 ? 1 : -1, x = side > 0 ? Cam.x + W + 30 : Cam.x - 30, sy = World.surfaceY(x, Cam.y + 40); if (sy != null) { const t = Math.random() < .3 + this.li * .06 ? pick(LEVELS[this.li].pool.filter(k => k !== 'turret' && k !== 'sniper')) : 'soldier'; const e = spawnEnemy(t, x, sy); e.face = -side; e.zoneTag = this.zi; } else z.queue++; } }
+    // enemies that can't reach the arena (stuck off-screen) stop counting after a few seconds
+    for (const e of this.E) if (e.alive && e.zoneTag === this.zi) { const off = e.x < Cam.x + 4 || e.x + e.w > Cam.x + W - 4; e.offT = off ? (e.offT || 0) + dt : 0; e.hideT = seesP(e, 1100) ? 0 : (e.hideT || 0) + dt; if (e.offT > 3 || e.hideT > 7) e.zoneTag = -1; }
+    const alive = this.E.filter(e => e.alive && e.zoneTag === this.zi).length;
+    z.alive = alive; z.t = (z.t || 0) + dt;
+    if ((alive === 0 || (z.t > 40 && alive <= 2)) && z.queue <= 0) { this.zone = null; Cam.zoneR = null; this.zi++; this.score += 500; FX.text(P.x + 10, P.y - 40, 'AREA CLEAR  +500', '#5aff8a', 22); Snd.play('checkpoint'); this.goT = 2.2; }
   },
   bossDown() { this.clearT = .01; Music.stop(); Snd.play('clear'); RWB.ach('boss' + (this.li + 1)); for (const e of this.E) if (e.alive) eKill(e, 1, 'boom'); },
   EB() { this.B = this.B.filter(b => b.own === 'p'); this.EG = []; },
@@ -31,10 +51,13 @@ const G = {
     if (FX.hs > 0) { FX.hs -= dt; FX.update(dt * .1); return; }
     playerUpdate(dt); World.update(dt);
     if (!P.alive && P.deathT > 1.6) { if (this.lives > 0) { this.lives--; this.respawn(); } else { this.gameOver(); return; } }
+    this.updZones(dt); this.goT = Math.max(0, (this.goT || 0) - dt);
+    // the player can never leave the visible screen
+    if (P.alive) { if (P.x < Cam.x + 4) { P.x = Cam.x + 4; if (P.vx < 0) P.vx = 0; } const rx = Cam.x + W - P.w - 4; if (P.x > rx && (Cam.zoneR != null || Cam.lockR != null)) { P.x = rx; if (P.vx > 0) P.vx = 0; } if (P.ground && P.tile && P.tile !== 9 && World.liquidAt(P) === 0) P.safeX = P.x + P.w / 2; }
     // spawn markers come alive as the camera reaches them
     for (const s of this.spawns) if (!s.done && s.x < Cam.x + W + 40 && s.x > Cam.x - 120) { s.done = true; spawnEnemy(s.e, s.x, s.y); }
     // dynamic reinforcements keep the pressure on (never during boss fights)
-    if (!this.boss) { this.spawnT -= dt; const prog = P.x / World.W, alive = this.E.filter(e => e.alive).length; if (this.spawnT <= 0 && alive < 7 + this.li) { this.spawnT = rnd(2.4, 4.2) - prog * 1.2 - this.li * .2; const side = Math.random() < .8 ? 1 : -1, x = side > 0 ? Cam.x + W + 40 : Cam.x - 40, sy = World.surfaceY(x, Cam.y + 40); if (sy != null && x > 400 && x < World.arenaX - 200) { const t = Math.random() < .12 + this.li * .03 ? pick(LEVELS[this.li].pool.filter(k => k !== 'turret' && k !== 'sniper')) : 'soldier'; const e = spawnEnemy(t, x, sy); e.face = -side; } } }
+    if (!this.boss && !this.zone) { this.spawnT -= dt; const prog = P.x / World.W, alive = this.E.filter(e => e.alive).length; if (this.spawnT <= 0 && alive < 7 + this.li) { this.spawnT = rnd(2.4, 4.2) - prog * 1.2 - this.li * .2; const side = Math.random() < .8 ? 1 : -1, x = side > 0 ? Cam.x + W + 40 : Cam.x - 40, sy = World.surfaceY(x, Cam.y + 40); if (sy != null && x > 400 && x < World.arenaX - 200) { const t = Math.random() < .12 + this.li * .03 ? pick(LEVELS[this.li].pool.filter(k => k !== 'turret' && k !== 'sniper')) : 'soldier'; const e = spawnEnemy(t, x, sy); e.face = -side; } } }
     for (const e of this.E) enemyUpdate(e, dt);
     this.E = this.E.filter(e => e.alive || e.dead < 2) ; this.E = this.E.filter(e => e.alive ? (e.x > Cam.x - 700 && e.x < Cam.x + W + 900) || this.boss : true);
     this.updProps(dt); this.updBullets(dt); this.updGrenades(dt); this.updPickups(dt); this.updSpecial(dt);
