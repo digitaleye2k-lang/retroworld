@@ -20,13 +20,13 @@
     TYPES, guards: [], civs: [], crowds: [], dynLights: [], maxMeter: 0, alertLevel: 0, combatCount: 0,
 
     spawnGuard(spec) {
-      const t = TYPES[spec.type] || TYPES.guard, f = W.feet(spec.tx, (spec.row || W.G) - 2);
+      let t = TYPES[spec.type] || TYPES.guard; if (spec.train) t = Object.assign({}, t, { range: t.range * 0.8, dmg: 6 }); const f = W.feet(spec.tx, (spec.row || W.G) - 2);
       const g = {
         type: spec.type, cfg: t, x: f.x, y: f.y, vx: 0, vy: 0, w: 14, h: 44, onGround: true, face: spec.face || 1,
         state: 'unaware', meter: 0, hp: t.hp, dead: false, sleepT: 0, stunT: 0,
         home: { x: f.x, y: f.y, face: spec.face || 1 }, patrol: spec.p ? [W.px(spec.p[0]), W.px(spec.p[1])] : null, pi: 0, wait: U.rand(0, 2),
         pers: spec.pers || U.pick(['normal', 'normal', 'lazy', 'vigilant', 'nervous']), torch: !!spec.torch, thug: !!spec.thug,
-        tag: spec.tag || null, mission: !!spec.mission, dummy: !!spec.dummy, name: spec.name || null,
+        tag: spec.tag || null, mission: !!spec.mission, dummy: !!spec.dummy, train: !!spec.train, name: spec.name || null,
         target: null, timer: 0, lastSeen: null, loseT: 0, sees: false, attackT: 0, attackCd: U.rand(0.3, 0.9), aimT: 0,
         look: spec.face < 0 ? Math.PI : 0, phase: Math.random() * 6, search: null, huntT: 0, wary: 0, ladder: null, climbing: false,
         barkT: 0, senseT: Math.random() * 0.1, bodyT: Math.random() * 0.3, inspectSpot: null, hurtT: 0, canDrop: false, blockedT: 0, said: null, saidT: 0
@@ -212,7 +212,7 @@
   // ---------- navigation ----------
   function findLadder(g, up) {
     const fr = Math.floor((g.y + 1) / T), gx = Math.floor(g.x / T); let best = null, bd = 99;
-    for (let c = gx - 24; c <= gx + 24; c++) {
+    for (let c = gx - 44; c <= gx + 44; c++) {
       if (W.get(c, up ? fr - 1 : fr) !== LADDER) continue;
       const d = Math.abs(c - gx); if (d >= bd) continue;
       let ok = true; const s = c < gx ? 1 : -1;
@@ -229,15 +229,19 @@
       const lad = findLadder(g, dy < 0);
       if (lad !== null) {
         goal = lad * T + T / 2;
-        if (Math.abs(g.x - goal) < 5) { g.ladder = { dir: dy < 0 ? -1 : 1, col: lad, toY: ty }; g.x = goal; g.vx = 0; if (dy > 0) g.y += 3; return false; }
+        if (Math.abs(g.x - goal) < 8) { g.ladder = { dir: dy < 0 ? -1 : 1, col: lad, toY: ty }; g.x = goal; g.vx = 0; if (dy > 0) g.y += 3; return false; }
       } else if (g.cfg.climbs && dy < 0 && Math.abs(tx - g.x) < 40 && W.at(g.x, g.y - 24) === FACADE) { g.climbing = true; return false; }
-    }
+      g.noRoute = lad === null && dy < 0;
+      // chasing something below with no ladder: hop down through a platform when right above it
+      if (lad === null && dy > 40 && g.canDrop && Math.abs(tx - g.x) < 30 && W.get(Math.floor(g.x / T), Math.floor((g.y + 1) / T)) === PLAT) { g.dropT = 0.25; return false; }
+    } else if (g.onGround) g.noRoute = false;
     const dx = goal - g.x;
     if (Math.abs(dx) < 7) { g.vx = 0; return Math.abs(dy) <= 44 || goal === tx; }
     const dir = dx > 0 ? 1 : -1; g.face = dir;
-    if (!g.canDrop && g.onGround) {
+    if (g.onGround) { // never walk off a deadly drop; calm guards will not step off any ledge
       const ax = Math.floor((g.x + dir * 13) / T), r = Math.floor((g.y + 2) / T);
-      if (!phys.standable(ax, r) && !phys.standable(ax, r + 1)) { g.vx = 0; g.blockedT += 0.05; return g.blockedT > 1.2; }
+      let depth = 0; while (depth < 9 && !phys.standable(ax, r + depth)) depth++;
+      if (depth > (g.canDrop ? 7 : 1)) { g.vx = 0; g.blockedT += 0.05; return g.blockedT > 1.2; }
     }
     g.vx = dir * sp; return false;
   }
@@ -262,7 +266,7 @@
     }
     g.vy = Math.min(g.vy + 1500 * dt, 1200);
     const pvx = g.vx;
-    phys.move(g, dt);
+    if (g.dropT > 0) { g.dropT -= dt; phys.move(g, dt, true); } else phys.move(g, dt);
     if (g.hitWall && g.cfg.climbs && g.state === 'combat') { // hunters scale solid walls
       const tx = Math.floor((g.x + g.hitWall * 10) / T), fr = Math.floor((g.y - 1) / T);
       if (W.climbable(tx, fr - 1) && W.solid(tx, fr - 1)) { g.vy = -150; g.vx = pvx; g.phase += dt * 9; return; }
@@ -312,14 +316,14 @@
 
   // ---------- per-state behaviour ----------
   function updGuard(g, dt, pl) {
-    g.hurtT = Math.max(0, g.hurtT - dt); g.saidT = Math.max(0, g.saidT - dt); g.wary = Math.max(0, g.wary - dt); g.attackCd -= dt; g.poking = false;
+    g.stoneT = Math.max(0, (g.stoneT || 0) - dt); g.hurtT = Math.max(0, g.hurtT - dt); g.saidT = Math.max(0, g.saidT - dt); g.wary = Math.max(0, g.wary - dt); g.attackCd -= dt; g.poking = false;
     if (g.sleepT > 0) { g.sleepT -= dt; g.vx = 0; g.vy = Math.min(g.vy + 1500 * dt, 1200); phys.move(g, dt); if (g.sleepT <= 0) { A.setState(g, 'suspicious', { x: g.x + g.face * 40, y: g.y }); A.say(g, 'Ugh...'); } return; }
     if (g.stunT > 0) { g.stunT -= dt; g.vx = U.approach(g.vx, 0, 500 * dt); g.attackT = 0; g.vy = Math.min(g.vy + 1500 * dt, 1200); phys.move(g, dt); return; }
     if (!g.dummy) sense(g, dt, pl);
     const cfg = g.cfg; g.timer += dt;
     if (g.meter >= 1 && g.state !== 'combat') {
       if (cfg.vip) { A.setState(g, 'combat'); A.shout(g, pl.x, pl.y, 500); }
-      else { A.setState(g, 'combat'); g.lastSeen = { x: pl.x, y: pl.y }; A.shout(g, pl.x, pl.y); GB.prog.addNotoriety(3); if (cfg.commands) A.alarm(pl.x, pl.y); }
+      else { A.setState(g, 'combat'); g.lastSeen = { x: pl.x, y: pl.y }; A.shout(g, pl.x, pl.y); if (!g.train) GB.prog.addNotoriety(3); if (cfg.commands) A.alarm(pl.x, pl.y); }
     }
     const tgt = g.target;
     switch (g.state) {
@@ -382,8 +386,9 @@
       }
       case 'combat': {
         if (cfg.vip) { vipFlee(g, pl, dt); if (!g.sees) { g.loseT += dt; if (g.loseT > 8) A.setState(g, 'searching', g.lastSeen); } else g.loseT = 0; break; }
-        if (g.sees) { g.lastSeen = { x: pl.x, y: pl.y }; g.loseT = 0; g.knowsSpot = pl.state === 'hidden' ? pl.hideSpot : null; if (pl.state === 'hidden') { pl.leaveHide(); } }
+        if (g.sees) { g.lastSeen = { x: pl.x, y: (pl.onGround || pl.state === 'ladder' || pl.state === 'swim' || !g.lastSeen) ? pl.y : g.lastSeen.y }; g.loseT = 0; g.knowsSpot = pl.state === 'hidden' ? pl.hideSpot : null; if (pl.state === 'hidden') { pl.leaveHide(); } }
         else { if (g.loseT < 0.3 && pl.state === 'hidden') g.knowsSpot = pl.hideSpot; else if (pl.state !== 'hidden') g.knowsSpot = null; g.loseT += dt; }
+        if (!g.sees && !pl.dead && pl.state !== 'hidden' && pl.onGround && Math.abs(pl.x - g.x) < 260 && Math.abs(pl.y - g.y) < 50 && !g.ladder && S().losClear(g.x, g.y - 38, pl.x, pl.y - 26)) { g.lastSeen = { x: pl.x, y: pl.y }; g.loseT = Math.min(g.loseT, 1); } // hears you land right beside him
         const ls = g.lastSeen || { x: g.x, y: g.y };
         lookToward(g, ls.x, ls.y - 26, dt);
         if (!g.sees && (g.loseT > 5.5 || (g.loseT > 2.2 && Math.abs(g.x - ls.x) < 30))) { A.setState(g, 'searching', ls); GB.events.emit('lostTrack', g); break; }
@@ -395,6 +400,11 @@
         } else if (cfg.ranged && g.sees && ad > 70) {
           g.vx = 0; g.face = U.sign(dx) || g.face; g.aimT += dt;
           if (g.aimT > 1.15) { g.aimT = 0; GB.combat.fireArrow(g, pl); }
+        } else if (!cfg.ranged && !cfg.boss && g.sees && !g.ladder && !g.climbing && g.onGround && ad < 430 && dy < -34 &&
+          ((pl.state === 'climb' || pl.state === 'hang' || pl.state === 'pullup' || pl.state === 'swing' || pl.state === 'ladder') || (dy < -60 && g.noRoute && (ad < 110 || g.blockedT > 0.3)))) {
+          g.vx = 0; g.face = U.sign(dx) || g.face; g.aimT += dt; g.stoneT = 0.3;
+          if (g.aimT > 1.3) { g.aimT = U.rand(0, 0.35); GB.combat.throwStone(g, pl); if (g.barkT <= 0) { g.barkT = 6; A.say(g, U.pick(['Get down here!', 'Come down, rat!', 'Knock him off!'])); } }
+          g.barkT -= dt;
         } else if (g.sees && ad < 34 && Math.abs(dy) < 34) {
           g.vx = 0; g.face = U.sign(dx) || g.face; g.aimT = 0;
           if (g.attackCd <= 0) { g.attackT = cfg.boss ? 0.36 : cfg.armored ? 0.45 : 0.52; g.attackCd = U.rand(0.9, 1.4); GB.sfx('swordSwing', { vol: 0.5 }); }

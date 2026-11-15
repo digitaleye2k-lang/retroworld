@@ -60,6 +60,7 @@
     els.gadget.textContent = ''; els.gadget.appendChild(el('span', null, 'GADGET')); els.gadget.appendChild(el('small', null, ''));
     top = el('div', 'tc-top tc-play');
     const bp = el('div', 'tc-b', 'II'), bm = el('div', 'tc-b', 'MAP'); top.appendChild(bp); top.appendChild(bm); root.appendChild(top);
+    if (GB.fullscreen.ok()) { const bf = el('div', 'tc-b', '⛶'); bf.style.fontSize = '17px'; top.appendChild(bf); tap(bf, () => GB.fullscreen.toggle()); }
     tap(bp, () => { if (playing() && !P().dead) GB.ui.showPause(); });
     tap(bm, () => { if (playing() && !P().dead) GB.ui.showScreen('map'); });
     const ui = document.getElementById('ui-root'); document.body.insertBefore(root, ui);

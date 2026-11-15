@@ -72,6 +72,7 @@
     suspicion(g, d) {
       const P = GB.player, zone = S.zone;
       S.soft = false;
+      if (g && g.train) return 1;
       if (P.carrying) return 1.6;
       if (S.recentKill > 0) return 1.5;
       if (zone && !zone.safe) {

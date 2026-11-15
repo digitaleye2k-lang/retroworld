@@ -46,6 +46,17 @@
     attack: 'Mouse0', block: 'Mouse2', pause: 'Escape'
   };
   const down = new Set(), pressed = new Set(), released = new Set();
+  GB.fullscreen = {
+    ok() { const el = document.documentElement; return !!(el.requestFullscreen || el.webkitRequestFullscreen) && document.fullscreenEnabled !== false; },
+    is() { return !!(document.fullscreenElement || document.webkitFullscreenElement); },
+    toggle() {
+      const el = document.documentElement;
+      try {
+        if (GB.fullscreen.is()) (document.exitFullscreen || document.webkitExitFullscreen).call(document);
+        else { const p = (el.requestFullscreen || el.webkitRequestFullscreen).call(el); if (p && p.catch) p.catch(() => { }); }
+      } catch (e) { }
+    }
+  };
   const I = GB.input = {
     DEFAULT_KEYS,
     keys: Object.assign({}, DEFAULT_KEYS),

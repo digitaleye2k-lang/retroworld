@@ -82,6 +82,7 @@
     if (sp > 8) cycle(o, g.phase, sp > 150 ? 0.9 : 0.42); else o.dy = Math.sin(GB.time * 1.7 + g.phase) * 0.4;
     if (g.attackT > 0) { o.aa0 = 3.0; o.aa1 = 0.4; o.lean = -0.1; }
     else if (g.attackCd > 0.75 && g.state === 'combat' && !g.cfg.ranged) { o.aa0 = 0.9; o.aa1 = 0.2; o.lean = 0.3; }
+    else if (g.stoneT > 0 && g.state === 'combat') { const k = Math.min(1, g.aimT / 1.3); o.aa0 = -2.6 + k * 0.5; o.aa1 = -0.9; }
     else if (g.cfg.ranged && g.state === 'combat' && g.aimT > 0) { o.aa0 = 1.57; o.aa1 = 0; o.ab0 = 1.3; o.ab1 = 1.5 - Math.min(1, g.aimT) * 0.6; }
     else if (g.poking) { o.aa0 = 1.5 + Math.sin(GB.time * 10) * 0.2; o.aa1 = 0.1; o.lean = 0.3; }
     else if (g.state === 'suspicious') { o.ab0 = 2.4; o.ab1 = 1.9; }

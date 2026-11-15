@@ -335,8 +335,8 @@
     fill(110, 70, 122, 71, AIR);
     [60, 205, 356, 466].forEach(x => shaft(x, 60, 74)); shaft(602, 68, 74); // re-cut the shafts through the tunnel
     // secret alcoves (crawl through 1-tile gaps)
-    fill(96, 66, 104, 69, AIR); fill(100, 70, 100, 71, LADDER); chest(98, 70, 110); relic(103, 70);
-    fill(408, 66, 418, 69, AIR); fill(413, 70, 413, 71, LADDER); chest(410, 70, 120);
+    fill(96, 66, 104, 69, AIR); fill(100, 70, 100, 73, LADDER); chest(98, 70, 110); relic(103, 70);
+    fill(408, 66, 418, 69, AIR); fill(413, 70, 413, 73, LADDER); chest(410, 70, 120);
     fill(320, 76, 332, 78, AIR); fill(326, 75, 326, 78, LADDER); chest(330, 79, 140); relic(322, 79);
     fill(500, 66, 512, 71, AIR); fill(504, 68, 508, 68, PLAT, 3); relic(506, 68); chest(510, 75, 100);
     // hidden district: assassin headquarters
@@ -345,7 +345,7 @@
     fill(226, 68, 240, 68, PLAT, 3); shaft(226, 68, 74); fill(246, 66, 252, 66, PLAT, 3);
     fill(256, 74, 257, 74, SOLID, 1); fill(258, 72, 261, 74, SOLID, 1); fill(264, 66, 265, 74, SOLID, 1);
     fill(270, 69, 276, 69, PLAT, 3);
-    fill(286, 64, 291, 64, PLAT, 3); shaft(289, 64, 74);
+    fill(286, 67, 291, 67, PLAT, 3); shaft(289, 67, 74);
     W.swings.push({ x: px(243), y: 63 * T + 4, len: 96 });
     W.zones.push({ id: 'hq', name: 'The Hidden District', safe: true, x0: 213 * T, y0: 62 * T, x1: 293 * T, y1: 76 * T });
     hide('hay', 254, 75); hide('barrel', 232, 75); hide('hay', 284, 75); W.benches.push({ x: px(222), y: 75 * T });
@@ -353,7 +353,7 @@
     torch(244, 64, { r: 220, ext: false }); torch(280, 65, { r: 220, ext: false });
     W.marks.push({ id: 'mentor', x: px(220), y: 75 * T }, { id: 'armory', x: px(228), y: 75 * T });
     W.decor.push({ type: 'banner', x: px(225), y: 64 * T }, { type: 'banner', x: px(250), y: 64 * T }, { type: 'banner', x: px(280), y: 64 * T }, { type: 'armory', x: px(228), y: 75 * T });
-    chest(290, 64, 60); relic(249, 66); relic(238, 68);
+    chest(290, 67, 60); relic(249, 66); relic(238, 68);
     // tunnel lighting + guards (far ends only)
     for (let x = 70; x < 600; x += 46) if (x < 210 || x > 296) torch(x, 72, { r: 150, int: 0.8 });
     guard('guard', 480, 75, { p: [440, 520], torch: true }); guard('guard', 570, 75, { p: [530, 598], torch: true, pers: 'nervous' });

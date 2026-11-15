@@ -20,8 +20,17 @@
       time: 14, weather: 'clear', start: [222, 75],
       intro: [{ who: 'The Mentor', text: 'So. The blade has chosen you. Before the city learns your name, the order must learn your worth.' }, { who: 'The Mentor', text: 'Three truths, initiate. Move as water. Wait as stone. Strike once.' }],
       outro: [{ who: 'The Mentor', text: 'You fell, and the city caught you. Remember that feeling. It is the only faith we keep.' }],
-      setup() { spawn({ type: 'guard', tx: 273, row: 75, face: 1, dummy: true, tag: 'dummy', pers: 'stoic' }); spawn({ type: 'guard', tx: 282, row: 75, p: [279, 290], dummy: true, tag: 'dummy' }); },
-      tick(dt, m) { if (m.idx < 6 && !A.guards.some(g => g.tag === 'dummy' && !g.dead)) { spawn({ type: 'guard', tx: m.idx <= 3 ? 273 : 288, row: 75, face: 1, p: m.idx <= 3 ? null : [279, 290], dummy: true, tag: 'dummy' }); GB.ui.toast('Another warden steps onto the floor'); } },
+      setup() { spawn({ type: 'guard', tx: 273, row: 75, face: 1, train: true, tag: 'dummy', pers: 'stoic' }); },
+      tick(dt, m) { // a fresh warden walks in from the tunnel only when the lesson needs one
+        if (m.idx >= 6) return;
+        const alive = A.guards.some(g => g.tag === 'dummy' && !g.dead);
+        const need = m.idx <= 3 || m.idx === 5 || (m.idx === 4 && !P.carrying && !GB.combat.bodies.some(b => !b.hidden));
+        if (alive || !need) { m.flags.wT = 0; return; }
+        m.flags.wT = (m.flags.wT || 0) + dt; if (m.flags.wT < 3) return; m.flags.wT = 0;
+        const post = m.idx <= 3, g = spawn({ type: 'guard', tx: 291, row: 75, face: -1, p: post ? null : [279, 290], train: true, tag: 'dummy', pers: post ? 'stoic' : 'normal' });
+        if (post) { g.home.x = W.px(273); g.home.face = 1; }
+        GB.ui.toast('Another warden walks in from the tunnel');
+      },
       objectives: [
         { text: 'Vault the step and climb the training wall', hint: () => `${K('left')}/${K('right')} move  -  ${K('jump')} jump  -  hold ${K('up')} against a wall to climb. Run into the low step to vault it.`, mk: [259, 72], test: () => P.onGround && P.y <= 72 * T + 1 && inT(258, 261, 66, 72) },
         { text: 'Wall-run to the top of the tall pillar', hint: () => `Hold ${K('sprint')} and run straight at the pillar to run up it, then ${K('up')} to keep climbing and pull yourself over the ledge.`, mk: [264, 66], test: () => P.onGround && P.y <= 66 * T + 1 && inT(264, 265, 60, 66) },

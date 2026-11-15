@@ -233,9 +233,11 @@
     });
   }
   function screenItems(parent) {
-    return SCREEN_LIST.map(function (s) {
+    const items = SCREEN_LIST.map(function (s) {
       return { key: s[0], label: s[1], act: function () { openScreen(s[0], parent); } };
     });
+    if (GB.fullscreen && GB.fullscreen.ok()) items.push({ key: 'fullscreen', label: GB.fullscreen.is() ? 'Exit Fullscreen' : 'Fullscreen', act: function () { menuFocus[parent] = 'fullscreen'; GB.fullscreen.toggle(); } });
+    return items;
   }
 
   // ---------- main menu ----------
@@ -1270,6 +1272,8 @@
     window.addEventListener('keydown', onKeyDown, true);
     window.addEventListener('keyup', onKeyUp, true);
     window.addEventListener('resize', onResize);
+    const onFs = function () { if (view === 'main') showMainMenu(); else if (view === 'pause') showPause(); };
+    document.addEventListener('fullscreenchange', onFs); document.addEventListener('webkitfullscreenchange', onFs);
     root.addEventListener('mousedown', onRootMouseDown, true);
     root.addEventListener('click', onRootClick, true);
     root.addEventListener('mousemove', onRootMouseMove);

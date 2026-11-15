@@ -45,6 +45,12 @@
       C.projectiles.push({ kind: 'arrow', owner: 'e', x: sx, y: sy, vx: dx / t, vy: dy / t - 0.5 * grav * t, g: grav, life: 3, dmg: g.cfg.dmg });
       GB.sfx('arrowFire', { vol: 0.6 });
     },
+    throwStone(g, pl) {
+      const sx = g.x + g.face * 8, sy = g.y - 40, tx = pl.x + pl.vx * 0.2 + U.rand(-10, 10), ty = pl.y - pl.h * 0.5 + U.rand(-8, 8), dx = tx - sx, dy = ty - sy, d = Math.hypot(dx, dy) || 1;
+      const sp = 520, t = d / sp, grav = 520;
+      C.projectiles.push({ kind: 'stone', owner: 'e', x: sx, y: sy, vx: dx / t, vy: dy / t - 0.5 * grav * t, g: grav, life: 3, dmg: g.train ? 3 : 7 });
+      GB.sfx('throw', { vol: 0.5, rate: 0.8 });
+    },
     throwAt(kind, sp, grav, extra) {
       const m = GB.cam.toWorld(I.mouse.x, I.mouse.y), sx = P.x + P.face * 6, sy = P.y - P.h * 0.75;
       let dx = m.x - sx, dy = m.y - sy; const d = Math.hypot(dx, dy) || 1; dx /= d; dy /= d;
@@ -297,7 +303,7 @@
         if (W.isSolid(t) || (p.g > 500 && p.vy > 0 && (t === PLAT) && Math.floor((p.y - p.vy * sdt) / T) < Math.floor(p.y / T))) { impact(p, null); dead = true; break; }
         if (p.owner === 'e') {
           if (!P.dead && P.state !== 'hidden' && Math.abs(P.x - p.x) < 9 && p.y < P.y && p.y > P.y - P.h) {
-            if (P.blocking && U.sign(p.vx) !== P.face) { GB.sfx('clash'); fx('spark', p.x, p.y, 5); } else { GB.sfx('arrowHit'); P.hurt(p.dmg, p.x - p.vx); }
+            if (P.blocking && U.sign(p.vx) !== P.face) { GB.sfx('clash'); fx('spark', p.x, p.y, 5); } else if (p.kind === 'stone') { GB.sfx('land', { vol: 0.7, rate: 1.5 }); P.grabCd = 0.7; P.hurt(p.dmg, p.x - p.vx); } else { GB.sfx('arrowHit'); P.hurt(p.dmg, p.x - p.vx); }
             dead = true;
           }
         } else {
@@ -314,6 +320,7 @@
     const x = p.x - p.vx * 0.004, y = p.y - p.vy * 0.004;
     switch (p.kind) {
       case 'arrow': GB.sfx('arrowHit', { vol: 0.3 }); break;
+      case 'stone': GB.sfx('land', { vol: 0.35, rate: 1.6 }); break;
       case 'knife': case 'parrow': case 'bolt': {
         if (g) {
           const lethal = p.kind === 'bolt' ? (g.state !== 'combat' || !g.cfg.boss) && !g.cfg.boss : (g.state !== 'combat' && !g.cfg.armored && !g.cfg.boss);
