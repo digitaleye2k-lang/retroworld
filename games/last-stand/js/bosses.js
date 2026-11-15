@@ -77,7 +77,7 @@ function nextAtk(b, list, cd) { b.atk = pick(list); b.atkT = 0; b.n = 0; b.cd = 
 
 const BOSSES = [
 /* 1. IRONROOT — jungle mechanical guardian rooted at the right wall */
-{ hp: 2600,
+{ hp: 2200,
   init(b) { b.x = b.ax + 700; b.y = FLOOR - 300; b.cd = 1.2; b.armA = 0; b.coreOpen = 0; },
   box(b) { return { x: b.x, y: b.y, w: 220, h: 300 }; },
   parts(b) { const open = b.coreOpen > 0 || b.phase >= 2; return [{ x: b.x + 70, y: b.y + 110, w: 70, h: 70, weak: open, armor: open ? 1 : .3 }, { x: b.x + 20, y: b.y + 20, w: 180, h: 280, armor: .3 }, { x: b.x - 70, y: b.y + 150 + Math.sin(b.armA) * 8, w: 90, h: 34, armor: .35 }]; },

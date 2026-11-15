@@ -97,7 +97,7 @@ const cntPlayed=(p,ids)=>ids.filter(i=>playedN(p,i)>0).length;
 const CNT=(p,k)=>(rw(p).cnt[k]||0);
 const lvlOf=p=>levelInfo(totalXp(p)).level;
 const ACH=(p,id,k)=>{const s=st(p,id);return !!(s&&s.achievements&&s.achievements[k])};
-const GF='gun-fu.html',SF='stick-fury.html',SP='shadow-protocol.html',STICKG=[GF,SF,SP];
+const GF='gun-fu.html',SF='stick-fury.html',SP='shadow-protocol.html',LS='last-stand.html',STICKG=[GF,SF,SP];
 const NEWG=['neon-survivors.html','grid-guardians.html','bubble-pop.html','sky-hop.html','neon-sudoku.html'];
 
 /* ---------- new trophies ---------- */
@@ -158,6 +158,12 @@ const NEW_DEFS=[
   N('sp_all','🗼','PROTOCOL COMPLETE','Finish the last mission of Shadow Protocol.','platinum','STICK MANIA',(a,p)=>ACH(p,SP,'m10'),null),
   N('stick_all','🕺','STICK MANIAC','Play Gun Fu, Stick Fury and Shadow Protocol.','silver','STICK MANIA',(a,p)=>allPlayed(p,STICKG),p=>[cntPlayed(p,STICKG),3]),
   N('stick_legend','🏅','STICK LEGEND','Finish Gun Fu, Stick Fury arcade and Shadow Protocol.','platinum','STICK MANIA',(a,p)=>ACH(p,GF,'ch7')&&ACH(p,SF,'arcade')&&ACH(p,SP,'m10'),p=>[(ACH(p,GF,'ch7')?1:0)+(ACH(p,SF,'arcade')?1:0)+(ACH(p,SP,'m10')?1:0),3]),
+  N('ls_play','💥','BOOTS ON THE GROUND','Play Stickman: Last Stand.','bronze','STICK MANIA',(a,p)=>playedN(p,LS)>=1,null),
+  N('ls_special','☄️','LAST STAND!','Unleash the LAST STAND orbital strike.','bronze','STICK MANIA',(a,p)=>ACH(p,LS,'special'),null),
+  N('ls_m1','🌴','JUNGLE CLEARED','Destroy IRONROOT in Stickman: Last Stand.','silver','STICK MANIA',(a,p)=>ACH(p,LS,'level1'),null),
+  N('ls_m3','🏭','FOUNDRY DOWN','Destroy the FOUNDRY TITAN in Stickman: Last Stand.','gold','STICK MANIA',(a,p)=>ACH(p,LS,'level3'),null),
+  N('ls_nohit','🛡️','UNTOUCHABLE','Finish a Last Stand mission without taking damage.','gold','STICK MANIA',(a,p)=>ACH(p,LS,'nohit'),null),
+  N('ls_win','🎖️','THE LAST SOLDIER','Defeat OVERLORD ZERO and win Stickman: Last Stand.','platinum','STICK MANIA',(a,p)=>ACH(p,LS,'victory'),null),
   // secrets
   N('night_owl','🦉','NIGHT OWL','Play a game between midnight and 5 AM.','silver','SECRET',(a,p)=>!!rw(p).flags.night,null,true),
   N('early_bird','🐦','EARLY BIRD','Play a game between 5 AM and 8 AM.','silver','SECRET',(a,p)=>!!rw(p).flags.early,null,true),

@@ -81,7 +81,7 @@ function firePlasma(k) {
 }
 function startSpecial() { P.sp = 0; G.special = { t: 0, n: 0 }; P.inv = 2.4; Snd.play('special'); FX.flash(.6, '#ffe0a0'); Cam.add(10); FX.text(P.x + P.w / 2, P.y - 30, 'LAST STAND!', '#ffd84a', 30); RWB.ach('special'); }
 function pHurt(d, dir, silent) {
-  if (!P.alive || P.inv > 0 || G.special) return; d *= DIFF().dmg; P.hp -= d; if (!silent) { P.inv = 1.0; P.hurtT = .18; Snd.play('hurt'); Cam.add(8); FX.flash(.25, '#ff2030'); FX.ink(P.x + P.w / 2, P.y + 20, dir || -P.face, 6, '#7a0a14'); FX.hitstop(.05); P.vx += (dir || -P.face) * 220; P.vy = Math.min(P.vy, -240); }
+  if (!P.alive || P.inv > 0 || G.special) return; d *= DIFF().dmg * (.8 + G.li * .08); P.hp -= d; if (!silent) { P.inv = 1.0; P.hurtT = .18; Snd.play('hurt'); Cam.add(8); FX.flash(.25, '#ff2030'); FX.ink(P.x + P.w / 2, P.y + 20, dir || -P.face, 6, '#7a0a14'); FX.hitstop(.05); P.vx += (dir || -P.face) * 220; P.vy = Math.min(P.vy, -240); }
   G.noHit = false; if (P.hp <= 0) pKill('hp');
 }
 function pKill(why) {

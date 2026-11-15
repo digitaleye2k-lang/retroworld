@@ -4,7 +4,7 @@ const TANK = { hp: 420, spd: 60, score: 1500, w: 120, h: 58, col: '#6a5a3a', fir
 function eDef(t) { return t === 'tank' ? TANK : EDEF[t]; }
 function spawnEnemy(t, x, y, o) {
   const d = eDef(t), lv = G.li, hpK = DIFF().ehp * (1 + lv * .12);
-  const e = Object.assign({ t, d, x: x - d.w / 2, y: y - d.h, w: d.w, h: d.h, vx: 0, vy: 0, hp: d.hp * hpK, maxHp: d.hp * hpK, face: -1, aim: Math.PI, alive: true, dead: 0, flash: 0, fireT: rnd(.6, 1.4) * d.fire, st: 'idle', stT: 0, ground: false, run: rnd(0, 6), burst: 0, burstT: 0, tele: 0, t: 0, bob: rnd(0, 6), hy: y - 80 - rnd(0, 60), shieldUp: true, rec: 0 }, o || {});
+  const e = Object.assign({ k: t, d, x: x - d.w / 2, y: y - d.h, w: d.w, h: d.h, vx: 0, vy: 0, hp: d.hp * hpK, maxHp: d.hp * hpK, face: -1, aim: Math.PI, alive: true, dead: 0, flash: 0, fireT: rnd(.6, 1.4) * d.fire, st: 'idle', stT: 0, ground: false, run: rnd(0, 6), burst: 0, burstT: 0, tele: 0, t: 0, bob: rnd(0, 6), hy: y - 80 - rnd(0, 60), shieldUp: true, rec: 0 }, o || {});
   if (d.fly) { e.y = y - d.h; e.hy = e.y; }
   G.E.push(e); return e;
 }
@@ -35,6 +35,7 @@ function enemyUpdate(e, dt) {
       if (e.tele > 0) { e.tele -= dt; e.vx = 0; if (e.tele <= 0) { e.burst = 7; e.burstT = 0; } }
       else if (e.burst > 0) { e.vx = 0; e.burstT -= dt; if (e.burstT <= 0) { e.burst--; e.burstT = .1; eShoot(e, aimAt(e, 0, .1), { dmg: 9, spd: 470, col: '#ffcc40' }); Cam.add(.8); } }
       else if (see && e.fireT <= 0 && adx < 560) { e.tele = .45; e.fireT = d.fire * fk; Snd.play('alarm', .3); }
+      else if (!see && adx < 200) e.vx = 0;
       else walk(sgn(dx) * d.spd);
       break;
     }
@@ -79,7 +80,7 @@ function enemyUpdate(e, dt) {
       else if (e.burst > 0) { e.vx = 0; e.burstT -= dt; if (e.burstT <= 0) { e.burst--; e.burstT = .08; eShoot(e, aimAt(e, .1, .08), { dmg: 11, spd: 520, col: '#ffe060' }); } }
       else if (e.fireT <= 0 && see) { const r = Math.random(); e.fireT = d.fire * fk * rnd(.8, 1.3);
         if (r < .4) { e.burst = 6; e.burstT = .25; } else if (r < .65) { G.EG.push({ x: e.x + e.w / 2, y: e.y + 10, vx: sgn(dx) * clamp(adx * 1.1, 160, 520), vy: -560, t: 0 }); Snd.play('throw'); } else if (r < .85 && e.ground) { e.dash = .35; FX.text(e.x + e.w / 2, e.y - 10, '!', '#ffd84a', 22); } else if (e.ground) { e.vy = -760; } }
-      else if (adx > 260) walk(sgn(dx) * d.spd); else if (adx < 120) walk(-sgn(dx) * d.spd); else e.vx = 0;
+      else if (adx > 260 || !see) { walk(sgn(dx) * d.spd); if (!see && e.ground && e.t % 1.5 < 1 / 60) e.vy = -760; } else if (adx < 120) walk(-sgn(dx) * d.spd); else e.vx = 0;
       break;
     }
     case 'tank': {
@@ -95,9 +96,9 @@ function enemyUpdate(e, dt) {
 }
 function eHurt(e, dmg, dir, src) {
   if (!e.alive) return false;
-  if (e.t === 'shield' && e.shieldUp && src !== 'blast' && src !== 'plasma' && dir === -e.face) { e.shieldFlash = .1; Snd.play('clang', .6); FX.spark(e.x + e.w / 2 + e.face * 16, e.y + 26, '#bfe0ff', 4); return 'block'; }
+  if (e.k === 'shield' && e.shieldUp && src !== 'blast' && src !== 'plasma' && dir === -e.face) { e.shieldFlash = .1; Snd.play('clang', .6); FX.spark(e.x + e.w / 2 + e.face * 16, e.y + 26, '#bfe0ff', 4); return 'block'; }
   if (e.d.armor && src !== 'plasma') dmg *= 1 - e.d.armor * (src === 'blast' ? .4 : 1);
-  e.hp -= dmg; e.flash = .07; e.vx += dir * Math.min(140, dmg * 6) * (e.d.static || e.t === 'tank' ? 0 : 1);
+  e.hp -= dmg; e.flash = .07; e.vx += dir * Math.min(140, dmg * 6) * (e.d.static || e.k === 'tank' ? 0 : 1);
   if (e.d.robot) FX.spark(e.x + e.w / 2, e.y + e.h * .4, '#ffe0a0', 3); else FX.ink(e.x + e.w / 2, e.y + 20, dir, 2);
   if (e.hp <= 0) { eKill(e, dir, src); return 'kill'; } Snd.play('hit', .4); return 'hit';
 }
@@ -105,13 +106,13 @@ function eKill(e, dir, src) {
   if (!e.alive) return; e.alive = false; e.dead = 0; const d = e.d, c = eCenter(e);
   P.combo++; P.comboT = 2.6; const mult = 1 + Math.min(4, Math.floor(P.combo / 3)) * .5; const pts = Math.round(d.score * mult); G.score += pts; G.kills++;
   FX.text(c.x, e.y - 8, (P.combo >= 3 ? 'x' + P.combo + ' ' : '') + '+' + pts, P.combo >= 3 ? '#ffd84a' : '#fff', P.combo >= 6 ? 20 : 15);
-  P.sp = Math.min(100, P.sp + (e.t === 'commander' || e.t === 'tank' ? 18 : e.t === 'heavy' ? 8 : 3.5));
+  P.sp = Math.min(100, P.sp + (e.k === 'commander' || e.k === 'tank' ? 18 : e.k === 'heavy' ? 8 : 3.5));
   if (P.combo === 10) FX.text(P.x + P.w / 2, P.y - 40, 'MASSACRE!', '#ff4a4a', 26);
-  if (d.robot || src === 'boom') { FX.explode(c.x, c.y, e.t === 'tank' ? 140 : 60); if (src === 'boom' || e.t === 'kamikaze') areaDamage(c.x, c.y, 70, 18, 'e'); e.dead = 9; Snd.play('robotDie'); }
+  if (d.robot || src === 'boom') { FX.explode(c.x, c.y, e.k === 'tank' ? 140 : 60); if (src === 'boom' || e.k === 'kamikaze') areaDamage(c.x, c.y, 70, 18, 'e'); e.dead = 9; Snd.play('robotDie'); }
   else { Snd.play('die', .7); FX.ink(c.x, c.y, dir || 1, 14); e.vy = -380 - (src === 'blast' ? 300 : 0); e.vx = (dir || 1) * (src === 'blast' ? 420 : 200); e.spin = (dir || 1) * rnd(4, 9); FX.hitstop(.02); }
   // drops
   const r = Math.random(); const x = c.x, y = e.y;
-  if (e.t === 'commander' || e.t === 'tank') dropWeapon(x, y); else if (r < .05) dropItem('med', x, y); else if (r < .1) dropItem('gren', x, y); else if (r < .14 && e.t !== 'kamikaze') dropWeapon(x, y);
+  if (e.k === 'commander' || e.k === 'tank') dropWeapon(x, y); else if (r < .05) dropItem('med', x, y); else if (r < .1) dropItem('gren', x, y); else if (r < .14 && e.k !== 'kamikaze') dropWeapon(x, y);
 }
 function areaDamage(x, y, r, dmg, src) { if (P.alive && dist(x, y, P.x + P.w / 2, P.y + P.h / 2) < r + 14) pHurt(dmg, sgn(P.x + P.w / 2 - x)); }
 function drawEnemy(g, e) {

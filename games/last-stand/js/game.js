@@ -21,7 +21,7 @@ const G = {
     const keepInv = P.inv2, cur = P.cur; P = mkPlayer(cx, 0); const sy = World.surfaceY(cx + 10, 0); P.y = (sy || 13 * TS) - P.h; P.inv = 2.4;
     P.inv2 = keepInv; if (cur !== 'rifle') { delete P.inv2[cur]; } P.cur = 'rifle'; P.gren = Math.max(3, P.gren || 0);
     if (this.boss) { P.x = Cam.lockL + 120; P.y = FLOOR - P.h - 40; }
-    this.E = this.E.filter(e => Math.abs(e.x - P.x) > 500 || e.t === 'turret' || this.boss); this.B = this.B.filter(b => b.own === 'p');
+    this.E = this.E.filter(e => Math.abs(e.x - P.x) > 500 || e.k === 'turret' || this.boss); this.B = this.B.filter(b => b.own === 'p');
     FX.text(P.x + 10, P.y - 20, 'BACK IN ACTION', '#7ae0ff', 18);
   },
   bossDown() { this.clearT = .01; Music.stop(); Snd.play('clear'); RWB.ach('boss' + (this.li + 1)); for (const e of this.E) if (e.alive) eKill(e, 1, 'boom'); },
