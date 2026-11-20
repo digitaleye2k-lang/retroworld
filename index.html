@@ -1655,9 +1655,10 @@ html[data-vault="rainbow"] .hero h1,html[data-vault="rainbow"] .section-title{an
 .itch-promo .ip-game b{display:block;padding:8px 10px 2px;font-size:13px}
 .itch-promo .ip-game small{display:block;padding:0 10px 10px;color:#fa5c5c;font-weight:700;font-size:12px}
 @media(max-width:760px){.itch-promo{grid-template-columns:1fr;padding:18px}}
+/* AdSense auto ads: give auto-placed in-page ads a full row of their own so they never squeeze into the card grid or hero columns, and keep the game player + cookie notice clear of anchor ads (no ads are hidden) */.google-auto-placed{grid-column:1/-1!important;flex:0 0 100%!important;width:100%!important;max-width:100%!important;box-sizing:border-box;clear:both;margin:18px 0!important;overflow:hidden;text-align:center}.google-auto-placed ins.adsbygoogle{max-width:100%!important;margin-left:auto!important;margin-right:auto!important}#player.open{top:var(--rw-ad-top,0px);bottom:var(--rw-ad-bot,0px)}#rwNotice{bottom:calc(10px + var(--rw-ad-bot,0px))!important}
 </style>
 <link rel="stylesheet" href="tv/tv-enhancements.css">
-<script>window.RW_NO_ADS=/RetroWorldApp/.test(navigator.userAgent);if(!window.RETROWORLD_TV_DEVICE&&!window.RW_NO_ADS){const a=document.createElement('script');a.async=true;a.crossOrigin="anonymous";a.src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7935805760564580";document.head.appendChild(a);}</script>
+<script>window.RW_NO_ADS=/RetroWorldApp/.test(navigator.userAgent);if(!window.RETROWORLD_TV_DEVICE&&!window.RW_NO_ADS){const a=document.createElement('script');a.async=true;a.crossOrigin="anonymous";a.src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7935805760564580";document.head.appendChild(a);try{(window.adsbygoogle=window.adsbygoogle||[]).push({google_ad_client:"ca-pub-7935805760564580",enable_page_level_ads:true,overlays:{bottom:true}})}catch(e){}}</script>
 <meta property="og:title" content="Retro World — 106 Free Retro Browser Games"><meta property="og:site_name" content="Retro World"><meta name="twitter:title" content="Retro World — 106 Free Retro Browser Games"><meta name="twitter:image" content="https://retroworld.eu.cc/assets/og-image.jpg">
 <meta property="og:description" content="106 free retro games in your browser: Neon Survivors, Grid Guardians, Bubble Pop, Sky Hop, Beat Up Mafia and more. No download.">
 <meta property="og:type" content="website"><meta property="og:url" content="https://retroworld.eu.cc/">
@@ -4747,6 +4748,9 @@ gameLoadText=document.getElementById('gameLoadText');
 const RW_ADS={client:'ca-pub-7935805760564580',banner:'4713461465',side:'4441998726',multi:'2889370212'};
 function rwAdIns(slot,style,extra){const ins=document.createElement('ins');ins.className='adsbygoogle';ins.style.cssText=style;ins.setAttribute('data-ad-client',RW_ADS.client);ins.setAttribute('data-ad-slot',slot);if(extra)for(const k in extra)ins.setAttribute(k,extra[k]);return ins}
 function rwAdPush(){try{(window.adsbygoogle=window.adsbygoogle||[]).push({})}catch(e){}}
+function rwAnchorGap(){let top=0,bot=0;const vh=innerHeight;document.querySelectorAll('ins.adsbygoogle').forEach(el=>{const cs=getComputedStyle(el);if(cs.position!=='fixed'||cs.display==='none'||cs.visibility==='hidden')return;const r=el.getBoundingClientRect();if(r.height<20||r.height>vh*.4||r.width<innerWidth*.5)return;if(r.top>vh*.5)bot=Math.max(bot,Math.round(vh-r.top));else if(r.bottom<vh*.5)top=Math.max(top,Math.round(r.bottom))});
+  const d=document.documentElement.style;if(d.getPropertyValue('--rw-ad-top')!==top+'px')d.setProperty('--rw-ad-top',top+'px');if(d.getPropertyValue('--rw-ad-bot')!==bot+'px')d.setProperty('--rw-ad-bot',bot+'px')}
+if(!window.RETROWORLD_TV_DEVICE&&!window.RW_NO_ADS){setInterval(rwAnchorGap,800);addEventListener('resize',rwAnchorGap)}
 function mountBannerAd(){const sec=document.getElementById('rwBannerSection'),slot=document.getElementById('rwBannerSlot');if(!sec||!slot)return;
   if(!RW_ADS.banner||window.RETROWORLD_TV_DEVICE||window.RW_NO_ADS){sec.hidden=true;return}
   slot.innerHTML='';slot.appendChild(rwAdIns(RW_ADS.banner,'display:block;width:100%;min-height:90px',{'data-ad-format':'auto','data-full-width-responsive':'true'}));sec.hidden=false;rwAdPush()}
