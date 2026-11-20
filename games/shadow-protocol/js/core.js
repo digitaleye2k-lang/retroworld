@@ -170,7 +170,7 @@ const SFX = {
 };
 
 /* ---------- adaptive soundtrack ----------
-   menu.mp3 = main-menu theme, game.mp3 = in-mission theme. The game track reacts to the scene:
+   menu.mp3 = main-menu theme, game.mp3 / game2.mp3 ("Iron Pulse Circuit") = in-mission themes, alternating by mission. The game track reacts to the scene:
    - intensity (0..1): calm = quiet and low-passed, full combat = loud and wide open
    - slow motion: the tape slows down and drops in pitch with the world, and the master filter muffles it */
 const Music = {
@@ -178,7 +178,7 @@ const Music = {
   ensure() {
     const ctx = Snd.ctx; if (this.tr || !ctx) return;
     this.tr = {};
-    for (const k of ['menu', 'game']) {
+    for (const k of ['menu', 'game', 'game2']) {
       const a = new Audio('audio/' + k + '.mp3'); a.loop = true; a.preload = 'auto'; a.preservesPitch = false; a.mozPreservesPitch = false; a.webkitPreservesPitch = false;
       const t = this.tr[k] = { a, f: null, g: null, vol: 0 };
       if (this.web) { // route through the WebAudio graph so filters apply
@@ -191,10 +191,11 @@ const Music = {
   update(rdt, target, mode = 'game') {
     const ctx = Snd.ctx; if (!ctx) return; this.ensure();
     const on = Save.data.settings.music, now = ctx.currentTime; this.mode = mode;
+    if (mode === 'game' && (G.mi || 0) % 2 === 1) mode = 'game2'; // odd missions play Iron Pulse Circuit
     Snd.musicGain.gain.setTargetAtTime(on ? .85 : 0, now, .2);
     this.intensity = lerp(this.intensity, target, damp(target > this.intensity ? 2.2 : .7, rdt)); // swells fast, relaxes slowly
     const I = this.intensity, slow = Snd.slowK || 0;
-    this.rate = lerp(this.rate, mode === 'game' ? 1 - .32 * slow : 1, damp(6, rdt));
+    this.rate = lerp(this.rate, mode !== 'menu' ? 1 - .32 * slow : 1, damp(6, rdt));
     for (const k in this.tr) {
       const t = this.tr[k], active = k === mode && on;
       const want = !active ? 0 : k === 'menu' ? .8 : lerp(.38, 1, I);
@@ -203,7 +204,7 @@ const Music = {
       else t.a.volume = clamp(t.vol * Save.data.settings.vol, 0, 1);
       if (active && t.a.paused) { const p = t.a.play(); if (p && p.catch) p.catch(() => { }); }
       else if (!active && t.vol < .01 && !t.a.paused) t.a.pause();
-      if (!t.a.paused && Math.abs(t.a.playbackRate - this.rate) > .004) t.a.playbackRate = k === 'game' ? this.rate : 1;
+      if (!t.a.paused && Math.abs(t.a.playbackRate - this.rate) > .004) t.a.playbackRate = k !== 'menu' ? this.rate : 1;
     }
   }
 };
