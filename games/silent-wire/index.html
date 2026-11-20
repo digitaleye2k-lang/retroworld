@@ -1,4 +1,5 @@
 <!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<script src="../../assets/rw-sfx.js?v=1"></script>
 <title>Silent Wire</title><script>
 /* RETRO WORLD profile bridge: report start / finish to the arcade (trophies, quests, streaks) */
 function __rw(kind,mid,win){var sc=0;try{var d=JSON.parse(localStorage.getItem('sw-done')||'[]');sc=d.length*1000}catch(e){}
@@ -1779,11 +1780,13 @@ mm.addEventListener('pointerdown',e=>{mmDrag=true;mm.setPointerCapture(e.pointer
 
 /* ================= audio ================= */
 let AC=null,master=null;
-function audio(){if(!soundOn)return null;if(!AC){try{AC=new (window.AudioContext||window.webkitAudioContext)();master=AC.createGain();master.gain.value=.55;master.connect(AC.destination)}catch(e){return null}}if(AC.state==='suspended')AC.resume();return AC}
+function audio(){if(!soundOn)return null;if(!AC){try{AC=new (window.AudioContext||window.webkitAudioContext)();master=AC.createGain();master.gain.value=.55;master.connect(AC.destination);if(window.RWSFX){RWSFX.use(AC,master);RWSFX.preload(['swipe','punch2','gun_pistol','gun_rifle_tail','gun_ak','page_turn','pencil','weapon_pickup','metal_tap','lock_pick','whistle','switch_on'])}}catch(e){return null}}if(AC.state==='suspended')AC.resume();return AC}
 function noiseBuf(d){const a=AC,b=a.createBuffer(1,a.sampleRate*d,a.sampleRate),x=b.getChannelData(0);for(let i=0;i<x.length;i++)x[i]=Math.random()*2-1;return b}
 function burst(d,f,type,vol,decay){const a=audio();if(!a)return;const s=a.createBufferSource();s.buffer=noiseBuf(d);const fl=a.createBiquadFilter();fl.type=type;fl.frequency.value=f;const g=a.createGain();g.gain.setValueAtTime(vol,a.currentTime);g.gain.exponentialRampToValueAtTime(.001,a.currentTime+decay);s.connect(fl);fl.connect(g);g.connect(master);s.start()}
 function tone(f0,f1,d,type,vol,when=0){const a=audio();if(!a)return;const o=a.createOscillator(),g=a.createGain();o.type=type;const t=a.currentTime+when;o.frequency.setValueAtTime(f0,t);o.frequency.linearRampToValueAtTime(f1,t+d);g.gain.setValueAtTime(vol,t);g.gain.exponentialRampToValueAtTime(.001,t+d);o.connect(g);g.connect(master);o.start(t);o.stop(t+d+.05)}
+const SWS={knife:['swipe',.7],shot:['gun_pistol',.7],rifle:['gun_rifle_tail',.8],enemy:['gun_ak',.45],page:['page_turn',.6],pick:['weapon_pickup',.5],tin:['metal_tap',.6],cut:['lock_pick',.6],radio:['switch_on',.5]};
 function sfx(k){if(!soundOn)return;
+  if(window.RWSFX&&SWS[k]){audio();if(k==='knife')RWSFX.play('punch2',{vol:.5,vary:.1});if(RWSFX.play(SWS[k][0],{vol:SWS[k][1],vary:.06}))return}
   if(k==='knife'){burst(.15,3000,'highpass',.4,.12);tone(220,90,.12,'sine',.25)}
   else if(k==='shot'){burst(.4,1200,'lowpass',.9,.3);tone(140,40,.18,'triangle',.5)}
   else if(k==='rifle'){burst(.5,900,'lowpass',.8,.4);tone(110,35,.25,'triangle',.4)}

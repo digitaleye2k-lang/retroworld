@@ -1,4 +1,5 @@
-<!doctype html><html lang="en"><head><script src="rw-boost.js"></script><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover"><meta name="theme-color" content="#0a0a14">
+<!doctype html><html lang="en"><head><script src="../../assets/rw-sfx.js?v=1"></script>
+<script src="rw-boost.js"></script><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover"><meta name="theme-color" content="#0a0a14">
 <title>GUN FU • RETRO WORLD</title>
 <style>
 html,body{margin:0;height:100%;background:#07070d;overflow:hidden;font-family:"Courier New",monospace;-webkit-user-select:none;user-select:none;-webkit-tap-highlight-color:transparent}
@@ -45,7 +46,7 @@ function voice(id,o){if(!sfxOn||!AC)return;const k=id+(o.tag||'');const now=AC.c
 Object.assign(VP,{kane:105,thug:96,gun:118,knife:150,shot:85,brute:60,snip:130,boss:70});
 const SMP={},SMT={};
 function smpLoad(k,f){try{fetch(new URL('../../assets/'+f,document.baseURI)).then(r=>r.arrayBuffer()).then(b=>AC.decodeAudioData(b,d=>{SMP[k]=d},()=>{})).catch(()=>{})}catch(e){}}
-function smpInit(){if(!AC||SMP._i)return;SMP._i=1;smpLoad('r1','gun-fu-rico1.mp3');smpLoad('r2','gun-fu-rico2.mp3');smpLoad('h','gun-fu-hit.mp3');smpLoad('sg','gun-fu-sg.mp3');smpLoad('pump','gun-fu-pump.mp3');smpLoad('rl','gun-fu-rocket.mp3')}
+function smpInit(){if(!AC||SMP._i)return;SMP._i=1;if(window.RWSFX)RWSFX.use(AC,MG||AC.destination).preload(['gun_pistol','gun_ak','gun_auto','punch1','punch2','punch3','kick','whoosh1','whoosh2','swipe','rl_ar','mag_out','weapon_pickup','land_dirt','impact_heavy']);smpLoad('r1','gun-fu-rico1.mp3');smpLoad('r2','gun-fu-rico2.mp3');smpLoad('h','gun-fu-hit.mp3');smpLoad('sg','gun-fu-sg.mp3');smpLoad('pump','gun-fu-pump.mp3');smpLoad('rl','gun-fu-rocket.mp3')}
 function playSmp(k,vol,rate){if(!sfxOn||!AC||!SMP[k])return false;const n=performance.now();if(n-(SMT[k]||0)<70)return true;SMT[k]=n;try{const s=AC.createBufferSource(),g=AC.createGain();s.buffer=SMP[k];s.playbackRate.value=rate||1;g.gain.value=vol||.7;s.connect(g);g.connect(MG||AC.destination);s.start()}catch(e){return false}return true}
 function ricoPlay(){return playSmp(Math.random()<.5?'r1':'r2',.65,.92+Math.random()*.16)}
 const SX={
@@ -80,6 +81,10 @@ const SX={
  clear(){[523,659,784,1046].forEach((f,i)=>tone(f,.25,'square',.07,0,i*.12))},
  die(){tone(220,.8,'sawtooth',.14,.3);tone(110,1.2,'triangle',.14,.4,.1)}
 };
+/* real recorded sounds from the shared RETRO WORLD library (assets/sfx); synth stays as fallback */
+const SXR={shot:()=>['gun_pistol',.55],shotE:()=>['gun_ak',.3],smg:()=>['gun_auto',.38],punch:h=>[['punch1','punch2','punch3'],.45+h*.12],kick:h=>[['kick','punch3'],.5+h*.12],
+ whoosh:h=>[['whoosh1','whoosh2','swipe'],.2+h*.07],reload:()=>['rl_ar',.5],click:()=>['mag_out',.35],pick:()=>['weapon_pickup',.5],land:()=>['land_dirt',.4],thud:()=>['impact_heavy',.5],roll:()=>['swipe',.3]};
+Object.keys(SXR).forEach(k=>{const f=SX[k];SX[k]=function(h){if(sfxOn&&AC&&window.RWSFX){const m=SXR[k](h||0),n=Array.isArray(m[0])?m[0][(Math.random()*m[0].length)|0]:m[0];if(RWSFX.play(n,{vol:m[1],vary:.06,gap:k==='smg'?.04:0}))return}return f.apply(this,arguments)}});
 /* ---------- procedural music ---------- */
 let MQ={on:false,step:0,next:0,bpm:110,root:38,lvl:0,int:0,pitch:1,gain:null,tmul:1};
 const SCALE=[0,3,5,7,10,12,15,17];

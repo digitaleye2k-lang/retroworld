@@ -458,7 +458,7 @@
     const AudioEngine = window.AudioContext || window.webkitAudioContext;
     if (!AudioEngine) return null;
     try {
-      if (!audioContext) audioContext = new AudioEngine();
+      if (!audioContext) { audioContext = new AudioEngine(); if (window.RWSFX) RWSFX.use(audioContext).preload(["gun_heavy", "gun_ak", "lever", "impact_wet", "hit_muffled", "impact_heavy", "item_equip", "fire_light", "step_gravel2"]); }
       if (audioContext.state === "suspended") {
         const resumed = audioContext.resume();
         if (resumed && typeof resumed.catch === "function") resumed.catch(() => {});
@@ -484,9 +484,13 @@
     oscillator.start(start);
     oscillator.stop(start + duration + .03);
   }
+  /* real recorded sounds from the shared RETRO WORLD library (assets/sfx); the synth tones below are the fallback */
+  const SAMPLE_SFX = { heroShot: ["gun_heavy", .5, 1.05], enemyShot: ["gun_ak", .34, .9], arm: ["lever", .55, 1], hit: ["impact_wet", .45, 1], enemyDown: ["hit_muffled", .55, .9], heroDown: ["impact_heavy", .5, .95], pickup: ["item_equip", .5, 1], smoke: ["fire_light", .45, 1], run: ["step_gravel2", .4, 1] };
   function playSfx(kind) {
     const context = audioContextForSfx();
     if (!context) return;
+    const sm = SAMPLE_SFX[kind];
+    if (sm && window.RWSFX) { RWSFX.use(context); if (RWSFX.play(sm[0], { vol: sm[1], rate: sm[2], vary: .06 })) return; }
     if (kind === "start") {
       tone(context, 196, .12, .055, { wave: "triangle" });
       tone(context, 247, .17, .05, { wave: "triangle", delay: .12 });

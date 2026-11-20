@@ -3,6 +3,7 @@
 <title>Beat Up Mafia — Top-Down Crime Game | Retro World</title><meta name="description" content="Beat Up Mafia: a top-down open-city crime game. Steal cars, outrun the cops, blow up mob limos and take down Don Corvino."><meta name="theme-color" content="#05060c">
 <style>html,body{margin:0;height:100%;background:#05060c;overflow:hidden}canvas{display:block;width:100vw;height:100vh;outline:none}</style></head>
 <body><canvas id="g" tabindex="0"></canvas>
+<script src="../../assets/rw-sfx.js?v=1"></script>
 <script>
 'use strict';
 (function(){
@@ -27,6 +28,7 @@ function ac(){
   master=AC.createGain();master.gain.value=muted?0:1;
   const lp=AC.createBiquadFilter();lp.type='lowpass';lp.frequency.value=9000;
   sfxBus=AC.createGain();radioBus=AC.createGain();radioBus.gain.value=.4;
+  if(window.RWSFX){RWSFX.use(AC,sfxBus);RWSFX.preload(['gun_pistol','gun_auto','gun_shotgun','pump_rack','gun_ak','gun_sniper','gun_minigun','punch1','punch2','punch3','impact_wet','hit_muffled','impact_heavy','door_close','weapon_pickup','coins','whoosh1','splash'])}
   sfxBus.connect(lp);radioBus.connect(lp);lp.connect(comp);comp.connect(master);master.connect(AC.destination);
  }catch(e){AC=null}}
  if(AC&&AC.state==='suspended')AC.resume();
@@ -64,6 +66,12 @@ const SFX={
  thunder(){noise(2.4,900,50,.55,'lowpass');tone(55,1.6,'sawtooth',.18,22);noise(1.2,300,40,.4,'lowpass')},
  splash(){if(once('sp',120))noise(.25,3600,500,.1)}
 };
+/* real recorded sounds from the shared RETRO WORLD library (assets/sfx); synth above stays as the fallback */
+const SMP={pistol:['gun_pistol',.5,.05],smg:['gun_auto',.38,.04],shotgun:['gun_shotgun',.7,.06],enemy:['gun_ak',.32,.09],sniper:['gun_sniper',.75,.25],mini:['gun_minigun',.32,.035],
+ punch:[['punch1','punch2','punch3'],.6,0],hit:[['impact_wet','hit_muffled'],.3,.05],crash:['impact_heavy',.45,.07],door:['door_close',.45,0],pick:['weapon_pickup',.45,0],cash:['coins',.5,0],
+ throw:['whoosh1',.4,0],splash:['splash',.45,.12]};
+Object.keys(SMP).forEach(k=>{const f=SFX[k],m=SMP[k];SFX[k]=function(v){if(window.RWSFX&&!muted&&ac()){const n=Array.isArray(m[0])?m[0][Math.floor(Math.random()*m[0].length)]:m[0];
+ const vol=k==='crash'&&v!=null?Math.min(1,.25+v*.002)*m[1]:m[1];if(RWSFX.play(n,{vol,vary:.06,gap:m[2]})){if(k==='shotgun')RWSFX.play('pump_rack',{vol:.35,at:.3});return}}return f.apply(this,arguments)}});
 const eng={o1:null,o2:null,g:null,f:null,kd:-1};
 const ENGK=[['sawtooth','square',36,100,18,50,320,950,.03,.035],['sawtooth','square',26,62,13,30,240,520,.034,.03],['square','sawtooth',11,7,64,24,380,260,.07,.03],['sawtooth','square',70,70,34,36,700,650,.03,.034],['sawtooth','square',21,28,10.5,14,180,240,.05,.03]];
 function engineUpdate(active,sf,kd){const c=AC;if(!c)return;kd=kd||0;

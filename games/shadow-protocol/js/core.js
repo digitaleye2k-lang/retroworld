@@ -68,11 +68,13 @@ const Snd = {
       this.musicGain = ctx.createGain(); this.musicGain.gain.value = 0.5; this.musicGain.connect(this.filter);
       const n = ctx.sampleRate; this.nb = ctx.createBuffer(1, n, n); const d = this.nb.getChannelData(0);
       for (let i = 0; i < n; i++) d[i] = Math.random() * 2 - 1;
-      for (const k of ['sg', 'pump', 'rico1', 'rico2', 'hit']) this.loadSmp(k); // recorded samples shared with Gun Fu
+      for (const k of this.LOCAL.concat(this.SHARED)) this.loadSmp(k); // recorded samples shared with Gun Fu
     } catch (e) { this.ctx = null; }
   },
-  smp: {}, smpT: {},
-  loadSmp(k) { try { fetch('audio/sfx/' + k + '.mp3').then(r => r.arrayBuffer()).then(b => this.ctx.decodeAudioData(b, d => { this.smp[k] = d; }, () => { })).catch(() => { }); } catch (e) { } },
+  smp: {}, smpT: {}, LOCAL: ['sg', 'pump', 'rico1', 'rico2', 'hit'],
+  // shared RETRO WORLD library (assets/sfx): real gunshots, reloads, foley
+  SHARED: ['gun_pistol', 'gun_rifle', 'gun_auto', 'gun_sniper', 'gun_suppressed', 'gun_ak', 'mag_out', 'mag_in', 'ar_charge', 'pistol_rack', 'punch1', 'punch2', 'bone_snap', 'door_open', 'wood_drop', 'land_dirt', 'weapon_pickup', 'bricks', 'swipe', 'step_concrete1', 'step_concrete2', 'step_concrete3', 'step_concrete4'],
+  loadSmp(k) { try { fetch((this.LOCAL.indexOf(k) >= 0 ? 'audio/sfx/' : '../../assets/sfx/') + k + '.mp3').then(r => r.arrayBuffer()).then(b => this.ctx.decodeAudioData(b, d => { this.smp[k] = d; }, () => { })).catch(() => { }); } catch (e) { } },
   // play a recorded sample through the game bus (so slow motion pitches and muffles it); false = not loaded, caller falls back to synth
   sample(k, vol = .7, rate = 1, delay = 0) {
     const ctx = this.ctx; if (!ctx || !this.smp[k]) return false;
@@ -121,19 +123,19 @@ const Snd = {
   }
 };
 const SFX = {
-  pistol() { Snd.gfNoise(.09, .2, 600, 6000); Snd.gfTone(190, .12, 'sawtooth', .13, .3); Snd.gfTone(70, .2, 'sine', .22, .4); }, // Gun Fu pistol shot
-  dual() { Snd.gfNoise(.08, .18, 700, 6500); Snd.gfTone(215, .1, 'sawtooth', .12, .3); Snd.gfTone(80, .16, 'sine', .18, .4); },
-  smg() { Snd.gfNoise(.04, .1, 1500, 7000); Snd.gfTone(210, .05, 'square', .05, .5); }, // Gun Fu SMG
-  ar() { Snd.gfNoise(.1, .22, 500, 5200); Snd.gfTone(160, .13, 'sawtooth', .14, .3); Snd.gfTone(62, .22, 'sine', .24, .4); },
+  pistol() { if (Snd.sample('gun_pistol', .55, .97 + Math.random() * .08)) return; Snd.gfNoise(.09, .2, 600, 6000); Snd.gfTone(190, .12, 'sawtooth', .13, .3); Snd.gfTone(70, .2, 'sine', .22, .4); }, // Gun Fu pistol shot
+  dual() { if (Snd.sample('gun_pistol', .5, 1.03 + Math.random() * .08)) return; Snd.gfNoise(.08, .18, 700, 6500); Snd.gfTone(215, .1, 'sawtooth', .12, .3); Snd.gfTone(80, .16, 'sine', .18, .4); },
+  smg() { if (Snd.sample('gun_auto', .4, 1.05 + Math.random() * .08)) return; Snd.gfNoise(.04, .1, 1500, 7000); Snd.gfTone(210, .05, 'square', .05, .5); }, // Gun Fu SMG
+  ar() { if (Snd.sample('gun_rifle', .55, .96 + Math.random() * .08)) return; Snd.gfNoise(.1, .22, 500, 5200); Snd.gfTone(160, .13, 'sawtooth', .14, .3); Snd.gfTone(62, .22, 'sine', .24, .4); },
   shotgun() { if (!Snd.sample('sg', .9, .96 + Math.random() * .08)) { Snd.gfNoise(.24, .3, 200, 2500); Snd.gfTone(60, .28, 'sawtooth', .2, .4); } if (!Snd.sample('pump', .7, 1, .38)) { Snd.gfTone(300, .05, 'square', .05, 0, .38); Snd.gfTone(500, .06, 'square', .05, 0, .53); } }, // Gun Fu shotgun blast + pump
-  sniper() { Snd.noise(.5, { f: 2600, f2: 120, g: 1 }); Snd.tone(.4, { f: 95, f2: 28, type: 'sawtooth', g: .5 }); Snd.noise(.7, { f: 6000, type: 'highpass', g: .1, delay: .08 }); },
-  silenced() { Snd.noise(.07, { f: 1100, type: 'bandpass', q: 2, g: .22 }); Snd.tone(.04, { f: 300, f2: 120, g: .08 }); },
-  eshot() { Snd.gfNoise(.08, .12, 500, 4000); Snd.gfTone(150, .1, 'square', .06, .35); }, // Gun Fu enemy shot
+  sniper() { if (Snd.sample('gun_sniper', .9, 1)) return; Snd.noise(.5, { f: 2600, f2: 120, g: 1 }); Snd.tone(.4, { f: 95, f2: 28, type: 'sawtooth', g: .5 }); Snd.noise(.7, { f: 6000, type: 'highpass', g: .1, delay: .08 }); },
+  silenced() { if (Snd.sample('gun_suppressed', .6, .95 + Math.random() * .1)) return; Snd.noise(.07, { f: 1100, type: 'bandpass', q: 2, g: .22 }); Snd.tone(.04, { f: 300, f2: 120, g: .08 }); },
+  eshot() { if (Snd.sample('gun_ak', .3, .9 + Math.random() * .12)) return; Snd.gfNoise(.08, .12, 500, 4000); Snd.gfTone(150, .1, 'square', .06, .35); }, // Gun Fu enemy shot
   flame() { Snd.noise(.2, { f: 700, f2: 300, type: 'bandpass', q: .6, g: .26 }); Snd.noise(.12, { f: 2600, type: 'highpass', g: .05 }); },
   ignite() { Snd.noise(.35, { f: 500, f2: 1800, type: 'bandpass', g: .3 }); },
   empty() { Snd.tone(.03, { f: 1800, type: 'square', g: .1 }); },
-  reload() { Snd.tone(.03, { f: 900, type: 'square', g: .12 }); Snd.tone(.04, { f: 1400, type: 'square', g: .12, delay: .12 }); },
-  reloadDone() { Snd.tone(.04, { f: 700, type: 'square', g: .14 }); Snd.noise(.05, { f: 4000, type: 'highpass', g: .12 }); },
+  reload() { if (Snd.sample('mag_out', .55, 1.1)) return; Snd.tone(.03, { f: 900, type: 'square', g: .12 }); Snd.tone(.04, { f: 1400, type: 'square', g: .12, delay: .12 }); },
+  reloadDone() { if (Snd.sample('mag_in', .55, 1.15)) return; Snd.tone(.04, { f: 700, type: 'square', g: .14 }); Snd.noise(.05, { f: 4000, type: 'highpass', g: .12 }); },
   perfect() { Snd.tone(.09, { f: 1200, f2: 2000, g: .2 }); Snd.tone(.12, { f: 1800, f2: 2600, g: .14, delay: .06 }); },
   glass() { Snd.noise(.4, { f: 4200, type: 'highpass', g: .4 }); for (let i = 0; i < 5; i++) Snd.tone(.08 + Math.random() * .1, { f: 2200 + Math.random() * 4000, g: .06, delay: Math.random() * .18 }); },
   light() { Snd.noise(.15, { f: 5000, type: 'highpass', g: .25 }); Snd.tone(.25, { f: 110, f2: 40, type: 'sawtooth', g: .18 }); },
@@ -144,9 +146,9 @@ const SFX = {
   kill() { Snd.tone(.16, { f: 240, f2: 50, type: 'sawtooth', g: .2 }); },
   hurt() { Snd.tone(.2, { f: 160, f2: 50, type: 'sawtooth', g: .35 }); Snd.noise(.12, { f: 600, g: .3 }); },
   slide() { Snd.noise(.4, { f: 500, f2: 1700, type: 'bandpass', q: 1.2, g: .22 }); },
-  roll() { Snd.noise(.25, { f: 400, f2: 1000, type: 'bandpass', g: .16 }); },
+  roll() { Snd.sample('swipe', .35, .9); Snd.noise(.25, { f: 400, f2: 1000, type: 'bandpass', g: .16 }); },
   dive() { Snd.noise(.5, { f: 300, f2: 1400, type: 'bandpass', g: .2 }); Snd.tone(.5, { f: 500, f2: 180, g: .08 }); },
-  land() { Snd.noise(.1, { f: 300, g: .3 }); },
+  land() { if (Snd.sample('land_dirt', .4, 1)) return; Snd.noise(.1, { f: 300, g: .3 }); },
   btOn() { Snd.tone(.9, { f: 1000, f2: 60, g: .32, dest: Snd.master }); Snd.noise(.8, { f: 5000, f2: 200, g: .2, dest: Snd.master }); },
   btOff() { Snd.tone(.5, { f: 80, f2: 900, g: .22, dest: Snd.master }); },
   dodge() { Snd.tone(.22, { f: 600, f2: 1900, g: .2, dest: Snd.master }); Snd.noise(.25, { f: 2500, type: 'bandpass', q: 3, g: .12, dest: Snd.master }); },
@@ -156,12 +158,12 @@ const SFX = {
   uiOk() { Snd.tone(.06, { f: 520, type: 'square', g: .08, dest: Snd.master }); Snd.tone(.08, { f: 1040, type: 'square', g: .07, delay: .05, dest: Snd.master }); },
   deny() { Snd.tone(.12, { f: 140, type: 'square', g: .1, dest: Snd.master }); },
   metal() { if (!Snd.sample(Math.random() < .5 ? 'rico1' : 'rico2', .55, 1 + Math.random() * .2)) { Snd.tone(.12, { f: 2400 + Math.random() * 1500, type: 'triangle', g: .12 }); Snd.noise(.04, { f: 5000, type: 'highpass', g: .15 }); } },
-  wood() { Snd.noise(.08, { f: 700, g: .3 }); Snd.tone(.05, { f: 180, f2: 90, g: .12 }); },
-  crash() { Snd.noise(.3, { f: 900, f2: 200, g: .5 }); Snd.tone(.15, { f: 120, f2: 50, g: .3 }); },
-  door() { Snd.noise(.12, { f: 500, g: .3 }); Snd.tone(.08, { f: 110, g: .2 }); },
-  takedown() { Snd.noise(.14, { f: 500, g: .5 }); Snd.tone(.18, { f: 130, f2: 40, type: 'square', g: .3 }); },
+  wood() { if (Snd.sample('wood_drop', .5, .9 + Math.random() * .2)) return; Snd.noise(.08, { f: 700, g: .3 }); Snd.tone(.05, { f: 180, f2: 90, g: .12 }); },
+  crash() { Snd.sample('bricks', .5, 1); Snd.noise(.3, { f: 900, f2: 200, g: .5 }); Snd.tone(.15, { f: 120, f2: 50, g: .3 }); },
+  door() { if (Snd.sample('door_open', .6, 1.1)) return; Snd.noise(.12, { f: 500, g: .3 }); Snd.tone(.08, { f: 110, g: .2 }); },
+  takedown() { if (Snd.sample(Math.random() < .5 ? 'bone_snap' : 'punch2', .7, .95 + Math.random() * .1)) return; Snd.noise(.14, { f: 500, g: .5 }); Snd.tone(.18, { f: 130, f2: 40, type: 'square', g: .3 }); },
   mark() { Snd.tone(.05, { f: 1700, type: 'square', g: .1, dest: Snd.master }); },
-  pickup() { Snd.tone(.07, { f: 600, g: .12 }); Snd.tone(.09, { f: 900, g: .12, delay: .06 }); },
+  pickup() { if (Snd.sample('weapon_pickup', .6, 1.05)) return; Snd.tone(.07, { f: 600, g: .12 }); Snd.tone(.09, { f: 900, g: .12, delay: .06 }); },
   alert() { Snd.tone(.09, { f: 760, type: 'square', g: .07 }); Snd.tone(.09, { f: 1010, type: 'square', g: .07, delay: .08 }); },
   laststand() { Snd.tone(.6, { f: 60, f2: 180, type: 'sawtooth', g: .3, dest: Snd.master }); },
   rank() { [523, 659, 784, 1047].forEach((f, i) => Snd.tone(.3, { f, type: 'triangle', g: .14, delay: i * .11, dest: Snd.master })); }

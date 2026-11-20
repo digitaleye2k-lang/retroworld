@@ -1,4 +1,6 @@
-<!doctype html><html lang="en"><head><script src="rw-boost.js"></script><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover"><meta name="theme-color" content="#05060f">
+<!doctype html><html lang="en"><head><script src="../../assets/rw-sfx.js?v=1"></script>
+<script>function RW(n,v,o){try{if(!window.RWSFX||!(typeof sfxOn==="undefined"||sfxOn))return false;o=o||{};o.vol=v;if(o.vary==null)o.vary=.06;return RWSFX.play(Array.isArray(n)?n[Math.floor(Math.random()*n.length)]:n,o)}catch(e){return false}}window.addEventListener('load',function(){window.RWSFX&&RWSFX.preload(['impact_heavy', 'metal_clang', 'cardboard_hit', 'ball_net'])});</script>
+<script src="rw-boost.js"></script><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover"><meta name="theme-color" content="#05060f">
 <title>HOOPS SHOWDOWN • RETRO WORLD</title>
 <style>
 html,body{margin:0;height:100%;background:#05060f;overflow:hidden;font-family:"Courier New",monospace;-webkit-user-select:none;user-select:none;-webkit-tap-highlight-color:transparent}
@@ -59,7 +61,7 @@ function shoot(){if(state!=='holding'&&state!=='ready')return;
 function resolveShot(made_){
  if(made_){made++;streak++;const far=this_D>7.2,base=far?3:2,swish=!rimTouch&&!boardTouch,bonus=swish?1:0,mult=streak>=3?2:1;const pts=(base+bonus)*mult;score+=pts;
   if(streak>=3)fire=Math.min(1,fire+.34);
-  msg=(swish?'SWISH! ':'')+'+'+pts+(mult>1?'  ON FIRE x2':'');msgT=1.1;pops.push({txt:'+'+pts,x:240,y:300,t:0});tone(660,.12,'square',.08);tone(990,.18,'square',.08,0,.1);netT=.7;
+  msg=(swish?'SWISH! ':'')+'+'+pts+(mult>1?'  ON FIRE x2':'');msgT=1.1;pops.push({txt:'+'+pts,x:240,y:300,t:0});RW('ball_net',.6,{rate:1.2});tone(660,.12,'square',.08);tone(990,.18,'square',.08,0,.1);netT=.7;
   if(swish)tleft=Math.min(99,tleft+2)}
  else{streak=0;fire=0;msg=(boardTouch?'OFF THE GLASS':rimTouch?'RIM OUT':'AIRBALL');msgT=.9;tone(150,.2,'sawtooth',.06)}
 }
@@ -69,7 +71,7 @@ function update(dt){t+=dt;if(msgT>0)msgT-=dt;if(netT>0)netT-=dt;for(const p of p
  if(fire>0)fire=Math.max(0,fire-dt*.02);
  if(state==='holding'){charge+=chDir*dt*1.25;if(charge>=1){charge=1;chDir=-1}if(charge<=0){charge=0;chDir=1}}
  if(state==='fly'||state==='drop'){const sub=4,h=dt/sub;for(let s=0;s<sub;s++)physics(h);afterT+=dt;trail.push([ball.x,ball.y,ball.z]);if(trail.length>14)trail.shift();
-  if(ball.y<BRAD&&ball.vy<0){ball.y=BRAD;ball.vy*=-.55;ball.vx*=.7;ball.vz*=.7;if(Math.abs(ball.vy)<1.2)ball.vy=0;tone(120,.05,'sine',.07)}
+  if(ball.y<BRAD&&ball.vy<0){ball.y=BRAD;ball.vy*=-.55;ball.vx*=.7;ball.vz*=.7;if(Math.abs(ball.vy)<1.2)ball.vy=0;if(!RW('impact_heavy',.4,{rate:1.5,gap:.08}))tone(120,.05,'sine',.07)}
   if((ball.y<=BRAD+.01&&afterT>.6)||afterT>3.6||(ball.z<cam.z+.5&&afterT>.4)){if(state==='fly'){resolveShot(false)}state='wait';afterT=0}}
  else if(state==='wait'){afterT+=dt;if(afterT>.55){pickSpot()}}
 }
@@ -80,10 +82,10 @@ function physics(h){const b=ball;b.vx+=wind*h*.28;b.vy-=GRAV*h;b.x+=b.vx*h;b.y+=
  // rim
  {const dxr=b.x-HX,dzr=b.z-HZ,ro=Math.hypot(dxr,dzr)||1e-6,ux=dxr/ro,uz=dzr/ro,hx=ro-RR,hy=b.y-HY,d=Math.hypot(hx,hy);
   if(d<BRAD&&d>1e-6){const nx=hx*ux/d,ny=hy/d,nz=hx*uz/d,vn=b.vx*nx+b.vy*ny+b.vz*nz;
-   if(vn<0){const e=.62;b.vx-=(1+e)*vn*nx;b.vy-=(1+e)*vn*ny;b.vz-=(1+e)*vn*nz;rimTouch=true;tone(520+Math.random()*80,.07,'triangle',.1)}
+   if(vn<0){const e=.62;b.vx-=(1+e)*vn*nx;b.vy-=(1+e)*vn*ny;b.vz-=(1+e)*vn*nz;rimTouch=true;if(!RW('metal_clang',.45,{rate:1.2,gap:.08}))tone(520+Math.random()*80,.07,'triangle',.1)}
    const pen=BRAD-d;b.x+=nx*pen;b.y+=ny*pen;b.z+=nz*pen}}
  // backboard
- if(b.z+BRAD>BZ&&b.z<BZ+.3&&Math.abs(b.x)<1&&b.y>2.9&&b.y<4.1&&b.vz>0){b.z=BZ-BRAD;b.vz*=-.55;b.vx*=.9;boardTouch=true;tone(200,.08,'square',.07)}
+ if(b.z+BRAD>BZ&&b.z<BZ+.3&&Math.abs(b.x)<1&&b.y>2.9&&b.y<4.1&&b.vz>0){b.z=BZ-BRAD;b.vz*=-.55;b.vx*=.9;boardTouch=true;if(!RW('cardboard_hit',.55,{gap:.08}))tone(200,.08,'square',.07)}
  if(scoredNow&&b.y<HY-.6){b.vx*=.98;b.vz*=.98}
 }
 function drawBall(x,y,r,rot){

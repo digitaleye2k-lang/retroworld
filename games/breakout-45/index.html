@@ -195,6 +195,7 @@ body.fs.sb #bSide{position:fixed;z-index:21;top:8px;left:8px;background:var(--ni
   </main>
 </div>
 
+<script src="../../assets/rw-sfx.js?v=1"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 <script>if(!window.THREE)document.write('<script src="../vendor/three.min.js"><\/script>')</script>
 <script>
@@ -794,6 +795,7 @@ function update(dt){
   }
   if(channel){channel.p+=dt/channel.dur;if(channel.p>=1)finishChannel()}
   P.moving=Math.hypot(P.x-ox,P.y-oy)>0.001;
+  {const dt_=get(Math.floor(P.x),Math.floor(P.y));if(dt_===T.DOOR&&P.lastTile!==T.DOOR&&AU.sfx&&window.RWSFX)RWSFX.play('door_creak',{vol:.32,vary:.1,dest:AU.master});P.lastTile=dt_}
   audioTick(dt,Math.hypot(P.x-ox,P.y-oy)*(P.crouch?0.6:1));
   advance(dt*4);
   if(paused)return;
@@ -1304,6 +1306,7 @@ function audioInit(){
     const C=window.AudioContext||window.webkitAudioContext;if(!C)return;
     const c=AU.ctx=new C();
     AU.master=c.createGain();AU.master.gain.value=AU.sfx?0.8:0;AU.master.connect(c.destination);
+    if(window.RWSFX)RWSFX.use(c,AU.master).preload(['step_snow1','step_snow2','step_snow3','step_snow4','step_wood1','step_wood2','step_wood3','step_wood4','item_equip','page_turn','paper','coins','shovel','lock_unlock','lock_pick','metal_tap','wood_drop','crow','crows','door_creak']);
     const len=c.sampleRate*2,b=c.createBuffer(1,len,c.sampleRate),d=b.getChannelData(0);
     for(let i=0;i<len;i++)d[i]=Math.random()*2-1;AU.noise=b;
     // wind: looped noise through a lowpass with a slow gust LFO
@@ -1354,7 +1357,14 @@ const SFX={
   lose(){[220,208,175,147].forEach((f,i)=>tone({f,dur:1.2,vol:.08,type:'sawtooth',delay:i*.35}))},
   tense(){tone({f:110,dur:2.2,vol:.06,type:'sawtooth',vib:5,vibAmt:3});tone({f:116.5,dur:2.2,vol:.05,type:'sawtooth'})},
 };
-function sfx(name,...a){try{if(AU.ctx&&AU.sfx)SFX[name](...a)}catch(e){}}
+/* real recorded foley from the shared RETRO WORLD library (assets/sfx); synth voices stay as fallback */
+const REC={pickup:[['item_equip'],.5],paper:[['page_turn','paper'],.55],coin:[['coins'],.45],dig:[['shovel'],.75],unlock:[['lock_unlock'],.7],click:[['lock_pick'],.55],craft:[['metal_tap','wood_drop'],.5],bad:null};
+function sfx(name,...a){try{if(!AU.ctx||!AU.sfx)return;
+  if(window.RWSFX){
+    if(name==='step'){const indoor=[T.FLOOR,T.RFLOOR,T.DOOR].includes(get(Math.floor(P.x),Math.floor(P.y)));if(RWSFX.play((indoor?'step_wood':'step_snow')+(1+Math.floor(Math.random()*4)),{vol:(indoor?.38:.32)*(P.crouch?.55:1),vary:.08,dest:AU.master}))return}
+    const r=REC[name];if(r&&RWSFX.play(r[0][Math.floor(Math.random()*r[0].length)],{vol:r[1],vary:.06,dest:AU.master})){if(name==='dig')RWSFX.play('shovel',{vol:.6,at:.65,rate:.95,dest:AU.master});return}
+  }
+  SFX[name](...a)}catch(e){}}
 
 /* voice-overs: the browser's speech synthesis, a different voice and pitch per character */
 const VOICE={
@@ -1412,6 +1422,7 @@ function audioTick(dt,moved){
   if(alarm>0.3&&AU.lastAlarm<=0.3&&clock-AU.lastBark>5&&alarmBy&&alarmBy.id){AU.lastBark=clock;speak(['Halt! Wer da?','Halt! Stehen bleiben!','He, du da!'][Math.floor(Math.random()*3)],alarmBy.id)}
   AU.lastAlarm=alarm;
   AU.boom-=dt;if(AU.boom<=0){AU.boom=35+Math.random()*60;sfx('boom')}
+  AU.crow=(AU.crow==null?20:AU.crow)-dt;if(AU.crow<=0){AU.crow=28+Math.random()*50;if(AU.sfx&&window.RWSFX&&darkness()<.3)RWSFX.play(Math.random()<.6?'crow':'crows',{vol:.18+Math.random()*.1,pan:Math.random()*1.6-.8,dest:AU.master})}
   if(channel){AU.ch=(AU.ch||0)-dt;if(AU.ch<=0){AU.ch=channel.kind==='cut'?0.7:0.45;sfx(channel.kind==='cut'?'snip':'click')}}
 }
 function renderAudioBtns(){

@@ -13,6 +13,7 @@ const Snd = {
       const n = this.ac.sampleRate * 1.2, b = this.ac.createBuffer(1, n, this.ac.sampleRate), d = b.getChannelData(0);
       for (let i = 0; i < n; i++) d[i] = Math.random() * 2 - 1; this.noiseBuf = b;
       this.setVol(Save.d.settings.vol);
+      if (window.RWSFX) { RWSFX.use(this.ac, this.sfx); RWSFX.preload(['gun_rifle','gun_minigun','gun_shotgun','pump_rack','gun_ak','gun_pistol','gun_heavy','impact_wet','hit_muffled','splat','crunch','weapon_pickup','weapon_equip','mag_out','land_dirt','step_gravel1','step_gravel2','step_gravel3','step_gravel4','metal_clang','whoosh1','metal_tap','item_equip','heart','gem','bricks']); }
     } catch (e) { this.ac = null; }
   },
   setVol(v) { if (this.master) this.master.gain.value = v; },
@@ -31,7 +32,37 @@ const Snd = {
   },
   play(n, vol) {
     if (!this.ac) return; const now = this.ac.currentTime; if (this.last[n] && now - this.last[n] < .03) return; this.last[n] = now;
-    const f = this.S[n]; if (f) f.call(this, vol == null ? 1 : vol);
+    const v = vol == null ? 1 : vol, m = this.SMP[n];
+    if (m && window.RWSFX) {
+      const nm = Array.isArray(m.n) ? m.n[Math.floor(Math.random() * m.n.length)] : m.n;
+      const ok = RWSFX.play(nm, { vol: (m.v || 1) * v, vary: m.vary == null ? .05 : m.vary, rate: m.rate || 1, dest: this.sfx });
+      if (ok && m.then) RWSFX.play(m.then, { vol: (m.tv || .6) * v, at: m.at || .3, dest: this.sfx });
+      if (ok && !m.layer) return;
+    }
+    const f = this.S[n]; if (f) f.call(this, v);
+  },
+  /* real recorded sounds from the shared RETRO WORLD library (assets/sfx); synth stays as fallback/layer */
+  SMP: {
+    rifle: { n: 'gun_rifle', v: .55, vary: .06 },
+    minigun: { n: 'gun_minigun', v: .42, vary: .08 },
+    shotgun: { n: 'gun_shotgun', v: .8, then: 'pump_rack', at: .32, tv: .45 },
+    enemyShot: { n: ['gun_ak', 'gun_pistol'], v: .3, rate: .95, vary: .08 },
+    rocket: { n: 'gun_heavy', v: .35, rate: .7, layer: 1 },
+    hit: { n: ['impact_wet', 'hit_muffled'], v: .3, vary: .12 },
+    die: { n: ['splat', 'crunch'], v: .4, layer: 1 },
+    weapon: { n: 'weapon_pickup', v: .7, layer: 1 },
+    swap: { n: 'weapon_equip', v: .55 },
+    empty: { n: 'mag_out', v: .5 },
+    land: { n: 'land_dirt', v: .32, vary: .1 },
+    step: { n: ['step_gravel1', 'step_gravel2', 'step_gravel3', 'step_gravel4'], v: .28, vary: .1 },
+    clang: { n: 'metal_clang', v: .45, vary: .1 },
+    throw: { n: 'whoosh1', v: .4, layer: 1 },
+    bounce: { n: 'metal_tap', v: .35, vary: .15 },
+    pickup: { n: 'item_equip', v: .5, layer: 1 },
+    heal: { n: 'heart', v: .55 },
+    life: { n: 'gem', v: .6, layer: 1 },
+    robotDie: { n: 'metal_clang', v: .55, rate: .8, layer: 1 },
+    crack: { n: 'bricks', v: .4, layer: 1 }
   },
   S: {
     rifle(v) { this.noise(.09, { f: 3200, f2: 500, g: .34 * v }); this.tone(.07, { f: 190, f2: 70, g: .18 * v }); },

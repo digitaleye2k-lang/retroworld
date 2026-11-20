@@ -1,4 +1,6 @@
-<!doctype html><html><head><script src="rw-boost.js"></script><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<!doctype html><html><head><script src="../../assets/rw-sfx.js?v=1"></script>
+<script>function RW(n,v,o){try{if(!window.RWSFX||!(true))return false;o=o||{};o.vol=v;if(o.vary==null)o.vary=.06;return RWSFX.play(Array.isArray(n)?n[Math.floor(Math.random()*n.length)]:n,o)}catch(e){return false}}window.addEventListener('load',function(){window.RWSFX&&RWSFX.preload(['wood_drop', 'cardboard_hit'])});</script>
+<script src="rw-boost.js"></script><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>PIXEL CHESS • RETRO WORLD</title><style>
 html,body{height:100%;margin:0;background:#03050c;color:#fff;font-family:"Courier New",monospace}
 body{display:grid;place-items:center;background:radial-gradient(circle at 50% 35%,#151735,#03050c 68%);overflow:hidden}
@@ -148,8 +150,8 @@ board=resetBoard();setInterval(draw,33);draw();
 let AC=null;function sfx(f,d,t,v,f2,delay){const go=()=>{try{AC=AC||new (window.AudioContext||window.webkitAudioContext)();const o=AC.createOscillator(),g=AC.createGain(),n=AC.currentTime;o.type=t||'square';o.frequency.setValueAtTime(f,n);if(f2)o.frequency.exponentialRampToValueAtTime(f2,n+d);g.gain.setValueAtTime(v||.05,n);g.gain.exponentialRampToValueAtTime(.0001,n+d);o.connect(g);g.connect(AC.destination);o.start();o.stop(n+d)}catch(e){}};delay?setTimeout(go,delay):go()}
 function arp(a,step,t){a.forEach((f,i)=>sfx(f,.16,t||'triangle',.06,0,i*(step||90)))}
 
-const _pm=playMove;playMove=function(m){const cap=board[m.tr][m.tc];_pm(m);try{if(state==='win')arp([523,659,784,1047,1319],110,'square');else if(state==='over')arp([392,330,262,196],140,'sawtooth');else if(cap){sfx(120,.14,'sawtooth',.08,60);sfx(900,.05,'square',.04,0,20)}else if(inCheck(board,turn)){arp([880,660],110,'square')}else sfx(300+Math.random()*60,.07,'triangle',.07)}catch(e){}};
-const _cs=clickSquare;clickSquare=function(){const was=sel;_cs.apply(this,arguments);try{if(sel&&sel!==was)sfx(620,.04,'triangle',.04)}catch(e){}};
+const _pm=playMove;playMove=function(m){const cap=board[m.tr][m.tc];_pm(m);try{if(state==='win')arp([523,659,784,1047,1319],110,'square');else if(state==='over')arp([392,330,262,196],140,'sawtooth');else if(cap){RW('wood_drop',.75,{rate:.85});RW('cardboard_hit',.45,{at:.05});sfx(120,.14,'sawtooth',.08,60);sfx(900,.05,'square',.04,0,20)}else if(inCheck(board,turn)){arp([880,660],110,'square')}else if(!RW('wood_drop',.6))sfx(300+Math.random()*60,.07,'triangle',.07)}catch(e){}};
+const _cs=clickSquare;clickSquare=function(){const was=sel;_cs.apply(this,arguments);try{if(sel&&sel!==was&&!RW('wood_drop',.25,{rate:1.5}))sfx(620,.04,'triangle',.04)}catch(e){}};
 const RETRO_LOCAL_STATS=(()=>{
   const GAME_ID="pixel-chess.html", GAME_TITLE="PIXEL CHESS";
   let active=false,lastProgress=0;

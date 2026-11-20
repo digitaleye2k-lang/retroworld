@@ -1,4 +1,5 @@
-<!doctype html><html lang="en"><head><script src="rw-boost.js"></script><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover"><meta name="theme-color" content="#05060f">
+<!doctype html><html lang="en"><head><script src="../../assets/rw-sfx.js?v=1"></script>
+<script src="rw-boost.js"></script><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover"><meta name="theme-color" content="#05060f">
 <title>JUNGLE GUNSHIP • RETRO WORLD</title>
 <style>
 html,body{margin:0;height:100%;background:#05060f;overflow:hidden;font-family:"Courier New",monospace;-webkit-user-select:none;user-select:none;-webkit-tap-highlight-color:transparent}
@@ -25,7 +26,7 @@ let sfxOn=LS.get('rwMute')!=='1',AC=null;
 const sndBtn=document.getElementById('snd');
 function sndLabel(){sndBtn.textContent='SFX: '+(sfxOn?'ON':'OFF');sndBtn.className=sfxOn?'':'off'}sndLabel();
 sndBtn.addEventListener('click',e=>{sfxOn=!sfxOn;LS.set('rwMute',sfxOn?'0':'1');sndLabel();e.stopPropagation();ac()});
-function ac(){try{if(!AC)AC=new (window.AudioContext||window.webkitAudioContext)();if(AC.state==='suspended')AC.resume()}catch(e){}}
+function ac(){try{if(!AC){AC=new (window.AudioContext||window.webkitAudioContext)();if(window.RWSFX)RWSFX.use(AC).preload(['gun_minigun','whoosh2','weapon_pickup'])}if(AC.state==='suspended')AC.resume()}catch(e){}}
 addEventListener('pointerdown',ac,{passive:true});addEventListener('keydown',ac);
 function tone(f,d,type,vol,slide,delay){if(!sfxOn||!AC)return;try{const t=AC.currentTime+(delay||0),o=AC.createOscillator(),g=AC.createGain();o.type=type||'square';o.frequency.setValueAtTime(f,t);if(slide)o.frequency.exponentialRampToValueAtTime(Math.max(20,f*slide),t+d);g.gain.setValueAtTime(vol||.06,t);g.gain.exponentialRampToValueAtTime(.0001,t+d);o.connect(g);g.connect(AC.destination);o.start(t);o.stop(t+d+.02)}catch(e){}}
 function noise(d,vol,hp){if(!sfxOn||!AC)return;try{const n=Math.floor(AC.sampleRate*d),b=AC.createBuffer(1,n,AC.sampleRate),a=b.getChannelData(0);for(let i=0;i<n;i++)a[i]=(Math.random()*2-1)*(1-i/n);const s=AC.createBufferSource(),g=AC.createGain(),f=AC.createBiquadFilter();f.type='highpass';f.frequency.value=hp||800;g.gain.value=vol||.08;s.buffer=b;s.connect(f);f.connect(g);g.connect(AC.destination);s.start()}catch(e){}}
@@ -70,7 +71,7 @@ function dmg(e,d){e.hp-=d;e.flash=.08;if(e.hp<=0&&!e.dead)kill(e)}
 function nearest(maxd,cone){let b=null,bd=maxd;for(const e of en){if(e.dead||e.mia)continue;const d=dist(pl,e);if(d>=bd)continue;if(cone!==undefined){let da=Math.atan2(e.y-pl.y,e.x-pl.x)-pl.a;da=Math.atan2(Math.sin(da),Math.cos(da));if(Math.abs(da)>cone)continue}bd=d;b=e}return b}
 function shoot(from,tx,ty,sp,dm,hom,life){const a=Math.atan2(ty-from.y,tx-from.x);eb.push({x:from.x,y:from.y,vx:Math.cos(a)*sp,vy:Math.sin(a)*sp,life:life||2.2,dmg:dm,hom:!!hom,a,sp,hp:hom?1:99})}
 function onKey(k){if(k==='m'||k==='k'||k==='x'||k==='shift')fireMissile()}
-function fireMissile(){if(msT>0||mcount<=0)return;mcount--;msT=.45;const tg=nearest(1000,1.1);msl.push({x:pl.x,y:pl.y,a:pl.a,life:2.4,tg});tone(250,.3,'sawtooth',.1,2);noise(.15,.1,500)}
+function fireMissile(){if(msT>0||mcount<=0)return;mcount--;msT=.45;const tg=nearest(1000,1.1);msl.push({x:pl.x,y:pl.y,a:pl.a,life:2.4,tg});if(sfxOn&&window.RWSFX)RWSFX.play('whoosh2',{vol:.5,rate:.8});tone(250,.3,'sawtooth',.1,2);noise(.15,.1,500)}
 function onTap(p){if(Math.hypot(p.x-890,p.y-520)<48){fireMissile();return}if(Math.hypot(p.x-790,p.y-540)<44){fireHold=true;return}stick={sx:p.x,sy:p.y,x:p.x,y:p.y}}
 function onMove(p){if(stick){stick.x=p.x;stick.y=p.y}}
 function onUp(){stick=null;fireHold=false}
@@ -92,7 +93,7 @@ function onUpdate(dt){
  if(pl.fuel<=0){fuelOut+=dt;if(fuelOut>4){endGame(false,'Out of fuel')}}else fuelOut=0;
  // fire
  const tg=nearest(560,.65);
- if((K[' ']||K.j||fireHold||tg)&&fireT<=0){fireT=.1;let a=pl.a;if(tg)a=Math.atan2(tg.y-pl.y,tg.x-pl.x);const o=(Math.random()<.5?1:-1)*14;pb.push({x:pl.x-Math.sin(a)*o,y:pl.y+Math.cos(a)*o,vx:Math.cos(a)*950,vy:Math.sin(a)*950,life:.75});if(Math.random()<.3)tone(900+Math.random()*200,.025,'square',.025)}
+ if((K[' ']||K.j||fireHold||tg)&&fireT<=0){fireT=.1;let a=pl.a;if(tg)a=Math.atan2(tg.y-pl.y,tg.x-pl.x);const o=(Math.random()<.5?1:-1)*14;pb.push({x:pl.x-Math.sin(a)*o,y:pl.y+Math.cos(a)*o,vx:Math.cos(a)*950,vy:Math.sin(a)*950,life:.75});if(!(sfxOn&&window.RWSFX&&AC&&RWSFX.play('gun_minigun',{vol:.28,vary:.06,gap:.055}))&&Math.random()<.3)tone(900+Math.random()*200,.025,'square',.025)}
  // player bullets
  for(const b of pb){b.x+=b.vx*dt;b.y+=b.vy*dt;b.life-=dt;for(const e of en){if(e.dead||e.mia)continue;if(Math.hypot(b.x-e.x,b.y-e.y)<e.r+6){dmg(e,1);b.life=0;fx.push({x:b.x,y:b.y,z:30,t:0,life:.2,s:.3});break}}
   for(const q of eb){if(q.hom&&!q.dead&&Math.hypot(b.x-q.x,b.y-q.y)<28){q.dead=true;b.life=0;boom(q.x,q.y,40,.6);score+=25}}}

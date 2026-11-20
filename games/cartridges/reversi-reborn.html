@@ -1,4 +1,6 @@
-<!doctype html><html lang="en"><head><script src="rw-boost.js"></script><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover"><meta name="theme-color" content="#05060f">
+<!doctype html><html lang="en"><head><script src="../../assets/rw-sfx.js?v=1"></script>
+<script>function RW(n,v,o){try{if(!window.RWSFX||!(typeof sfxOn==="undefined"||sfxOn))return false;o=o||{};o.vol=v;if(o.vary==null)o.vary=.06;return RWSFX.play(Array.isArray(n)?n[Math.floor(Math.random()*n.length)]:n,o)}catch(e){return false}}window.addEventListener('load',function(){window.RWSFX&&RWSFX.preload(['chip1', 'chip2', 'chip3'])});</script>
+<script src="rw-boost.js"></script><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover"><meta name="theme-color" content="#05060f">
 <title>REVERSI REBORN • RETRO WORLD</title>
 <style>
 html,body{margin:0;height:100%;background:#05060f;overflow:hidden;font-family:"Courier New",monospace;-webkit-user-select:none;user-select:none;-webkit-tap-highlight-color:transparent}
@@ -55,7 +57,7 @@ function legal(b,p){const m=[];for(let r=0;r<N;r++)for(let c=0;c<N;c++){const f=
 function apply(b,m,p){const nb=b.map(r=>r.slice());nb[m.r][m.c]=p;for(const [y,x] of m.f)nb[y][x]=p;return nb}
 function counts(b){let a=0,c=0;for(const r of b)for(const v of r){if(v===1)a++;else if(v===2)c++}return[a,c]}
 function onTap(p){if(turn!==1||flip.length)return;const c=Math.floor((p.x-BX)/CS),r=Math.floor((p.y-BY)/CS);const m=moves.find(m=>m.r===r&&m.c===c);if(m)play(m,1)}
-function play(m,p){flip=m.f.map(q=>({y:q[0],x:q[1],t:0,to:p}));bd[m.r][m.c]=p;lastM=[m.r,m.c];tone(p===1?500:380,.08,'square',.08)}
+function play(m,p){flip=m.f.map(q=>({y:q[0],x:q[1],t:0,to:p}));bd[m.r][m.c]=p;lastM=[m.r,m.c];if(!RW(['chip1','chip2','chip3'],.65))tone(p===1?500:380,.08,'square',.08);m.f.forEach((q,i)=>i<6&&RW('chip'+(1+i%3),.25,{at:.12+i*.07,rate:1.15}))}
 let lastM=null;
 function finishFlips(p){for(const f of flip)bd[f.y][f.x]=f.to;flip=[];turn=3-p;moves=legal(bd,turn);
  if(!moves.length){const o=legal(bd,3-turn);if(!o.length){const[a,c]=counts(bd);score=a*10+(a>c?500:0);endGame(a>c,a+' - '+c+(a===c?' (draw)':''));return}passMsg=(turn===1?'You have':'CPU has')+' no move — pass';setTimeout(()=>{passMsg=''},1400);turn=3-turn;moves=legal(bd,turn)}thinkT=0}

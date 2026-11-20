@@ -1,4 +1,6 @@
-<!doctype html><html lang="en"><head><script src="rw-boost.js"></script><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>SPIDER STACK • RETRO WORLD</title><style>
+<!doctype html><html lang="en"><head><script src="../../assets/rw-sfx.js?v=1"></script>
+<script>function RW(n,v,o){try{if(!window.RWSFX||!((function(){try{return localStorage.getItem('retroWorldSFX')!=='off'}catch(e){return true}})()))return false;o=o||{};o.vol=v;if(o.vary==null)o.vary=.06;return RWSFX.play(Array.isArray(n)?n[Math.floor(Math.random()*n.length)]:n,o)}catch(e){return false}}window.addEventListener('load',function(){window.RWSFX&&RWSFX.preload(['card1', 'card2', 'card3', 'card_fan'])});</script>
+<script src="rw-boost.js"></script><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>SPIDER STACK • RETRO WORLD</title><style>
 html,body{height:100%;margin:0;background:#020208;color:#fff;font-family:"Courier New",monospace}
 body{display:grid;place-items:center;background:radial-gradient(circle,#161633,#020208 65%)}
 .wrap{width:min(94vw,860px);text-align:center}
@@ -551,8 +553,8 @@ function cc(r,up=false){return{r,up}}
 function reset(){let d=[];for(let k=0;k<4;k++)for(let r=13;r>=1;r--)d.push(cc(r,false));for(let i=d.length-1;i>0;i--){let j=Math.floor(R(0,i+1));[d[i],d[j]]=[d[j],d[i]]}piles=Array.from({length:6},()=>[]);for(let n=0;n<36;n++){let q=d.pop();q.up=n>=24;piles[n%6].push(q)}stock=d;sel=null;score=0;complete=0;cur=0;state='play'}
 function runStart(p){if(!p.length)return-1;let i=p.length-1;while(i>0&&p[i-1].up&&p[i-1].r===p[i].r+1)i--;return i}
 function check(p){if(p.length<13)return;let s=p.length-13;if(!p[s].up)return;for(let i=s;i<p.length-1;i++)if(p[i].r!==p[i+1].r+1)return;if(p[p.length-1].r!==1)return;p.splice(s,13);complete++;score+=1000;SFX.success();if(p.length)p[p.length-1].up=true;if(complete>=4)state='win'}
-function deal(){if(stock.length<6)return;for(let i=0;i<6;i++){let q=stock.pop();q.up=true;piles[i].push(q)}SFX.tone(280,.05,'square',.02)}
-function act(){let p=piles[cur];if(!sel){let s=runStart(p);if(s>=0)sel={from:cur,start:s,cards:p.slice(s)}}else{if(sel.from===cur){sel=null;return}let d=piles[cur],top=d[d.length-1],first=sel.cards[0];if(!top||top.r===first.r+1){piles[sel.from].splice(sel.start);d.push(...sel.cards);if(piles[sel.from].length)piles[sel.from][piles[sel.from].length-1].up=true;score+=20;SFX.tone(560,.04,'square',.02);check(d)}sel=null}}
+function deal(){if(stock.length<6)return;for(let i=0;i<6;i++){let q=stock.pop();q.up=true;piles[i].push(q)}if(!RW('card_fan',.6))SFX.tone(280,.05,'square',.02)}
+function act(){let p=piles[cur];if(!sel){let s=runStart(p);if(s>=0)sel={from:cur,start:s,cards:p.slice(s)}}else{if(sel.from===cur){sel=null;return}let d=piles[cur],top=d[d.length-1],first=sel.cards[0];if(!top||top.r===first.r+1){piles[sel.from].splice(sel.start);d.push(...sel.cards);if(piles[sel.from].length)piles[sel.from][piles[sel.from].length-1].up=true;score+=20;if(!RW(['card1','card2','card3'],.6))SFX.tone(560,.04,'square',.02);check(d)}sel=null}}
 addEventListener('keydown',e=>{if(e.key==='Enter'){if(state!=='play')reset();else deal()}});
 c.addEventListener('mousedown',e=>{if(state!=='play'){reset();return}let r=c.getBoundingClientRect(),mx=(e.clientX-r.left)*W/r.width,my=(e.clientY-r.top)*H/r.height;if(my>405){deal();return}let col=Math.floor((mx-70)/84);if(col>=0&&col<6){cur=col;act()}});
 function up(){let h=K.arrowleft||K.arrowright||K[' '];if(h&&!latch){latch=true;if(K.arrowleft)cur=(cur+5)%6;else if(K.arrowright)cur=(cur+1)%6;else act()}if(!h)latch=false}

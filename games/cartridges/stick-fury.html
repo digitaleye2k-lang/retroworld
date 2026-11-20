@@ -1,4 +1,5 @@
-<!doctype html><html lang="en"><head><script src="rw-boost.js"></script><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover"><meta name="theme-color" content="#0a0a14">
+<!doctype html><html lang="en"><head><script src="../../assets/rw-sfx.js?v=1"></script>
+<script src="rw-boost.js"></script><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover"><meta name="theme-color" content="#0a0a14">
 <title>STICK FURY • RETRO WORLD</title>
 <style>
 html,body{margin:0;height:100%;background:#07070d;overflow:hidden;font-family:"Courier New",monospace;-webkit-user-select:none;user-select:none;-webkit-tap-highlight-color:transparent}
@@ -25,7 +26,7 @@ let sfxOn=LS.get('rwMute')!=='1',AC=null,MG=null;
 const sndBtn=document.getElementById('snd');
 function sndLabel(){sndBtn.textContent='SFX: '+(sfxOn?'ON':'OFF');sndBtn.className=sfxOn?'':'off'}sndLabel();
 sndBtn.addEventListener('click',e=>{sfxOn=!sfxOn;LS.set('rwMute',sfxOn?'0':'1');sndLabel();e.stopPropagation();ac()});
-function ac(){try{if(!AC){AC=new (window.AudioContext||window.webkitAudioContext)();MG=AC.createGain();MG.gain.value=1;MG.connect(AC.destination)}if(AC.state==='suspended')AC.resume()}catch(e){}}
+function ac(){try{if(!AC){AC=new (window.AudioContext||window.webkitAudioContext)();MG=AC.createGain();MG.gain.value=1;MG.connect(AC.destination);if(window.RWSFX)RWSFX.use(AC,MG).preload(['punch1','punch2','punch3','kick','bone_snap','crunch','land_dirt','whoosh1','whoosh2','swipe','metal_tap','impact_heavy','sword_clash','sword_clash2'])}if(AC.state==='suspended')AC.resume()}catch(e){}}
 addEventListener('pointerdown',ac,{passive:true});addEventListener('keydown',ac);
 function tone(f,d,type,vol,slide,delay){if(!sfxOn||!AC)return;try{const t=AC.currentTime+(delay||0),o=AC.createOscillator(),g=AC.createGain();o.type=type||'square';o.frequency.setValueAtTime(f,t);if(slide)o.frequency.exponentialRampToValueAtTime(Math.max(20,f*slide),t+d);g.gain.setValueAtTime(vol||.06,t);g.gain.exponentialRampToValueAtTime(.0001,t+d);o.connect(g);g.connect(AC.destination);o.start(t);o.stop(t+d+.02)}catch(e){}}
 function noise(d,vol,hp,lp){if(!sfxOn||!AC)return;try{const n=Math.floor(AC.sampleRate*d),b=AC.createBuffer(1,n,AC.sampleRate),a=b.getChannelData(0);for(let i=0;i<n;i++)a[i]=(Math.random()*2-1)*(1-i/n);const s=AC.createBufferSource(),g=AC.createGain(),f=AC.createBiquadFilter();f.type=lp?'lowpass':'highpass';f.frequency.value=lp||hp||800;g.gain.value=vol||.08;s.buffer=b;s.connect(f);f.connect(g);g.connect(AC.destination);s.start()}catch(e){}}
@@ -68,6 +69,10 @@ const SFX={
  bell(){tone(880,.5,'sine',.08);tone(1320,.5,'sine',.05)},
  clash(){noise(.1,.1,2500);tone(900,.1,'square',.05,.5)}
 };
+/* real recorded impacts from the shared RETRO WORLD library (assets/sfx); synth stays as fallback and as a light layer */
+const SFXR={punch:h=>[['punch1','punch2','punch3'],.45+h*.15],kick:h=>[['kick','punch3'],.5+h*.15],hit:h=>h>1?[['bone_snap','crunch'],.45]:null,land:()=>['land_dirt',.45],
+ whoosh:h=>[['whoosh1','whoosh2','swipe'],.22+h*.08],block:()=>['metal_tap',.4],slam:()=>['impact_heavy',.65],throw:()=>['swipe',.45],clash:()=>[['sword_clash','sword_clash2'],.45]};
+Object.keys(SFXR).forEach(k=>{const f=SFX[k];SFX[k]=function(h){const m=SFXR[k](h||0);if(m&&sfxOn&&AC&&window.RWSFX){const n=Array.isArray(m[0])?m[0][(Math.random()*m[0].length)|0]:m[0];if(RWSFX.play(n,{vol:m[1],vary:.08})){if(k==='punch'||k==='kick'||k==='hit')return;return}}return f.apply(this,arguments)}});
 /* ---------- music: tiny generative fight loop ---------- */
 let musOn=true,musStep=0,musNext=0,musKind=0;
 const MUSIC=[{bpm:128,root:55,sc:[0,3,5,7,10],lead:'sawtooth'},{bpm:140,root:49,sc:[0,2,3,7,8],lead:'square'},{bpm:118,root:58.3,sc:[0,3,5,6,7,10],lead:'triangle'}];

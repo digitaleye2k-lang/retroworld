@@ -681,6 +681,7 @@
     limiter.threshold.value = -3; limiter.knee.value = 0; limiter.ratio.value = 20; limiter.attack.value = 0.001; limiter.release.value = 0.1;
     chain(master, comp, limiter, ctx.destination);
     musicBus = gn(vols.music * MUSIC_GAIN); stingBus = gn(vols.music * 0.8); sfxBus = gn(vols.sfx * SFX_GAIN); ambBus = gn(vols.sfx * AMB_GAIN);
+    if (window.RWSFX) { RWSFX.use(ctx, sfxBus); const all = []; Object.keys(REC).forEach(k => [].concat(REC[k][0]).forEach(x => all.indexOf(x) < 0 && all.push(x))); RWSFX.preload(all); }
     musicBus.connect(master); stingBus.connect(master); sfxBus.connect(master); ambBus.connect(master);
     reverbIn = gn(1);
     const conv = ctx.createConvolver(); conv.buffer = makeImpulse();
@@ -689,6 +690,15 @@
   }
 
   // ---------- public API ----------
+  // real recorded foley from the shared RETRO WORLD library (assets/sfx); [names, vol, layerSynth]
+  const REC = {
+    swordSwing: [['sword_light', 'whoosh1'], .6], swing: [['whoosh1', 'whoosh2'], .45], swordHit: [['sword_slice', 'impact_wet'], .65], clash: [['sword_clash', 'sword_clash2'], .7],
+    parry: [['sword_clash', 'sword_clash2'], .75, 1], stab: ['splat', .55], assassinate: [['splat', 'bone_snap'], .6, 1], knifeHit: ['impact_wet', .5], blade: ['sword_draw', .55],
+    bodyDrop: ['impact_heavy', .55], bodyPickup: ['clothing', .5], guardDown: ['hit_muffled', .55, 1], land: [['land_dirt', 'land_grass'], .4], landHard: ['impact_heavy', .55],
+    hayLand: ['land_grass', .6], stepWood: [['step_wood1', 'step_wood2', 'step_wood3', 'step_wood4'], .35], stepSoft: [['step_grass1', 'step_grass2', 'step_grass3', 'step_grass4'], .28],
+    door: ['door_creak', .55], splash: [['splash', 'water_splash'], .55], coin: ['coin', .5], pickup: ['item_equip', .5], grab: ['clothing', .45], climb: [['clothing', 'wood_creak'], .3],
+    throw: ['swipe', .45], roll: ['swipe', .35], arrowFire: ['whoosh2', .5, 1], arrowHit: ['wood_drop', .55], eagle: ['crow', .35, 1], torchOut: ['fire_light', .4, 1], relic: ['gem', .6, 1]
+  };
   GB.audio = {
     init() {
       try {
@@ -697,6 +707,7 @@
           const AC = window.AudioContext || window.webkitAudioContext;
           if (!AC) { dead = true; return; }
           ctx = new AC({ latencyHint: 'interactive' });
+          if (window.RWSFX) RWSFX.use(ctx);
           try { build(); } catch (e) { dead = true; try { ctx.close(); } catch (e2) { } ctx = null; return; }
         }
         if (ctx.state !== 'running' && ctx.state !== 'closed') { const p = ctx.resume(); if (p && p.catch) p.catch(() => { }); }
@@ -715,6 +726,11 @@
         if (now - (lastFired[name] || -1e9) < 30) return;
         lastFired[name] = now;
         const o = opts || {};
+        const rs = REC[name];
+        if (rs && window.RWSFX) {
+          const nm = Array.isArray(rs[0]) ? pick(rs[0]) : rs[0];
+          if (RWSFX.play(nm, { vol: rs[1] * clamp(num(o.vol, 1), 0, 1), pan: num(o.pan, 0), rate: num(o.rate, 1), vary: .06, dest: sfxBus }) && !rs[2]) return;
+        }
         play(SFX, name, sfxBus, clamp(num(o.vol, 1), 0, 1), clamp(num(o.pan, 0), -1, 1), clamp(num(o.rate, 1), 0.25, 4), !TONAL[name]);
       } catch (e) { }
     },

@@ -1,4 +1,5 @@
-<!doctype html><html lang="en"><head><script src="rw-boost.js"></script><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no"><title>HELLBYTE &#x27;93 • RETRO WORLD</title><style>
+<!doctype html><html lang="en"><head><script src="../../assets/rw-sfx.js?v=1"></script>
+<script src="rw-boost.js"></script><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no"><title>HELLBYTE &#x27;93 • RETRO WORLD</title><style>
 html,body{height:100%;margin:0;background:#020208;overflow:hidden;touch-action:none;-webkit-user-select:none;user-select:none;-webkit-tap-highlight-color:transparent}
 body{display:flex;align-items:center;justify-content:center;font-family:"Courier New",monospace}
 canvas{display:block;image-rendering:auto;cursor:crosshair;touch-action:none;outline:none}
@@ -13,7 +14,7 @@ const clamp=(v,a,b)=>v<a?a:v>b?b:v,hyp=Math.hypot,rnd=(a,b)=>a+Math.random()*(b-
 function mulberry(a){return function(){a|=0;a=a+0x6D2B79F5|0;let t=Math.imul(a^a>>>15,1|a);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296}}
 // ---------- audio
 let AC=null,master=null,musGain=null,muted=false,noiseBuf=null;
-function audio(){if(AC){if(AC.state==='suspended')AC.resume();return}try{AC=new(window.AudioContext||window.webkitAudioContext)();master=AC.createGain();master.gain.value=muted?0:.7;const cp=AC.createDynamicsCompressor();cp.threshold.value=-14;master.connect(cp);cp.connect(AC.destination);musGain=AC.createGain();musGain.gain.value=.5;musGain.connect(master);
+function audio(){if(AC){if(AC.state==='suspended')AC.resume();return}try{AC=new(window.AudioContext||window.webkitAudioContext)();master=AC.createGain();master.gain.value=muted?0:.7;if(window.RWSFX){RWSFX.use(AC,master);RWSFX.preload(['gun_pistol','gun_shotgun','pump_rack','gun_auto_heavy','punch1','punch2','punch3','industrial_open','industrial_close','switch_on','weapon_pickup','mag_out'])}const cp=AC.createDynamicsCompressor();cp.threshold.value=-14;master.connect(cp);cp.connect(AC.destination);musGain=AC.createGain();musGain.gain.value=.5;musGain.connect(master);
  noiseBuf=AC.createBuffer(1,AC.sampleRate*2,AC.sampleRate);const d=noiseBuf.getChannelData(0);for(let i=0;i<d.length;i++)d[i]=Math.random()*2-1;musNext=AC.currentTime+.2}catch(e){AC=null}}
 function tone(f,d,type,v,slide,at,dest){if(!AC||muted)return;const t=at||AC.currentTime,o=AC.createOscillator(),g=AC.createGain();o.type=type||'sine';o.frequency.setValueAtTime(f,t);if(slide)o.frequency.exponentialRampToValueAtTime(Math.max(18,f*slide),t+d);g.gain.setValueAtTime(v,t);g.gain.exponentialRampToValueAtTime(.0001,t+d);o.connect(g);g.connect(dest||master);o.start(t);o.stop(t+d+.03)}
 function noise(d,v,f0,f1,type,at,q,dest){if(!AC||muted)return;const t=at||AC.currentTime,s=AC.createBufferSource(),fl=AC.createBiquadFilter(),g=AC.createGain();s.buffer=noiseBuf;fl.type=type||'bandpass';fl.Q.value=q||.8;fl.frequency.setValueAtTime(f0,t);fl.frequency.exponentialRampToValueAtTime(Math.max(30,f1),t+d);g.gain.setValueAtTime(v,t);g.gain.exponentialRampToValueAtTime(.0001,t+d);s.connect(fl);fl.connect(g);g.connect(dest||master);s.start(t,Math.random()*1.4);s.stop(t+d+.03)}
@@ -46,6 +47,9 @@ const SND={
  exit(){[0,5,9,12,17].forEach((s,i)=>tone(262*Math.pow(1.0595,s),.35,'triangle',.22,1,AC&&AC.currentTime+i*.12))},
  secret(){[12,16,19,24].forEach((s,i)=>tone(262*Math.pow(1.0595,s),.15,'sine',.2,1,AC&&AC.currentTime+i*.07))},
  empty(){tone(90,.05,'square',.2,1)}};
+/* real recorded sounds from the shared RETRO WORLD library (assets/sfx); the synth voices above stay as fallback */
+const SNDS={pistol:['gun_pistol',.6],shotgun:['gun_shotgun',.85,'pump_rack'],chain:['gun_auto_heavy',.5],punch:[['punch1','punch2','punch3'],.75],door:['industrial_open',.6],doorc:['industrial_close',.6],switch:['switch_on',.7],weapon:['weapon_pickup',.6,0,1],empty:['mag_out',.5]};
+Object.keys(SNDS).forEach(k=>{const f=SND[k],m=SNDS[k];SND[k]=function(){if(window.RWSFX&&AC&&!muted){const n=Array.isArray(m[0])?m[0][(Math.random()*m[0].length)|0]:m[0];if(RWSFX.play(n,{vol:m[1],vary:.05})){if(m[2])RWSFX.play(m[2],{vol:.4,at:.34});if(!m[3])return}}return f.apply(this,arguments)}});
 // music
 let musNext=0,musStep=0,musTheme=0,musCombat=0;
 const RIFF=[0,0,12,0,0,0,10,0, 0,0,12,0,0,0,7,0, 3,3,15,3,3,3,13,3, 5,5,17,5,5,5,15,3];
