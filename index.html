@@ -1639,6 +1639,22 @@ html[data-vault="rainbow"] .hero h1,html[data-vault="rainbow"] .section-title{an
 .news-teaser{margin:44px 0;padding:22px;border:2px solid #3a3566;background:#0a0918}.news-teaser .nt-list{margin:14px 0;padding:0;list-style:none}.news-teaser .nt-list li{padding:9px 0;border-bottom:1px dashed #2b2750}.news-teaser .nt-list a{color:#dfe3ff;text-decoration:none}.news-teaser .nt-list a:hover{color:var(--cyan)}.news-teaser .nt-all{display:inline-block;margin-top:6px;color:var(--cyan);font-weight:700;text-decoration:none;letter-spacing:1px}
 .rw-app-banner{display:flex;gap:12px;align-items:center;flex-wrap:wrap;justify-content:center;margin:14px auto;width:min(1180px,94vw);padding:12px 16px;border:1px solid #2f6b46;background:linear-gradient(90deg,#0d2a1b,#0a1a2a);border-radius:12px;font-size:13px;color:#dfeee6}.rw-app-banner a{background:#7bd88f;color:#00391a;font-weight:800;text-decoration:none;padding:8px 16px;border-radius:20px;letter-spacing:.5px}.rw-app-banner a.alt{background:transparent;color:#7bd88f;border:1px solid #7bd88f}body.rw-console .rw-app-banner,body.rw-mobile .rw-app-banner{display:none!important}
 .itch-embed{margin-top:16px}.itch-link{display:block;text-align:center;margin-top:8px;text-decoration:none;background:#fa5c5c!important;color:#fff!important;border-color:#fa5c5c!important}.itch-link:hover{filter:brightness(1.1)}.itch-embed .itch-label{font-size:12px;letter-spacing:1.5px;color:#c8102e;font-weight:700;margin-bottom:8px}.itch-embed iframe{display:block;width:100%;max-width:552px;height:167px;border:0;border-radius:6px;background:#222}
+.itch-promo{position:relative;margin:26px 0 8px;padding:22px 24px;border:2px solid #fa5c5c;border-radius:10px;background:linear-gradient(120deg,#1a0d14 0%,#130b1f 55%,#0b0918 100%);box-shadow:0 0 0 4px rgba(250,92,92,.12),0 10px 34px rgba(0,0,0,.45);display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,1fr);gap:22px;align-items:center}
+.itch-promo .ip-kick{display:inline-block;background:#fa5c5c;color:#fff;font-weight:900;letter-spacing:2px;font-size:12px;padding:5px 10px;border-radius:3px}
+.itch-promo h2{margin:12px 0 8px;font-size:clamp(24px,3.4vw,38px);line-height:1.05;color:#fff;letter-spacing:1px}
+.itch-promo h2 span{color:#fa5c5c}
+.itch-promo p{margin:0 0 14px;color:#d7d3ea;line-height:1.55;font-size:15px}
+.itch-promo .ip-ways{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 16px;padding:0;list-style:none}
+.itch-promo .ip-ways li{border:1px solid #4a3a5e;border-radius:999px;padding:5px 11px;font-size:12px;color:#f3e9ff;background:rgba(255,255,255,.04)}
+.itch-promo .ip-btn{display:inline-block;background:#fa5c5c;color:#fff;font-weight:900;letter-spacing:1px;text-decoration:none;padding:12px 20px;border-radius:5px;box-shadow:0 4px 0 #a8343a}
+.itch-promo .ip-btn:hover{filter:brightness(1.08)}
+.itch-promo .ip-games{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.itch-promo .ip-game{display:block;text-decoration:none;color:#fff;background:#1b1b22;border:1px solid #34343f;border-radius:8px;overflow:hidden;transition:transform .15s}
+.itch-promo .ip-game:hover{transform:translateY(-3px);border-color:#fa5c5c}
+.itch-promo .ip-game img{display:block;width:100%;height:auto}
+.itch-promo .ip-game b{display:block;padding:8px 10px 2px;font-size:14px}
+.itch-promo .ip-game small{display:block;padding:0 10px 10px;color:#fa5c5c;font-weight:700;font-size:12px}
+@media(max-width:760px){.itch-promo{grid-template-columns:1fr;padding:18px}}
 </style>
 <link rel="stylesheet" href="tv/tv-enhancements.css">
 <script>window.RW_NO_ADS=/RetroWorldApp/.test(navigator.userAgent);if(!window.RETROWORLD_TV_DEVICE&&!window.RW_NO_ADS){const a=document.createElement('script');a.async=true;a.crossOrigin="anonymous";a.src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7935805760564580";document.head.appendChild(a);}</script>
@@ -1900,6 +1916,7 @@ html[data-vault="rainbow"] .hero h1,html[data-vault="rainbow"] .section-title{an
 <div aria-label="Screenshot slideshow navigation" class="hero-showcase-dots"></div>
 </div>
 </div></div></div></div></section>
+<section class="itch-promo" id="itchPromo" aria-labelledby="itchPromoTitle"><div><span class="ip-kick">🎮 NEW · NOW ON ITCH.IO</span><h2 id="itchPromoTitle">RETRO WORLD games are now on <span>itch.io</span>!</h2><p>Some of our games are now available on itch.io. If you enjoy RETRO WORLD, please support us there too. Every follow, rating and comment helps a small indie arcade grow and keeps us making new free games for you.</p><ul class="ip-ways"><li>⭐ Follow us</li><li>👍 Rate the games</li><li>💬 Leave a comment</li><li>📥 Download &amp; play offline</li></ul><a class="ip-btn" href="https://digitaleye2k.itch.io/" target="_blank" rel="noopener">VISIT US ON ITCH.IO ↗</a></div><div class="ip-games"><a class="ip-game" href="https://digitaleye2k.itch.io/beat-up-mafia-10" target="_blank" rel="noopener"><img src="assets/itch/gun-fu.jpg" alt="GUN FU: Underworld cover" width="315" height="250" loading="lazy"><b>GUN FU: Underworld</b><small>Play on itch.io ↗</small></a><a class="ip-game" href="https://digitaleye2k.itch.io/beat-up-mafia" target="_blank" rel="noopener"><img src="assets/itch/beat-up-mafia.jpg" alt="Beat Up Mafia cover" width="315" height="250" loading="lazy"><b>Beat Up Mafia</b><small>Play on itch.io ↗</small></a></div></section>
 
 
 <aside class="rw-app-banner" id="rwAppBanner"><span>📱 <b>NEW:</b> Retro World <b>Beta 2.0</b> Android app — new look &amp; easy mobile interface.</span><a href="https://files.catbox.moe/r5ijst.apk" target="_blank" rel="noopener noreferrer">⬇ TRY IT NOW</a><a class="alt" href="news.html">READ MORE</a></aside><section aria-label="Advertisement" class="retro-ad-slot" id="rwBannerSection" hidden>
@@ -2313,7 +2330,7 @@ html[data-vault="rainbow"] .hero h1,html[data-vault="rainbow"] .section-title{an
 <button class="play" data-game="ring-king.html">PLAY NOW</button></article>
 </section>
 
-<section class="news-teaser" id="news" aria-labelledby="newsTitle"><div class="news-kicker">:: DIGITAL EYE BULLETIN // LATEST</div><h2 class="news-heading" id="newsTitle">NEWS &amp; UPDATES</h2><ul class="nt-list"><li><a href="news.html"><b style="color:#7bd88f">NEW · Retro World Beta 2.0 Android app — new look &amp; easier mobile interface</b></a></li><li><a href="news.html">A brand-new Trophy Room: levels, streaks, weekly quests</a></li><li><a href="news.html">Save game, weapon shops, snow and weapon icons</a></li><li><a href="news.html">Bigger map, sea, sky, weather and 13 missions</a></li></ul><a class="nt-all" href="news.html">READ ALL NEWS &amp; UPDATES →</a></section>
+<section class="news-teaser" id="news" aria-labelledby="newsTitle"><div class="news-kicker">:: DIGITAL EYE BULLETIN // LATEST</div><h2 class="news-heading" id="newsTitle">NEWS &amp; UPDATES</h2><ul class="nt-list"><li><a href="https://digitaleye2k.itch.io/" target="_blank" rel="noopener"><b style="color:#fa5c5c">NEW · Our games are now on itch.io: please support us there too ↗</b></a></li><li><a href="news.html"><b style="color:#7bd88f">NEW · Retro World Beta 2.0 Android app — new look &amp; easier mobile interface</b></a></li><li><a href="news.html">A brand-new Trophy Room: levels, streaks, weekly quests</a></li><li><a href="news.html">Save game, weapon shops, snow and weapon icons</a></li><li><a href="news.html">Bigger map, sea, sky, weather and 13 missions</a></li></ul><a class="nt-all" href="news.html">READ ALL NEWS &amp; UPDATES →</a></section>
 
 <section class="about" id="about">
 <div class="about-hero">
