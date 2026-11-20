@@ -42,7 +42,8 @@
   const empty=document.createElement('div');empty.className='rw-empty rw-hidden';empty.textContent='NO GAMES MATCH \u2014 TRY ANOTHER SEARCH';grid.appendChild(empty);
   try{const s=localStorage.getItem(SKEY);if(s&&[...sortSel.options].some(o=>o.value===s))sortSel.value=s}catch(e){}
 
-  const vis=c=>!c.classList.contains('category-hidden')&&!c.classList.contains('rw-hidden');
+  const kidsOff=c=>document.documentElement.classList.contains('kids-mode')&&c.hasAttribute('data-violent');
+  const vis=c=>!c.classList.contains('category-hidden')&&!c.classList.contains('rw-hidden')&&!kidsOff(c);
   function recount(){const n=cards.filter(vis).length;if(count)count.textContent=n+' GAME'+(n===1?'':'S');empty.classList.toggle('rw-hidden',n!==0)}
   function sortCards(){
     const m=sortSel.value;let list=cards.slice();
@@ -71,6 +72,7 @@
     c.scrollIntoView({behavior:'smooth',block:'center'});
     setTimeout(()=>c.querySelector('button.play[data-game]').click(),450);
   });
+  window.addEventListener('rw-kids-change',()=>requestAnimationFrame(recount));
   new MutationObserver(()=>requestAnimationFrame(recount)).observe(grid,{attributes:true,attributeFilter:['class'],subtree:true});
 
   /* ---------- recently played row ---------- */
@@ -79,7 +81,7 @@
   const rec=document.createElement('div');rec.className='rw-recent rw-hidden';tools.insertAdjacentElement('beforebegin',rec);
   function cardById(id){return cards.find(c=>idOf(c)===id)}
   function drawRecent(){
-    const items=recent.filter(r=>cardById(r.id)).slice(0,6);rec.innerHTML='';
+    const items=recent.filter(r=>{const c=cardById(r.id);return c&&!kidsOff(c)}).slice(0,6);rec.innerHTML='';
     rec.classList.toggle('rw-hidden',!items.length);if(!items.length)return;
     const l=document.createElement('span');l.textContent='RECENTLY PLAYED';rec.appendChild(l);
     items.forEach(r=>{const b=document.createElement('button');b.type='button';b.textContent='\u25B6 '+r.title;b.addEventListener('click',()=>{const c=cardById(r.id);const pb=c&&c.querySelector('button.play[data-game]');if(pb)pb.click()});rec.appendChild(b)});
@@ -89,6 +91,7 @@
     recent=[{id:d.gameId,title:String(d.title||d.gameId).slice(0,28)}].concat(recent.filter(r=>r.id!==d.gameId)).slice(0,8);
     try{localStorage.setItem(RKEY,JSON.stringify(recent))}catch(x){}drawRecent();
   });
+  window.addEventListener('rw-kids-change',drawRecent);
   drawRecent();
   apply();
 })();

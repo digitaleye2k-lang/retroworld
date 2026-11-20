@@ -22,7 +22,7 @@
   if(rails){rails.appendChild(rail('🔥 NEW &amp; HOT','fresh arcade hits — play instantly',NEW,'new'));rails.appendChild(rail('⭐ TOP PICKS','hand-picked favourites',PICKS,'pick'))}
   document.addEventListener('click',e=>{const b=e.target.closest('[data-rail-game]');if(b){e.preventDefault();open(b.dataset.railGame)}});
   // random
-  const rb=$('#rwHeroRandom');if(rb)rb.addEventListener('click',()=>{const ids=$$('button.play[data-game]').filter(b=>!b.classList.contains('premium-locked-btn')).map(b=>b.dataset.game).filter(x=>!/popshot|crimson|dust/.test(x));open(ids[Math.floor(Math.random()*ids.length)])});
+  const rb=$('#rwHeroRandom');if(rb)rb.addEventListener('click',()=>{const ids=$$('button.play[data-game]').filter(b=>!b.classList.contains('premium-locked-btn')).map(b=>b.dataset.game).filter(x=>!/popshot|crimson|dust/.test(x)).filter(x=>!(window.RWKIDS&&RWKIDS.on()&&RWKIDS.isViolent(x)));open(ids[Math.floor(Math.random()*ids.length)])});
   // compact header toggle
   const hd=$('header .nav');if(hd){const m=document.createElement('button');m.type='button';m.className='rw-menu-btn';m.textContent='⚙ MENU';m.setAttribute('aria-expanded','false');m.addEventListener('click',()=>{const o=$('header').classList.toggle('rw-open');m.setAttribute('aria-expanded',o?'true':'false')});hd.insertBefore(m,$('nav',hd).nextSibling)}
   // share row
