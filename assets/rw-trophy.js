@@ -97,7 +97,7 @@ const cntPlayed=(p,ids)=>ids.filter(i=>playedN(p,i)>0).length;
 const CNT=(p,k)=>(rw(p).cnt[k]||0);
 const lvlOf=p=>levelInfo(totalXp(p)).level;
 const ACH=(p,id,k)=>{const s=st(p,id);return !!(s&&s.achievements&&s.achievements[k])};
-const GF='gun-fu.html',SF='stick-fury.html',SP='shadow-protocol.html',LS='last-stand.html',STICKG=[GF,SF,SP];
+const GF='gun-fu.html',SF='stick-fury.html',SP='shadow-protocol.html',LS='last-stand.html',BK='breakout-45.html',STICKG=[GF,SF,SP];
 const NEWG=['neon-survivors.html','grid-guardians.html','bubble-pop.html','sky-hop.html','neon-sudoku.html'];
 
 /* ---------- new trophies ---------- */
@@ -164,6 +164,14 @@ const NEW_DEFS=[
   N('ls_m3','🏭','FOUNDRY DOWN','Destroy the FOUNDRY TITAN in Stickman: Last Stand.','gold','STICK MANIA',(a,p)=>ACH(p,LS,'level3'),null),
   N('ls_nohit','🛡️','UNTOUCHABLE','Finish a Last Stand mission without taking damage.','gold','STICK MANIA',(a,p)=>ACH(p,LS,'nohit'),null),
   N('ls_win','🎖️','THE LAST SOLDIER','Defeat OVERLORD ZERO and win Stickman: Last Stand.','platinum','STICK MANIA',(a,p)=>ACH(p,LS,'victory'),null),
+  N('bk_play','🪖','NEW KRIEGIE','Play Breakout \'45.','bronze','BREAKOUT \'45',(a,p)=>playedN(p,BK)>=1,null),
+  N('bk_tools','🥄','TOOLS OF THE TRADE','Grind a trowel and show it to Kowalski in Breakout \'45.','bronze','BREAKOUT \'45',(a,p)=>ACH(p,BK,'mission2'),null),
+  N('bk_orders','📜','PAPER TRAIL','Steal the evacuation orders from the Kommandantur.','silver','BREAKOUT \'45',(a,p)=>ACH(p,BK,'mission4'),null),
+  N('bk_out','🌲','BEYOND THE WIRE','Get outside the wire in Breakout \'45.','silver','BREAKOUT \'45',(a,p)=>ACH(p,BK,'outside'),null),
+  N('bk_tunnel','⛏️','TOM, DICK OR HARRY','Escape through Kowalski\'s tunnel and reach Sweden.','gold','BREAKOUT \'45',(a,p)=>ACH(p,BK,'route_tunnel'),null),
+  N('bk_bluff','🎭','PAPERS, PLEASE','Walk out the main gate in disguise and reach Sweden.','gold','BREAKOUT \'45',(a,p)=>ACH(p,BK,'route_disguise'),null),
+  N('bk_ghost','👻','NEVER CAUGHT','Make the home run without ever being caught.','gold','BREAKOUT \'45',(a,p)=>ACH(p,BK,'clean'),null),
+  N('bk_win','⛵','HOME RUN','Escape Stalag Waldheim and reach Sweden.','platinum','BREAKOUT \'45',(a,p)=>ACH(p,BK,'escaped'),null),
   // secrets
   N('night_owl','🦉','NIGHT OWL','Play a game between midnight and 5 AM.','silver','SECRET',(a,p)=>!!rw(p).flags.night,null,true),
   N('early_bird','🐦','EARLY BIRD','Play a game between 5 AM and 8 AM.','silver','SECRET',(a,p)=>!!rw(p).flags.early,null,true),
