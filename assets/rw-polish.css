@@ -148,3 +148,15 @@ html.rw-calm #arcadeBg{display:none!important}
  .card:hover,.card:hover .rw-thumb img{transform:none!important}
  .rw-new{animation:none!important}
 }
+
+/* ---------- live site stats (hero) ---------- */
+.rw-live{display:flex;flex-wrap:wrap;gap:8px;margin:12px 0 4px;font-family:var(--rw-body,system-ui)}
+.rw-live>span{display:inline-flex;align-items:center;gap:7px;padding:7px 12px;border-radius:999px;font-size:13px;color:#d9dcf2;background:rgba(10,12,26,.7);border:1px solid #2a2f4f;min-height:34px}
+.rw-live b{color:#fff;font-weight:800;font-variant-numeric:tabular-nums;letter-spacing:.02em}
+.rw-live-v i{font-style:normal;color:var(--cyan,#0ff)}
+.rw-live.off .rw-live-v{opacity:.55}
+.rw-live.bump .rw-live-v{animation:rwLiveBump .6s ease-out}
+@keyframes rwLiveBump{0%{border-color:var(--cyan,#0ff);box-shadow:0 0 0 0 rgba(0,255,255,.45)}100%{border-color:#2a2f4f;box-shadow:0 0 0 10px rgba(0,255,255,0)}}
+.rw-live-o i{width:8px;height:8px;border-radius:50%;background:#2bd88a;box-shadow:0 0 0 0 rgba(43,216,138,.6);animation:rwLivePulse 1.8s infinite}
+@keyframes rwLivePulse{70%{box-shadow:0 0 0 7px rgba(43,216,138,0)}100%{box-shadow:0 0 0 0 rgba(43,216,138,0)}}
+.rw-live-o[hidden]{display:none}
