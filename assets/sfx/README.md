@@ -49,6 +49,10 @@ Sources: Snake's Authentic Gun Sounds, 400 Sounds Pack, 96 Extra SFX (supplied b
 
 `coin`, `coins`, `gem`, `heart`, `item_equip`
 
+## Vehicles (PSX Style Cars by GGBot)
+
+`car2_engine_loop`, `car2_engine_start_up`, `car2_engine_turning_off`, `car_acceleration`, `car_acceleration_2`, `car_door_close`, `car_door_open`, `car_engine_loop`, `car_engine_loop_2`, `car_engine_start_up`, `car_engine_turning_off`, `car_hood_close`, `car_hood_open`, `car_horn`, `car_parking_brake`, `car_trunk_open`, `card1`, `card2`, `card3`, `card_fan`, `cardboard_hit`
+
 ## Environment & objects
 
 `bird`, `bricks`, `chest_open`, `clothing`, `cough`, `crow`, `crows`, `door_break`, `door_close`, `door_creak`, `door_open`, `fire_light`, `glass_ping`, `gulp`, `hydraulic`, `industrial_close`, `industrial_open`, `keys`, `lock_pick`, `lock_unlock`, `map_open`, `metal_clang`, `metal_tap`, `munch`, `page_turn`, `paper`, `pencil`, `shovel`, `splash`, `stone_rumble`, `switch_on`, `water_splash`, `whistle`, `wood_creak`, `wood_drop`, `zipper`

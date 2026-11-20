@@ -50,3 +50,10 @@ Each hand has a colored hat, a readable silhouette, a unique speed, health, and 
 ## Expansion path
 
 The next production pass would add authored multi-step objectives, inventory objects, alternate disguises, interiors, guard communication, character banter, save slots, and a map editor. The existing entity and command structure is intentionally small enough to grow into those systems.
+
+
+## Shared asset libraries (use these in every new game)
+- **Sound:** `assets/sfx/` + `assets/rw-sfx.js` (real gunshots, reloads, melee, footsteps, foley, cards, dice, sports, car sounds). See `assets/sfx/README.md`.
+- **Textures:** `assets/textures/` (CC0 SBS + Classic 64 packs, `index.json` catalogue). See `assets/textures/README.md`.
+- **3D models:** `assets/models/` (retro nature glb, PSX cars obj). See `assets/models/README.md`.
+Keep synth/procedural fallbacks so a game still works if a file fails to load.

@@ -959,13 +959,23 @@ function init3D(){
     sc.add(sun);sc.add(sun.target);
     W3.lantern=new THREE.PointLight(0xffd8a0,0,9,2);sc.add(W3.lantern);
     W3.warm=[[11.5,9.5],[11.5,18.5],[24.5,10],[23.5,18],[39.5,9],[18.6,22.6],[30.4,22.6]].map(([x,z])=>{const l=new THREE.PointLight(0xffa850,0,10,2);l.position.set(x,x===18.6||x===30.4?2.6:1.4,z);sc.add(l);return l});
-    buildStatic();buildActors();buildSnow();
+    buildStatic();buildActors();buildSnow();if(txLeft===0)texReady();
     W3.ok=true;
     $('#stage').addEventListener('wheel',e=>{if(!W3.ok)return;e.preventDefault();W3.zoom=Math.max(0.55,Math.min(1.6,W3.zoom*(e.deltaY>0?1.08:0.93)))},{passive:false});
     return true;
   }catch(e){console.error(e);W3.ok=false;return false}
 }
 
+/* real textures from the shared RETRO WORLD library (assets/textures/classic64); flat colours are the fallback */
+const TXB='../../assets/textures/classic64/',TXI={},TXP={};
+const TXF={snow:'ground/snow_01',yard:'ground/snow_footprints',dead:'ground/snow_dirty_01',road:'ground/snow_path_01',res:'ground/gravel_03',floor:'wood/wood_planks_3',rfloor:'concrete/concrete_03',hut:'walls/siding_wood_03',de:'walls/wall_plaster_worn'};
+let txLeft=Object.keys(TXF).length;
+Object.entries(TXF).forEach(([k,f])=>{const im=new Image();im.onload=()=>{TXI[k]=im;if(--txLeft===0)texReady()};im.onerror=()=>{if(--txLeft===0)texReady()};im.src=TXB+f+'.png'});
+function texReady(){worldDirty=true;if(!W3.bgroups)return;
+  W3.bgroups.forEach(g=>{const b=g.userData.b,img=TXI[b.de?'de':'hut'],wm=g.userData.wm;if(!img||!wm)return;
+    const t=new THREE.Texture(img);t.wrapS=t.wrapT=THREE.RepeatWrapping;t.needsUpdate=true;wm.material.map=t;wm.material.needsUpdate=true;
+    const c=new THREE.Color(b.de?0xe6e0d2:0xcdbfa8);for(let i=0;i<wm.count;i++){const cc=c.clone();cc.offsetHSL(0,0,(noise[i%noise.length]-.5)*.06);wm.setColorAt(i,cc)}if(wm.instanceColor)wm.instanceColor.needsUpdate=true})}
+function txPat(g,k){if(!TXI[k])return null;return TXP[k]||(TXP[k]=g.createPattern(TXI[k],'repeat'))}
 /* ground is one painted texture, repainted when the map changes */
 function paintGround(){
   const px=20,c=W3.gc||(W3.gc=document.createElement('canvas'));
@@ -974,14 +984,15 @@ function paintGround(){
   const rr=rng(77);
   for(let y=0;y<MH;y++)for(let x=0;x<MW;x++){
     const t=get(x,y),n=noise[y*MW+x],X=x*px,Y=y*px;
-    g.fillStyle=cols[t];g.fillRect(X,Y,px,px);
+    const tk={[T.OUT]:'snow',[T.TREE]:'snow',[T.FENCE]:'dead',[T.CUT]:'dead',[T.DEAD]:'dead',[T.GROUND]:'yard',[T.IFENCE]:'yard',[T.TOWER]:'yard',[T.RES]:'res',[T.ROAD]:'road',[T.GATE]:'road',[T.FLOOR]:'floor',[T.DOOR]:x>=33?'rfloor':'floor',[T.RFLOOR]:'rfloor',[T.LDOOR]:'rfloor'}[t],pat=tk&&t!==T.WALL?txPat(g,tk):null;
+    g.fillStyle=pat||cols[t];g.fillRect(X,Y,px,px);if(pat&&(t===T.RES))g.fillStyle='rgba(225,228,230,.35)',g.fillRect(X,Y,px,px);
     if(t===T.DOOR&&x>=33)g.fillStyle=cols[T.RFLOOR],g.fillRect(X,Y,px,px);
     if(t===T.GROUND||t===T.RES||t===T.ROAD||t===T.GATE||t===T.TOWER){g.fillStyle=`rgba(60,55,45,${n*0.07})`;g.fillRect(X,Y,px,px);
       for(let i=0;i<3;i++){if(rr()<0.55){g.fillStyle='rgba(90,85,72,.22)';g.beginPath();g.ellipse(X+rr()*px,Y+rr()*px,1.6,2.6,rr()*3,0,7);g.fill()}}}
     if(t===T.OUT||t===T.TREE||t===T.DEAD){if(rr()<0.3){g.fillStyle='rgba(255,255,255,.9)';g.fillRect(X+rr()*px,Y+rr()*px,2,2)}g.fillStyle=`rgba(120,140,160,${n*0.05})`;g.fillRect(X,Y,px,px)}
     if(t===T.RES){g.strokeStyle='rgba(110,60,30,.10)';g.lineWidth=2;g.beginPath();g.moveTo(X,Y+px);g.lineTo(X+px,Y);g.stroke()}
-    if(t===T.FLOOR||(t===T.DOOR&&x<33)){g.strokeStyle='rgba(50,30,15,.35)';g.lineWidth=1;for(let i=1;i<4;i++){g.beginPath();g.moveTo(X,Y+i*px/4);g.lineTo(X+px,Y+i*px/4);g.stroke()}}
-    if(t===T.RFLOOR){g.strokeStyle='rgba(30,30,25,.25)';g.strokeRect(X+.5,Y+.5,px-1,px-1)}
+    if(!TXI.floor&&(t===T.FLOOR||(t===T.DOOR&&x<33))){g.strokeStyle='rgba(50,30,15,.35)';g.lineWidth=1;for(let i=1;i<4;i++){g.beginPath();g.moveTo(X,Y+i*px/4);g.lineTo(X+px,Y+i*px/4);g.stroke()}}
+    if(!TXI.rfloor&&t===T.RFLOOR){g.strokeStyle='rgba(30,30,25,.25)';g.strokeRect(X+.5,Y+.5,px-1,px-1)}
     if(t===T.ROAD){g.strokeStyle='rgba(50,45,35,.35)';g.lineWidth=2;g.beginPath();g.moveTo(X,Y+px*.3);g.lineTo(X+px,Y+px*.3);g.moveTo(X,Y+px*.7);g.lineTo(X+px,Y+px*.7);g.stroke()}
   }
   // trampled roll-call square
@@ -1004,14 +1015,14 @@ function buildStatic(){
     const walls=[];for(let y=b.y0;y<=b.y1;y++)for(let x=b.x0;x<=b.x1;x++)if(get(x,y)===T.WALL)walls.push([x,y]);
     const wm=new THREE.InstancedMesh(new THREE.BoxGeometry(1,WALL_H,1),PM(0xffffff),walls.length);
     walls.forEach(([x,y],i)=>{d.position.set(x+.5,WALL_H/2,y+.5);d.updateMatrix();wm.setMatrixAt(i,d.matrix);col.set(b.de?0x9a937f:0x5e4733);col.offsetHSL(0,0,(noise[y*MW+x]-.5)*0.05);wm.setColorAt(i,col)});
-    wm.castShadow=wm.receiveShadow=true;grp.add(wm);
+    wm.castShadow=wm.receiveShadow=true;grp.add(wm);grp.userData.wm=wm;
     const w=b.x1-b.x0+1,dd=b.y1-b.y0+1,trim=b.de?PM(0x6c6658):PM(0x3d2f22);
     box(w+.04,.12,.16,trim,b.x0+w/2,WALL_H-.06,b.y0+.5,grp);box(w+.04,.12,.16,trim,b.x0+w/2,WALL_H-.06,b.y1+.5,grp);
     box(.16,.12,dd+.04,trim,b.x0+.5,WALL_H-.06,b.y0+dd/2,grp);box(.16,.12,dd+.04,trim,b.x1+.5,WALL_H-.06,b.y0+dd/2,grp);
     for(let x=b.x0+2;x<=b.x1-2;x+=2)[b.y0,b.y1].forEach(y=>{if(get(x,y)===T.WALL)box(.55,.45,1.06,W3.winMat,x+.5,1.05,y+.5,grp)});
     for(let y=b.y0+2;y<=b.y1-2;y+=2)[b.x0,b.x1].forEach(x=>{if(get(x,y)===T.WALL)box(1.06,.45,.55,W3.winMat,x+.5,1.05,y+.5,grp)});
     b.doors.forEach(([x,y])=>box(1,.32,1,b.de?PM(0x8a8474):PM(0x4a3726),x+.5,WALL_H-.16,y+.5,grp));
-    grp.userData={b,sy:1};return grp;
+    grp.userData.b=b;grp.userData.sy=1;return grp;
   });
   // roofs (fade out when you're inside or standing just behind)
   W3.roofs=BUILDINGS.map(b=>{

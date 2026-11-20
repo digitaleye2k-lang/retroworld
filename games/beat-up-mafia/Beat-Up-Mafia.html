@@ -350,6 +350,10 @@ function rrect(g,px,py,w,h,r){g.beginPath();if(g.roundRect)g.roundRect(px,py,w,h
  blocks.forEach(b=>{if(b.type!=='park')return;const rp=mulberry(b.seed*977+5),q=(a,c)=>a+rp()*(c-a),s=4*T,px=b.x0*T,py=b.y0*T;b.deco={p1:q(-40,40),p2:q(-40,40),trees:[],bench:1};
   for(let i=0;i<7;i++){const tx_=px+q(14,s-14),ty_=py+q(14,s-14);if(b.pond&&D(tx_,ty_,px+s*.3,py+s*.3)<50)continue;b.deco.trees.push({x:tx_,y:ty_,r:q(13,21)})}})})();
 function shade(hex,p){const n=parseInt(hex.slice(1),16),r=n>>16,g=(n>>8)&255,b=n&255,f=p<0?0:255,t=Math.abs(p);return'rgb('+Math.round((f-r)*t+r)+','+Math.round((f-g)*t+g)+','+Math.round((f-b)*t+b)+')'}
+/* real surface textures from the shared RETRO WORLD library, blended in soft-light so the city palette stays */
+const GTX={},GTXF={0:'road/road_01',1:'concrete/concrete_tile_01',2:'ground/grass_01',5:'road/road_02',7:'ground/sand_01',8:'wood/wood_planks_3',9:'concrete/concrete_floor_02'};let gtxLeft=Object.keys(GTXF).length;
+Object.entries(GTXF).forEach(([k,f])=>{const im=new Image();im.onload=()=>{GTX[k]=im;done()};im.onerror=done;im.src='../../assets/textures/classic64/'+f+'.png';function done(){if(--gtxLeft===0){CHC.clear()}}});
+function gtxPat(g,k){const im=GTX[k];if(!im)return null;const p=g.createPattern(im,'repeat');try{p.setTransform(new DOMMatrix().scale((k==8?T:T*2)/im.width))}catch(e){}return p}
 function paintChunk(g,ox,oy){
  g.save();g.translate(-ox,-oy);g.beginPath();g.rect(ox,oy,CH,CH);g.clip();
  const X1=ox+CH,Y1=oy+CH,inR=(a,b,w,h,m)=>{m=m===undefined?30:m;return a+w>ox-m&&a<X1+m&&b+h>oy-m&&b<Y1+m};
@@ -368,6 +372,9 @@ function paintChunk(g,ox,oy){
   else if(k===9){g.fillStyle=h<.5?'#4b4e56':'#474a52';g.fillRect(px,py,T,T);g.strokeStyle='rgba(0,0,0,.18)';g.lineWidth=1;g.strokeRect(px+.5,py+.5,T-1,T-1)}
   else if(k===10){g.fillStyle='#3a3d44';g.fillRect(px,py,T,T)}
   else{g.fillStyle='#43464f';g.fillRect(px,py,T,T)}}
+ if(gtxLeft===0){const pats={};g.save();g.globalCompositeOperation='soft-light';g.globalAlpha=.85;
+  for(let ty=ty0;ty<=ty1;ty++)for(let tx=tx0;tx<=tx1;tx++){const k=kind[ty][tx];if(!(k in GTXF)||(k===8&&BR[ty*N+tx]))continue;const p=pats[k]||(pats[k]=gtxPat(g,k));if(!p)continue;g.fillStyle=p;g.fillRect(tx*T,ty*T,T,T)}
+  g.restore()}
  /* ---- shoreline foam, dock shadows, quay edges ---- */
  for(let ty=ty0;ty<=ty1;ty++)for(let tx=tx0;tx<=tx1;tx++){const k=kind[ty][tx],px=tx*T,py=ty*T;
   if(k===6&&SD[ty*N+tx]===1){[[0,-1],[0,1],[-1,0],[1,0]].forEach(d=>{const a=tx+d[0],b=ty+d[1];if(OUT(a,b)||kind[b][a]===6)return;

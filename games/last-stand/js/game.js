@@ -1,4 +1,8 @@
 'use strict';
+const GTex = { img: {}, cache: {}, F: { jungle: 'classic64/ground/dirt_02', desert: 'classic64/ground/sand_02', factory: 'sbs-horror/metal/metal_05', frozen: 'classic64/ground/snow_rocks_01', fortress: 'classic64/concrete/concrete_wall_01' },
+  pat(g, id) { const f = this.F[id]; if (!f) return null; if (this.cache[id] !== undefined) return this.cache[id];
+    if (!this.img[id]) { const im = new Image(); this.img[id] = im; im.onload = () => { const p = g.createPattern(im, 'repeat'); try { p.setTransform(new DOMMatrix().scale(64 / im.width)); } catch (e) { } this.cache[id] = p; }; im.onerror = () => { this.cache[id] = null; }; im.src = '../../assets/textures/' + f + (f.indexOf('sbs') === 0 ? '.jpg' : '.png'); }
+    return null; } };
 /* ===== game: state, level flow, props, projectiles, pickups, spawning, rendering ===== */
 const G = {
   state: 'title', li: 0, score: 0, lives: 3, kills: 0, deaths: 0, t: 0, E: [], B: [], GR: [], EG: [], PK: [], PR: [], spawnT: 0, special: null, maxCamX: 0, cp: 0, boss: false, bossIntro: 0, clearT: 0, levelT: 0, noHit: true, banner: 0, carry: null,
@@ -229,6 +233,11 @@ const G = {
       else if (t === 7) { g.fillStyle = 'rgba(60,140,170,.55)'; g.fillRect(x, y + (World.t(c, r - 1) !== 7 ? 6 : 0), TS, TS); if (World.t(c, r - 1) !== 7) { g.fillStyle = 'rgba(200,240,255,.5)'; g.fillRect(x, y + 6 + Math.sin(this.t * 2 + c) * 1.5, TS, 2); } }
       else if (t === 8) { g.fillStyle = '#c89a5a'; g.fillRect(x, y, TS, TS); g.fillStyle = 'rgba(120,80,40,.4)'; const o = (this.t * 10 + c * 5) % 20; g.fillRect(x + o, y + 6, 10, 2); g.fillRect(x + (o + 10) % 30, y + 16, 8, 2); }
     }
+    // real surface texture from the shared RETRO WORLD library, soft-light blended over the solid ground
+    const pat = GTex.pat(g, id);
+    if (pat) { g.save(); g.globalCompositeOperation = 'soft-light'; g.globalAlpha = .9; g.fillStyle = pat;
+      for (let c = c0; c <= c1; c++) { let r0 = -1; for (let r = 0; r <= ROWS; r++) { const sol = r < ROWS && SOLID[World.t(c, r)]; if (sol && r0 < 0) r0 = r; if (!sol && r0 >= 0) { g.fillRect(c * TS, r0 * TS + (SOLID[World.t(c, r0 - 1)] ? 0 : 8), TS, (r - r0) * TS - (SOLID[World.t(c, r0 - 1)] ? 0 : 8)); r0 = -1; } } }
+      g.restore(); }
   },
   drawDeco(g, back) {
     const id = World.L.id;

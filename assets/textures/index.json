@@ -1,0 +1,8440 @@
+{
+"sbs-tiny2": {
+"brick": [
+{
+"name": "brick_01",
+"file": "sbs-tiny2/brick/brick_01.jpg"
+},
+{
+"name": "brick_02",
+"file": "sbs-tiny2/brick/brick_02.jpg"
+},
+{
+"name": "brick_03",
+"file": "sbs-tiny2/brick/brick_03.jpg"
+},
+{
+"name": "brick_04",
+"file": "sbs-tiny2/brick/brick_04.jpg"
+},
+{
+"name": "brick_05",
+"file": "sbs-tiny2/brick/brick_05.jpg"
+},
+{
+"name": "brick_06",
+"file": "sbs-tiny2/brick/brick_06.jpg"
+},
+{
+"name": "brick_07",
+"file": "sbs-tiny2/brick/brick_07.jpg"
+},
+{
+"name": "brick_08",
+"file": "sbs-tiny2/brick/brick_08.jpg"
+},
+{
+"name": "brick_09",
+"file": "sbs-tiny2/brick/brick_09.jpg"
+},
+{
+"name": "brick_10",
+"file": "sbs-tiny2/brick/brick_10.jpg"
+},
+{
+"name": "brick_11",
+"file": "sbs-tiny2/brick/brick_11.jpg"
+},
+{
+"name": "brick_12",
+"file": "sbs-tiny2/brick/brick_12.jpg"
+},
+{
+"name": "brick_13",
+"file": "sbs-tiny2/brick/brick_13.jpg"
+},
+{
+"name": "brick_14",
+"file": "sbs-tiny2/brick/brick_14.jpg"
+},
+{
+"name": "brick_15",
+"file": "sbs-tiny2/brick/brick_15.jpg"
+},
+{
+"name": "brick_16",
+"file": "sbs-tiny2/brick/brick_16.jpg"
+},
+{
+"name": "brick_17",
+"file": "sbs-tiny2/brick/brick_17.jpg"
+},
+{
+"name": "brick_18",
+"file": "sbs-tiny2/brick/brick_18.jpg"
+},
+{
+"name": "brick_19",
+"file": "sbs-tiny2/brick/brick_19.jpg"
+},
+{
+"name": "brick_20",
+"file": "sbs-tiny2/brick/brick_20.jpg"
+}
+],
+"dirt": [
+{
+"name": "dirt_01",
+"file": "sbs-tiny2/dirt/dirt_01.jpg"
+},
+{
+"name": "dirt_02",
+"file": "sbs-tiny2/dirt/dirt_02.jpg"
+},
+{
+"name": "dirt_03",
+"file": "sbs-tiny2/dirt/dirt_03.jpg"
+},
+{
+"name": "dirt_04",
+"file": "sbs-tiny2/dirt/dirt_04.jpg"
+},
+{
+"name": "dirt_05",
+"file": "sbs-tiny2/dirt/dirt_05.jpg"
+},
+{
+"name": "dirt_06",
+"file": "sbs-tiny2/dirt/dirt_06.jpg"
+},
+{
+"name": "dirt_07",
+"file": "sbs-tiny2/dirt/dirt_07.jpg"
+},
+{
+"name": "dirt_08",
+"file": "sbs-tiny2/dirt/dirt_08.jpg"
+},
+{
+"name": "dirt_09",
+"file": "sbs-tiny2/dirt/dirt_09.jpg"
+},
+{
+"name": "dirt_10",
+"file": "sbs-tiny2/dirt/dirt_10.jpg"
+},
+{
+"name": "dirt_11",
+"file": "sbs-tiny2/dirt/dirt_11.jpg"
+},
+{
+"name": "dirt_12",
+"file": "sbs-tiny2/dirt/dirt_12.jpg"
+},
+{
+"name": "dirt_13",
+"file": "sbs-tiny2/dirt/dirt_13.jpg"
+},
+{
+"name": "dirt_14",
+"file": "sbs-tiny2/dirt/dirt_14.jpg"
+},
+{
+"name": "dirt_15",
+"file": "sbs-tiny2/dirt/dirt_15.jpg"
+},
+{
+"name": "dirt_16",
+"file": "sbs-tiny2/dirt/dirt_16.jpg"
+},
+{
+"name": "dirt_17",
+"file": "sbs-tiny2/dirt/dirt_17.jpg"
+},
+{
+"name": "dirt_18",
+"file": "sbs-tiny2/dirt/dirt_18.jpg"
+},
+{
+"name": "dirt_19",
+"file": "sbs-tiny2/dirt/dirt_19.jpg"
+},
+{
+"name": "dirt_20",
+"file": "sbs-tiny2/dirt/dirt_20.jpg"
+}
+],
+"elements": [
+{
+"name": "elements_01",
+"file": "sbs-tiny2/elements/elements_01.jpg"
+},
+{
+"name": "elements_02",
+"file": "sbs-tiny2/elements/elements_02.jpg"
+},
+{
+"name": "elements_03",
+"file": "sbs-tiny2/elements/elements_03.jpg"
+},
+{
+"name": "elements_04",
+"file": "sbs-tiny2/elements/elements_04.jpg"
+},
+{
+"name": "elements_05",
+"file": "sbs-tiny2/elements/elements_05.jpg"
+},
+{
+"name": "elements_06",
+"file": "sbs-tiny2/elements/elements_06.jpg"
+},
+{
+"name": "elements_07",
+"file": "sbs-tiny2/elements/elements_07.jpg"
+},
+{
+"name": "elements_08",
+"file": "sbs-tiny2/elements/elements_08.jpg"
+},
+{
+"name": "elements_09",
+"file": "sbs-tiny2/elements/elements_09.jpg"
+},
+{
+"name": "elements_10",
+"file": "sbs-tiny2/elements/elements_10.jpg"
+},
+{
+"name": "elements_11",
+"file": "sbs-tiny2/elements/elements_11.jpg"
+},
+{
+"name": "elements_12",
+"file": "sbs-tiny2/elements/elements_12.jpg"
+},
+{
+"name": "elements_13",
+"file": "sbs-tiny2/elements/elements_13.jpg"
+},
+{
+"name": "elements_14",
+"file": "sbs-tiny2/elements/elements_14.jpg"
+},
+{
+"name": "elements_15",
+"file": "sbs-tiny2/elements/elements_15.jpg"
+},
+{
+"name": "elements_16",
+"file": "sbs-tiny2/elements/elements_16.jpg"
+},
+{
+"name": "elements_17",
+"file": "sbs-tiny2/elements/elements_17.jpg"
+},
+{
+"name": "elements_18",
+"file": "sbs-tiny2/elements/elements_18.jpg"
+},
+{
+"name": "elements_19",
+"file": "sbs-tiny2/elements/elements_19.jpg"
+},
+{
+"name": "elements_20",
+"file": "sbs-tiny2/elements/elements_20.jpg"
+}
+],
+"metal": [
+{
+"name": "metal_01",
+"file": "sbs-tiny2/metal/metal_01.jpg"
+},
+{
+"name": "metal_02",
+"file": "sbs-tiny2/metal/metal_02.jpg"
+},
+{
+"name": "metal_03",
+"file": "sbs-tiny2/metal/metal_03.jpg"
+},
+{
+"name": "metal_04",
+"file": "sbs-tiny2/metal/metal_04.jpg"
+},
+{
+"name": "metal_05",
+"file": "sbs-tiny2/metal/metal_05.jpg"
+},
+{
+"name": "metal_06",
+"file": "sbs-tiny2/metal/metal_06.jpg"
+},
+{
+"name": "metal_07",
+"file": "sbs-tiny2/metal/metal_07.jpg"
+},
+{
+"name": "metal_08",
+"file": "sbs-tiny2/metal/metal_08.jpg"
+},
+{
+"name": "metal_09",
+"file": "sbs-tiny2/metal/metal_09.jpg"
+},
+{
+"name": "metal_10",
+"file": "sbs-tiny2/metal/metal_10.jpg"
+},
+{
+"name": "metal_11",
+"file": "sbs-tiny2/metal/metal_11.jpg"
+},
+{
+"name": "metal_12",
+"file": "sbs-tiny2/metal/metal_12.jpg"
+},
+{
+"name": "metal_13",
+"file": "sbs-tiny2/metal/metal_13.jpg"
+},
+{
+"name": "metal_14",
+"file": "sbs-tiny2/metal/metal_14.jpg"
+},
+{
+"name": "metal_15",
+"file": "sbs-tiny2/metal/metal_15.jpg"
+},
+{
+"name": "metal_16",
+"file": "sbs-tiny2/metal/metal_16.jpg"
+},
+{
+"name": "metal_17",
+"file": "sbs-tiny2/metal/metal_17.jpg"
+},
+{
+"name": "metal_18",
+"file": "sbs-tiny2/metal/metal_18.jpg"
+},
+{
+"name": "metal_19",
+"file": "sbs-tiny2/metal/metal_19.jpg"
+},
+{
+"name": "metal_20",
+"file": "sbs-tiny2/metal/metal_20.jpg"
+}
+],
+"plaster": [
+{
+"name": "plaster_01",
+"file": "sbs-tiny2/plaster/plaster_01.jpg"
+},
+{
+"name": "plaster_02",
+"file": "sbs-tiny2/plaster/plaster_02.jpg"
+},
+{
+"name": "plaster_03",
+"file": "sbs-tiny2/plaster/plaster_03.jpg"
+},
+{
+"name": "plaster_04",
+"file": "sbs-tiny2/plaster/plaster_04.jpg"
+},
+{
+"name": "plaster_05",
+"file": "sbs-tiny2/plaster/plaster_05.jpg"
+},
+{
+"name": "plaster_06",
+"file": "sbs-tiny2/plaster/plaster_06.jpg"
+},
+{
+"name": "plaster_07",
+"file": "sbs-tiny2/plaster/plaster_07.jpg"
+},
+{
+"name": "plaster_08",
+"file": "sbs-tiny2/plaster/plaster_08.jpg"
+},
+{
+"name": "plaster_09",
+"file": "sbs-tiny2/plaster/plaster_09.jpg"
+},
+{
+"name": "plaster_10",
+"file": "sbs-tiny2/plaster/plaster_10.jpg"
+},
+{
+"name": "plaster_11",
+"file": "sbs-tiny2/plaster/plaster_11.jpg"
+},
+{
+"name": "plaster_12",
+"file": "sbs-tiny2/plaster/plaster_12.jpg"
+},
+{
+"name": "plaster_13",
+"file": "sbs-tiny2/plaster/plaster_13.jpg"
+},
+{
+"name": "plaster_14",
+"file": "sbs-tiny2/plaster/plaster_14.jpg"
+},
+{
+"name": "plaster_15",
+"file": "sbs-tiny2/plaster/plaster_15.jpg"
+},
+{
+"name": "plaster_16",
+"file": "sbs-tiny2/plaster/plaster_16.jpg"
+},
+{
+"name": "plaster_17",
+"file": "sbs-tiny2/plaster/plaster_17.jpg"
+},
+{
+"name": "plaster_18",
+"file": "sbs-tiny2/plaster/plaster_18.jpg"
+},
+{
+"name": "plaster_19",
+"file": "sbs-tiny2/plaster/plaster_19.jpg"
+},
+{
+"name": "plaster_20",
+"file": "sbs-tiny2/plaster/plaster_20.jpg"
+}
+],
+"stone": [
+{
+"name": "stone_01",
+"file": "sbs-tiny2/stone/stone_01.jpg"
+},
+{
+"name": "stone_02",
+"file": "sbs-tiny2/stone/stone_02.jpg"
+},
+{
+"name": "stone_03",
+"file": "sbs-tiny2/stone/stone_03.jpg"
+},
+{
+"name": "stone_04",
+"file": "sbs-tiny2/stone/stone_04.jpg"
+},
+{
+"name": "stone_05",
+"file": "sbs-tiny2/stone/stone_05.jpg"
+},
+{
+"name": "stone_06",
+"file": "sbs-tiny2/stone/stone_06.jpg"
+},
+{
+"name": "stone_07",
+"file": "sbs-tiny2/stone/stone_07.jpg"
+},
+{
+"name": "stone_08",
+"file": "sbs-tiny2/stone/stone_08.jpg"
+},
+{
+"name": "stone_09",
+"file": "sbs-tiny2/stone/stone_09.jpg"
+},
+{
+"name": "stone_10",
+"file": "sbs-tiny2/stone/stone_10.jpg"
+},
+{
+"name": "stone_11",
+"file": "sbs-tiny2/stone/stone_11.jpg"
+},
+{
+"name": "stone_12",
+"file": "sbs-tiny2/stone/stone_12.jpg"
+},
+{
+"name": "stone_13",
+"file": "sbs-tiny2/stone/stone_13.jpg"
+},
+{
+"name": "stone_14",
+"file": "sbs-tiny2/stone/stone_14.jpg"
+},
+{
+"name": "stone_15",
+"file": "sbs-tiny2/stone/stone_15.jpg"
+},
+{
+"name": "stone_16",
+"file": "sbs-tiny2/stone/stone_16.jpg"
+},
+{
+"name": "stone_17",
+"file": "sbs-tiny2/stone/stone_17.jpg"
+},
+{
+"name": "stone_18",
+"file": "sbs-tiny2/stone/stone_18.jpg"
+},
+{
+"name": "stone_19",
+"file": "sbs-tiny2/stone/stone_19.jpg"
+},
+{
+"name": "stone_20",
+"file": "sbs-tiny2/stone/stone_20.jpg"
+}
+],
+"tile": [
+{
+"name": "tile_01",
+"file": "sbs-tiny2/tile/tile_01.jpg"
+},
+{
+"name": "tile_02",
+"file": "sbs-tiny2/tile/tile_02.jpg"
+},
+{
+"name": "tile_03",
+"file": "sbs-tiny2/tile/tile_03.jpg"
+},
+{
+"name": "tile_04",
+"file": "sbs-tiny2/tile/tile_04.jpg"
+},
+{
+"name": "tile_05",
+"file": "sbs-tiny2/tile/tile_05.jpg"
+},
+{
+"name": "tile_06",
+"file": "sbs-tiny2/tile/tile_06.jpg"
+},
+{
+"name": "tile_07",
+"file": "sbs-tiny2/tile/tile_07.jpg"
+},
+{
+"name": "tile_08",
+"file": "sbs-tiny2/tile/tile_08.jpg"
+},
+{
+"name": "tile_09",
+"file": "sbs-tiny2/tile/tile_09.jpg"
+},
+{
+"name": "tile_10",
+"file": "sbs-tiny2/tile/tile_10.jpg"
+},
+{
+"name": "tile_11",
+"file": "sbs-tiny2/tile/tile_11.jpg"
+},
+{
+"name": "tile_12",
+"file": "sbs-tiny2/tile/tile_12.jpg"
+},
+{
+"name": "tile_13",
+"file": "sbs-tiny2/tile/tile_13.jpg"
+},
+{
+"name": "tile_14",
+"file": "sbs-tiny2/tile/tile_14.jpg"
+},
+{
+"name": "tile_15",
+"file": "sbs-tiny2/tile/tile_15.jpg"
+},
+{
+"name": "tile_16",
+"file": "sbs-tiny2/tile/tile_16.jpg"
+},
+{
+"name": "tile_17",
+"file": "sbs-tiny2/tile/tile_17.jpg"
+},
+{
+"name": "tile_18",
+"file": "sbs-tiny2/tile/tile_18.jpg"
+},
+{
+"name": "tile_19",
+"file": "sbs-tiny2/tile/tile_19.jpg"
+},
+{
+"name": "tile_20",
+"file": "sbs-tiny2/tile/tile_20.jpg"
+}
+],
+"wood": [
+{
+"name": "wood_01",
+"file": "sbs-tiny2/wood/wood_01.jpg"
+},
+{
+"name": "wood_02",
+"file": "sbs-tiny2/wood/wood_02.jpg"
+},
+{
+"name": "wood_03",
+"file": "sbs-tiny2/wood/wood_03.jpg"
+},
+{
+"name": "wood_04",
+"file": "sbs-tiny2/wood/wood_04.jpg"
+},
+{
+"name": "wood_05",
+"file": "sbs-tiny2/wood/wood_05.jpg"
+},
+{
+"name": "wood_06",
+"file": "sbs-tiny2/wood/wood_06.jpg"
+},
+{
+"name": "wood_07",
+"file": "sbs-tiny2/wood/wood_07.jpg"
+},
+{
+"name": "wood_08",
+"file": "sbs-tiny2/wood/wood_08.jpg"
+},
+{
+"name": "wood_09",
+"file": "sbs-tiny2/wood/wood_09.jpg"
+},
+{
+"name": "wood_10",
+"file": "sbs-tiny2/wood/wood_10.jpg"
+},
+{
+"name": "wood_11",
+"file": "sbs-tiny2/wood/wood_11.jpg"
+},
+{
+"name": "wood_12",
+"file": "sbs-tiny2/wood/wood_12.jpg"
+},
+{
+"name": "wood_13",
+"file": "sbs-tiny2/wood/wood_13.jpg"
+},
+{
+"name": "wood_14",
+"file": "sbs-tiny2/wood/wood_14.jpg"
+},
+{
+"name": "wood_15",
+"file": "sbs-tiny2/wood/wood_15.jpg"
+},
+{
+"name": "wood_16",
+"file": "sbs-tiny2/wood/wood_16.jpg"
+},
+{
+"name": "wood_17",
+"file": "sbs-tiny2/wood/wood_17.jpg"
+},
+{
+"name": "wood_18",
+"file": "sbs-tiny2/wood/wood_18.jpg"
+},
+{
+"name": "wood_19",
+"file": "sbs-tiny2/wood/wood_19.jpg"
+},
+{
+"name": "wood_20",
+"file": "sbs-tiny2/wood/wood_20.jpg"
+}
+]
+},
+"sbs-tiny3": {
+"animal": [
+{
+"name": "animal_01",
+"file": "sbs-tiny3/animal/animal_01.jpg",
+"hd": "sbs-tiny3/animal/hd/animal_01.jpg"
+},
+{
+"name": "animal_02",
+"file": "sbs-tiny3/animal/animal_02.jpg",
+"hd": "sbs-tiny3/animal/hd/animal_02.jpg"
+},
+{
+"name": "animal_03",
+"file": "sbs-tiny3/animal/animal_03.jpg",
+"hd": "sbs-tiny3/animal/hd/animal_03.jpg"
+},
+{
+"name": "animal_04",
+"file": "sbs-tiny3/animal/animal_04.jpg",
+"hd": "sbs-tiny3/animal/hd/animal_04.jpg"
+},
+{
+"name": "animal_05",
+"file": "sbs-tiny3/animal/animal_05.jpg",
+"hd": "sbs-tiny3/animal/hd/animal_05.jpg"
+},
+{
+"name": "animal_06",
+"file": "sbs-tiny3/animal/animal_06.jpg",
+"hd": "sbs-tiny3/animal/hd/animal_06.jpg"
+},
+{
+"name": "animal_07",
+"file": "sbs-tiny3/animal/animal_07.jpg",
+"hd": "sbs-tiny3/animal/hd/animal_07.jpg"
+},
+{
+"name": "animal_08",
+"file": "sbs-tiny3/animal/animal_08.jpg",
+"hd": "sbs-tiny3/animal/hd/animal_08.jpg"
+},
+{
+"name": "animal_09",
+"file": "sbs-tiny3/animal/animal_09.jpg",
+"hd": "sbs-tiny3/animal/hd/animal_09.jpg"
+},
+{
+"name": "animal_10",
+"file": "sbs-tiny3/animal/animal_10.jpg",
+"hd": "sbs-tiny3/animal/hd/animal_10.jpg"
+},
+{
+"name": "animal_11",
+"file": "sbs-tiny3/animal/animal_11.jpg",
+"hd": "sbs-tiny3/animal/hd/animal_11.jpg"
+},
+{
+"name": "animal_12",
+"file": "sbs-tiny3/animal/animal_12.jpg",
+"hd": "sbs-tiny3/animal/hd/animal_12.jpg"
+},
+{
+"name": "animal_13",
+"file": "sbs-tiny3/animal/animal_13.jpg",
+"hd": "sbs-tiny3/animal/hd/animal_13.jpg"
+},
+{
+"name": "animal_14",
+"file": "sbs-tiny3/animal/animal_14.jpg",
+"hd": "sbs-tiny3/animal/hd/animal_14.jpg"
+},
+{
+"name": "animal_15",
+"file": "sbs-tiny3/animal/animal_15.jpg",
+"hd": "sbs-tiny3/animal/hd/animal_15.jpg"
+},
+{
+"name": "animal_16",
+"file": "sbs-tiny3/animal/animal_16.jpg",
+"hd": "sbs-tiny3/animal/hd/animal_16.jpg"
+},
+{
+"name": "animal_17",
+"file": "sbs-tiny3/animal/animal_17.jpg",
+"hd": "sbs-tiny3/animal/hd/animal_17.jpg"
+},
+{
+"name": "animal_18",
+"file": "sbs-tiny3/animal/animal_18.jpg",
+"hd": "sbs-tiny3/animal/hd/animal_18.jpg"
+},
+{
+"name": "animal_19",
+"file": "sbs-tiny3/animal/animal_19.jpg",
+"hd": "sbs-tiny3/animal/hd/animal_19.jpg"
+},
+{
+"name": "animal_20",
+"file": "sbs-tiny3/animal/animal_20.jpg",
+"hd": "sbs-tiny3/animal/hd/animal_20.jpg"
+},
+{
+"name": "animal_21",
+"file": "sbs-tiny3/animal/animal_21.jpg",
+"hd": "sbs-tiny3/animal/hd/animal_21.jpg"
+},
+{
+"name": "animal_22",
+"file": "sbs-tiny3/animal/animal_22.jpg",
+"hd": "sbs-tiny3/animal/hd/animal_22.jpg"
+},
+{
+"name": "animal_23",
+"file": "sbs-tiny3/animal/animal_23.jpg",
+"hd": "sbs-tiny3/animal/hd/animal_23.jpg"
+},
+{
+"name": "animal_24",
+"file": "sbs-tiny3/animal/animal_24.jpg",
+"hd": "sbs-tiny3/animal/hd/animal_24.jpg"
+}
+],
+"box": [
+{
+"name": "box_01",
+"file": "sbs-tiny3/box/box_01.jpg",
+"hd": "sbs-tiny3/box/hd/box_01.jpg"
+},
+{
+"name": "box_02",
+"file": "sbs-tiny3/box/box_02.jpg",
+"hd": "sbs-tiny3/box/hd/box_02.jpg"
+},
+{
+"name": "box_03",
+"file": "sbs-tiny3/box/box_03.jpg",
+"hd": "sbs-tiny3/box/hd/box_03.jpg"
+},
+{
+"name": "box_04",
+"file": "sbs-tiny3/box/box_04.jpg",
+"hd": "sbs-tiny3/box/hd/box_04.jpg"
+},
+{
+"name": "box_05",
+"file": "sbs-tiny3/box/box_05.jpg",
+"hd": "sbs-tiny3/box/hd/box_05.jpg"
+},
+{
+"name": "box_06",
+"file": "sbs-tiny3/box/box_06.jpg",
+"hd": "sbs-tiny3/box/hd/box_06.jpg"
+},
+{
+"name": "box_07",
+"file": "sbs-tiny3/box/box_07.jpg",
+"hd": "sbs-tiny3/box/hd/box_07.jpg"
+},
+{
+"name": "box_08",
+"file": "sbs-tiny3/box/box_08.jpg",
+"hd": "sbs-tiny3/box/hd/box_08.jpg"
+},
+{
+"name": "box_09",
+"file": "sbs-tiny3/box/box_09.jpg",
+"hd": "sbs-tiny3/box/hd/box_09.jpg"
+},
+{
+"name": "box_10",
+"file": "sbs-tiny3/box/box_10.jpg",
+"hd": "sbs-tiny3/box/hd/box_10.jpg"
+},
+{
+"name": "box_11",
+"file": "sbs-tiny3/box/box_11.jpg",
+"hd": "sbs-tiny3/box/hd/box_11.jpg"
+},
+{
+"name": "box_12",
+"file": "sbs-tiny3/box/box_12.jpg",
+"hd": "sbs-tiny3/box/hd/box_12.jpg"
+},
+{
+"name": "box_13",
+"file": "sbs-tiny3/box/box_13.jpg",
+"hd": "sbs-tiny3/box/hd/box_13.jpg"
+},
+{
+"name": "box_14",
+"file": "sbs-tiny3/box/box_14.jpg",
+"hd": "sbs-tiny3/box/hd/box_14.jpg"
+},
+{
+"name": "box_15",
+"file": "sbs-tiny3/box/box_15.jpg",
+"hd": "sbs-tiny3/box/hd/box_15.jpg"
+},
+{
+"name": "box_16",
+"file": "sbs-tiny3/box/box_16.jpg",
+"hd": "sbs-tiny3/box/hd/box_16.jpg"
+},
+{
+"name": "box_17",
+"file": "sbs-tiny3/box/box_17.jpg",
+"hd": "sbs-tiny3/box/hd/box_17.jpg"
+},
+{
+"name": "box_18",
+"file": "sbs-tiny3/box/box_18.jpg",
+"hd": "sbs-tiny3/box/hd/box_18.jpg"
+},
+{
+"name": "box_19",
+"file": "sbs-tiny3/box/box_19.jpg",
+"hd": "sbs-tiny3/box/hd/box_19.jpg"
+},
+{
+"name": "box_20",
+"file": "sbs-tiny3/box/box_20.jpg",
+"hd": "sbs-tiny3/box/hd/box_20.jpg"
+},
+{
+"name": "box_21",
+"file": "sbs-tiny3/box/box_21.jpg",
+"hd": "sbs-tiny3/box/hd/box_21.jpg"
+},
+{
+"name": "box_22",
+"file": "sbs-tiny3/box/box_22.jpg",
+"hd": "sbs-tiny3/box/hd/box_22.jpg"
+},
+{
+"name": "box_23",
+"file": "sbs-tiny3/box/box_23.jpg",
+"hd": "sbs-tiny3/box/hd/box_23.jpg"
+},
+{
+"name": "box_24",
+"file": "sbs-tiny3/box/box_24.jpg",
+"hd": "sbs-tiny3/box/hd/box_24.jpg"
+}
+],
+"cloth": [
+{
+"name": "cloth_01",
+"file": "sbs-tiny3/cloth/cloth_01.jpg",
+"hd": "sbs-tiny3/cloth/hd/cloth_01.jpg"
+},
+{
+"name": "cloth_02",
+"file": "sbs-tiny3/cloth/cloth_02.jpg",
+"hd": "sbs-tiny3/cloth/hd/cloth_02.jpg"
+},
+{
+"name": "cloth_03",
+"file": "sbs-tiny3/cloth/cloth_03.jpg",
+"hd": "sbs-tiny3/cloth/hd/cloth_03.jpg"
+},
+{
+"name": "cloth_04",
+"file": "sbs-tiny3/cloth/cloth_04.jpg",
+"hd": "sbs-tiny3/cloth/hd/cloth_04.jpg"
+},
+{
+"name": "cloth_05",
+"file": "sbs-tiny3/cloth/cloth_05.jpg",
+"hd": "sbs-tiny3/cloth/hd/cloth_05.jpg"
+},
+{
+"name": "cloth_06",
+"file": "sbs-tiny3/cloth/cloth_06.jpg",
+"hd": "sbs-tiny3/cloth/hd/cloth_06.jpg"
+},
+{
+"name": "cloth_07",
+"file": "sbs-tiny3/cloth/cloth_07.jpg",
+"hd": "sbs-tiny3/cloth/hd/cloth_07.jpg"
+},
+{
+"name": "cloth_08",
+"file": "sbs-tiny3/cloth/cloth_08.jpg",
+"hd": "sbs-tiny3/cloth/hd/cloth_08.jpg"
+},
+{
+"name": "cloth_09",
+"file": "sbs-tiny3/cloth/cloth_09.jpg",
+"hd": "sbs-tiny3/cloth/hd/cloth_09.jpg"
+},
+{
+"name": "cloth_10",
+"file": "sbs-tiny3/cloth/cloth_10.jpg",
+"hd": "sbs-tiny3/cloth/hd/cloth_10.jpg"
+},
+{
+"name": "cloth_11",
+"file": "sbs-tiny3/cloth/cloth_11.jpg",
+"hd": "sbs-tiny3/cloth/hd/cloth_11.jpg"
+},
+{
+"name": "cloth_12",
+"file": "sbs-tiny3/cloth/cloth_12.jpg",
+"hd": "sbs-tiny3/cloth/hd/cloth_12.jpg"
+},
+{
+"name": "cloth_13",
+"file": "sbs-tiny3/cloth/cloth_13.jpg",
+"hd": "sbs-tiny3/cloth/hd/cloth_13.jpg"
+},
+{
+"name": "cloth_14",
+"file": "sbs-tiny3/cloth/cloth_14.jpg",
+"hd": "sbs-tiny3/cloth/hd/cloth_14.jpg"
+},
+{
+"name": "cloth_15",
+"file": "sbs-tiny3/cloth/cloth_15.jpg",
+"hd": "sbs-tiny3/cloth/hd/cloth_15.jpg"
+},
+{
+"name": "cloth_16",
+"file": "sbs-tiny3/cloth/cloth_16.jpg",
+"hd": "sbs-tiny3/cloth/hd/cloth_16.jpg"
+},
+{
+"name": "cloth_17",
+"file": "sbs-tiny3/cloth/cloth_17.jpg",
+"hd": "sbs-tiny3/cloth/hd/cloth_17.jpg"
+},
+{
+"name": "cloth_18",
+"file": "sbs-tiny3/cloth/cloth_18.jpg",
+"hd": "sbs-tiny3/cloth/hd/cloth_18.jpg"
+},
+{
+"name": "cloth_19",
+"file": "sbs-tiny3/cloth/cloth_19.jpg",
+"hd": "sbs-tiny3/cloth/hd/cloth_19.jpg"
+},
+{
+"name": "cloth_20",
+"file": "sbs-tiny3/cloth/cloth_20.jpg",
+"hd": "sbs-tiny3/cloth/hd/cloth_20.jpg"
+},
+{
+"name": "cloth_21",
+"file": "sbs-tiny3/cloth/cloth_21.jpg",
+"hd": "sbs-tiny3/cloth/hd/cloth_21.jpg"
+},
+{
+"name": "cloth_22",
+"file": "sbs-tiny3/cloth/cloth_22.jpg",
+"hd": "sbs-tiny3/cloth/hd/cloth_22.jpg"
+},
+{
+"name": "cloth_23",
+"file": "sbs-tiny3/cloth/cloth_23.jpg",
+"hd": "sbs-tiny3/cloth/hd/cloth_23.jpg"
+},
+{
+"name": "cloth_24",
+"file": "sbs-tiny3/cloth/cloth_24.jpg",
+"hd": "sbs-tiny3/cloth/hd/cloth_24.jpg"
+}
+],
+"elements": [
+{
+"name": "elements_01",
+"file": "sbs-tiny3/elements/elements_01.jpg",
+"hd": "sbs-tiny3/elements/hd/elements_01.jpg"
+},
+{
+"name": "elements_02",
+"file": "sbs-tiny3/elements/elements_02.jpg",
+"hd": "sbs-tiny3/elements/hd/elements_02.jpg"
+},
+{
+"name": "elements_03",
+"file": "sbs-tiny3/elements/elements_03.jpg",
+"hd": "sbs-tiny3/elements/hd/elements_03.jpg"
+},
+{
+"name": "elements_04",
+"file": "sbs-tiny3/elements/elements_04.jpg",
+"hd": "sbs-tiny3/elements/hd/elements_04.jpg"
+},
+{
+"name": "elements_05",
+"file": "sbs-tiny3/elements/elements_05.jpg",
+"hd": "sbs-tiny3/elements/hd/elements_05.jpg"
+},
+{
+"name": "elements_06",
+"file": "sbs-tiny3/elements/elements_06.jpg",
+"hd": "sbs-tiny3/elements/hd/elements_06.jpg"
+},
+{
+"name": "elements_07",
+"file": "sbs-tiny3/elements/elements_07.jpg",
+"hd": "sbs-tiny3/elements/hd/elements_07.jpg"
+},
+{
+"name": "elements_08",
+"file": "sbs-tiny3/elements/elements_08.jpg",
+"hd": "sbs-tiny3/elements/hd/elements_08.jpg"
+},
+{
+"name": "elements_09",
+"file": "sbs-tiny3/elements/elements_09.jpg",
+"hd": "sbs-tiny3/elements/hd/elements_09.jpg"
+},
+{
+"name": "elements_10",
+"file": "sbs-tiny3/elements/elements_10.jpg",
+"hd": "sbs-tiny3/elements/hd/elements_10.jpg"
+},
+{
+"name": "elements_11",
+"file": "sbs-tiny3/elements/elements_11.jpg",
+"hd": "sbs-tiny3/elements/hd/elements_11.jpg"
+},
+{
+"name": "elements_12",
+"file": "sbs-tiny3/elements/elements_12.jpg",
+"hd": "sbs-tiny3/elements/hd/elements_12.jpg"
+},
+{
+"name": "elements_13",
+"file": "sbs-tiny3/elements/elements_13.jpg",
+"hd": "sbs-tiny3/elements/hd/elements_13.jpg"
+},
+{
+"name": "elements_14",
+"file": "sbs-tiny3/elements/elements_14.jpg",
+"hd": "sbs-tiny3/elements/hd/elements_14.jpg"
+},
+{
+"name": "elements_15",
+"file": "sbs-tiny3/elements/elements_15.jpg",
+"hd": "sbs-tiny3/elements/hd/elements_15.jpg"
+},
+{
+"name": "elements_16",
+"file": "sbs-tiny3/elements/elements_16.jpg",
+"hd": "sbs-tiny3/elements/hd/elements_16.jpg"
+},
+{
+"name": "elements_17",
+"file": "sbs-tiny3/elements/elements_17.jpg",
+"hd": "sbs-tiny3/elements/hd/elements_17.jpg"
+},
+{
+"name": "elements_18",
+"file": "sbs-tiny3/elements/elements_18.jpg",
+"hd": "sbs-tiny3/elements/hd/elements_18.jpg"
+},
+{
+"name": "elements_19",
+"file": "sbs-tiny3/elements/elements_19.jpg",
+"hd": "sbs-tiny3/elements/hd/elements_19.jpg"
+},
+{
+"name": "elements_20",
+"file": "sbs-tiny3/elements/elements_20.jpg",
+"hd": "sbs-tiny3/elements/hd/elements_20.jpg"
+},
+{
+"name": "elements_21",
+"file": "sbs-tiny3/elements/elements_21.jpg",
+"hd": "sbs-tiny3/elements/hd/elements_21.jpg"
+},
+{
+"name": "elements_22",
+"file": "sbs-tiny3/elements/elements_22.jpg",
+"hd": "sbs-tiny3/elements/hd/elements_22.jpg"
+},
+{
+"name": "elements_23",
+"file": "sbs-tiny3/elements/elements_23.jpg",
+"hd": "sbs-tiny3/elements/hd/elements_23.jpg"
+},
+{
+"name": "elements_24",
+"file": "sbs-tiny3/elements/elements_24.jpg",
+"hd": "sbs-tiny3/elements/hd/elements_24.jpg"
+}
+],
+"gem": [
+{
+"name": "gem_01",
+"file": "sbs-tiny3/gem/gem_01.jpg",
+"hd": "sbs-tiny3/gem/hd/gem_01.jpg"
+},
+{
+"name": "gem_02",
+"file": "sbs-tiny3/gem/gem_02.jpg",
+"hd": "sbs-tiny3/gem/hd/gem_02.jpg"
+},
+{
+"name": "gem_03",
+"file": "sbs-tiny3/gem/gem_03.jpg",
+"hd": "sbs-tiny3/gem/hd/gem_03.jpg"
+},
+{
+"name": "gem_04",
+"file": "sbs-tiny3/gem/gem_04.jpg",
+"hd": "sbs-tiny3/gem/hd/gem_04.jpg"
+},
+{
+"name": "gem_05",
+"file": "sbs-tiny3/gem/gem_05.jpg",
+"hd": "sbs-tiny3/gem/hd/gem_05.jpg"
+},
+{
+"name": "gem_06",
+"file": "sbs-tiny3/gem/gem_06.jpg",
+"hd": "sbs-tiny3/gem/hd/gem_06.jpg"
+},
+{
+"name": "gem_07",
+"file": "sbs-tiny3/gem/gem_07.jpg",
+"hd": "sbs-tiny3/gem/hd/gem_07.jpg"
+},
+{
+"name": "gem_08",
+"file": "sbs-tiny3/gem/gem_08.jpg",
+"hd": "sbs-tiny3/gem/hd/gem_08.jpg"
+},
+{
+"name": "gem_09",
+"file": "sbs-tiny3/gem/gem_09.jpg",
+"hd": "sbs-tiny3/gem/hd/gem_09.jpg"
+},
+{
+"name": "gem_10",
+"file": "sbs-tiny3/gem/gem_10.jpg",
+"hd": "sbs-tiny3/gem/hd/gem_10.jpg"
+},
+{
+"name": "gem_11",
+"file": "sbs-tiny3/gem/gem_11.jpg",
+"hd": "sbs-tiny3/gem/hd/gem_11.jpg"
+},
+{
+"name": "gem_12",
+"file": "sbs-tiny3/gem/gem_12.jpg",
+"hd": "sbs-tiny3/gem/hd/gem_12.jpg"
+},
+{
+"name": "gem_13",
+"file": "sbs-tiny3/gem/gem_13.jpg",
+"hd": "sbs-tiny3/gem/hd/gem_13.jpg"
+},
+{
+"name": "gem_14",
+"file": "sbs-tiny3/gem/gem_14.jpg",
+"hd": "sbs-tiny3/gem/hd/gem_14.jpg"
+},
+{
+"name": "gem_15",
+"file": "sbs-tiny3/gem/gem_15.jpg",
+"hd": "sbs-tiny3/gem/hd/gem_15.jpg"
+},
+{
+"name": "gem_16",
+"file": "sbs-tiny3/gem/gem_16.jpg",
+"hd": "sbs-tiny3/gem/hd/gem_16.jpg"
+},
+{
+"name": "gem_17",
+"file": "sbs-tiny3/gem/gem_17.jpg",
+"hd": "sbs-tiny3/gem/hd/gem_17.jpg"
+},
+{
+"name": "gem_18",
+"file": "sbs-tiny3/gem/gem_18.jpg",
+"hd": "sbs-tiny3/gem/hd/gem_18.jpg"
+},
+{
+"name": "gem_19",
+"file": "sbs-tiny3/gem/gem_19.jpg",
+"hd": "sbs-tiny3/gem/hd/gem_19.jpg"
+},
+{
+"name": "gem_20",
+"file": "sbs-tiny3/gem/gem_20.jpg",
+"hd": "sbs-tiny3/gem/hd/gem_20.jpg"
+},
+{
+"name": "gem_21",
+"file": "sbs-tiny3/gem/gem_21.jpg",
+"hd": "sbs-tiny3/gem/hd/gem_21.jpg"
+},
+{
+"name": "gem_22",
+"file": "sbs-tiny3/gem/gem_22.jpg",
+"hd": "sbs-tiny3/gem/hd/gem_22.jpg"
+},
+{
+"name": "gem_23",
+"file": "sbs-tiny3/gem/gem_23.jpg",
+"hd": "sbs-tiny3/gem/hd/gem_23.jpg"
+},
+{
+"name": "gem_24",
+"file": "sbs-tiny3/gem/gem_24.jpg",
+"hd": "sbs-tiny3/gem/hd/gem_24.jpg"
+}
+],
+"grating": [
+{
+"name": "grating_01",
+"file": "sbs-tiny3/grating/grating_01.jpg",
+"hd": "sbs-tiny3/grating/hd/grating_01.jpg"
+},
+{
+"name": "grating_02",
+"file": "sbs-tiny3/grating/grating_02.jpg",
+"hd": "sbs-tiny3/grating/hd/grating_02.jpg"
+},
+{
+"name": "grating_03",
+"file": "sbs-tiny3/grating/grating_03.jpg",
+"hd": "sbs-tiny3/grating/hd/grating_03.jpg"
+},
+{
+"name": "grating_04",
+"file": "sbs-tiny3/grating/grating_04.jpg",
+"hd": "sbs-tiny3/grating/hd/grating_04.jpg"
+},
+{
+"name": "grating_05",
+"file": "sbs-tiny3/grating/grating_05.jpg",
+"hd": "sbs-tiny3/grating/hd/grating_05.jpg"
+},
+{
+"name": "grating_06",
+"file": "sbs-tiny3/grating/grating_06.jpg",
+"hd": "sbs-tiny3/grating/hd/grating_06.jpg"
+},
+{
+"name": "grating_07",
+"file": "sbs-tiny3/grating/grating_07.jpg",
+"hd": "sbs-tiny3/grating/hd/grating_07.jpg"
+},
+{
+"name": "grating_08",
+"file": "sbs-tiny3/grating/grating_08.jpg",
+"hd": "sbs-tiny3/grating/hd/grating_08.jpg"
+},
+{
+"name": "grating_09",
+"file": "sbs-tiny3/grating/grating_09.jpg",
+"hd": "sbs-tiny3/grating/hd/grating_09.jpg"
+},
+{
+"name": "grating_10",
+"file": "sbs-tiny3/grating/grating_10.jpg",
+"hd": "sbs-tiny3/grating/hd/grating_10.jpg"
+},
+{
+"name": "grating_11",
+"file": "sbs-tiny3/grating/grating_11.jpg",
+"hd": "sbs-tiny3/grating/hd/grating_11.jpg"
+},
+{
+"name": "grating_12",
+"file": "sbs-tiny3/grating/grating_12.jpg",
+"hd": "sbs-tiny3/grating/hd/grating_12.jpg"
+},
+{
+"name": "grating_13",
+"file": "sbs-tiny3/grating/grating_13.jpg",
+"hd": "sbs-tiny3/grating/hd/grating_13.jpg"
+},
+{
+"name": "grating_14",
+"file": "sbs-tiny3/grating/grating_14.jpg",
+"hd": "sbs-tiny3/grating/hd/grating_14.jpg"
+},
+{
+"name": "grating_15",
+"file": "sbs-tiny3/grating/grating_15.jpg",
+"hd": "sbs-tiny3/grating/hd/grating_15.jpg"
+},
+{
+"name": "grating_16",
+"file": "sbs-tiny3/grating/grating_16.jpg",
+"hd": "sbs-tiny3/grating/hd/grating_16.jpg"
+},
+{
+"name": "grating_17",
+"file": "sbs-tiny3/grating/grating_17.jpg",
+"hd": "sbs-tiny3/grating/hd/grating_17.jpg"
+},
+{
+"name": "grating_18",
+"file": "sbs-tiny3/grating/grating_18.jpg",
+"hd": "sbs-tiny3/grating/hd/grating_18.jpg"
+},
+{
+"name": "grating_19",
+"file": "sbs-tiny3/grating/grating_19.jpg",
+"hd": "sbs-tiny3/grating/hd/grating_19.jpg"
+},
+{
+"name": "grating_20",
+"file": "sbs-tiny3/grating/grating_20.jpg",
+"hd": "sbs-tiny3/grating/hd/grating_20.jpg"
+},
+{
+"name": "grating_21",
+"file": "sbs-tiny3/grating/grating_21.jpg",
+"hd": "sbs-tiny3/grating/hd/grating_21.jpg"
+},
+{
+"name": "grating_22",
+"file": "sbs-tiny3/grating/grating_22.jpg",
+"hd": "sbs-tiny3/grating/hd/grating_22.jpg"
+},
+{
+"name": "grating_23",
+"file": "sbs-tiny3/grating/grating_23.jpg",
+"hd": "sbs-tiny3/grating/hd/grating_23.jpg"
+},
+{
+"name": "grating_24",
+"file": "sbs-tiny3/grating/grating_24.jpg",
+"hd": "sbs-tiny3/grating/hd/grating_24.jpg"
+}
+],
+"metal": [
+{
+"name": "metal_01",
+"file": "sbs-tiny3/metal/metal_01.jpg",
+"hd": "sbs-tiny3/metal/hd/metal_01.jpg"
+},
+{
+"name": "metal_02",
+"file": "sbs-tiny3/metal/metal_02.jpg",
+"hd": "sbs-tiny3/metal/hd/metal_02.jpg"
+},
+{
+"name": "metal_03",
+"file": "sbs-tiny3/metal/metal_03.jpg",
+"hd": "sbs-tiny3/metal/hd/metal_03.jpg"
+},
+{
+"name": "metal_04",
+"file": "sbs-tiny3/metal/metal_04.jpg",
+"hd": "sbs-tiny3/metal/hd/metal_04.jpg"
+},
+{
+"name": "metal_05",
+"file": "sbs-tiny3/metal/metal_05.jpg",
+"hd": "sbs-tiny3/metal/hd/metal_05.jpg"
+},
+{
+"name": "metal_06",
+"file": "sbs-tiny3/metal/metal_06.jpg",
+"hd": "sbs-tiny3/metal/hd/metal_06.jpg"
+},
+{
+"name": "metal_07",
+"file": "sbs-tiny3/metal/metal_07.jpg",
+"hd": "sbs-tiny3/metal/hd/metal_07.jpg"
+},
+{
+"name": "metal_08",
+"file": "sbs-tiny3/metal/metal_08.jpg",
+"hd": "sbs-tiny3/metal/hd/metal_08.jpg"
+},
+{
+"name": "metal_09",
+"file": "sbs-tiny3/metal/metal_09.jpg",
+"hd": "sbs-tiny3/metal/hd/metal_09.jpg"
+},
+{
+"name": "metal_10",
+"file": "sbs-tiny3/metal/metal_10.jpg",
+"hd": "sbs-tiny3/metal/hd/metal_10.jpg"
+},
+{
+"name": "metal_11",
+"file": "sbs-tiny3/metal/metal_11.jpg",
+"hd": "sbs-tiny3/metal/hd/metal_11.jpg"
+},
+{
+"name": "metal_12",
+"file": "sbs-tiny3/metal/metal_12.jpg",
+"hd": "sbs-tiny3/metal/hd/metal_12.jpg"
+},
+{
+"name": "metal_13",
+"file": "sbs-tiny3/metal/metal_13.jpg",
+"hd": "sbs-tiny3/metal/hd/metal_13.jpg"
+},
+{
+"name": "metal_14",
+"file": "sbs-tiny3/metal/metal_14.jpg",
+"hd": "sbs-tiny3/metal/hd/metal_14.jpg"
+},
+{
+"name": "metal_15",
+"file": "sbs-tiny3/metal/metal_15.jpg",
+"hd": "sbs-tiny3/metal/hd/metal_15.jpg"
+},
+{
+"name": "metal_16",
+"file": "sbs-tiny3/metal/metal_16.jpg",
+"hd": "sbs-tiny3/metal/hd/metal_16.jpg"
+},
+{
+"name": "metal_17",
+"file": "sbs-tiny3/metal/metal_17.jpg",
+"hd": "sbs-tiny3/metal/hd/metal_17.jpg"
+},
+{
+"name": "metal_18",
+"file": "sbs-tiny3/metal/metal_18.jpg",
+"hd": "sbs-tiny3/metal/hd/metal_18.jpg"
+},
+{
+"name": "metal_19",
+"file": "sbs-tiny3/metal/metal_19.jpg",
+"hd": "sbs-tiny3/metal/hd/metal_19.jpg"
+},
+{
+"name": "metal_20",
+"file": "sbs-tiny3/metal/metal_20.jpg",
+"hd": "sbs-tiny3/metal/hd/metal_20.jpg"
+},
+{
+"name": "metal_21",
+"file": "sbs-tiny3/metal/metal_21.jpg",
+"hd": "sbs-tiny3/metal/hd/metal_21.jpg"
+},
+{
+"name": "metal_22",
+"file": "sbs-tiny3/metal/metal_22.jpg",
+"hd": "sbs-tiny3/metal/hd/metal_22.jpg"
+},
+{
+"name": "metal_23",
+"file": "sbs-tiny3/metal/metal_23.jpg",
+"hd": "sbs-tiny3/metal/hd/metal_23.jpg"
+},
+{
+"name": "metal_24",
+"file": "sbs-tiny3/metal/metal_24.jpg",
+"hd": "sbs-tiny3/metal/hd/metal_24.jpg"
+}
+],
+"stone": [
+{
+"name": "stone_01",
+"file": "sbs-tiny3/stone/stone_01.jpg",
+"hd": "sbs-tiny3/stone/hd/stone_01.jpg"
+},
+{
+"name": "stone_02",
+"file": "sbs-tiny3/stone/stone_02.jpg",
+"hd": "sbs-tiny3/stone/hd/stone_02.jpg"
+},
+{
+"name": "stone_03",
+"file": "sbs-tiny3/stone/stone_03.jpg",
+"hd": "sbs-tiny3/stone/hd/stone_03.jpg"
+},
+{
+"name": "stone_04",
+"file": "sbs-tiny3/stone/stone_04.jpg",
+"hd": "sbs-tiny3/stone/hd/stone_04.jpg"
+},
+{
+"name": "stone_05",
+"file": "sbs-tiny3/stone/stone_05.jpg",
+"hd": "sbs-tiny3/stone/hd/stone_05.jpg"
+},
+{
+"name": "stone_06",
+"file": "sbs-tiny3/stone/stone_06.jpg",
+"hd": "sbs-tiny3/stone/hd/stone_06.jpg"
+},
+{
+"name": "stone_07",
+"file": "sbs-tiny3/stone/stone_07.jpg",
+"hd": "sbs-tiny3/stone/hd/stone_07.jpg"
+},
+{
+"name": "stone_08",
+"file": "sbs-tiny3/stone/stone_08.jpg",
+"hd": "sbs-tiny3/stone/hd/stone_08.jpg"
+},
+{
+"name": "stone_09",
+"file": "sbs-tiny3/stone/stone_09.jpg",
+"hd": "sbs-tiny3/stone/hd/stone_09.jpg"
+},
+{
+"name": "stone_10",
+"file": "sbs-tiny3/stone/stone_10.jpg",
+"hd": "sbs-tiny3/stone/hd/stone_10.jpg"
+},
+{
+"name": "stone_11",
+"file": "sbs-tiny3/stone/stone_11.jpg",
+"hd": "sbs-tiny3/stone/hd/stone_11.jpg"
+},
+{
+"name": "stone_12",
+"file": "sbs-tiny3/stone/stone_12.jpg",
+"hd": "sbs-tiny3/stone/hd/stone_12.jpg"
+},
+{
+"name": "stone_13",
+"file": "sbs-tiny3/stone/stone_13.jpg",
+"hd": "sbs-tiny3/stone/hd/stone_13.jpg"
+},
+{
+"name": "stone_14",
+"file": "sbs-tiny3/stone/stone_14.jpg",
+"hd": "sbs-tiny3/stone/hd/stone_14.jpg"
+},
+{
+"name": "stone_15",
+"file": "sbs-tiny3/stone/stone_15.jpg",
+"hd": "sbs-tiny3/stone/hd/stone_15.jpg"
+},
+{
+"name": "stone_16",
+"file": "sbs-tiny3/stone/stone_16.jpg",
+"hd": "sbs-tiny3/stone/hd/stone_16.jpg"
+},
+{
+"name": "stone_17",
+"file": "sbs-tiny3/stone/stone_17.jpg",
+"hd": "sbs-tiny3/stone/hd/stone_17.jpg"
+},
+{
+"name": "stone_18",
+"file": "sbs-tiny3/stone/stone_18.jpg",
+"hd": "sbs-tiny3/stone/hd/stone_18.jpg"
+},
+{
+"name": "stone_19",
+"file": "sbs-tiny3/stone/stone_19.jpg",
+"hd": "sbs-tiny3/stone/hd/stone_19.jpg"
+},
+{
+"name": "stone_20",
+"file": "sbs-tiny3/stone/stone_20.jpg",
+"hd": "sbs-tiny3/stone/hd/stone_20.jpg"
+},
+{
+"name": "stone_21",
+"file": "sbs-tiny3/stone/stone_21.jpg",
+"hd": "sbs-tiny3/stone/hd/stone_21.jpg"
+},
+{
+"name": "stone_22",
+"file": "sbs-tiny3/stone/stone_22.jpg",
+"hd": "sbs-tiny3/stone/hd/stone_22.jpg"
+},
+{
+"name": "stone_23",
+"file": "sbs-tiny3/stone/stone_23.jpg",
+"hd": "sbs-tiny3/stone/hd/stone_23.jpg"
+},
+{
+"name": "stone_24",
+"file": "sbs-tiny3/stone/stone_24.jpg",
+"hd": "sbs-tiny3/stone/hd/stone_24.jpg"
+}
+],
+"terrain": [
+{
+"name": "terrain_01",
+"file": "sbs-tiny3/terrain/terrain_01.jpg",
+"hd": "sbs-tiny3/terrain/hd/terrain_01.jpg"
+},
+{
+"name": "terrain_02",
+"file": "sbs-tiny3/terrain/terrain_02.jpg",
+"hd": "sbs-tiny3/terrain/hd/terrain_02.jpg"
+},
+{
+"name": "terrain_03",
+"file": "sbs-tiny3/terrain/terrain_03.jpg",
+"hd": "sbs-tiny3/terrain/hd/terrain_03.jpg"
+},
+{
+"name": "terrain_04",
+"file": "sbs-tiny3/terrain/terrain_04.jpg",
+"hd": "sbs-tiny3/terrain/hd/terrain_04.jpg"
+},
+{
+"name": "terrain_05",
+"file": "sbs-tiny3/terrain/terrain_05.jpg",
+"hd": "sbs-tiny3/terrain/hd/terrain_05.jpg"
+},
+{
+"name": "terrain_06",
+"file": "sbs-tiny3/terrain/terrain_06.jpg",
+"hd": "sbs-tiny3/terrain/hd/terrain_06.jpg"
+},
+{
+"name": "terrain_07",
+"file": "sbs-tiny3/terrain/terrain_07.jpg",
+"hd": "sbs-tiny3/terrain/hd/terrain_07.jpg"
+},
+{
+"name": "terrain_08",
+"file": "sbs-tiny3/terrain/terrain_08.jpg",
+"hd": "sbs-tiny3/terrain/hd/terrain_08.jpg"
+},
+{
+"name": "terrain_09",
+"file": "sbs-tiny3/terrain/terrain_09.jpg",
+"hd": "sbs-tiny3/terrain/hd/terrain_09.jpg"
+},
+{
+"name": "terrain_10",
+"file": "sbs-tiny3/terrain/terrain_10.jpg",
+"hd": "sbs-tiny3/terrain/hd/terrain_10.jpg"
+},
+{
+"name": "terrain_11",
+"file": "sbs-tiny3/terrain/terrain_11.jpg",
+"hd": "sbs-tiny3/terrain/hd/terrain_11.jpg"
+},
+{
+"name": "terrain_12",
+"file": "sbs-tiny3/terrain/terrain_12.jpg",
+"hd": "sbs-tiny3/terrain/hd/terrain_12.jpg"
+},
+{
+"name": "terrain_13",
+"file": "sbs-tiny3/terrain/terrain_13.jpg",
+"hd": "sbs-tiny3/terrain/hd/terrain_13.jpg"
+},
+{
+"name": "terrain_14",
+"file": "sbs-tiny3/terrain/terrain_14.jpg",
+"hd": "sbs-tiny3/terrain/hd/terrain_14.jpg"
+},
+{
+"name": "terrain_15",
+"file": "sbs-tiny3/terrain/terrain_15.jpg",
+"hd": "sbs-tiny3/terrain/hd/terrain_15.jpg"
+},
+{
+"name": "terrain_16",
+"file": "sbs-tiny3/terrain/terrain_16.jpg",
+"hd": "sbs-tiny3/terrain/hd/terrain_16.jpg"
+},
+{
+"name": "terrain_17",
+"file": "sbs-tiny3/terrain/terrain_17.jpg",
+"hd": "sbs-tiny3/terrain/hd/terrain_17.jpg"
+},
+{
+"name": "terrain_18",
+"file": "sbs-tiny3/terrain/terrain_18.jpg",
+"hd": "sbs-tiny3/terrain/hd/terrain_18.jpg"
+},
+{
+"name": "terrain_19",
+"file": "sbs-tiny3/terrain/terrain_19.jpg",
+"hd": "sbs-tiny3/terrain/hd/terrain_19.jpg"
+},
+{
+"name": "terrain_20",
+"file": "sbs-tiny3/terrain/terrain_20.jpg",
+"hd": "sbs-tiny3/terrain/hd/terrain_20.jpg"
+},
+{
+"name": "terrain_21",
+"file": "sbs-tiny3/terrain/terrain_21.jpg",
+"hd": "sbs-tiny3/terrain/hd/terrain_21.jpg"
+},
+{
+"name": "terrain_22",
+"file": "sbs-tiny3/terrain/terrain_22.jpg",
+"hd": "sbs-tiny3/terrain/hd/terrain_22.jpg"
+},
+{
+"name": "terrain_23",
+"file": "sbs-tiny3/terrain/terrain_23.jpg",
+"hd": "sbs-tiny3/terrain/hd/terrain_23.jpg"
+},
+{
+"name": "terrain_24",
+"file": "sbs-tiny3/terrain/terrain_24.jpg",
+"hd": "sbs-tiny3/terrain/hd/terrain_24.jpg"
+}
+],
+"weave": [
+{
+"name": "weave_01",
+"file": "sbs-tiny3/weave/weave_01.jpg",
+"hd": "sbs-tiny3/weave/hd/weave_01.jpg"
+},
+{
+"name": "weave_02",
+"file": "sbs-tiny3/weave/weave_02.jpg",
+"hd": "sbs-tiny3/weave/hd/weave_02.jpg"
+},
+{
+"name": "weave_03",
+"file": "sbs-tiny3/weave/weave_03.jpg",
+"hd": "sbs-tiny3/weave/hd/weave_03.jpg"
+},
+{
+"name": "weave_04",
+"file": "sbs-tiny3/weave/weave_04.jpg",
+"hd": "sbs-tiny3/weave/hd/weave_04.jpg"
+},
+{
+"name": "weave_05",
+"file": "sbs-tiny3/weave/weave_05.jpg",
+"hd": "sbs-tiny3/weave/hd/weave_05.jpg"
+},
+{
+"name": "weave_06",
+"file": "sbs-tiny3/weave/weave_06.jpg",
+"hd": "sbs-tiny3/weave/hd/weave_06.jpg"
+},
+{
+"name": "weave_07",
+"file": "sbs-tiny3/weave/weave_07.jpg",
+"hd": "sbs-tiny3/weave/hd/weave_07.jpg"
+},
+{
+"name": "weave_08",
+"file": "sbs-tiny3/weave/weave_08.jpg",
+"hd": "sbs-tiny3/weave/hd/weave_08.jpg"
+},
+{
+"name": "weave_09",
+"file": "sbs-tiny3/weave/weave_09.jpg",
+"hd": "sbs-tiny3/weave/hd/weave_09.jpg"
+},
+{
+"name": "weave_10",
+"file": "sbs-tiny3/weave/weave_10.jpg",
+"hd": "sbs-tiny3/weave/hd/weave_10.jpg"
+},
+{
+"name": "weave_11",
+"file": "sbs-tiny3/weave/weave_11.jpg",
+"hd": "sbs-tiny3/weave/hd/weave_11.jpg"
+},
+{
+"name": "weave_12",
+"file": "sbs-tiny3/weave/weave_12.jpg",
+"hd": "sbs-tiny3/weave/hd/weave_12.jpg"
+},
+{
+"name": "weave_13",
+"file": "sbs-tiny3/weave/weave_13.jpg",
+"hd": "sbs-tiny3/weave/hd/weave_13.jpg"
+},
+{
+"name": "weave_14",
+"file": "sbs-tiny3/weave/weave_14.jpg",
+"hd": "sbs-tiny3/weave/hd/weave_14.jpg"
+},
+{
+"name": "weave_15",
+"file": "sbs-tiny3/weave/weave_15.jpg",
+"hd": "sbs-tiny3/weave/hd/weave_15.jpg"
+},
+{
+"name": "weave_16",
+"file": "sbs-tiny3/weave/weave_16.jpg",
+"hd": "sbs-tiny3/weave/hd/weave_16.jpg"
+},
+{
+"name": "weave_17",
+"file": "sbs-tiny3/weave/weave_17.jpg",
+"hd": "sbs-tiny3/weave/hd/weave_17.jpg"
+},
+{
+"name": "weave_18",
+"file": "sbs-tiny3/weave/weave_18.jpg",
+"hd": "sbs-tiny3/weave/hd/weave_18.jpg"
+},
+{
+"name": "weave_19",
+"file": "sbs-tiny3/weave/weave_19.jpg",
+"hd": "sbs-tiny3/weave/hd/weave_19.jpg"
+},
+{
+"name": "weave_20",
+"file": "sbs-tiny3/weave/weave_20.jpg",
+"hd": "sbs-tiny3/weave/hd/weave_20.jpg"
+},
+{
+"name": "weave_21",
+"file": "sbs-tiny3/weave/weave_21.jpg",
+"hd": "sbs-tiny3/weave/hd/weave_21.jpg"
+},
+{
+"name": "weave_22",
+"file": "sbs-tiny3/weave/weave_22.jpg",
+"hd": "sbs-tiny3/weave/hd/weave_22.jpg"
+},
+{
+"name": "weave_23",
+"file": "sbs-tiny3/weave/weave_23.jpg",
+"hd": "sbs-tiny3/weave/hd/weave_23.jpg"
+},
+{
+"name": "weave_24",
+"file": "sbs-tiny3/weave/weave_24.jpg",
+"hd": "sbs-tiny3/weave/hd/weave_24.jpg"
+}
+]
+},
+"sbs-horror": {
+"brick": [
+{
+"name": "horror_brick_01",
+"file": "sbs-horror/brick/horror_brick_01.jpg",
+"hd": "sbs-horror/brick/hd/horror_brick_01.jpg"
+},
+{
+"name": "horror_brick_02",
+"file": "sbs-horror/brick/horror_brick_02.jpg",
+"hd": "sbs-horror/brick/hd/horror_brick_02.jpg"
+},
+{
+"name": "horror_brick_03",
+"file": "sbs-horror/brick/horror_brick_03.jpg",
+"hd": "sbs-horror/brick/hd/horror_brick_03.jpg"
+},
+{
+"name": "horror_brick_04",
+"file": "sbs-horror/brick/horror_brick_04.jpg",
+"hd": "sbs-horror/brick/hd/horror_brick_04.jpg"
+},
+{
+"name": "horror_brick_05",
+"file": "sbs-horror/brick/horror_brick_05.jpg",
+"hd": "sbs-horror/brick/hd/horror_brick_05.jpg"
+},
+{
+"name": "horror_brick_06",
+"file": "sbs-horror/brick/horror_brick_06.jpg",
+"hd": "sbs-horror/brick/hd/horror_brick_06.jpg"
+},
+{
+"name": "horror_brick_07",
+"file": "sbs-horror/brick/horror_brick_07.jpg",
+"hd": "sbs-horror/brick/hd/horror_brick_07.jpg"
+},
+{
+"name": "horror_brick_08",
+"file": "sbs-horror/brick/horror_brick_08.jpg",
+"hd": "sbs-horror/brick/hd/horror_brick_08.jpg"
+},
+{
+"name": "horror_brick_09",
+"file": "sbs-horror/brick/horror_brick_09.jpg",
+"hd": "sbs-horror/brick/hd/horror_brick_09.jpg"
+},
+{
+"name": "horror_brick_10",
+"file": "sbs-horror/brick/horror_brick_10.jpg",
+"hd": "sbs-horror/brick/hd/horror_brick_10.jpg"
+},
+{
+"name": "horror_brick_11",
+"file": "sbs-horror/brick/horror_brick_11.jpg",
+"hd": "sbs-horror/brick/hd/horror_brick_11.jpg"
+},
+{
+"name": "horror_brick_12",
+"file": "sbs-horror/brick/horror_brick_12.jpg",
+"hd": "sbs-horror/brick/hd/horror_brick_12.jpg"
+},
+{
+"name": "horror_brick_13",
+"file": "sbs-horror/brick/horror_brick_13.jpg",
+"hd": "sbs-horror/brick/hd/horror_brick_13.jpg"
+},
+{
+"name": "horror_brick_14",
+"file": "sbs-horror/brick/horror_brick_14.jpg",
+"hd": "sbs-horror/brick/hd/horror_brick_14.jpg"
+}
+],
+"floor": [
+{
+"name": "horror_floor_01",
+"file": "sbs-horror/floor/horror_floor_01.jpg",
+"hd": "sbs-horror/floor/hd/horror_floor_01.jpg"
+},
+{
+"name": "horror_floor_02",
+"file": "sbs-horror/floor/horror_floor_02.jpg",
+"hd": "sbs-horror/floor/hd/horror_floor_02.jpg"
+},
+{
+"name": "horror_floor_03",
+"file": "sbs-horror/floor/horror_floor_03.jpg",
+"hd": "sbs-horror/floor/hd/horror_floor_03.jpg"
+},
+{
+"name": "horror_floor_04",
+"file": "sbs-horror/floor/horror_floor_04.jpg",
+"hd": "sbs-horror/floor/hd/horror_floor_04.jpg"
+},
+{
+"name": "horror_floor_05",
+"file": "sbs-horror/floor/horror_floor_05.jpg",
+"hd": "sbs-horror/floor/hd/horror_floor_05.jpg"
+},
+{
+"name": "horror_floor_06",
+"file": "sbs-horror/floor/horror_floor_06.png",
+"hd": "sbs-horror/floor/hd/horror_floor_06.png"
+},
+{
+"name": "horror_floor_07",
+"file": "sbs-horror/floor/horror_floor_07.jpg",
+"hd": "sbs-horror/floor/hd/horror_floor_07.jpg"
+},
+{
+"name": "horror_floor_08",
+"file": "sbs-horror/floor/horror_floor_08.jpg",
+"hd": "sbs-horror/floor/hd/horror_floor_08.jpg"
+},
+{
+"name": "horror_floor_09",
+"file": "sbs-horror/floor/horror_floor_09.jpg",
+"hd": "sbs-horror/floor/hd/horror_floor_09.jpg"
+},
+{
+"name": "horror_floor_10",
+"file": "sbs-horror/floor/horror_floor_10.jpg",
+"hd": "sbs-horror/floor/hd/horror_floor_10.jpg"
+},
+{
+"name": "horror_floor_11",
+"file": "sbs-horror/floor/horror_floor_11.jpg",
+"hd": "sbs-horror/floor/hd/horror_floor_11.jpg"
+},
+{
+"name": "horror_floor_12",
+"file": "sbs-horror/floor/horror_floor_12.jpg",
+"hd": "sbs-horror/floor/hd/horror_floor_12.jpg"
+},
+{
+"name": "horror_floor_13",
+"file": "sbs-horror/floor/horror_floor_13.jpg",
+"hd": "sbs-horror/floor/hd/horror_floor_13.jpg"
+},
+{
+"name": "horror_floor_14",
+"file": "sbs-horror/floor/horror_floor_14.jpg",
+"hd": "sbs-horror/floor/hd/horror_floor_14.jpg"
+}
+],
+"metal": [
+{
+"name": "horror_metal_01",
+"file": "sbs-horror/metal/horror_metal_01.jpg",
+"hd": "sbs-horror/metal/hd/horror_metal_01.jpg"
+},
+{
+"name": "horror_metal_02",
+"file": "sbs-horror/metal/horror_metal_02.jpg",
+"hd": "sbs-horror/metal/hd/horror_metal_02.jpg"
+},
+{
+"name": "horror_metal_03",
+"file": "sbs-horror/metal/horror_metal_03.jpg",
+"hd": "sbs-horror/metal/hd/horror_metal_03.jpg"
+},
+{
+"name": "horror_metal_04",
+"file": "sbs-horror/metal/horror_metal_04.jpg",
+"hd": "sbs-horror/metal/hd/horror_metal_04.jpg"
+},
+{
+"name": "horror_metal_05",
+"file": "sbs-horror/metal/horror_metal_05.jpg",
+"hd": "sbs-horror/metal/hd/horror_metal_05.jpg"
+},
+{
+"name": "horror_metal_06",
+"file": "sbs-horror/metal/horror_metal_06.jpg",
+"hd": "sbs-horror/metal/hd/horror_metal_06.jpg"
+},
+{
+"name": "horror_metal_07",
+"file": "sbs-horror/metal/horror_metal_07.jpg",
+"hd": "sbs-horror/metal/hd/horror_metal_07.jpg"
+},
+{
+"name": "horror_metal_08",
+"file": "sbs-horror/metal/horror_metal_08.jpg",
+"hd": "sbs-horror/metal/hd/horror_metal_08.jpg"
+},
+{
+"name": "horror_metal_09",
+"file": "sbs-horror/metal/horror_metal_09.jpg",
+"hd": "sbs-horror/metal/hd/horror_metal_09.jpg"
+},
+{
+"name": "horror_metal_10",
+"file": "sbs-horror/metal/horror_metal_10.jpg",
+"hd": "sbs-horror/metal/hd/horror_metal_10.jpg"
+},
+{
+"name": "horror_metal_11",
+"file": "sbs-horror/metal/horror_metal_11.jpg",
+"hd": "sbs-horror/metal/hd/horror_metal_11.jpg"
+},
+{
+"name": "horror_metal_12",
+"file": "sbs-horror/metal/horror_metal_12.jpg",
+"hd": "sbs-horror/metal/hd/horror_metal_12.jpg"
+},
+{
+"name": "horror_metal_13",
+"file": "sbs-horror/metal/horror_metal_13.jpg",
+"hd": "sbs-horror/metal/hd/horror_metal_13.jpg"
+},
+{
+"name": "horror_metal_14",
+"file": "sbs-horror/metal/horror_metal_14.jpg",
+"hd": "sbs-horror/metal/hd/horror_metal_14.jpg"
+}
+],
+"misc": [
+{
+"name": "horror_misc_01",
+"file": "sbs-horror/misc/horror_misc_01.jpg",
+"hd": "sbs-horror/misc/hd/horror_misc_01.jpg"
+},
+{
+"name": "horror_misc_02",
+"file": "sbs-horror/misc/horror_misc_02.jpg",
+"hd": "sbs-horror/misc/hd/horror_misc_02.jpg"
+},
+{
+"name": "horror_misc_03",
+"file": "sbs-horror/misc/horror_misc_03.jpg",
+"hd": "sbs-horror/misc/hd/horror_misc_03.jpg"
+},
+{
+"name": "horror_misc_04",
+"file": "sbs-horror/misc/horror_misc_04.jpg",
+"hd": "sbs-horror/misc/hd/horror_misc_04.jpg"
+},
+{
+"name": "horror_misc_05",
+"file": "sbs-horror/misc/horror_misc_05.jpg",
+"hd": "sbs-horror/misc/hd/horror_misc_05.jpg"
+},
+{
+"name": "horror_misc_06",
+"file": "sbs-horror/misc/horror_misc_06.jpg",
+"hd": "sbs-horror/misc/hd/horror_misc_06.jpg"
+},
+{
+"name": "horror_misc_07",
+"file": "sbs-horror/misc/horror_misc_07.png",
+"hd": "sbs-horror/misc/hd/horror_misc_07.png"
+},
+{
+"name": "horror_misc_08",
+"file": "sbs-horror/misc/horror_misc_08.jpg",
+"hd": "sbs-horror/misc/hd/horror_misc_08.jpg"
+},
+{
+"name": "horror_misc_09",
+"file": "sbs-horror/misc/horror_misc_09.jpg",
+"hd": "sbs-horror/misc/hd/horror_misc_09.jpg"
+},
+{
+"name": "horror_misc_10",
+"file": "sbs-horror/misc/horror_misc_10.jpg",
+"hd": "sbs-horror/misc/hd/horror_misc_10.jpg"
+},
+{
+"name": "horror_misc_11",
+"file": "sbs-horror/misc/horror_misc_11.jpg",
+"hd": "sbs-horror/misc/hd/horror_misc_11.jpg"
+},
+{
+"name": "horror_misc_12",
+"file": "sbs-horror/misc/horror_misc_12.jpg",
+"hd": "sbs-horror/misc/hd/horror_misc_12.jpg"
+},
+{
+"name": "horror_misc_13",
+"file": "sbs-horror/misc/horror_misc_13.jpg",
+"hd": "sbs-horror/misc/hd/horror_misc_13.jpg"
+},
+{
+"name": "horror_misc_14",
+"file": "sbs-horror/misc/horror_misc_14.jpg",
+"hd": "sbs-horror/misc/hd/horror_misc_14.jpg"
+},
+{
+"name": "horror_misc_15",
+"file": "sbs-horror/misc/horror_misc_15.jpg",
+"hd": "sbs-horror/misc/hd/horror_misc_15.jpg"
+}
+],
+"stains": [
+{
+"name": "horror_stain_01",
+"file": "sbs-horror/stains/horror_stain_01.png",
+"hd": "sbs-horror/stains/hd/horror_stain_01.png"
+},
+{
+"name": "horror_stain_02",
+"file": "sbs-horror/stains/horror_stain_02.png",
+"hd": "sbs-horror/stains/hd/horror_stain_02.png"
+},
+{
+"name": "horror_stain_03",
+"file": "sbs-horror/stains/horror_stain_03.png",
+"hd": "sbs-horror/stains/hd/horror_stain_03.png"
+},
+{
+"name": "horror_stain_04",
+"file": "sbs-horror/stains/horror_stain_04.png",
+"hd": "sbs-horror/stains/hd/horror_stain_04.png"
+},
+{
+"name": "horror_stain_05",
+"file": "sbs-horror/stains/horror_stain_05.png",
+"hd": "sbs-horror/stains/hd/horror_stain_05.png"
+},
+{
+"name": "horror_stain_06",
+"file": "sbs-horror/stains/horror_stain_06.png",
+"hd": "sbs-horror/stains/hd/horror_stain_06.png"
+},
+{
+"name": "horror_stain_07",
+"file": "sbs-horror/stains/horror_stain_07.png",
+"hd": "sbs-horror/stains/hd/horror_stain_07.png"
+},
+{
+"name": "horror_stain_08",
+"file": "sbs-horror/stains/horror_stain_08.png",
+"hd": "sbs-horror/stains/hd/horror_stain_08.png"
+},
+{
+"name": "horror_stain_09",
+"file": "sbs-horror/stains/horror_stain_09.png",
+"hd": "sbs-horror/stains/hd/horror_stain_09.png"
+},
+{
+"name": "horror_stain_10",
+"file": "sbs-horror/stains/horror_stain_10.png",
+"hd": "sbs-horror/stains/hd/horror_stain_10.png"
+},
+{
+"name": "horror_stain_11",
+"file": "sbs-horror/stains/horror_stain_11.png",
+"hd": "sbs-horror/stains/hd/horror_stain_11.png"
+},
+{
+"name": "horror_stain_12",
+"file": "sbs-horror/stains/horror_stain_12.png",
+"hd": "sbs-horror/stains/hd/horror_stain_12.png"
+},
+{
+"name": "horror_stain_13",
+"file": "sbs-horror/stains/horror_stain_13.png",
+"hd": "sbs-horror/stains/hd/horror_stain_13.png"
+},
+{
+"name": "horror_stain_14",
+"file": "sbs-horror/stains/horror_stain_14.png",
+"hd": "sbs-horror/stains/hd/horror_stain_14.png"
+},
+{
+"name": "horror_stain_15",
+"file": "sbs-horror/stains/horror_stain_15.png",
+"hd": "sbs-horror/stains/hd/horror_stain_15.png"
+}
+],
+"stone": [
+{
+"name": "horror_stone_01",
+"file": "sbs-horror/stone/horror_stone_01.jpg",
+"hd": "sbs-horror/stone/hd/horror_stone_01.jpg"
+},
+{
+"name": "horror_stone_02",
+"file": "sbs-horror/stone/horror_stone_02.jpg",
+"hd": "sbs-horror/stone/hd/horror_stone_02.jpg"
+},
+{
+"name": "horror_stone_03",
+"file": "sbs-horror/stone/horror_stone_03.jpg",
+"hd": "sbs-horror/stone/hd/horror_stone_03.jpg"
+},
+{
+"name": "horror_stone_04",
+"file": "sbs-horror/stone/horror_stone_04.jpg",
+"hd": "sbs-horror/stone/hd/horror_stone_04.jpg"
+},
+{
+"name": "horror_stone_05",
+"file": "sbs-horror/stone/horror_stone_05.jpg",
+"hd": "sbs-horror/stone/hd/horror_stone_05.jpg"
+},
+{
+"name": "horror_stone_06",
+"file": "sbs-horror/stone/horror_stone_06.jpg",
+"hd": "sbs-horror/stone/hd/horror_stone_06.jpg"
+},
+{
+"name": "horror_stone_07",
+"file": "sbs-horror/stone/horror_stone_07.jpg",
+"hd": "sbs-horror/stone/hd/horror_stone_07.jpg"
+},
+{
+"name": "horror_stone_08",
+"file": "sbs-horror/stone/horror_stone_08.jpg",
+"hd": "sbs-horror/stone/hd/horror_stone_08.jpg"
+},
+{
+"name": "horror_stone_09",
+"file": "sbs-horror/stone/horror_stone_09.jpg",
+"hd": "sbs-horror/stone/hd/horror_stone_09.jpg"
+},
+{
+"name": "horror_stone_10",
+"file": "sbs-horror/stone/horror_stone_10.jpg",
+"hd": "sbs-horror/stone/hd/horror_stone_10.jpg"
+},
+{
+"name": "horror_stone_11",
+"file": "sbs-horror/stone/horror_stone_11.jpg",
+"hd": "sbs-horror/stone/hd/horror_stone_11.jpg"
+},
+{
+"name": "horror_stone_12",
+"file": "sbs-horror/stone/horror_stone_12.jpg",
+"hd": "sbs-horror/stone/hd/horror_stone_12.jpg"
+},
+{
+"name": "horror_stone_13",
+"file": "sbs-horror/stone/horror_stone_13.jpg",
+"hd": "sbs-horror/stone/hd/horror_stone_13.jpg"
+},
+{
+"name": "horror_stone_14",
+"file": "sbs-horror/stone/horror_stone_14.jpg",
+"hd": "sbs-horror/stone/hd/horror_stone_14.jpg"
+}
+],
+"wall": [
+{
+"name": "horror_wall_01",
+"file": "sbs-horror/wall/horror_wall_01.jpg",
+"hd": "sbs-horror/wall/hd/horror_wall_01.jpg"
+},
+{
+"name": "horror_wall_02",
+"file": "sbs-horror/wall/horror_wall_02.jpg",
+"hd": "sbs-horror/wall/hd/horror_wall_02.jpg"
+},
+{
+"name": "horror_wall_03",
+"file": "sbs-horror/wall/horror_wall_03.jpg",
+"hd": "sbs-horror/wall/hd/horror_wall_03.jpg"
+},
+{
+"name": "horror_wall_04",
+"file": "sbs-horror/wall/horror_wall_04.jpg",
+"hd": "sbs-horror/wall/hd/horror_wall_04.jpg"
+},
+{
+"name": "horror_wall_05",
+"file": "sbs-horror/wall/horror_wall_05.jpg",
+"hd": "sbs-horror/wall/hd/horror_wall_05.jpg"
+},
+{
+"name": "horror_wall_06",
+"file": "sbs-horror/wall/horror_wall_06.jpg",
+"hd": "sbs-horror/wall/hd/horror_wall_06.jpg"
+},
+{
+"name": "horror_wall_07",
+"file": "sbs-horror/wall/horror_wall_07.jpg",
+"hd": "sbs-horror/wall/hd/horror_wall_07.jpg"
+},
+{
+"name": "horror_wall_08",
+"file": "sbs-horror/wall/horror_wall_08.jpg",
+"hd": "sbs-horror/wall/hd/horror_wall_08.jpg"
+},
+{
+"name": "horror_wall_09",
+"file": "sbs-horror/wall/horror_wall_09.jpg",
+"hd": "sbs-horror/wall/hd/horror_wall_09.jpg"
+},
+{
+"name": "horror_wall_10",
+"file": "sbs-horror/wall/horror_wall_10.jpg",
+"hd": "sbs-horror/wall/hd/horror_wall_10.jpg"
+},
+{
+"name": "horror_wall_11",
+"file": "sbs-horror/wall/horror_wall_11.jpg",
+"hd": "sbs-horror/wall/hd/horror_wall_11.jpg"
+},
+{
+"name": "horror_wall_12",
+"file": "sbs-horror/wall/horror_wall_12.jpg",
+"hd": "sbs-horror/wall/hd/horror_wall_12.jpg"
+},
+{
+"name": "horror_wall_13",
+"file": "sbs-horror/wall/horror_wall_13.jpg",
+"hd": "sbs-horror/wall/hd/horror_wall_13.jpg"
+},
+{
+"name": "horror_wall_14",
+"file": "sbs-horror/wall/horror_wall_14.jpg",
+"hd": "sbs-horror/wall/hd/horror_wall_14.jpg"
+}
+]
+},
+"classic64": {
+"art": [
+{
+"name": "art_vintage_01",
+"file": "classic64/art/art_vintage_01.png",
+"size": [
+64,
+81
+]
+},
+{
+"name": "art_vintage_02",
+"file": "classic64/art/art_vintage_02.png",
+"size": [
+64,
+108
+]
+},
+{
+"name": "art_weird_01",
+"file": "classic64/art/art_weird_01.png",
+"size": [
+256,
+251
+]
+},
+{
+"name": "painting_01",
+"file": "classic64/art/painting_01.png",
+"size": [
+83,
+64
+]
+},
+{
+"name": "painting_02",
+"file": "classic64/art/painting_02.png",
+"size": [
+80,
+64
+]
+},
+{
+"name": "painting_03",
+"file": "classic64/art/painting_03.png",
+"size": [
+64,
+72
+]
+},
+{
+"name": "painting_04",
+"file": "classic64/art/painting_04.png",
+"size": [
+80,
+64
+]
+},
+{
+"name": "painting_05",
+"file": "classic64/art/painting_05.png",
+"size": [
+64,
+81
+]
+},
+{
+"name": "poster_infomation",
+"file": "classic64/art/poster_infomation.png",
+"size": [
+70,
+64
+]
+}
+],
+"books": [
+{
+"name": "book_black_01",
+"file": "classic64/books/book_black_01.png",
+"size": [
+64,
+64
+]
+},
+{
+"name": "book_blue_01",
+"file": "classic64/books/book_blue_01.png",
+"size": [
+64,
+64
+]
+},
+{
+"name": "book_blue_02",
+"file": "classic64/books/book_blue_02.png",
+"size": [
+64,
+64
+]
+},
+{
+"name": "book_blue_03",
+"file": "classic64/books/book_blue_03.png",
+"size": [
+64,
+64
+]
+},
+{
+"name": "book_blue_04",
+"file": "classic64/books/book_blue_04.png",
+"size": [
+64,
+64
+]
+},
+{
+"name": "book_blue_05",
+"file": "classic64/books/book_blue_05.png",
+"size": [
+64,
+64
+]
+},
+{
+"name": "book_blue_06",
+"file": "classic64/books/book_blue_06.png",
+"size": [
+64,
+64
+]
+},
+{
+"name": "book_blue_07",
+"file": "classic64/books/book_blue_07.png",
+"size": [
+64,
+64
+]
+},
+{
+"name": "book_brown_01",
+"file": "classic64/books/book_brown_01.png",
+"size": [
+64,
+64
+]
+},
+{
+"name": "book_brown_02",
+"file": "classic64/books/book_brown_02.png",
+"size": [
+64,
+64
+]
+},
+{
+"name": "book_brown_03",
+"file": "classic64/books/book_brown_03.png",
+"size": [
+64,
+64
+]
+},
+{
+"name": "book_red_01",
+"file": "classic64/books/book_red_01.png",
+"size": [
+64,
+64
+]
+},
+{
+"name": "book_yellow_01",
+"file": "classic64/books/book_yellow_01.png",
+"size": [
+64,
+64
+]
+},
+{
+"name": "catalog_01",
+"file": "classic64/books/catalog_01.png",
+"size": [
+126,
+142
+]
+},
+{
+"name": "catalog_02",
+"file": "classic64/books/catalog_02.png",
+"size": [
+150,
+64
+]
+}
+],
+"boxes": [
+{
+"name": "box_01",
+"file": "classic64/boxes/box_01.png",
+"size": [
+194,
+190
+]
+},
+{
+"name": "box_02",
+"file": "classic64/boxes/box_02.png",
+"size": [
+194,
+190
+]
+},
+{
+"name": "box_03",
+"file": "classic64/boxes/box_03.png",
+"size": [
+194,
+190
+]
+},
+{
+"name": "box_04",
+"file": "classic64/boxes/box_04.png",
+"size": [
+194,
+190
+]
+},
+{
+"name": "box_05",
+"file": "classic64/boxes/box_05.png",
+"size": [
+128,
+165
+]
+},
+{
+"name": "box_shipping_01",
+"file": "classic64/boxes/box_shipping_01.png",
+"size": [
+80,
+64
+]
+},
+{
+"name": "box_shipping_02",
+"file": "classic64/boxes/box_shipping_02.png",
+"size": [
+86,
+64
+]
+},
+{
+"name": "box_shipping_03",
+"file": "classic64/boxes/box_shipping_03.png",
+"size": [
+107,
+64
+]
+},
+{
+"name": "cardboard_01",
+"file": "classic64/boxes/cardboard_01.png",
+"size": [
+64,
+64
+]
+},
+{
+"name": "cardboard_02",
+"file": "classic64/boxes/cardboard_02.png",
+"size": [
+64,
+64
+]
+},
+{
+"name": "crate_1",
+"file": "classic64/boxes/crate_1.png",
+"size": [
+64,
+64
+]
+}
+],
+"bricks": [
+{
+"name": "brick_medium_brown",
+"file": "classic64/bricks/brick_medium_brown.png",
+"size": [
+64,
+64
+]
+},
+{
+"name": "brick_medium_mossy",
+"file": "classic64/bricks/brick_medium_mossy.png",
+"size": [
+128,
+128
+]
+},
+{
+"name": "brick_painted_white",
+"file": "classic64/bricks/brick_painted_white.png",
+"size": [
+128,
+128
+]
+},
+{
+"name": "brick_red_01",
+"file": "classic64/bricks/brick_red_01.png",
+"size": [
+128,
+25
+]
+},
+{
+"name": "brick_red_02",
+"file": "classic64/bricks/brick_red_02.png",
+"size": [
+128,
+128
+]
+},
+{
+"name": "brick_red_03",
+"file": "classic64/bricks/brick_red_03.png",
+"size": [
+128,
+128
+]
+},
+{
+"name": "brick_red_04",
+"file": "classic64/bricks/brick_red_04.png",
+"size": [
+128,
+128
+]
+},
+{
+"name": "brick_rough_blue",
+"file": "classic64/bricks/brick_rough_blue.png",
+"size": [
+64,
+64
+]
+},
+{
+"name": "brick_rough_tan",
+"file": "classic64/bricks/brick_rough_tan.png",
+"size": [
+64,
+64
+]
+},
+{
+"name": "brick_small_old",
+"file": "classic64/bricks/brick_small_old.png",
+"size": [
+128,
+128
+]
+},
+{
+"name": "brick_small_red",
+"file": "classic64/bricks/brick_small_red.png",
+"size": [
+256,
+254
+]
+},
+{
+"name": "brick_small_red_2",
+"file": "classic64/bricks/brick_small_red_2.png",
+"size": [
+64,
+64
+]
+},
+{
+"name": "brick_small_rustic_brown_2",
+"file": "classic64/bricks/brick_small_rustic_brown_2.png",
+"size": [
+64,
+64
+]
+},
+{
+"name": "brick_small_white_clean",
+"file": "classic64/bricks/brick_small_white_clean.png",
+"size": [
+64,
+64
+]
+},
+{
+"name": "brick_small_white_dirty",
+"file": "classic64/bricks/brick_small_white_dirty.png",
+"size": [
+64,
+63
+]
+},
+{
+"name": "bricks_modern_01",
+"file": "classic64/bricks/bricks_modern_01.png",
+"size": [
+128,
+128
+]
+},
+{
+"name": "bricks_painted_01",
+"file": "classic64/bricks/bricks_painted_01.png",
+"size": [
+64,
+64
+]
+},
+{
+"name": "brick_large_gray",
+"file": "classic64/bricks/brick_large_gray.png",
+"size": [
+64,
+64
+]
+},
+{
+"name": "brick_large_white_clean_2",
+"file": "classic64/bricks/brick_large_white_clean_2.png",
+"size": [
+64,
+64
+]
+},
+{
+"name": "brick_rustic_brown",
+"file": "classic64/bricks/brick_rustic_brown.png",
+"size": [
+64,
+64
+]
+},
+{
+"name": "brick_small_fancy_brown",
+"file": "classic64/bricks/brick_small_fancy_brown.png",
+"size": [
+64,
+64
+]
+},
+{
+"name": "brick_small_fancy_gray",
+"file": "classic64/bricks/brick_small_fancy_gray.png",
+"size": [
+64,
+64
+]
+}
+],
+"buildings": [
+{
+"name": "building_misc",
+"file": "classic64/buildings/building_misc.png",
+"size": [
+256,
+56
+]
+},
+{
+"name": "building_old_tan_01",
+"file": "classic64/buildings/building_old_tan_01.png",
+"size": [
+128,
+170
+]
+},
+{
+"name": "building_old_tan_02",
+"file": "classic64/buildings/building_old_tan_02.png",
+"size": [
+128,
+150
+]
+},
+{
+"name": "building_old_tan_03",
+"file": "classic64/buildings/building_old_tan_03.png",
+"size": [
+222,
+247
+]
+},
+{
+"name": "ceiling_utilities_01",
+"file": "classic64/buildings/ceiling_utilities_01.png",
+"size": [
+117,
+64
+]
+},
+{
+"name": "ceiling_utilities_02",
+"file": "classic64/buildings/ceiling_utilities_02.png",
+"size": [
+117,
+70
+]
+},
+{
+"name": "ceiling_utilities_03",
+"file": "classic64/buildings/ceiling_utilities_03.png",
+"size": [
+128,
+128
+]
+},
+{
+"name": "ceiling_utilities_04",
+"file": "classic64/buildings/ceiling_utilities_04.png",
+"size": [
+128,
+128
+]
+},
+{
+"name": "ceiling_utilities_05",
+"file": "classic64/buildings/ceiling_utilities_05.png",
+"size": [
+128,
+128
+]
+},
+{
+"name": "insulation_01",
+"file": "classic64/buildings/insulation_01.png",
+"size": [
+128,
+128
+]
+},
+{
+"name": "insulation_02",
+"file": "classic64/buildings/insulation_02.png",
+"size": [
+128,
+128
+]
+},
+{
+"name": "wall_insulation_01",
+"file": "classic64/buildings/wall_insulation_01.png",
+"size": [
+64,
+88
+]
+},
+{
+"name": "wall_insulation_02",
+"file": "classic64/buildings/wall_insulation_02.png",
+"size": [
+64,
+88
+]
+},
+{
+"name": "wall_utilities",
+"file": "classic64/buildings/wall_utilities.png",
+"size": [
+61,
+134
+]
+}
+],
+"concrete": [
+{
+"name": "concrete_01",
+"file": "classic64/concrete/concrete_01.png",
+"size": [
+128,
+128
+]
+},
+{
+"name": "concrete_02",
+"file": "classic64/concrete/concrete_02.png",
+"size": [
+256,
+117
+]
+},
+{
+"name": "concrete_03",
+"file": "classic64/concrete/concrete_03.png",
+"size": [
+128,
+77
+]
+},
+{
+"name": "concrete_04",
+"file": "classic64/concrete/concrete_04.png",
+"size": [
+128,
+128
+]
+},
+{
+"name": "concrete_05",
+"file": "classic64/concrete/concrete_05.png",
+"size": [
+128,
+128
+]
+},
+{
+"name": "concrete_06",
+"file": "classic64/concrete/concrete_06.png",
+"size": [
+128,
+128
+]
+},
+{
+"name": "concrete_07",
+"file": "classic64/concrete/concrete_07.png",
+"size": [
+128,
+128
+]
+},
+{
+"name": "concrete_08",
+"file": "classic64/concrete/concrete_08.png",
+"size": [
+128,
+128
+]
+},
+{
+"name": "concrete_09",
+"file": "classic64/concrete/concrete_09.png",
+"size": [
+128,
+128
+]
+},
+{
+"name": "concrete_10",
+"file": "classic64/concrete/concrete_10.png",
+"size": [
+128,
+128
+]
+},
+{
+"name": "concrete_11",
+"file": "classic64/concrete/concrete_11.png",
+"size": [
+128,
+128
+]
+},
+{
+"name": "concrete_12",
+"file": "classic64/concrete/concrete_12.png",
+"size": [
+128,
+128
+]
+},
+{
+"name": "concrete_13",
+"file": "classic64/concrete/concrete_13.png",
+"size": [
+64,
+64
+]
+},
+{
+"name": "concrete_14",
+"file": "classic64/concrete/concrete_14.png",
+"size": [
+128,
+128
+]
+},
+{
+"name": "concrete_15",
+"file": "classic64/concrete/concrete_15.png",
+"size": [
+64,
+64
+]
+},
+{
+"name": "concrete_16",
+"file": "classic64/concrete/concrete_16.png",
+"size": [
+64,
+64
+]
+},
+{
+"name": "concrete_block_01",
+"file": "classic64/concrete/concrete_block_01.png",
+"size": [
+64,
+64
+]
+},
+{
+"name": "concrete_blocks_painted_gray_01",
+"file": "classic64/concrete/concrete_blocks_painted_gray_01.png",
+"size": [
+64,
+64
+]
+},
+{
+"name": "concrete_floor_01",
+"file": "classic64/concrete/concrete_floor_01.png",
+"size": [
+128,
+128
+]
+},
+{
+"name": "concrete_floor_02",
+"file": "classic64/concrete/concrete_floor_02.png",
+"size": [
+128,
+128
+]
+},
+{
+"name": "concrete_floor_03",
+"file": "classic64/concrete/concrete_floor_03.png",
+"size": [
+128,
+128
+]
+},
+{
+"name": "concrete_floor_04",
+"file": "classic64/concrete/concrete_floor_04.png",
+"size": [
+128,
+128
+]
+},
+{
+"name": "concrete_floor_05",
+"file": "classic64/concrete/concrete_floor_05.png",
+"size": [
+128,
+128
+]
+},
+{
+"name": "concrete_floor_06",
+"file": "classic64/concrete/concrete_floor_06.png",
+"size": [
+128,
+128
+]
+},
+{
+"name": "concrete_metalbeams_01",
+"file": "classic64/concrete/concrete_metalbeams_01.png",
+"size": [
+128,
+128
+]
+},
+{
+"name": "concrete_pipe_01",
+"file": "classic64/concrete/concrete_pipe_01.png",
+"size": [
+44,
+128
+]
+},
+{
+"name": "concrete_rockface_01",
+"file": "classic64/concrete/concrete_rockface_01.png",
+"size": [
+256,
+256
+]
+},
+{
+"name": "concrete_tile_01",
+"file": "classic64/concrete/concrete_tile_01.png",
+"size": [
+128,
+128
+]
+},
+{
+"name": "concrete_wall_01",
+"file": "classic64/concrete/concrete_wall_01.png",
+"size": [
+256,
+256
+]
+},
+{
+"name": "concrete_wall_02",
+"file": "classic64/concrete/concrete_wall_02.png",
+"size": [
+256,
+256
+]
+},
+{
+"name": "conrete_painted_blue_dirty_01",
+"file": "classic64/concrete/conrete_painted_blue_dirty_01.png",
+"size": [
+128,
+128
+]
+},
+{
+"name": "conrete_painted_blue_dirty_02_png",
+"file": "classic64/concrete/conrete_painted_blue_dirty_02_png.png",
+"size": [
+128,
+128
+]
+}
+],
+"doors": [
+{
+"name": "cabinet_door_01",
+"file": "classic64/doors/cabinet_door_01.png",
+"size": [
+64,
+124
+]
+},
+{
+"name": "cabinet_door_02",
+"file": "classic64/doors/cabinet_door_02.png",
+"size": [
+84,
+64
+]
+},
+{
+"name": "door_barn_01",
+"file": "classic64/doors/door_barn_01.png",
+"size": [
+64,
+88
+]
+},
+{
+"name": "door_barn_02",
+"file": "classic64/doors/door_barn_02.png",
+"size": [
+64,
+59
+]
+},
+{
+"name": "door_business_01",
+"file": "classic64/doors/door_business_01.png",
+"size": [
+64,
+141
+]
+},
+{
+"name": "door_double_brown_left",
+"file": "classic64/doors/door_double_brown_left.png",
+"size": [
+64,
+156
+]
+},
+{
+"name": "door_double_brown_right",
+"file": "classic64/doors/door_double_brown_right.png",
+"size": [
+64,
+152
+]
+},
+{
+"name": "door_garage",
+"file": "classic64/doors/door_garage.png",
+"size": [
+64,
+64
+]
+},
+{
+"name": "door_grungy",
+"file": "classic64/doors/door_grungy.png",
+"size": [
+64,
+120
+]
+},
+{
+"name": "door_grungy_02",
+"file": "classic64/doors/door_grungy_02.png",
+"size": [
+64,
+144
+]
+},
+{
+"name": "door_grungy_03",
+"file": "classic64/doors/door_grungy_03.png",
+"size": [
+64,
+170
+]
+},
+{
+"name": "door_grungy_no_handle",
+"file": "classic64/doors/door_grungy_no_handle.png",
+"size": [
+64,
+120
+]
+},
+{
+"name": "door_grungy_with_glass",
+"file": "classic64/doors/door_grungy_with_glass.png",
+"size": [
+64,
+120
+]
+},
+{
+"name": "door_grungy_with_glass_no_handle",
+"file": "classic64/doors/door_grungy_with_glass_no_handle.png",
+"size": [
+64,
+120
+]
+},
+{
+"name": "door_hinge_01",
+"file": "classic64/doors/door_hinge_01.png",
+"size": [
+64,
+39
+]
+},
+{
+"name": "door_industral_01",
+"file": "classic64/doors/door_industral_01.png",
+"size": [
+56,
+128
+]
+},
+{
+"name": "door_industral_02",
+"file": "classic64/doors/door_industral_02.png",
+"size": [
+56,
+128
+]
+},
+{
+"name": "door_old_01",
+"file": "classic64/doors/door_old_01.png",
+"size": [
+64,
+140
+]
+},
+{
+"name": "door_professional_01",
+"file": "classic64/doors/door_professional_01.png",
+"size": [
+64,
+139
+]
+},
+{
+"name": "door_screen_01",
+"file": "classic64/doors/door_screen_01.png",
+"size": [
+64,
+162
+]
+},
+{
+"name": "door_shed_a",
+"file": "classic64/doors/door_shed_a.png",
+"size": [
+64,
+174
+]
+},
+{
+"name": "door_shed_b",
+"file": "classic64/doors/door_shed_b.png",
+"size": [
+64,
+174
+]
+},
+{
+"name": "door_store_01",
+"file": "classic64/doors/door_store_01.png",
+"size": [
+64,
+147
+]
+},
+{
+"name": "door_store_drinks_01",
+"file": "classic64/doors/door_store_drinks_01.png",
+"size": [
+64,
+144
+]
+},
+{
+"name": "door_store_drinks_02",
+"file": "classic64/doors/door_store_drinks_02.png",
+"size": [
+64,
+145
+]
+},
+{
+"name": "door_store_food_01",
+"file": "classic64/doors/door_store_food_01.png",
+"size": [
+64,
+147
+]
+},
+{
+"name": "door_store_food_02",
+"file": "classic64/doors/door_store_food_02.png",
+"size": [
+64,
+143
+]
+}
+],
+"electrical": [
+{
+"name": "conduit_gray_01",
+"file": "classic64/electrical/conduit_gray_01.png",
+"size": [
+64,
+64
+]
+},
+{
+"name": "conduit_white_01",
+"file": "classic64/electrical/conduit_white_01.png",
+"size": [
+64,
+64
+]
+},
+{
+"name": "electrical_junctionbox_small",
+"file": "classic64/electrical/electrical_junctionbox_small.png",
+"size": [
+128,
+79
+]
+},
+{
+"name": "electrical_wires_group_3",
+"file": "classic64/electrical/electrical_wires_group_3.png",
+"size": [
+256,
+10
+]
+},
+{
+"name": "electrical_wires_group_3_curve",
+"file": "classic64/electrical/electrical_wires_group_3_curve.png",
+"size": [
+256,
+16
+]
+},
+{
+"name": "electrical_wires_group_5",
+"file": "classic64/electrical/electrical_wires_group_5.png",
+"size": [
+256,
+9
+]
+},
+{
+"name": "electrical_wires_group_5_curve",
+"file": "classic64/electrical/electrical_wires_group_5_curve.png",
+"size": [
+256,
+17
+]
+},
+{
+"name": "electrical_wires_plain",
+"file": "classic64/electrical/electrical_wires_plain.png",
+"size": [
+19,
+11
+]
+}
+],
+"floor": [
+{
+"name": "blanket_black_01",
+"file": "classic64/floor/blanket_black_01.png",
+"size": [
+64,
+64
+]
+},
+{
+"name": "carpet_black_01",
+"file": "classic64/floor/carpet_black_01.png",
+"size": [
+64,
+64
+]
+},
+{
+"name": "carpet_blue_01",
+"file": "classic64/floor/carpet_blue_01.png",
+"size": [
+128,
+130
+]
+},
+{
+"name": "carpet_brown_01",
+"file": "classic64/floor/carpet_brown_01.png",
+"size": [
+64,
+64
+]
+},
+{
+"name": "carpet_darkgray_01",
+"file": "classic64/floor/carpet_darkgray_01.png",
+"size": [
+64,
+64
+]
+},
+{
+"name": "carpet_darkgray_02",
+"file": "classic64/floor/carpet_darkgray_02.png",
+"size": [
+64,
+64
+]
+},
+{
+"name": "carpet_lightgray_01",
+"file": "classic64/floor/carpet_lightgray_01.png",
+"size": [
+64,
+64
+]
+},
+{
+"name": "carpet_lightgray_02",
+"file": "classic64/floor/carpet_lightgray_02.png",
+"size": [
+64,
+64
+]
+},
+{
+"name": "carpet_lightgray_03",
+"file": "classic64/floor/carpet_lightgray_03.png",
+"size": [
+64,
+64
+]
+},
+{
+"name": "carpet_tan_01",
+"file": "classic64/floor/carpet_tan_01.png",
+"size": [
+64,
+64
+]
+},
+{
+"name": "carpet_tan_02",
+"file": "classic64/floor/carpet_tan_02.png",
+"size": [
+64,
+64
+]
+},
+{
+"name": "floor_painted_dirty_01",
+"file": "classic64/floor/floor_painted_dirty_01.png",
+"size": [
+128,
+128
+]
+},
+{
+"name": "floor_painted_dirty_02",
+"file": "classic64/floor/floor_painted_dirty_02.png",
+"size": [
+128,
+128
+]
+},
+{
+"name": "concrete",
+"file": "classic64/floor/concrete.png",
+"size": [
+64,
+64
+]
+}
+],
+"food": [
+{
+"name": "drink_can_soda_1",
+"file": "classic64/food/drink_can_soda_1.png",
+"size": [
+64,
+64
+]
+},
+{
+"name": "drink_can_soda_2",
+"file": "classic64/food/drink_can_soda_2.png",
+"size": [
+64,
+64
+]
+},
+{
+"name": "drink_can_soda_3",
+"file": "classic64/food/drink_can_soda_3.png",
+"size": [
+64,
+64
+]
+},
+{
+"name": "drink_can_soda_4",
+"file": "classic64/food/drink_can_soda_4.png",
+"size": [
+64,
+64
+]
+},
+{
+"name": "drink_can_soda_5",
+"file": "classic64/food/drink_can_soda_5.png",
+"size": [
+64,
+64
+]
+},
+{
+"name": "drink_can_soda_6",
+"file": "classic64/food/drink_can_soda_6.png",
+"size": [
+64,
+64
+]
+},
+{
+"name": "drink_can_soda_7",
+"file": "classic64/food/drink_can_soda_7.png",
+"size": [
+64,
+64
+]
+},
+{
+"name": "drink_can_soda_8",
+"file": "classic64/food/drink_can_soda_8.png",
+"size": [
+64,
+64
+]
+},
+{
+"name": "food_bag_01",
+"file": "classic64/food/food_bag_01.png",
+"size": [
+64,
+129
+]
+},
+{
+"name": "food_baking_flour",
+"file": "classic64/food/food_baking_flour.png",
+"size": [
+128,
+64
+]
+},
+{
+"name": "food_baking_sugar",
+"file": "classic64/food/food_baking_sugar.png",
+"size": [
+73,
+64
+]
+},
+{
+"name": "food_box_01",
+"file": "classic64/food/food_box_01.png",
+"size": [
+64,
+81
+]
+},
+{
+"name": "food_box_02",
+"file": "classic64/food/food_box_02.png",
+"size": [
+64,
+94
+]
+},
+{
+"name": "food_canned_01",
+"file": "classic64/food/food_canned_01.png",
+"size": [
+128,
+186
+]
+},
+{
+"name": "food_canned_soup_1",
+"file": "classic64/food/food_canned_soup_1.png",
+"size": [
+64,
+64
+]
+},
+{
+"name": "food_canned_soup_10",
+"file": "classic64/food/food_canned_soup_10.png",
+"size": [
+64,
+64
+]
+},
+{
+"name": "food_canned_soup_2",
+"file": "classic64/food/food_canned_soup_2.png",
+"size": [
+64,
+64
+]
+},
+{
+"name": "food_canned_soup_3",
+"file": "classic64/food/food_canned_soup_3.png",
+"size": [
+64,
+64
+]
+},
+{
+"name": "food_canned_soup_4",
+"file": "classic64/food/food_canned_soup_4.png",
+"size": [
+64,
+64
+]
+},
+{
+"name": "food_canned_soup_5",
+"file": "classic64/food/food_canned_soup_5.png",
+"size": [
+64,
+64
+]
+},
+{
+"name": "food_canned_soup_6",
+"file": "classic64/food/food_canned_soup_6.png",
+"size": [
+64,
+64
+]
+},
+{
+"name": "food_canned_soup_7",
+"file": "classic64/food/food_canned_soup_7.png",
+"size": [
+64,
+64
+]
+},
+{
+"name": "food_canned_soup_8",
+"file": "classic64/food/food_canned_soup_8.png",
+"size": [
+64,
+64
+]
+},
+{
+"name": "food_canned_soup_9",
+"file": "classic64/food/food_canned_soup_9.png",
+"size": [
+64,
+64
+]
+},
+{
+"name": "food_cereal_1",
+"file": "classic64/food/food_cereal_1.png",
+"size": [
+105,
+57
+]
+},
+{
+"name": "food_cereal_2",
+"file": "classic64/food/food_cereal_2.png",
+"size": [
+105,
+57
+]
+},
+{
+"name": "food_cereal_3",
+"file": "classic64/food/food_cereal_3.png",
+"size": [
+105,
+57
+]
+},
+{
+"name": "food_cereal_4",
+"file": "classic64/food/food_cereal_4.png",
+"size": [
+105,
+57
+]
+},
+{
+"name": "food_cereal_5",
+"file": "classic64/food/food_cereal_5.png",
+"size": [
+105,
+57
+]
+},
+{
+"name": "food_cereal_6",
+"file": "classic64/food/food_cereal_6.png",
+"size": [
+105,
+57
+]
+},
+{
+"name": "food_cereal_7",
+"file": "classic64/food/food_cereal_7.png",
+"size": [
+105,
+57
+]
+},
+{
+"name": "food_cereal_8",
+"file": "classic64/food/food_cereal_8.png",
+"size": [
+105,
+57
+]
+},
+{
+"name": "food_fridge_01",
+"file": "classic64/food/food_fridge_01.png",
+"size": [
+64,
+159
+]
+},
+{
+"name": "food_fridge_02",
+"file": "classic64/food/food_fridge_02.png",
+"size": [
+64,
+157
+]
+},
+{
+"name": "food_pet",
+"file": "classic64/food/food_pet.png",
+"size": [
+120,
+64
+]
+},
+{
+"name": "food_pet_2",
+"file": "classic64/food/food_pet_2.png",
+"size": [
+82,
+64
+]
+},
+{
+"name": "food_sause_01",
+"file": "classic64/food/food_sause_01.png",
+"size": [
+32,
+64
+]
+},
+{
+"name": "food_sause_02",
+"file": "classic64/food/food_sause_02.png",
+"size": [
+32,
+64
+]
+},
+{
+"name": "food_snack_chips_1",
+"file": "classic64/food/food_snack_chips_1.png",
+"size": [
+72,
+47
+]
+},
+{
+"name": "food_snack_chips_2",
+"file": "classic64/food/food_snack_chips_2.png",
+"size": [
+72,
+47
+]
+},
+{
+"name": "food_snack_chips_3",
+"file": "classic64/food/food_snack_chips_3.png",
+"size": [
+72,
+47
+]
+},
+{
+"name": "food_snack_chips_4",
+"file": "classic64/food/food_snack_chips_4.png",
+"size": [
+72,
+47
+]
+}
+],
+"gems": [
+{
+"name": "blue_gemstone_tiles",
+"file": "classic64/gems/blue_gemstone_tiles.png",
+"size": [
+64,
+64
+]
+},
+{
+"name": "blue_gemstone_tiles_norm",
+"file": "classic64/gems/blue_gemstone_tiles_norm.png",
+"size": [
+64,
+64
+]
+},
+{
+"name": "blue_gemstone_tiles_spec",
+"file": "classic64/gems/blue_gemstone_tiles_spec.png",
+"size": [
+64,
+64
+]
+},
+{
+"name": "red_gemstone_tiles",
+"file": "classic64/gems/red_gemstone_tiles.png",
+"size": [
+64,
+64
+]
+},
+{
+"name": "red_gemstone_tiles_norm",
+"file": "classic64/gems/red_gemstone_tiles_norm.png",
+"size": [
+64,
+64
+]
+},
+{
+"name": "red_gemstone_tiles_spec",
+"file": "classic64/gems/red_gemstone_tiles_spec.png",
+"size": [
+64,
+64
+]
+},
+{
+"name": "red_gemstones",
+"file": "classic64/gems/red_gemstones.png",
+"size": [
+64,
+64
+]
+},
+{
+"name": "red_gemstones_norm",
+"file": "classic64/gems/red_gemstones_norm.png",
+"size": [
+64,
+64
+]
+},
+{
+"name": "red_gemstones_spec",
+"file": "classic64/gems/red_gemstones_spec.png",
+"size": [
+64,
+64
+]
+}
+],
+"ground": [
+{
+"name": "brush_01",
+"file": "classic64/ground/brush_01.png",
+"size": [
+64,
+64
+]
+},
+{
+"name": "dirt_0",
+"file": "classic64/ground/dirt_0.png",
+"size": [
+64,
+64
+]
+},
+{
+"name": "dirt_02",
+"file": "classic64/ground/dirt_02.png",
+"size": [
+128,
+128
+]
+},
+{
+"name": "dirt_muddy_1",
+"file": "classic64/ground/dirt_muddy_1.png",
+"size": [
+128,
+128
+]
+},
+{
+"name": "dirt_muddy_footprint_1",
+"file": "classic64/ground/dirt_muddy_footprint_1.png",
+"size": [
+128,
+128
+]
+},
+{
+"name": "grass_01",
+"file": "classic64/ground/grass_01.png",
+"size": [
+64,
+64
+]
+},
+{
+"name": "grass_02",
+"file": "classic64/ground/grass_02.png",
+"size": [
+64,
+64
+]
+},
+{
+"name": "grass_03",
+"file": "classic64/ground/grass_03.png",
+"size": [
+64,
+64
+]
+},
+{
+"name": "grass_dead_01",
+"file": "classic64/ground/grass_dead_01.png",
+"size": [
+128,
+128
+]
+},
+{
+"name": "grass_dead_02",
+"file": "classic64/ground/grass_dead_02.png",
+"size": [
+128,
+128
+]
+},
+{
+"name": "grass_dead_03",
+"file": "classic64/ground/grass_dead_03.png",
+"size": [
+128,
+128
+]
+},
+{
+"name": "gravel_0",
+"file": "classic64/ground/gravel_0.png",
+"size": [
+64,
+64
+]
+},
+{
+"name": "gravel_02",
+"file": "classic64/ground/gravel_02.png",
+"size": [
+64,
+64
+]
+},
+{
+"name": "gravel_02_nm",
+"file": "classic64/ground/gravel_02_nm.png",
+"size": [
+64,
+64
+]
+},
+{
+"name": "gravel_03",
+"file": "classic64/ground/gravel_03.png",
+"size": [
+64,
+64
+]
+},
+{
+"name": "gravel_04",
+"file": "classic64/ground/gravel_04.png",
+"size": [
+64,
+64
+]
+},
+{
+"name": "gravel_05",
+"file": "classic64/ground/gravel_05.png",
+"size": [
+64,
+64
+]
+},
+{
+"name": "gravel_06",
+"file": "classic64/ground/gravel_06.png",
+"size": [
+128,
+128
+]
+},
+{
+"name": "gravel_07",
+"file": "classic64/ground/gravel_07.png",
+"size": [
+128,
+128
+]
+},
+{
+"name": "gravel_08",
+"file": "classic64/ground/gravel_08.png",
+"size": [
+128,
+128
+]
+},
+{
+"name": "gravel_09",
+"file": "classic64/ground/gravel_09.png",
+"size": [
+128,
+128
+]
+},
+{
+"name": "gravel_10",
+"file": "classic64/ground/gravel_10.png",
+"size": [
+128,
+128
+]
+},
+{
+"name": "gravel_11",
+"file": "classic64/ground/gravel_11.png",
+"size": [
+128,
+128
+]
+},
+{
+"name": "gravel_12",
+"file": "classic64/ground/gravel_12.png",
+"size": [
+128,
+128
+]
+},
+{
+"name": "ice_01",
+"file": "classic64/ground/ice_01.png",
+"size": [
+128,
+128
+]
+},
+{
+"name": "ice_02",
+"file": "classic64/ground/ice_02.png",
+"size": [
+128,
+128
+]
+},
+{
+"name": "ice_03",
+"file": "classic64/ground/ice_03.png",
+"size": [
+128,
+128
+]
+},
+{
+"name": "ice_04",
+"file": "classic64/ground/ice_04.png",
+"size": [
+128,
+128
+]
+},
+{
+"name": "ice_05",
+"file": "classic64/ground/ice_05.png",
+"size": [
+128,
+128
+]
+},
+{
+"name": "ice_06",
+"file": "classic64/ground/ice_06.png",
+"size": [
+128,
+128
+]
+},
+{
+"name": "ice_07",
+"file": "classic64/ground/ice_07.png",
+"size": [
+128,
+128
+]
+},
+{
+"name": "ice_08",
+"file": "classic64/ground/ice_08.png",
+"size": [
+128,
+128
+]
+},
+{
+"name": "ice_09",
+"file": "classic64/ground/ice_09.png",
+"size": [
+128,
+128
+]
+},
+{
+"name": "ice_10",
+"file": "classic64/ground/ice_10.png",
+"size": [
+128,
+128
+]
+},
+{
+"name": "ice_11",
+"file": "classic64/ground/ice_11.png",
+"size": [
+128,
+128
+]
+},
+{
+"name": "ice_12",
+"file": "classic64/ground/ice_12.png",
+"size": [
+128,
+128
+]
+},
+{
+"name": "ice_13",
+"file": "classic64/ground/ice_13.png",
+"size": [
+128,
+128
+]
+},
+{
+"name": "ice_14",
+"file": "classic64/ground/ice_14.png",
+"size": [
+128,
+128
+]
+},
+{
+"name": "ice_15",
+"file": "classic64/ground/ice_15.png",
+"size": [
+128,
+128
+]
+},
+{
+"name": "ice_16",
+"file": "classic64/ground/ice_16.png",
+"size": [
+128,
+128
+]
+},
+{
+"name": "mud_01",
+"file": "classic64/ground/mud_01.png",
+"size": [
+128,
+128
+]
+},
+{
+"name": "mud_02",
+"file": "classic64/ground/mud_02.png",
+"size": [
+128,
+128
+]
+},
+{
+"name": "mud_03",
+"file": "classic64/ground/mud_03.png",
+"size": [
+128,
+128
+]
+},
+{
+"name": "mud_04",
+"file": "classic64/ground/mud_04.png",
+"size": [
+128,
+128
+]
+},
+{
+"name": "rocks_01",
+"file": "classic64/ground/rocks_01.png",
+"size": [
+128,
+128
+]
+},
+{
+"name": "rocks_02",
+"file": "classic64/ground/rocks_02.png",
+"size": [
+128,
+128
+]
+},
+{
+"name": "rocks_03",
+"file": "classic64/ground/rocks_03.png",
+"size": [
+128,
+128
+]
+},
+{
+"name": "rocks_04",
+"file": "classic64/ground/rocks_04.png",
+"size": [
+128,
+128
+]
+},
+{
+"name": "rocks_05",
+"file": "classic64/ground/rocks_05.png",
+"size": [
+256,
+255
+]
+},
+{
+"name": "rocks_06",
+"file": "classic64/ground/rocks_06.png",
+"size": [
+128,
+128
+]
+},
+{
+"name": "rocks_around_puddle",
+"file": "classic64/ground/rocks_around_puddle.png",
+"size": [
+256,
+121
+]
+},
+{
+"name": "rocks_cobblestone_01",
+"file": "classic64/ground/rocks_cobblestone_01.png",
+"size": [
+128,
+128
+]
+},
+{
+"name": "rocks_grass_01",
+"file": "classic64/ground/rocks_grass_01.png",
+"size": [
+128,
+128
+]
+},
+{
+"name": "rocks_grass_02",
+"file": "classic64/ground/rocks_grass_02.png",
+"size": [
+128,
+129
+]
+},
+{
+"name": "rocks_underwater_01",
+"file": "classic64/ground/rocks_underwater_01.png",
+"size": [
+64,
+64
+]
+},
+{
+"name": "sand_01",
+"file": "classic64/ground/sand_01.png",
+"size": [
+128,
+128
+]
+},
+{
+"name": "sand_02",
+"file": "classic64/ground/sand_02.png",
+"size": [
+128,
+128
+]
+},
+{
+"name": "sand_03",
+"file": "classic64/ground/sand_03.png",
+"size": [
+128,
+129
+]
+},
+{
+"name": "sand_mossy_01",
+"file": "classic64/ground/sand_mossy_01.png",
+"size": [
+128,
+128
+]
+},
+{
+"name": "small_stones_1",
+"file": "classic64/ground/small_stones_1.png",
+"size": [
+128,
+128
+]
+},
+{
+"name": "small_stones_2",
+"file": "classic64/ground/small_stones_2.png",
+"size": [
+128,
+128
+]
+},
+{
+"name": "snow_01",
+"file": "classic64/ground/snow_01.png",
+"size": [
+128,
+128
+]
+},
+{
+"name": "snow_02",
+"file": "classic64/ground/snow_02.png",
+"size": [
+128,
+128
+]
+},
+{
+"name": "snow_03",
+"file": "classic64/ground/snow_03.png",
+"size": [
+128,
+128
+]
+},
+{
+"name": "snow_04",
+"file": "classic64/ground/snow_04.png",
+"size": [
+128,
+128
+]
+},
+{
+"name": "snow_05",
+"file": "classic64/ground/snow_05.png",
+"size": [
+128,
+128
+]
+},
+{
+"name": "snow_06",
+"file": "classic64/ground/snow_06.png",
+"size": [
+128,
+128
+]
+},
+{
+"name": "snow_dirty",
+"file": "classic64/ground/snow_dirty.png",
+"size": [
+128,
+128
+]
+},
+{
+"name": "snow_dirty_01",
+"file": "classic64/ground/snow_dirty_01.png",
+"size": [
+128,
+128
+]
+},
+{
+"name": "snow_dirty_02",
+"file": "classic64/ground/snow_dirty_02.png",
+"size": [
+128,
+128
+]
+},
+{
+"name": "snow_dirty_03",
+"file": "classic64/ground/snow_dirty_03.png",
+"size": [
+128,
+128
+]
+},
+{
+"name": "snow_footprints",
+"file": "classic64/ground/snow_footprints.png",
+"size": [
+128,
+128
+]
+},
+{
+"name": "snow_footprints_02",
+"file": "classic64/ground/snow_footprints_02.png",
+"size": [
+128,
+128
+]
+},
+{
+"name": "snow_grass_05",
+"file": "classic64/ground/snow_grass_05.png",
+"size": [
+128,
+128
+]
+},
+{
+"name": "snow_grass_06",
+"file": "classic64/ground/snow_grass_06.png",
+"size": [
+128,
+128
+]
+},
+{
+"name": "snow_grass_07",
+"file": "classic64/ground/snow_grass_07.png",
+"size": [
+128,
+128
+]
+},
+{
+"name": "snow_grassy_1",
+"file": "classic64/ground/snow_grassy_1.png",
+"size": [
+128,
+128
+]
+},
+{
+"name": "snow_grassy_2",
+"file": "classic64/ground/snow_grassy_2.png",
+"size": [
+128,
+128
+]
+},
+{
+"name": "snow_grassy_3",
+"file": "classic64/ground/snow_grassy_3.png",
+"size": [
+128,
+128
+]
+},
+{
+"name": "snow_grassy_4",
+"file": "classic64/ground/snow_grassy_4.png",
+"size": [
+128,
+128
+]
+},
+{
+"name": "snow_grassy_5",
+"file": "classic64/ground/snow_grassy_5.png",
+"size": [
+128,
+128
+]
+},
+{
+"name": "snow_grassy_6",
+"file": "classic64/ground/snow_grassy_6.png",
+"size": [
+128,
+128
+]
+},
+{
+"name": "snow_path_01",
+"file": "classic64/ground/snow_path_01.png",
+"size": [
+128,
+128
+]
+},
+{
+"name": "snow_path_02",
+"file": "classic64/ground/snow_path_02.png",
+"size": [
+128,
+128
+]
+},
+{
+"name": "snow_path_03",
+"file": "classic64/ground/snow_path_03.png",
+"size": [
+128,
+128
+]
+},
+{
+"name": "snow_rocks_01",
+"file": "classic64/ground/snow_rocks_01.png",
+"size": [
+128,
+128
+]
+},
+{
+"name": "snow_rocks_02",
+"file": "classic64/ground/snow_rocks_02.png",
+"size": [
+128,
+128
+]
+},
+{
+"name": "snow_rocks_03",
+"file": "classic64/ground/snow_rocks_03.png",
+"size": [
+128,
+128
+]
+},
+{
+"name": "stone_path_grass_01",
+"file": "classic64/ground/stone_path_grass_01.png",
+"size": [
+128,
+128
+]
+}
+],
+"industrial": [
+{
+"name": "ac_vent_01",
+"file": "classic64/industrial/ac_vent_01.png",
+"size": [
+47,
+64
+]
+},
+{
+"name": "ac_vent_02",
+"file": "classic64/industrial/ac_vent_02.png",
+"size": [
+64,
+52
+]
+},
+{
+"name": "culvert_pipe",
+"file": "classic64/industrial/culvert_pipe.png",
+"size": [
+64,
+99
+]
+},
+{
+"name": "fire_extenguisher_case",
+"file": "classic64/industrial/fire_extenguisher_case.png",
+"size": [
+64,
+84
+]
+},
+{
+"name": "generator_panel_01",
+"file": "classic64/industrial/generator_panel_01.png",
+"size": [
+128,
+82
+]
+},
+{
+"name": "generator_vent_01",
+"file": "classic64/industrial/generator_vent_01.png",
+"size": [
+100,
+128
+]
+},
+{
+"name": "generator_vent_02",
+"file": "classic64/industrial/generator_vent_02.png",
+"size": [
+82,
+128
+]
+},
+{
+"name": "manhole_cover",
+"file": "classic64/industrial/manhole_cover.png",
+"size": [
+64,
+64
+]
+},
+{
+"name": "manhole_cover_2",
+"file": "classic64/industrial/manhole_cover_2.png",
+"size": [
+64,
+64
+]
+},
+{
+"name": "manhole_cover_3",
+"file": "classic64/industrial/manhole_cover_3.png",
+"size": [
+64,
+64
+]
+},
+{
+"name": "manhole_cover_4",
+"file": "classic64/industrial/manhole_cover_4.png",
+"size": [
+64,
+64
+]
+},
+{
+"name": "manhole_cover_norm",
+"file": "classic64/industrial/manhole_cover_norm.png",
+"size": [
+64,
+64
+]
+},
+{
+"name": "metal_cabinet",
+"file": "classic64/industrial/metal_cabinet.png",
+"size": [
+68,
+128
+]
+},
+{
+"name": "metal_manhole",
+"file": "classic64/industrial/metal_manhole.png",
+"size": [
+124,
+111
+]
+},
+{
+"name": "misc_structure_01",
+"file": "classic64/industrial/misc_structure_01.png",
+"size": [
+128,
+128
+]
+},
+{
+"name": "panel_army_01",
+"file": "classic64/industrial/panel_army_01.png",
+"size": [
+64,
+104
+]
+},
+{
+"name": "panel_army_02",
+"file": "classic64/industrial/panel_army_02.png",
+"size": [
+118,
+128
+]
+},
+{
+"name": "panel_army_03",
+"file": "classic64/industrial/panel_army_03.png",
+"size": [
+128,
+70
+]
+},
+{
+"name": "shipping_container_01_front",
+"file": "classic64/industrial/shipping_container_01_front.png",
+"size": [
+128,
+128
+]
+},
+{
+"name": "shipping_container_01_side",
+"file": "classic64/industrial/shipping_container_01_side.png",
+"size": [
+256,
+101
+]
+},
+{
+"name": "valve_cap_green",
+"file": "classic64/industrial/valve_cap_green.png",
+"size": [
+64,
+64
+]
+},
+{
+"name": "valve_wheel",
+"file": "classic64/industrial/valve_wheel.png",
+"size": [
+64,
+64
+]
+},
+{
+"name": "valve_wheel_2",
+"file": "classic64/industrial/valve_wheel_2.png",
+"size": [
+64,
+64
+]
+},
+{
+"name": "yellow_post",
+"file": "classic64/industrial/yellow_post.png",
+"size": [
+128,
+128
+]
+}
+],
+"metal": [
+{
+"name": "metal_aluminium",
+"file": "classic64/metal/metal_aluminium.png",
+"size": [
+64,
+64
+]
+},
+{
+"name": "metal_army_tank_01",
+"file": "classic64/metal/metal_army_tank_01.png",
+"size": [
+181,
+128
+]
+},
+{
+"name": "metal_army_tank_02",
+"file": "classic64/metal/metal_army_tank_02.png",
+"size": [
+206,
+128
+]
+},
+{
+"name": "metal_army_tank_lid",
+"file": "classic64/metal/metal_army_tank_lid.png",
+"size": [
+123,
+143
+]
+},
+{
+"name": "metal_bar_01",
+"file": "classic64/metal/metal_bar_01.png",
+"size": [
+256,
+58
+]
+},
+{
+"name": "metal_bar_02",
+"file": "classic64/metal/metal_bar_02.png",
+"size": [
+256,
+47
+]
+},
+{
+"name": "metal_diamondplate_01",
+"file": "classic64/metal/metal_diamondplate_01.png",
+"size": [
+64,
+64
+]
+},
+{
+"name": "metal_diamondplate_02",
+"file": "classic64/metal/metal_diamondplate_02.png",
+"size": [
+64,
+64
+]
+},
+{
+"name": "metal_diamondplate_03",
+"file": "classic64/metal/metal_diamondplate_03.png",
+"size": [
+64,
+64
+]
+},
+{
+"name": "metal_diamondplate_04",
+"file": "classic64/metal/metal_diamondplate_04.png",
+"size": [
+64,
+64
+]
+},
+{
+"name": "metal_disc",
+"file": "classic64/metal/metal_disc.png",
+"size": [
+64,
+64
+]
+},
+{
+"name": "metal_galvanized_silver",
+"file": "classic64/metal/metal_galvanized_silver.png",
+"size": [
+64,
+64
+]
+},
+{
+"name": "metal_grunge_01",
+"file": "classic64/metal/metal_grunge_01.png",
+"size": [
+64,
+64
+]
+},
+{
+"name": "metal_grunge_02",
+"file": "classic64/metal/metal_grunge_02.png",
+"size": [
+64,
+64
+]
+},
+{
+"name": "metal_grunge_03",
+"file": "classic64/metal/metal_grunge_03.png",
+"size": [
+64,
+64
+]
+},
+{
+"name": "metal_grunge_panel_01",
+"file": "classic64/metal/metal_grunge_panel_01.png",
+"size": [
+64,
+64
+]
+},
+{
+"name": "metal_grunge_panel_02",
+"file": "classic64/metal/metal_grunge_panel_02.png",
+"size": [
+219,
+136
+]
+},
+{
+"name": "metal_grunge_panel_infographic",
+"file": "classic64/metal/metal_grunge_panel_infographic.png",
+"size": [
+64,
+86
+]
+},
+{
+"name": "metal_grungy_tall_01",
+"file": "classic64/metal/metal_grungy_tall_01.png",
+"size": [
+64,
+184
+]
+},
+{
+"name": "metal_grungy_tall_02",
+"file": "classic64/metal/metal_grungy_tall_02.png",
+"size": [
+64,
+184
+]
+},
+{
+"name": "metal_misc",
+"file": "classic64/metal/metal_misc.png",
+"size": [
+171,
+128
+]
+},
+{
+"name": "metal_misc_02",
+"file": "classic64/metal/metal_misc_02.png",
+"size": [
+64,
+64
+]
+},
+{
+"name": "metal_misc_03",
+"file": "classic64/metal/metal_misc_03.png",
+"size": [
+64,
+64
+]
+},
+{
+"name": "metal_misc_04",
+"file": "classic64/metal/metal_misc_04.png",
+"size": [
+64,
+64
+]
+},
+{
+"name": "metal_misc_05",
+"file": "classic64/metal/metal_misc_05.png",
+"size": [
+64,
+64
+]
+},
+{
+"name": "metal_painted_blue_01",
+"file": "classic64/metal/metal_painted_blue_01.png",
+"size": [
+64,
+64
+]
+},
+{
+"name": "metal_painted_blue_02",
+"file": "classic64/metal/metal_painted_blue_02.png",
+"size": [
+64,
+64
+]
+},
+{
+"name": "metal_painted_blue_03",
+"file": "classic64/metal/metal_painted_blue_03.png",
+"size": [
+169,
+64
+]
+},
+{
+"name": "metal_painted_gray",
+"file": "classic64/metal/metal_painted_gray.png",
+"size": [
+128,
+128
+]
+},
+{
+"name": "metal_painted_green_01",
+"file": "classic64/metal/metal_painted_green_01.png",
+"size": [
+64,
+64
+]
+},
+{
+"name": "metal_panel",
+"file": "classic64/metal/metal_panel.png",
+"size": [
+85,
+64
+]
+},
+{
+"name": "metal_panel_grey",
+"file": "classic64/metal/metal_panel_grey.png",
+"size": [
+105,
+64
+]
+},
+{
+"name": "metal_pipe_01",
+"file": "classic64/metal/metal_pipe_01.png",
+"size": [
+50,
+256
+]
+},
+{
+"name": "metal_pipe_02",
+"file": "classic64/metal/metal_pipe_02.png",
+"size": [
+64,
+64
+]
+},
+{
+"name": "metal_pipe_03",
+"file": "classic64/metal/metal_pipe_03.png",
+"size": [
+128,
+9
+]
+},
+{
+"name": "metal_pipe_04",
+"file": "classic64/metal/metal_pipe_04.png",
+"size": [
+128,
+88
+]
+},
+{
+"name": "metal_rusty_01",
+"file": "classic64/metal/metal_rusty_01.png",
+"size": [
+64,
+64
+]
+},
+{
+"name": "metal_rusty_02",
+"file": "classic64/metal/metal_rusty_02.png",
+"size": [
+150,
+64
+]
+},
+{
+"name": "metal_rusty_03",
+"file": "classic64/metal/metal_rusty_03.png",
+"size": [
+88,
+64
+]
+},
+{
+"name": "metal_rusty_04",
+"file": "classic64/metal/metal_rusty_04.png",
+"size": [
+128,
+128
+]
+},
+{
+"name": "metal_rusty_05",
+"file": "classic64/metal/metal_rusty_05.png",
+"size": [
+128,
+128
+]
+},
+{
+"name": "metal_rusty_06",
+"file": "classic64/metal/metal_rusty_06.png",
+"size": [
+64,
+64
+]
+},
+{
+"name": "metal_rusty_07",
+"file": "classic64/metal/metal_rusty_07.png",
+"size": [
+64,
+64
+]
+},
+{
+"name": "metal_rusty_08",
+"file": "classic64/metal/metal_rusty_08.png",
+"size": [
+64,
+64
+]
+},
+{
+"name": "metal_rusty_09",
+"file": "classic64/metal/metal_rusty_09.png",
+"size": [
+64,
+64
+]
+},
+{
+"name": "metal_siding_01",
+"file": "classic64/metal/metal_siding_01.png",
+"size": [
+96,
+128
+]
+},
+{
+"name": "metal_siding_02",
+"file": "classic64/metal/metal_siding_02.png",
+"size": [
+128,
+102
+]
+},
+{
+"name": "metal_smooth",
+"file": "classic64/metal/metal_smooth.png",
+"size": [
+64,
+64
+]
+},
+{
+"name": "metal_tank",
+"file": "classic64/metal/metal_tank.png",
+"size": [
+256,
+256
+]
+},
+{
+"name": "metal_threads_01",
+"file": "classic64/metal/metal_threads_01.png",
+"size": [
+64,
+64
+]
+},
+{
+"name": "metal_threads_02",
+"file": "classic64/metal/metal_threads_02.png",
+"size": [
+64,
+64
+]
+},
+{
+"name": "metal_toolbox",
+"file": "classic64/metal/metal_toolbox.png",
+"size": [
+64,
+64
+]
+},
+{
+"name": "misc_metal_01",
+"file": "classic64/metal/misc_metal_01.png",
+"size": [
+64,
+64
+]
+},
+{
+"name": "rust_chrome_01",
+"file": "classic64/metal/rust_chrome_01.png",
+"size": [
+64,
+64
+]
+},
+{
+"name": "rusty_metal_4",
+"file": "classic64/metal/rusty_metal_4.png",
+"size": [
+64,
+64
+]
+},
+{
+"name": "metal_diamond_plate",
+"file": "classic64/metal/metal_diamond_plate.png",
+"size": [
+64,
+64
+]
+}
+],
+"misc": [
+{
+"name": "colors_color_offwhite",
+"file": "classic64/misc/colors_color_offwhite.png",
+"size": [
+64,
+64
+]
+},
+{
+"name": "colors_color_blackdirty",
+"file": "classic64/misc/colors_color_blackdirty.png",
+"size": [
+64,
+64
+]
+},
+{
+"name": "colors_color_blacksmooth",
+"file": "classic64/misc/colors_color_blacksmooth.png",
+"size": [
+64,
+64
+]
+},
+{
+"name": "colors_color_gold",
+"file": "classic64/misc/colors_color_gold.png",
+"size": [
+64,
+64
+]
+},
+{
+"name": "colors_color_green",
+"file": "classic64/misc/colors_color_green.png",
+"size": [
+64,
+64
+]
+},
+{
+"name": "colors_color_silver",
+"file": "classic64/misc/colors_color_silver.png",
+"size": [
+64,
+64
+]
+},
+{
+"name": "colors_color_softbloodorange",
+"file": "classic64/misc/colors_color_softbloodorange.png",
+"size": [
+64,
+64
+]
+},
+{
+"name": "colors_misc_blue_01",
+"file": "classic64/misc/colors_misc_blue_01.png",
+"size": [
+64,
+64
+]
+},
+{
+"name": "colors_misc_gray_01",
+"file": "classic64/misc/colors_misc_gray_01.png",
+"size": [
+64,
+64
+]
+},
+{
+"name": "colors_white_stripes_02",
+"file": "classic64/misc/colors_white_stripes_02.png",
+"size": [
+64,
+64
+]
+},
+{
+"name": "bolt_head_01",
+"file": "classic64/misc/bolt_head_01.png",
+"size": [
+64,
+64
+]
+},
+{
+"name": "caution_tape",
+"file": "classic64/misc/caution_tape.png",
+"size": [
+128,
+13
+]
+},
+{
+"name": "caution_tape_2",
+"file": "classic64/misc/caution_tape_2.png",
+"size": [
+128,
+13
+]
+},
+{
+"name": "caution_tape_3",
+"file": "classic64/misc/caution_tape_3.png",
+"size": [
+128,
+13
+]
+},
+{
+"name": "caution_tape_4",
+"file": "classic64/misc/caution_tape_4.png",
+"size": [
+128,
+13
+]
+},
+{
+"name": "change_machine_01",
+"file": "classic64/misc/change_machine_01.png",
+"size": [
+64,
+138
+]
+},
+{
+"name": "crate_old_01",
+"file": "classic64/misc/crate_old_01.png",
+"size": [
+72,
+64
+]
+},
+{
+"name": "crate_old_02",
+"file": "classic64/misc/crate_old_02.png",
+"size": [
+86,
+64
+]
+},
+{
+"name": "decal_yellow_stripes_01",
+"file": "classic64/misc/decal_yellow_stripes_01.png",
+"size": [
+64,
+64
+]
+},
+{
+"name": "dryer_01",
+"file": "classic64/misc/dryer_01.png",
+"size": [
+64,
+80
+]
+},
+{
+"name": "dryers_02",
+"file": "classic64/misc/dryers_02.png",
+"size": [
+64,
+161
+]
+},
+{
+"name": "fan_double",
+"file": "classic64/misc/fan_double.png",
+"size": [
+175,
+64
+]
+},
+{
+"name": "fence_chain_rusty",
+"file": "classic64/misc/fence_chain_rusty.png",
+"size": [
+128,
+128
+]
+},
+{
+"name": "filingcabinet_01",
+"file": "classic64/misc/filingcabinet_01.png",
+"size": [
+64,
+124
+]
+},
+{
+"name": "garbage_bag",
+"file": "classic64/misc/garbage_bag.png",
+"size": [
+64,
+64
+]
+},
+{
+"name": "garbage_bag_full",
+"file": "classic64/misc/garbage_bag_full.png",
+"size": [
+128,
+128
+]
+},
+{
+"name": "gas_pump_screen",
+"file": "classic64/misc/gas_pump_screen.png",
+"size": [
+85,
+64
+]
+},
+{
+"name": "grunge",
+"file": "classic64/misc/grunge.png",
+"size": [
+128,
+43
+]
+},
+{
+"name": "gutter_brown_01",
+"file": "classic64/misc/gutter_brown_01.png",
+"size": [
+64,
+64
+]
+},
+{
+"name": "gutter_brown_bottom",
+"file": "classic64/misc/gutter_brown_bottom.png",
+"size": [
+64,
+64
+]
+},
+{
+"name": "gutter_brown_elbow_01",
+"file": "classic64/misc/gutter_brown_elbow_01.png",
+"size": [
+128,
+128
+]
+},
+{
+"name": "gutter_long_01",
+"file": "classic64/misc/gutter_long_01.png",
+"size": [
+256,
+15
+]
+},
+{
+"name": "gutter_white",
+"file": "classic64/misc/gutter_white.png",
+"size": [
+64,
+64
+]
+},
+{
+"name": "gutter_white_02",
+"file": "classic64/misc/gutter_white_02.png",
+"size": [
+112,
+112
+]
+},
+{
+"name": "heater_rusty_01",
+"file": "classic64/misc/heater_rusty_01.png",
+"size": [
+64,
+84
+]
+},
+{
+"name": "leather_01",
+"file": "classic64/misc/leather_01.png",
+"size": [
+64,
+64
+]
+},
+{
+"name": "light_01",
+"file": "classic64/misc/light_01.png",
+"size": [
+64,
+64
+]
+},
+{
+"name": "marbel_01",
+"file": "classic64/misc/marbel_01.png",
+"size": [
+64,
+64
+]
+},
+{
+"name": "marbel_02",
+"file": "classic64/misc/marbel_02.png",
+"size": [
+64,
+64
+]
+},
+{
+"name": "misc_dirty_01",
+"file": "classic64/misc/misc_dirty_01.png",
+"size": [
+64,
+64
+]
+},
+{
+"name": "misc_dirty_02",
+"file": "classic64/misc/misc_dirty_02.png",
+"size": [
+64,
+64
+]
+},
+{
+"name": "misc_grunge_01",
+"file": "classic64/misc/misc_grunge_01.png",
+"size": [
+128,
+128
+]
+},
+{
+"name": "misc_grunge_02",
+"file": "classic64/misc/misc_grunge_02.png",
+"size": [
+128,
+128
+]
+},
+{
+"name": "misc_pattern_01",
+"file": "classic64/misc/misc_pattern_01.png",
+"size": [
+64,
+64
+]
+},
+{
+"name": "misc_spiderwebs",
+"file": "classic64/misc/misc_spiderwebs.png",
+"size": [
+64,
+64
+]
+},
+{
+"name": "misc_vent_01",
+"file": "classic64/misc/misc_vent_01.png",
+"size": [
+82,
+64
+]
+},
+{
+"name": "outlet",
+"file": "classic64/misc/outlet.png",
+"size": [
+36,
+64
+]
+},
+{
+"name": "padlock_01",
+"file": "classic64/misc/padlock_01.png",
+"size": [
+64,
+60
+]
+},
+{
+"name": "plastic_pipe",
+"file": "classic64/misc/plastic_pipe.png",
+"size": [
+256,
+29
+]
+},
+{
+"name": "plastic_textured_gray",
+"file": "classic64/misc/plastic_textured_gray.png",
+"size": [
+128,
+128
+]
+},
+{
+"name": "plastic_textured_gray_64",
+"file": "classic64/misc/plastic_textured_gray_64.png",
+"size": [
+64,
+64
+]
+},
+{
+"name": "screw_01",
+"file": "classic64/misc/screw_01.png",
+"size": [
+64,
+64
+]
+},
+{
+"name": "slime_green_01",
+"file": "classic64/misc/slime_green_01.png",
+"size": [
+128,
+128
+]
+},
+{
+"name": "sticker_shippinglabel_01",
+"file": "classic64/misc/sticker_shippinglabel_01.png",
+"size": [
+64,
+93
+]
+},
+{
+"name": "switch_01",
+"file": "classic64/misc/switch_01.png",
+"size": [
+64,
+64
+]
+},
+{
+"name": "tarp_01",
+"file": "classic64/misc/tarp_01.png",
+"size": [
+64,
+64
+]
+},
+{
+"name": "tarp_02",
+"file": "classic64/misc/tarp_02.png",
+"size": [
+128,
+128
+]
+},
+{
+"name": "train_tracks",
+"file": "classic64/misc/train_tracks.png",
+"size": [
+119,
+64
+]
+},
+{
+"name": "train_tracks_02",
+"file": "classic64/misc/train_tracks_02.png",
+"size": [
+64,
+64
+]
+},
+{
+"name": "vent_01",
+"file": "classic64/misc/vent_01.png",
+"size": [
+64,
+64
+]
+},
+{
+"name": "vent_02",
+"file": "classic64/misc/vent_02.png",
+"size": [
+87,
+64
+]
+},
+{
+"name": "vent_03",
+"file": "classic64/misc/vent_03.png",
+"size": [
+239,
+64
+]
+},
+{
+"name": "vent_04",
+"file": "classic64/misc/vent_04.png",
+"size": [
+64,
+64
+]
+},
+{
+"name": "vent_05",
+"file": "classic64/misc/vent_05.png",
+"size": [
+64,
+64
+]
+},
+{
+"name": "vent_06",
+"file": "classic64/misc/vent_06.png",
+"size": [
+64,
+64
+]
+},
+{
+"name": "vent_floor",
+"file": "classic64/misc/vent_floor.png",
+"size": [
+76,
+64
+]
+},
+{
+"name": "wall_grunge_white",
+"file": "classic64/misc/wall_grunge_white.png",
+"size": [
+128,
+128
+]
+},
+{
+"name": "warning_light",
+"file": "classic64/misc/warning_light.png",
+"size": [
+64,
+64
+]
+},
+{
+"name": "warning_light_2",
+"file": "classic64/misc/warning_light_2.png",
+"size": [
+64,
+99
+]
+},
+{
+"name": "white_misc_stripes",
+"file": "classic64/misc/white_misc_stripes.png",
+"size": [
+64,
+64
+]
+},
+{
+"name": "yellow_grunge_01",
+"file": "classic64/misc/yellow_grunge_01.png",
+"size": [
+64,
+64
+]
+},
+{
+"name": "yellow_grunge_02",
+"file": "classic64/misc/yellow_grunge_02.png",
+"size": [
+64,
+64
+]
+},
+{
+"name": "yellow_grunge_03",
+"file": "classic64/misc/yellow_grunge_03.png",
+"size": [
+64,
+64
+]
+}
+],
+"nature": [
+{
+"name": "bark",
+"file": "classic64/nature/bark.png",
+"size": [
+101,
+256
+]
+},
+{
+"name": "bark_05",
+"file": "classic64/nature/bark_05.png",
+"size": [
+128,
+128
+]
+},
+{
+"name": "bark_2",
+"file": "classic64/nature/bark_2.png",
+"size": [
+64,
+64
+]
+},
+{
+"name": "bark_3",
+"file": "classic64/nature/bark_3.png",
+"size": [
+64,
+64
+]
+},
+{
+"name": "bark_4",
+"file": "classic64/nature/bark_4.png",
+"size": [
+64,
+64
+]
+},
+{
+"name": "branches",
+"file": "classic64/nature/branches.png",
+"size": [
+64,
+99
+]
+},
+{
+"name": "branches_leaves",
+"file": "classic64/nature/branches_leaves.png",
+"size": [
+64,
+100
+]
+},
+{
+"name": "branches_small",
+"file": "classic64/nature/branches_small.png",
+"size": [
+64,
+109
+]
+},
+{
+"name": "branches_small_leaves",
+"file": "classic64/nature/branches_small_leaves.png",
+"size": [
+64,
+109
+]
+},
+{
+"name": "bush_01",
+"file": "classic64/nature/bush_01.png",
+"size": [
+128,
+128
+]
+},
+{
+"name": "bush_02",
+"file": "classic64/nature/bush_02.png",
+"size": [
+128,
+128
+]
+},
+{
+"name": "bush_03",
+"file": "classic64/nature/bush_03.png",
+"size": [
+128,
+128
+]
+},
+{
+"name": "bush_04",
+"file": "classic64/nature/bush_04.png",
+"size": [
+128,
+128
+]
+},
+{
+"name": "bush_05",
+"file": "classic64/nature/bush_05.png",
+"size": [
+128,
+128
+]
+},
+{
+"name": "grass",
+"file": "classic64/nature/grass.png",
+"size": [
+64,
+64
+]
+},
+{
+"name": "grass_1",
+"file": "classic64/nature/grass_1.png",
+"size": [
+64,
+64
+]
+},
+{
+"name": "grass_2",
+"file": "classic64/nature/grass_2.png",
+"size": [
+64,
+64
+]
+},
+{
+"name": "grass_3",
+"file": "classic64/nature/grass_3.png",
+"size": [
+111,
+92
+]
+},
+{
+"name": "grass_4",
+"file": "classic64/nature/grass_4.png",
+"size": [
+64,
+64
+]
+},
+{
+"name": "grass_5",
+"file": "classic64/nature/grass_5.png",
+"size": [
+64,
+64
+]
+},
+{
+"name": "grass_6",
+"file": "classic64/nature/grass_6.png",
+"size": [
+64,
+64
+]
+},
+{
+"name": "grass_bush_1",
+"file": "classic64/nature/grass_bush_1.png",
+"size": [
+64,
+64
+]
+},
+{
+"name": "grass_bush_2",
+"file": "classic64/nature/grass_bush_2.png",
+"size": [
+64,
+64
+]
+},
+{
+"name": "grass_bush_3",
+"file": "classic64/nature/grass_bush_3.png",
+"size": [
+64,
+64
+]
+},
+{
+"name": "grass_bush_4",
+"file": "classic64/nature/grass_bush_4.png",
+"size": [
+64,
+64
+]
+},
+{
+"name": "hay",
+"file": "classic64/nature/hay.png",
+"size": [
+64,
+64
+]
+},
+{
+"name": "tree_trunk",
+"file": "classic64/nature/tree_trunk.png",
+"size": [
+64,
+64
+]
+},
+{
+"name": "trunk_cut",
+"file": "classic64/nature/trunk_cut.png",
+"size": [
+111,
+256
+]
+}
+],
+"panels": [
+{
+"name": "control_panel",
+"file": "classic64/panels/control_panel.png",
+"size": [
+64,
+77
+]
+},
+{
+"name": "electrical_panel_inside_a",
+"file": "classic64/panels/electrical_panel_inside_a.png",
+"size": [
+64,
+157
+]
+},
+{
+"name": "electrical_panel_inside_b",
+"file": "classic64/panels/electrical_panel_inside_b.png",
+"size": [
+64,
+157
+]
+},
+{
+"name": "electrical_panel_outside",
+"file": "classic64/panels/electrical_panel_outside.png",
+"size": [
+64,
+157
+]
+},
+{
+"name": "electrical_panel_outside_misc",
+"file": "classic64/panels/electrical_panel_outside_misc.png",
+"size": [
+64,
+157
+]
+},
+{
+"name": "gauge_pressure",
+"file": "classic64/panels/gauge_pressure.png",
+"size": [
+64,
+64
+]
+},
+{
+"name": "gauge_temp",
+"file": "classic64/panels/gauge_temp.png",
+"size": [
+64,
+64
+]
+},
+{
+"name": "panel_amp_controls",
+"file": "classic64/panels/panel_amp_controls.png",
+"size": [
+129,
+136
+]
+},
+{
+"name": "panel_amp_controls_2",
+"file": "classic64/panels/panel_amp_controls_2.png",
+"size": [
+256,
+138
+]
+},
+{
+"name": "panel_electric",
+"file": "classic64/panels/panel_electric.png",
+"size": [
+64,
+129
+]
+},
+{
+"name": "panel_gas_gauge",
+"file": "classic64/panels/panel_gas_gauge.png",
+"size": [
+117,
+64
+]
+},
+{
+"name": "panel_gaugepanel",
+"file": "classic64/panels/panel_gaugepanel.png",
+"size": [
+81,
+64
+]
+},
+{
+"name": "panel_heater",
+"file": "classic64/panels/panel_heater.png",
+"size": [
+124,
+128
+]
+},
+{
+"name": "panel_misc",
+"file": "classic64/panels/panel_misc.png",
+"size": [
+138,
+134
+]
+},
+{
+"name": "panel_tempature_control",
+"file": "classic64/panels/panel_tempature_control.png",
+"size": [
+64,
+115
+]
+},
+{
+"name": "panel_thermostat",
+"file": "classic64/panels/panel_thermostat.png",
+"size": [
+69,
+72
+]
+},
+{
+"name": "panel_timer",
+"file": "classic64/panels/panel_timer.png",
+"size": [
+77,
+64
+]
+},
+{
+"name": "propane_storage",
+"file": "classic64/panels/propane_storage.png",
+"size": [
+205,
+256
+]
+},
+{
+"name": "vent",
+"file": "classic64/panels/vent.png",
+"size": [
+64,
+64
+]
+}
+],
+"papers": [
+{
+"name": "envolope_redacted",
+"file": "classic64/papers/envolope_redacted.png",
+"size": [
+64,
+84
+]
+},
+{
+"name": "paper_log_1",
+"file": "classic64/papers/paper_log_1.png",
+"size": [
+64,
+81
+]
+}
+],
+"products": [
+{
+"name": "products_dishsoap",
+"file": "classic64/products/products_dishsoap.png",
+"size": [
+64,
+71
+]
+},
+{
+"name": "products_dishsoap_2",
+"file": "classic64/products/products_dishsoap_2.png",
+"size": [
+64,
+71
+]
+},
+{
+"name": "products_dishsoap_3",
+"file": "classic64/products/products_dishsoap_3.png",
+"size": [
+64,
+71
+]
+},
+{
+"name": "products_electronics",
+"file": "classic64/products/products_electronics.png",
+"size": [
+71,
+128
+]
+},
+{
+"name": "products_electronics_2",
+"file": "classic64/products/products_electronics_2.png",
+"size": [
+71,
+128
+]
+},
+{
+"name": "products_papertowels_pack",
+"file": "classic64/products/products_papertowels_pack.png",
+"size": [
+128,
+111
+]
+}
+],
+"road": [
+{
+"name": "guard_rail",
+"file": "classic64/road/guard_rail.png",
+"size": [
+254,
+32
+]
+},
+{
+"name": "road_01",
+"file": "classic64/road/road_01.png",
+"size": [
+128,
+128
+]
+},
+{
+"name": "road_02",
+"file": "classic64/road/road_02.png",
+"size": [
+128,
+64
+]
+},
+{
+"name": "road_muddy_01",
+"file": "classic64/road/road_muddy_01.png",
+"size": [
+128,
+128
+]
+},
+{
+"name": "road_muddy_02",
+"file": "classic64/road/road_muddy_02.png",
+"size": [
+128,
+128
+]
+},
+{
+"name": "road_muddy_03",
+"file": "classic64/road/road_muddy_03.png",
+"size": [
+128,
+128
+]
+}
+],
+"rocks": [
+{
+"name": "cobblestone",
+"file": "classic64/rocks/cobblestone.png",
+"size": [
+128,
+64
+]
+},
+{
+"name": "cobblestone_2",
+"file": "classic64/rocks/cobblestone_2.png",
+"size": [
+128,
+128
+]
+},
+{
+"name": "rock1",
+"file": "classic64/rocks/rock1.png",
+"size": [
+64,
+64
+]
+},
+{
+"name": "rock2",
+"file": "classic64/rocks/rock2.png",
+"size": [
+64,
+64
+]
+},
+{
+"name": "rock3",
+"file": "classic64/rocks/rock3.png",
+"size": [
+64,
+64
+]
+},
+{
+"name": "rock4",
+"file": "classic64/rocks/rock4.png",
+"size": [
+64,
+64
+]
+},
+{
+"name": "rock5",
+"file": "classic64/rocks/rock5.png",
+"size": [
+64,
+64
+]
+},
+{
+"name": "rock_cliff",
+"file": "classic64/rocks/rock_cliff.png",
+"size": [
+256,
+128
+]
+},
+{
+"name": "rock_cliff_2",
+"file": "classic64/rocks/rock_cliff_2.png",
+"size": [
+128,
+64
+]
+},
+{
+"name": "rock_cliff_2_ao",
+"file": "classic64/rocks/rock_cliff_2_ao.png",
+"size": [
+128,
+64
+]
+},
+{
+"name": "rock_cliff_2_norm",
+"file": "classic64/rocks/rock_cliff_2_norm.png",
+"size": [
+128,
+64
+]
+},
+{
+"name": "rock_gravel",
+"file": "classic64/rocks/rock_gravel.png",
+"size": [
+64,
+64
+]
+},
+{
+"name": "rock_gravel_2",
+"file": "classic64/rocks/rock_gravel_2.png",
+"size": [
+64,
+64
+]
+},
+{
+"name": "rock_gravel_3",
+"file": "classic64/rocks/rock_gravel_3.png",
+"size": [
+64,
+64
+]
+},
+{
+"name": "rock_wall_01",
+"file": "classic64/rocks/rock_wall_01.png",
+"size": [
+128,
+128
+]
+},
+{
+"name": "rock_wall_02",
+"file": "classic64/rocks/rock_wall_02.png",
+"size": [
+128,
+128
+]
+},
+{
+"name": "rock_wall_03",
+"file": "classic64/rocks/rock_wall_03.png",
+"size": [
+128,
+128
+]
+},
+{
+"name": "rock_wall_04",
+"file": "classic64/rocks/rock_wall_04.png",
+"size": [
+128,
+128
+]
+},
+{
+"name": "rock_wall_05",
+"file": "classic64/rocks/rock_wall_05.png",
+"size": [
+128,
+128
+]
+},
+{
+"name": "rock_wall_06",
+"file": "classic64/rocks/rock_wall_06.png",
+"size": [
+128,
+128
+]
+},
+{
+"name": "rock_wall_1",
+"file": "classic64/rocks/rock_wall_1.png",
+"size": [
+64,
+64
+]
+},
+{
+"name": "rock_wall_2",
+"file": "classic64/rocks/rock_wall_2.png",
+"size": [
+64,
+64
+]
+},
+{
+"name": "rock_wall_3",
+"file": "classic64/rocks/rock_wall_3.png",
+"size": [
+64,
+64
+]
+},
+{
+"name": "rocks_07",
+"file": "classic64/rocks/rocks_07.png",
+"size": [
+128,
+128
+]
+},
+{
+"name": "snow_rocks_01",
+"file": "classic64/rocks/snow_rocks_01.png",
+"size": [
+128,
+128
+]
+},
+{
+"name": "snow_rocks_02",
+"file": "classic64/rocks/snow_rocks_02.png",
+"size": [
+128,
+128
+]
+},
+{
+"name": "snow_rocks_03",
+"file": "classic64/rocks/snow_rocks_03.png",
+"size": [
+128,
+128
+]
+},
+{
+"name": "snow_rocks_04",
+"file": "classic64/rocks/snow_rocks_04.png",
+"size": [
+128,
+128
+]
+},
+{
+"name": "snow_rocks_05",
+"file": "classic64/rocks/snow_rocks_05.png",
+"size": [
+128,
+128
+]
+},
+{
+"name": "snow_rocks_06",
+"file": "classic64/rocks/snow_rocks_06.png",
+"size": [
+128,
+128
+]
+},
+{
+"name": "stone_sidewalk",
+"file": "classic64/rocks/stone_sidewalk.png",
+"size": [
+64,
+64
+]
+}
+],
+"roof": [
+{
+"name": "roof_metal_01",
+"file": "classic64/roof/roof_metal_01.png",
+"size": [
+128,
+128
+]
+},
+{
+"name": "roof_metal_siding",
+"file": "classic64/roof/roof_metal_siding.png",
+"size": [
+64,
+64
+]
+},
+{
+"name": "roof_old",
+"file": "classic64/roof/roof_old.png",
+"size": [
+64,
+64
+]
+},
+{
+"name": "roof_old_2",
+"file": "classic64/roof/roof_old_2.png",
+"size": [
+64,
+64
+]
+},
+{
+"name": "roof_soffit_01",
+"file": "classic64/roof/roof_soffit_01.png",
+"size": [
+128,
+128
+]
+},
+{
+"name": "roof_soffit_ridge_01",
+"file": "classic64/roof/roof_soffit_ridge_01.png",
+"size": [
+64,
+64
+]
+},
+{
+"name": "shingles_01",
+"file": "classic64/roof/shingles_01.png",
+"size": [
+128,
+128
+]
+},
+{
+"name": "shingles_02",
+"file": "classic64/roof/shingles_02.png",
+"size": [
+128,
+128
+]
+},
+{
+"name": "shingles_fancy_01",
+"file": "classic64/roof/shingles_fancy_01.png",
+"size": [
+128,
+128
+]
+},
+{
+"name": "shingles_old_01",
+"file": "classic64/roof/shingles_old_01.png",
+"size": [
+128,
+128
+]
+},
+{
+"name": "shingles_wood_01",
+"file": "classic64/roof/shingles_wood_01.png",
+"size": [
+128,
+128
+]
+},
+{
+"name": "shingles_wood_02",
+"file": "classic64/roof/shingles_wood_02.png",
+"size": [
+128,
+128
+]
+},
+{
+"name": "roof_classic",
+"file": "classic64/roof/roof_classic.png",
+"size": [
+64,
+64
+]
+}
+],
+"shelves": [
+{
+"name": "storeshelfback",
+"file": "classic64/shelves/storeshelfback.png",
+"size": [
+208,
+64
+]
+},
+{
+"name": "storeshelfbottom",
+"file": "classic64/shelves/storeshelfbottom.png",
+"size": [
+64,
+146
+]
+},
+{
+"name": "metal_rack_stackable",
+"file": "classic64/shelves/metal_rack_stackable.png",
+"size": [
+188,
+202
+]
+}
+],
+"signs": [
+{
+"name": "gas_station_01",
+"file": "classic64/signs/gas_station_01.png",
+"size": [
+64,
+77
+]
+},
+{
+"name": "sign_carwash_01",
+"file": "classic64/signs/sign_carwash_01.png",
+"size": [
+64,
+64
+]
+},
+{
+"name": "sign_changemachine_01",
+"file": "classic64/signs/sign_changemachine_01.png",
+"size": [
+119,
+64
+]
+},
+{
+"name": "sign_chemical_01",
+"file": "classic64/signs/sign_chemical_01.png",
+"size": [
+64,
+64
+]
+},
+{
+"name": "sign_chemical_rusty_01",
+"file": "classic64/signs/sign_chemical_rusty_01.png",
+"size": [
+64,
+64
+]
+},
+{
+"name": "sign_confined_space_01",
+"file": "classic64/signs/sign_confined_space_01.png",
+"size": [
+64,
+64
+]
+},
+{
+"name": "sign_hazard_01",
+"file": "classic64/signs/sign_hazard_01.png",
+"size": [
+64,
+52
+]
+},
+{
+"name": "sign_hazard_02",
+"file": "classic64/signs/sign_hazard_02.png",
+"size": [
+64,
+56
+]
+},
+{
+"name": "sign_hazard_03",
+"file": "classic64/signs/sign_hazard_03.png",
+"size": [
+64,
+59
+]
+},
+{
+"name": "sign_hazard_04",
+"file": "classic64/signs/sign_hazard_04.png",
+"size": [
+64,
+54
+]
+},
+{
+"name": "sign_money_01",
+"file": "classic64/signs/sign_money_01.png",
+"size": [
+64,
+64
+]
+},
+{
+"name": "sign_no_parking_01",
+"file": "classic64/signs/sign_no_parking_01.png",
+"size": [
+64,
+95
+]
+},
+{
+"name": "sign_no_smoking_01",
+"file": "classic64/signs/sign_no_smoking_01.png",
+"size": [
+64,
+64
+]
+},
+{
+"name": "sign_no_smoking_2",
+"file": "classic64/signs/sign_no_smoking_2.png",
+"size": [
+90,
+64
+]
+},
+{
+"name": "sign_no_smoking_3",
+"file": "classic64/signs/sign_no_smoking_3.png",
+"size": [
+64,
+64
+]
+},
+{
+"name": "sign_no_smoking_4",
+"file": "classic64/signs/sign_no_smoking_4.png",
+"size": [
+64,
+78
+]
+},
+{
+"name": "sign_notrespassing_01",
+"file": "classic64/signs/sign_notrespassing_01.png",
+"size": [
+94,
+64
+]
+},
+{
+"name": "sign_numbers_01",
+"file": "classic64/signs/sign_numbers_01.png",
+"size": [
+128,
+31
+]
+},
+{
+"name": "sign_plaque_01",
+"file": "classic64/signs/sign_plaque_01.png",
+"size": [
+64,
+102
+]
+},
+{
+"name": "sign_reserved_parking_01",
+"file": "classic64/signs/sign_reserved_parking_01.png",
+"size": [
+64,
+97
+]
+},
+{
+"name": "sign_tools_01",
+"file": "classic64/signs/sign_tools_01.png",
+"size": [
+44,
+64
+]
+},
+{
+"name": "sign_tyeer",
+"file": "classic64/signs/sign_tyeer.png",
+"size": [
+64,
+21
+]
+},
+{
+"name": "sign_warning_01",
+"file": "classic64/signs/sign_warning_01.png",
+"size": [
+95,
+64
+]
+},
+{
+"name": "sign_warning_04",
+"file": "classic64/signs/sign_warning_04.png",
+"size": [
+115,
+64
+]
+},
+{
+"name": "sign_warning_2",
+"file": "classic64/signs/sign_warning_2.png",
+"size": [
+86,
+64
+]
+},
+{
+"name": "sign_warning_3",
+"file": "classic64/signs/sign_warning_3.png",
+"size": [
+121,
+64
+]
+},
+{
+"name": "sign_warning_propane_01",
+"file": "classic64/signs/sign_warning_propane_01.png",
+"size": [
+64,
+64
+]
+},
+{
+"name": "sign_warning_propane_02",
+"file": "classic64/signs/sign_warning_propane_02.png",
+"size": [
+64,
+64
+]
+},
+{
+"name": "signpost_green",
+"file": "classic64/signs/signpost_green.png",
+"size": [
+64,
+64
+]
+},
+{
+"name": "signpost_silver",
+"file": "classic64/signs/signpost_silver.png",
+"size": [
+64,
+64
+]
+},
+{
+"name": "vintage_sign_01",
+"file": "classic64/signs/vintage_sign_01.png",
+"size": [
+65,
+77
+]
+},
+{
+"name": "vintage_sign_02",
+"file": "classic64/signs/vintage_sign_02.png",
+"size": [
+64,
+103
+]
+}
+],
+"tiles": [
+{
+"name": "tile_clean_tan",
+"file": "classic64/tiles/tile_clean_tan.png",
+"size": [
+64,
+63
+]
+},
+{
+"name": "tile_modern_white",
+"file": "classic64/tiles/tile_modern_white.png",
+"size": [
+64,
+74
+]
+},
+{
+"name": "tiles_ceiling",
+"file": "classic64/tiles/tiles_ceiling.png",
+"size": [
+64,
+64
+]
+},
+{
+"name": "tiles_ceiling_02",
+"file": "classic64/tiles/tiles_ceiling_02.png",
+"size": [
+60,
+128
+]
+},
+{
+"name": "tiles_vintage",
+"file": "classic64/tiles/tiles_vintage.png",
+"size": [
+64,
+64
+]
+},
+{
+"name": "tile_fancy",
+"file": "classic64/tiles/tile_fancy.png",
+"size": [
+128,
+128
+]
+}
+],
+"tools": [
+{
+"name": "rolling_tool_chest_red",
+"file": "classic64/tools/rolling_tool_chest_red.png",
+"size": [
+256,
+256
+]
+},
+{
+"name": "shovel_rusty",
+"file": "classic64/tools/shovel_rusty.png",
+"size": [
+103,
+97
+]
+},
+{
+"name": "wooden_handle",
+"file": "classic64/tools/wooden_handle.png",
+"size": [
+46,
+256
+]
+}
+],
+"units": [
+{
+"name": "fridge_drinks_01",
+"file": "classic64/units/fridge_drinks_01.png",
+"size": [
+128,
+205
+]
+},
+{
+"name": "generator",
+"file": "classic64/units/generator.png",
+"size": [
+256,
+256
+]
+}
+],
+"vehicles": [
+{
+"name": "bike_vintage",
+"file": "classic64/vehicles/bike_vintage.png",
+"size": [
+256,
+189
+]
+},
+{
+"name": "car_tire",
+"file": "classic64/vehicles/car_tire.png",
+"size": [
+128,
+64
+]
+},
+{
+"name": "light_01",
+"file": "classic64/vehicles/light_01.png",
+"size": [
+64,
+64
+]
+},
+{
+"name": "truck_wheel_1",
+"file": "classic64/vehicles/truck_wheel_1.png",
+"size": [
+64,
+64
+]
+},
+{
+"name": "truck_wheel_2",
+"file": "classic64/vehicles/truck_wheel_2.png",
+"size": [
+64,
+64
+]
+},
+{
+"name": "volvo",
+"file": "classic64/vehicles/volvo.png",
+"size": [
+256,
+95
+]
+}
+],
+"walls": [
+{
+"name": "siding_blue_01",
+"file": "classic64/walls/siding_blue_01.png",
+"size": [
+64,
+64
+]
+},
+{
+"name": "siding_gray_01",
+"file": "classic64/walls/siding_gray_01.png",
+"size": [
+64,
+64
+]
+},
+{
+"name": "siding_green_01",
+"file": "classic64/walls/siding_green_01.png",
+"size": [
+64,
+64
+]
+},
+{
+"name": "siding_metal_red_01",
+"file": "classic64/walls/siding_metal_red_01.png",
+"size": [
+128,
+128
+]
+},
+{
+"name": "siding_tan_01",
+"file": "classic64/walls/siding_tan_01.png",
+"size": [
+64,
+64
+]
+},
+{
+"name": "siding_white_01",
+"file": "classic64/walls/siding_white_01.png",
+"size": [
+64,
+64
+]
+},
+{
+"name": "siding_white_02",
+"file": "classic64/walls/siding_white_02.png",
+"size": [
+128,
+128
+]
+},
+{
+"name": "siding_white_03",
+"file": "classic64/walls/siding_white_03.png",
+"size": [
+64,
+64
+]
+},
+{
+"name": "siding_wood_01",
+"file": "classic64/walls/siding_wood_01.png",
+"size": [
+64,
+64
+]
+},
+{
+"name": "siding_wood_02",
+"file": "classic64/walls/siding_wood_02.png",
+"size": [
+64,
+60
+]
+},
+{
+"name": "siding_wood_03",
+"file": "classic64/walls/siding_wood_03.png",
+"size": [
+128,
+128
+]
+},
+{
+"name": "siding_wood_04",
+"file": "classic64/walls/siding_wood_04.png",
+"size": [
+64,
+64
+]
+},
+{
+"name": "siding_wood_05",
+"file": "classic64/walls/siding_wood_05.png",
+"size": [
+128,
+128
+]
+},
+{
+"name": "siding_wood_06",
+"file": "classic64/walls/siding_wood_06.png",
+"size": [
+64,
+64
+]
+},
+{
+"name": "wall_cracked_1",
+"file": "classic64/walls/wall_cracked_1.png",
+"size": [
+64,
+64
+]
+},
+{
+"name": "wall_cracked_2",
+"file": "classic64/walls/wall_cracked_2.png",
+"size": [
+256,
+256
+]
+},
+{
+"name": "wall_grunge",
+"file": "classic64/walls/wall_grunge.png",
+"size": [
+64,
+64
+]
+},
+{
+"name": "wall_halfconcrete_01",
+"file": "classic64/walls/wall_halfconcrete_01.png",
+"size": [
+64,
+64
+]
+},
+{
+"name": "wall_halfconcrete_02",
+"file": "classic64/walls/wall_halfconcrete_02.png",
+"size": [
+64,
+64
+]
+},
+{
+"name": "wall_halfconcrete_03",
+"file": "classic64/walls/wall_halfconcrete_03.png",
+"size": [
+64,
+64
+]
+},
+{
+"name": "wall_halfconcrete_04",
+"file": "classic64/walls/wall_halfconcrete_04.png",
+"size": [
+64,
+64
+]
+},
+{
+"name": "wall_halfconcrete_05",
+"file": "classic64/walls/wall_halfconcrete_05.png",
+"size": [
+64,
+64
+]
+},
+{
+"name": "wall_halfconcrete_06",
+"file": "classic64/walls/wall_halfconcrete_06.png",
+"size": [
+64,
+64
+]
+},
+{
+"name": "wall_halfconcrete_07",
+"file": "classic64/walls/wall_halfconcrete_07.png",
+"size": [
+64,
+59
+]
+},
+{
+"name": "wall_plaster_orange",
+"file": "classic64/walls/wall_plaster_orange.png",
+"size": [
+64,
+64
+]
+},
+{
+"name": "wall_plaster_pealing",
+"file": "classic64/walls/wall_plaster_pealing.png",
+"size": [
+64,
+64
+]
+},
+{
+"name": "wall_plaster_worn",
+"file": "classic64/walls/wall_plaster_worn.png",
+"size": [
+64,
+64
+]
+},
+{
+"name": "wall_plaster_worn_2",
+"file": "classic64/walls/wall_plaster_worn_2.png",
+"size": [
+64,
+64
+]
+},
+{
+"name": "wall_plaster_worn_3",
+"file": "classic64/walls/wall_plaster_worn_3.png",
+"size": [
+64,
+64
+]
+},
+{
+"name": "wall_stucco",
+"file": "classic64/walls/wall_stucco.png",
+"size": [
+64,
+64
+]
+},
+{
+"name": "wall_stucco_01",
+"file": "classic64/walls/wall_stucco_01.png",
+"size": [
+64,
+64
+]
+},
+{
+"name": "wall_stucco_02",
+"file": "classic64/walls/wall_stucco_02.png",
+"size": [
+64,
+64
+]
+},
+{
+"name": "wall_stucco_03",
+"file": "classic64/walls/wall_stucco_03.png",
+"size": [
+64,
+64
+]
+},
+{
+"name": "wall_stucco_04",
+"file": "classic64/walls/wall_stucco_04.png",
+"size": [
+64,
+64
+]
+},
+{
+"name": "wall_stucco_05",
+"file": "classic64/walls/wall_stucco_05.png",
+"size": [
+64,
+64
+]
+},
+{
+"name": "wall_stucco_06",
+"file": "classic64/walls/wall_stucco_06.png",
+"size": [
+64,
+64
+]
+},
+{
+"name": "wall_wallpaper",
+"file": "classic64/walls/wall_wallpaper.png",
+"size": [
+64,
+77
+]
+},
+{
+"name": "wall_wallpaper_2",
+"file": "classic64/walls/wall_wallpaper_2.png",
+"size": [
+64,
+64
+]
+},
+{
+"name": "wall_wallpaper_3",
+"file": "classic64/walls/wall_wallpaper_3.png",
+"size": [
+64,
+64
+]
+}
+],
+"water": [
+{
+"name": "river_ice_01",
+"file": "classic64/water/river_ice_01.png",
+"size": [
+128,
+128
+]
+},
+{
+"name": "river_ice_02",
+"file": "classic64/water/river_ice_02.png",
+"size": [
+128,
+128
+]
+},
+{
+"name": "water_foamy_01",
+"file": "classic64/water/water_foamy_01.png",
+"size": [
+128,
+128
+]
+},
+{
+"name": "water_waves",
+"file": "classic64/water/water_waves.png",
+"size": [
+128,
+128
+]
+},
+{
+"name": "waterfall_with_stones",
+"file": "classic64/water/waterfall_with_stones.png",
+"size": [
+128,
+103
+]
+}
+],
+"windows": [
+{
+"name": "inside_store_1",
+"file": "classic64/windows/inside_store_1.png",
+"size": [
+64,
+64
+]
+},
+{
+"name": "window_boarded",
+"file": "classic64/windows/window_boarded.png",
+"size": [
+64,
+93
+]
+},
+{
+"name": "window_classic_01",
+"file": "classic64/windows/window_classic_01.png",
+"size": [
+64,
+92
+]
+},
+{
+"name": "window_modern",
+"file": "classic64/windows/window_modern.png",
+"size": [
+64,
+99
+]
+},
+{
+"name": "window_modern_02",
+"file": "classic64/windows/window_modern_02.png",
+"size": [
+75,
+64
+]
+},
+{
+"name": "window_modern_03",
+"file": "classic64/windows/window_modern_03.png",
+"size": [
+78,
+64
+]
+},
+{
+"name": "window_modern_04",
+"file": "classic64/windows/window_modern_04.png",
+"size": [
+64,
+92
+]
+},
+{
+"name": "window_modern_05",
+"file": "classic64/windows/window_modern_05.png",
+"size": [
+64,
+49
+]
+},
+{
+"name": "window_modern_06",
+"file": "classic64/windows/window_modern_06.png",
+"size": [
+64,
+102
+]
+},
+{
+"name": "window_modern_07",
+"file": "classic64/windows/window_modern_07.png",
+"size": [
+64,
+195
+]
+},
+{
+"name": "window_modern_08",
+"file": "classic64/windows/window_modern_08.png",
+"size": [
+64,
+82
+]
+},
+{
+"name": "window_modern_09",
+"file": "classic64/windows/window_modern_09.png",
+"size": [
+64,
+88
+]
+},
+{
+"name": "window_modern_10",
+"file": "classic64/windows/window_modern_10.png",
+"size": [
+73,
+64
+]
+},
+{
+"name": "window_modern_11",
+"file": "classic64/windows/window_modern_11.png",
+"size": [
+66,
+64
+]
+},
+{
+"name": "window_modern_12",
+"file": "classic64/windows/window_modern_12.png",
+"size": [
+64,
+97
+]
+},
+{
+"name": "window_office",
+"file": "classic64/windows/window_office.png",
+"size": [
+64,
+79
+]
+},
+{
+"name": "window_old_01",
+"file": "classic64/windows/window_old_01.png",
+"size": [
+64,
+83
+]
+},
+{
+"name": "window_old_02",
+"file": "classic64/windows/window_old_02.png",
+"size": [
+64,
+30
+]
+},
+{
+"name": "window_old_03",
+"file": "classic64/windows/window_old_03.png",
+"size": [
+81,
+64
+]
+},
+{
+"name": "window_paintcans_01",
+"file": "classic64/windows/window_paintcans_01.png",
+"size": [
+91,
+64
+]
+},
+{
+"name": "window_shutter_black",
+"file": "classic64/windows/window_shutter_black.png",
+"size": [
+64,
+192
+]
+},
+{
+"name": "window_shutter_blue_01",
+"file": "classic64/windows/window_shutter_blue_01.png",
+"size": [
+30,
+128
+]
+},
+{
+"name": "window_shutter_green",
+"file": "classic64/windows/window_shutter_green.png",
+"size": [
+64,
+192
+]
+},
+{
+"name": "window_shutter_red",
+"file": "classic64/windows/window_shutter_red.png",
+"size": [
+64,
+192
+]
+},
+{
+"name": "window_sign_01",
+"file": "classic64/windows/window_sign_01.png",
+"size": [
+64,
+105
+]
+},
+{
+"name": "window_small_double_01",
+"file": "classic64/windows/window_small_double_01.png",
+"size": [
+52,
+64
+]
+},
+{
+"name": "window_store_01",
+"file": "classic64/windows/window_store_01.png",
+"size": [
+64,
+91
+]
+},
+{
+"name": "window_wood_old_01",
+"file": "classic64/windows/window_wood_old_01.png",
+"size": [
+128,
+57
+]
+},
+{
+"name": "window_wood_old_02",
+"file": "classic64/windows/window_wood_old_02.png",
+"size": [
+128,
+57
+]
+},
+{
+"name": "window_frame_green",
+"file": "classic64/windows/window_frame_green.png",
+"size": [
+64,
+139
+]
+},
+{
+"name": "window_frame_wood",
+"file": "classic64/windows/window_frame_wood.png",
+"size": [
+64,
+109
+]
+},
+{
+"name": "window_frame_wood_2",
+"file": "classic64/windows/window_frame_wood_2.png",
+"size": [
+64,
+119
+]
+}
+],
+"wood": [
+{
+"name": "plywood",
+"file": "classic64/wood/plywood.png",
+"size": [
+64,
+127
+]
+},
+{
+"name": "wood_bare",
+"file": "classic64/wood/wood_bare.png",
+"size": [
+64,
+64
+]
+},
+{
+"name": "wood_charred",
+"file": "classic64/wood/wood_charred.png",
+"size": [
+128,
+128
+]
+},
+{
+"name": "wood_details_01",
+"file": "classic64/wood/wood_details_01.png",
+"size": [
+203,
+128
+]
+},
+{
+"name": "wood_details_02",
+"file": "classic64/wood/wood_details_02.png",
+"size": [
+64,
+148
+]
+},
+{
+"name": "wood_fancy_01",
+"file": "classic64/wood/wood_fancy_01.png",
+"size": [
+64,
+64
+]
+},
+{
+"name": "wood_fancy_02",
+"file": "classic64/wood/wood_fancy_02.png",
+"size": [
+128,
+128
+]
+},
+{
+"name": "wood_fancy_03",
+"file": "classic64/wood/wood_fancy_03.png",
+"size": [
+128,
+128
+]
+},
+{
+"name": "wood_fancy_04",
+"file": "classic64/wood/wood_fancy_04.png",
+"size": [
+128,
+128
+]
+},
+{
+"name": "wood_fancy_plank_01",
+"file": "classic64/wood/wood_fancy_plank_01.png",
+"size": [
+128,
+128
+]
+},
+{
+"name": "wood_fancy_plank_02",
+"file": "classic64/wood/wood_fancy_plank_02.png",
+"size": [
+128,
+128
+]
+},
+{
+"name": "wood_painted_white",
+"file": "classic64/wood/wood_painted_white.png",
+"size": [
+64,
+64
+]
+},
+{
+"name": "wood_pallet",
+"file": "classic64/wood/wood_pallet.png",
+"size": [
+64,
+62
+]
+},
+{
+"name": "wood_plank",
+"file": "classic64/wood/wood_plank.png",
+"size": [
+64,
+64
+]
+},
+{
+"name": "wood_plank_02",
+"file": "classic64/wood/wood_plank_02.png",
+"size": [
+64,
+64
+]
+},
+{
+"name": "wood_plank_05",
+"file": "classic64/wood/wood_plank_05.png",
+"size": [
+157,
+65
+]
+},
+{
+"name": "wood_plank_06",
+"file": "classic64/wood/wood_plank_06.png",
+"size": [
+140,
+64
+]
+},
+{
+"name": "wood_plank_07",
+"file": "classic64/wood/wood_plank_07.png",
+"size": [
+256,
+14
+]
+},
+{
+"name": "wood_plank_08",
+"file": "classic64/wood/wood_plank_08.png",
+"size": [
+256,
+17
+]
+},
+{
+"name": "wood_plank_09",
+"file": "classic64/wood/wood_plank_09.png",
+"size": [
+47,
+128
+]
+},
+{
+"name": "wood_plank_10",
+"file": "classic64/wood/wood_plank_10.png",
+"size": [
+64,
+64
+]
+},
+{
+"name": "wood_plank_2",
+"file": "classic64/wood/wood_plank_2.png",
+"size": [
+29,
+256
+]
+},
+{
+"name": "wood_plank_3",
+"file": "classic64/wood/wood_plank_3.png",
+"size": [
+256,
+36
+]
+},
+{
+"name": "wood_plank_4",
+"file": "classic64/wood/wood_plank_4.png",
+"size": [
+256,
+37
+]
+},
+{
+"name": "wood_plank_charred",
+"file": "classic64/wood/wood_plank_charred.png",
+"size": [
+128,
+128
+]
+},
+{
+"name": "wood_plank_red",
+"file": "classic64/wood/wood_plank_red.png",
+"size": [
+61,
+256
+]
+},
+{
+"name": "wood_planks",
+"file": "classic64/wood/wood_planks.png",
+"size": [
+64,
+64
+]
+},
+{
+"name": "wood_planks_2",
+"file": "classic64/wood/wood_planks_2.png",
+"size": [
+64,
+64
+]
+},
+{
+"name": "wood_planks_3",
+"file": "classic64/wood/wood_planks_3.png",
+"size": [
+64,
+64
+]
+},
+{
+"name": "wood_planks_4",
+"file": "classic64/wood/wood_planks_4.png",
+"size": [
+128,
+64
+]
+},
+{
+"name": "wood_planks_5",
+"file": "classic64/wood/wood_planks_5.png",
+"size": [
+64,
+64
+]
+},
+{
+"name": "wood_planks_6",
+"file": "classic64/wood/wood_planks_6.png",
+"size": [
+64,
+64
+]
+},
+{
+"name": "wood_planks_7",
+"file": "classic64/wood/wood_planks_7.png",
+"size": [
+64,
+61
+]
+},
+{
+"name": "wood_planks_8",
+"file": "classic64/wood/wood_planks_8.png",
+"size": [
+64,
+61
+]
+},
+{
+"name": "wood_planks_9",
+"file": "classic64/wood/wood_planks_9.png",
+"size": [
+64,
+64
+]
+},
+{
+"name": "wood_planks_fancy_01",
+"file": "classic64/wood/wood_planks_fancy_01.png",
+"size": [
+128,
+128
+]
+},
+{
+"name": "wood_planks_fancy_02",
+"file": "classic64/wood/wood_planks_fancy_02.png",
+"size": [
+128,
+128
+]
+},
+{
+"name": "wood_planks_fancy_03",
+"file": "classic64/wood/wood_planks_fancy_03.png",
+"size": [
+128,
+128
+]
+},
+{
+"name": "wood_planks_modern_01",
+"file": "classic64/wood/wood_planks_modern_01.png",
+"size": [
+128,
+128
+]
+},
+{
+"name": "wood_planks_painted_gray_01",
+"file": "classic64/wood/wood_planks_painted_gray_01.png",
+"size": [
+128,
+128
+]
+},
+{
+"name": "wood_planks_painted_gray_02",
+"file": "classic64/wood/wood_planks_painted_gray_02.png",
+"size": [
+128,
+128
+]
+},
+{
+"name": "wood_planks_plain",
+"file": "classic64/wood/wood_planks_plain.png",
+"size": [
+64,
+64
+]
+},
+{
+"name": "wood_planks_tan",
+"file": "classic64/wood/wood_planks_tan.png",
+"size": [
+128,
+132
+]
+},
+{
+"name": "wood_plywood",
+"file": "classic64/wood/wood_plywood.png",
+"size": [
+64,
+64
+]
+},
+{
+"name": "wood_plywood_03",
+"file": "classic64/wood/wood_plywood_03.png",
+"size": [
+128,
+128
+]
+},
+{
+"name": "wood_plywood_04",
+"file": "classic64/wood/wood_plywood_04.png",
+"size": [
+128,
+128
+]
+},
+{
+"name": "wood_plywood_05",
+"file": "classic64/wood/wood_plywood_05.png",
+"size": [
+64,
+64
+]
+},
+{
+"name": "wood_plywood_06",
+"file": "classic64/wood/wood_plywood_06.png",
+"size": [
+64,
+64
+]
+},
+{
+"name": "wood_plywood_2",
+"file": "classic64/wood/wood_plywood_2.png",
+"size": [
+64,
+64
+]
+},
+{
+"name": "wood_plywood_green",
+"file": "classic64/wood/wood_plywood_green.png",
+"size": [
+64,
+64
+]
+},
+{
+"name": "wood_plywood_green_2",
+"file": "classic64/wood/wood_plywood_green_2.png",
+"size": [
+64,
+64
+]
+},
+{
+"name": "wood_plywood_red",
+"file": "classic64/wood/wood_plywood_red.png",
+"size": [
+256,
+179
+]
+},
+{
+"name": "wood_pole_01",
+"file": "classic64/wood/wood_pole_01.png",
+"size": [
+46,
+128
+]
+},
+{
+"name": "wood_pole_02",
+"file": "classic64/wood/wood_pole_02.png",
+"size": [
+67,
+128
+]
+},
+{
+"name": "wood_rustic",
+"file": "classic64/wood/wood_rustic.png",
+"size": [
+64,
+64
+]
+},
+{
+"name": "wood_rustic_2",
+"file": "classic64/wood/wood_rustic_2.png",
+"size": [
+64,
+64
+]
+},
+{
+"name": "wood_rustic_3",
+"file": "classic64/wood/wood_rustic_3.png",
+"size": [
+64,
+64
+]
+},
+{
+"name": "wood_rustic_4",
+"file": "classic64/wood/wood_rustic_4.png",
+"size": [
+64,
+64
+]
+},
+{
+"name": "wood_rustic_5",
+"file": "classic64/wood/wood_rustic_5.png",
+"size": [
+64,
+64
+]
+},
+{
+"name": "wood_rustic_beam",
+"file": "classic64/wood/wood_rustic_beam.png",
+"size": [
+56,
+128
+]
+},
+{
+"name": "wood_sign",
+"file": "classic64/wood/wood_sign.png",
+"size": [
+64,
+60
+]
+},
+{
+"name": "wood_staples_01",
+"file": "classic64/wood/wood_staples_01.png",
+"size": [
+64,
+64
+]
+},
+{
+"name": "woodchips_01",
+"file": "classic64/wood/woodchips_01.png",
+"size": [
+64,
+64
+]
+},
+{
+"name": "woodchips_02",
+"file": "classic64/wood/woodchips_02.png",
+"size": [
+64,
+64
+]
+},
+{
+"name": "woodchips_03",
+"file": "classic64/wood/woodchips_03.png",
+"size": [
+128,
+128
+]
+},
+{
+"name": "wood_fine",
+"file": "classic64/wood/wood_fine.png",
+"size": [
+64,
+64
+]
+},
+{
+"name": "wood_fine_2",
+"file": "classic64/wood/wood_fine_2.png",
+"size": [
+64,
+64
+]
+},
+{
+"name": "wood_fine_3",
+"file": "classic64/wood/wood_fine_3.png",
+"size": [
+64,
+64
+]
+},
+{
+"name": "wood_modern",
+"file": "classic64/wood/wood_modern.png",
+"size": [
+64,
+64
+]
+}
+]
+}
+}
