@@ -298,7 +298,8 @@ kbd{border:1px solid #66669a;background:#16162a;padding:1px 5px}
 @media(orientation:landscape) and (max-height:760px){.rw-diffbox{gap:2px;margin-left:3px}.rw-diffbox span{display:none}.rw-diffbox select{height:23px;width:66px;font-size:8px;padding:0 2px}.rw-level-hud{gap:2px}.rw-level-hud .rw-next{display:none}.rw-level-hud span{font-size:7px;padding:2px 3px}.rw-level-banner{top:13%;font-size:11px}}
 
 </style>
-<script>addEventListener('keydown',function(e){if((e.keyCode||e.which)===461&&window.parent!==window){e.preventDefault();window.parent.postMessage({type:'retroworld-tv-back'},'*');}},true);</script></head>
+<script>addEventListener('keydown',function(e){if((e.keyCode||e.which)===461&&window.parent!==window){e.preventDefault();window.parent.postMessage({type:'retroworld-tv-back'},'*');}},true);</script><script src="../../assets/rw-fx.js?v=1"></script>
+</head>
 <body><div class="wrap"><div class="top"><span class="game-brand">DIGITAL EYE</span><div class="title">TANK DUEL</div><div class="rw-diffbox"><span>DIFFICULTY</span><select id="difficultySelect" aria-label="Game difficulty"><option value="easy">EASY</option><option value="normal" selected>NORMAL</option><option value="hard">HARD</option></select></div><button id="sfxToggle" class="sfxbtn" type="button" onclick="SFX.toggle()">SFX: ON</button></div>
 <div class="frame"><canvas id="g" width="640" height="480"></canvas></div><div class="help"><kbd>ARROWS/WASD</kbd> move &nbsp; <kbd>SPACE</kbd> fire &nbsp; <kbd>ENTER</kbd> start/restart</div>
 <div class="touch-controls" id="touchControls" aria-label="Mobile game controls">
@@ -547,15 +548,15 @@ addEventListener('keyup',e=>K[e.key.toLowerCase()]=0);
 let last=0;function txt(s,a,b,z=16,col='#fff',al='left'){x.fillStyle=col;x.font=`bold ${z}px Courier New`;x.textAlign=al;x.textBaseline='top';x.fillText(s,a,b)}
 function R(a,b){return Math.random()*(b-a)+a} function C(v,a,b){return Math.max(a,Math.min(b,v))}
 
-let p,cpu,shots,state='title',score=0;
+let p,cpu,shots,state='title',score=0;const TANKS=new Image();TANKS.src='../../assets/sprites/military/Vehicles.png';
 const walls=[{x:300,y:120,w:40,h:110},{x:300,y:290,w:40,h:110},{x:140,y:220,w:90,h:30},{x:410,y:220,w:90,h:30}];
 function reset(){p={x:80,y:H/2,cd:0,hp:3};cpu={x:560,y:H/2,cd:0,hp:3,t:0};shots=[];state='play'}
 addEventListener('keydown',e=>{if(e.key==='Enter'&&state!=='play')reset()});
 function wallHit(o){return walls.some(w=>o.x>w.x-8&&o.x<w.x+w.w+8&&o.y>w.y-8&&o.y<w.y+w.h+8)}
 function up(dt){if(state!=='play')return;p.cd-=dt;cpu.cd-=dt;let ox=p.x,oy=p.y;p.x+=((K.arrowright||K.d?1:0)-(K.arrowleft||K.a?1:0))*160*dt;p.y+=((K.arrowdown||K.s?1:0)-(K.arrowup||K.w?1:0))*160*dt;p.x=C(p.x,20,W-20);p.y=C(p.y,20,H-20);if(wallHit(p)){p.x=ox;p.y=oy}if(K[' ']&&p.cd<=0){shots.push({x:p.x+18,y:p.y,vx:260,owner:'p'});SFX.cannon();p.cd=.4}
-cpu.t+=dt;let ty=p.y+Math.sin(cpu.t*2)*70,oldy=cpu.y;cpu.y+=C(ty-cpu.y,-90*dt,90*dt);if(wallHit(cpu))cpu.y=oldy;if(cpu.cd<=0){shots.push({x:cpu.x-18,y:cpu.y,vx:-230,owner:'c'});SFX.cannon();cpu.cd=R(.55,1.0)}shots.forEach(s=>s.x+=s.vx*dt);for(let i=shots.length-1;i>=0;i--){let s=shots[i];if(wallHit(s)){SFX.hit();shots.splice(i,1);continue}let target=s.owner==='p'?cpu:p;if(Math.abs(s.x-target.x)<20&&Math.abs(s.y-target.y)<18){target.hp--;SFX.boom(false);shots.splice(i,1);if(target.hp<=0){state=s.owner==='p'?'win':'over';if(state==='win'){SFX.success();score++}else SFX.fail()}}}shots=shots.filter(s=>s.x>-30&&s.x<W+30)}
+cpu.t+=dt;let ty=p.y+Math.sin(cpu.t*2)*70,oldy=cpu.y;cpu.y+=C(ty-cpu.y,-90*dt,90*dt);if(wallHit(cpu))cpu.y=oldy;if(cpu.cd<=0){shots.push({x:cpu.x-18,y:cpu.y,vx:-230,owner:'c'});SFX.cannon();cpu.cd=R(.55,1.0)}shots.forEach(s=>s.x+=s.vx*dt);for(let i=shots.length-1;i>=0;i--){let s=shots[i];if(wallHit(s)){SFX.hit();FX('boom-small',s.x,s.y,40);shots.splice(i,1);continue}let target=s.owner==='p'?cpu:p;if(Math.abs(s.x-target.x)<20&&Math.abs(s.y-target.y)<18){target.hp--;SFX.boom(false);FX('boom-pop',s.x,s.y,70);shots.splice(i,1);if(target.hp<=0){FX('boom-big',target.x,target.y,140);state=s.owner==='p'?'win':'over';if(state==='win'){SFX.success();score++}else SFX.fail()}}}shots=shots.filter(s=>s.x>-30&&s.x<W+30)}
 function draw(){x.fillStyle='#101522';x.fillRect(0,0,W,H);walls.forEach(w=>{x.fillStyle='#4b4b5c';x.fillRect(w.x,w.y,w.w,w.h);x.fillStyle='#69697d';x.fillRect(w.x+4,w.y+4,w.w-8,6)});if(state==='title'){txt('TANK DUEL',W/2,150,36,'#00ffff','center');txt('DESTROY THE ENEMY TANK',W/2,205,15,'#ff2bd6','center');txt('PRESS ENTER',W/2,250,18,'#66ff66','center');return}
-function tank(o,col,flip){x.fillStyle=col;x.fillRect(o.x-15,o.y-12,30,24);x.fillStyle='#111';x.fillRect(o.x-18,o.y-15,5,30);x.fillRect(o.x+13,o.y-15,5,30);x.fillStyle='#ffff55';x.fillRect(flip?o.x-25:o.x+10,o.y-3,15,6)}tank(p,'#00aaff',false);tank(cpu,'#ff4b64',true);shots.forEach(s=>{x.fillStyle=s.owner==='p'?'#ffff55':'#ff2bd6';x.fillRect(s.x-4,s.y-3,8,6)});txt('YOU '+p.hp,10,10,14,'#00ffff');txt('CPU '+cpu.hp,W-10,10,14,'#ff4b64','right');if(state!=='play'){x.fillStyle='#000d';x.fillRect(110,180,420,110);txt(state==='win'?'ENEMY DESTROYED':'TANK DESTROYED',W/2,198,28,state==='win'?'#66ff66':'#ff4b64','center');txt('PRESS ENTER',W/2,246,14,'#00ffff','center')}}
+function tank(o,col,flip){if(TANKS.complete&&TANKS.naturalWidth){if(state!=='play'&&o.hp<=0)return;x.save();x.imageSmoothingEnabled=false;x.translate(o.x,o.y);if(flip)x.scale(-1,1);x.drawImage(TANKS,0,flip?21:0,32,21,-32,-21,64,42);x.restore();return}x.fillStyle=col;x.fillRect(o.x-15,o.y-12,30,24);x.fillStyle='#111';x.fillRect(o.x-18,o.y-15,5,30);x.fillRect(o.x+13,o.y-15,5,30);x.fillStyle='#ffff55';x.fillRect(flip?o.x-25:o.x+10,o.y-3,15,6)}tank(p,'#00aaff',false);tank(cpu,'#ff4b64',true);shots.forEach(s=>{x.fillStyle=s.owner==='p'?'#ffff55':'#ff2bd6';x.fillRect(s.x-4,s.y-3,8,6)});txt('YOU '+p.hp,10,10,14,'#00ffff');txt('CPU '+cpu.hp,W-10,10,14,'#ff4b64','right');if(state!=='play'){x.fillStyle='#000d';x.fillRect(110,180,420,110);txt(state==='win'?'ENEMY DESTROYED':'TANK DESTROYED',W/2,198,28,state==='win'?'#66ff66':'#ff4b64','center');txt('PRESS ENTER',W/2,246,14,'#00ffff','center')}}
 function loop(t){let d=Math.min(.033,(t-last)/1000||0);last=t;up(d);draw();requestAnimationFrame(loop)}requestAnimationFrame(loop);
 
 
@@ -786,4 +787,8 @@ const RETRO_LOCAL_STATS=(()=>{
   return {snapshot};
 })();
 
-</script></body></html>
+</script><script>/* RETRO WORLD sprite explosions (assets/fx) */
+function FX(n,X,Y,s,o){try{if(window.RWFX)RWFX.spawn(n,X,Y,Object.assign({size:s},o||{}))}catch(e){}}
+(function(){if(!window.RWFX||typeof draw!=='function')return;RWFX.preload(['boom-small','boom-pop','boom-big']);var _d=draw;draw=function(){var r=_d.apply(this,arguments);try{RWFX.update();RWFX.draw(x)}catch(e){}return r}})();
+</script>
+</body></html>

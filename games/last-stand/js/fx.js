@@ -1,5 +1,6 @@
 'use strict';
 /* ===== effects: particles, shells, explosions, debris, lights, camera shake, hit-stop ===== */
+if (window.RWFX) RWFX.preload(['boom-big', 'boom-fire', 'boom-pop', 'boom-cloud']);
 const Cam = {
   x: 0, y: 0, tx: 0, shake: 0, sx: 0, sy: 0, lockL: null, lockR: null, zoomK: 0,
   add(v) { if (Save.d.settings.shake) this.shake = Math.min(28, this.shake + v); },
@@ -17,7 +18,7 @@ const Cam = {
 };
 const FX = {
   P: [], S: [], T: [], L: [], flashA: 0, flashC: '#fff', hs: 0,
-  reset() { this.P = []; this.S = []; this.T = []; this.L = []; this.flashA = 0; this.hs = 0; },
+  reset() { this.P = []; this.S = []; this.T = []; this.L = []; this.flashA = 0; this.hs = 0; if (window.RWFX) RWFX.clear(); },
   hitstop(t) { this.hs = Math.max(this.hs, t); },
   flash(a, c) { if (!Save.d.settings.fx) a *= .4; this.flashA = Math.max(this.flashA, a); this.flashC = c || '#fff'; },
   p(o) { if (this.P.length > 900) this.P.shift(); this.P.push(Object.assign({ vx: 0, vy: 0, g: 0, life: .5, t: 0, s: 3, s2: 0, c: '#fff', drag: 0, add: false, k: 'dot' }, o)); },
@@ -32,6 +33,7 @@ const FX = {
   muzzle(x, y, a, c, big) { const n = big ? 7 : 4; for (let i = 0; i < n; i++) { const aa = a + rnd(-.35, .35), v = rnd(200, 600); this.p({ x, y, vx: Math.cos(aa) * v, vy: Math.sin(aa) * v, life: rnd(.04, .09), s: rnd(3, 7), c: c || '#fff2a0', add: true, drag: 6 }); } this.light(x, y, big ? 150 : 90, c || '#ffd060', .06); this.P.push({ x, y, k: 'flash', a, t: 0, life: .045, s: big ? 26 : 16, c: c || '#fff6c0', add: true, vx: 0, vy: 0, g: 0, drag: 0 }); },
   explode(x, y, r, opt) {
     opt = opt || {}; const big = r > 90;
+    if (window.RWFX && Save.d.settings.fx !== false) { RWFX.spawn(big ? 'boom-big' : r > 55 ? 'boom-fire' : 'boom-pop', x, y - r * (big ? .35 : .15), { size: r * (big ? 2.4 : 2.1), fps: big ? 16 : 20 }); if (big) RWFX.spawn('boom-cloud', x, y + 8, { size: r * 2.2, fps: 14, delay: .08 }); }
     Snd.play(big ? 'bigBoom' : 'boom', opt.vol || 1); Cam.add(big ? 18 : 10); if (!opt.noStop) this.hitstop(big ? .07 : .035); this.flash(big ? .35 : .18, '#fff3d0');
     this.P.push({ x, y, k: 'ring', t: 0, life: .35, s: 4, s2: r * 1.4, c: '#fff3c0', add: true, vx: 0, vy: 0, g: 0, drag: 0 });
     for (let i = 0; i < (big ? 26 : 14); i++) { const a = rnd(0, TAU), v = rnd(40, r * 3.2); this.p({ x, y, vx: Math.cos(a) * v, vy: Math.sin(a) * v - 60, life: rnd(.25, .6), s: rnd(10, r * .32), s2: 2, c: pick(['#fff4a0', '#ffc040', '#ff7a1a', '#ff4a1a']), add: true, drag: 3.4 }); }
@@ -52,6 +54,7 @@ const FX = {
     for (const t of this.T) { t.t += dt; t.y -= 40 * dt; } this.T = this.T.filter(t => t.t < t.life);
     for (const l of this.L) l.t += dt; this.L = this.L.filter(l => l.t < l.life);
     this.flashA = Math.max(0, this.flashA - dt * 3);
+    if (window.RWFX) RWFX.update(dt);
   },
   draw(g) {
     for (const s of this.S) { g.save(); g.translate(s.x, s.y); g.rotate(s.rot); g.globalAlpha = Math.min(1, (3 - s.t) * 2); g.fillStyle = s.big ? '#c84a2a' : '#e8b83a'; g.fillRect(-3, -1.3, s.big ? 8 : 6, s.big ? 3.4 : 2.6); g.restore(); }
@@ -66,6 +69,7 @@ const FX = {
       else { const s = p.s2 ? lerp(p.s, p.s2, u) : p.s; g.globalAlpha = p.add ? a : a * .9; g.fillStyle = p.c; g.beginPath(); g.arc(p.x, p.y, Math.max(.5, s), 0, TAU); g.fill(); }
     }
     g.globalAlpha = 1; g.globalCompositeOperation = 'source-over';
+    if (window.RWFX) RWFX.draw(g);
   },
   drawLights(g) {
     g.globalCompositeOperation = 'lighter';

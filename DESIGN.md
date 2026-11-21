@@ -55,5 +55,7 @@ The next production pass would add authored multi-step objectives, inventory obj
 ## Shared asset libraries (use these in every new game)
 - **Sound:** `assets/sfx/` + `assets/rw-sfx.js` (real gunshots, reloads, melee, footsteps, foley, cards, dice, sports, car sounds). See `assets/sfx/README.md`.
 - **Textures:** `assets/textures/` (CC0 SBS + Classic 64 packs, `index.json` catalogue). See `assets/textures/README.md`.
-- **3D models:** `assets/models/` (retro nature glb, PSX cars obj). See `assets/models/README.md`.
+- **3D models:** `assets/models/` (retro nature glb, PSX cars obj, low-poly jeep glb with sand/snow/wood skins in `assets/models/jeep/`). See `assets/models/README.md`.
+- **Explosions & effects:** `assets/fx/` + `assets/rw-fx.js` (11 pixel-art sprite animations: `boom-small`, `boom-pop`, `boom-spark`, `boom-fire`, `boom-cloud`, `boom-burst`, `boom-big`, `boom-huge`, `fireball`, `flash-burst`, `splash-water`). `RWFX.spawn(name,x,y,{size})`, then `RWFX.update(dt)` + `RWFX.draw(ctx)` each frame inside the world transform. Catalogue: `assets/fx/index.json`.
+- **Sprites:** `assets/sprites/military/` (pixel tank, rocket launcher, APC, supply truck, scout car in forest/desert/snow, side view 32×21) and `assets/sprites/topdown/` (police officer walk/shoot/die strips, player with pistol/SMG/shotgun/chaingun/flamethrower + walk/run, zombie walk, blood splats). Frame sizes in each folder's `index.json`. Draw with `imageSmoothingEnabled=false`.
 Keep synth/procedural fallbacks so a game still works if a file fails to load.

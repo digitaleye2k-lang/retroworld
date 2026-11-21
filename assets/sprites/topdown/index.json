@@ -1,0 +1,90 @@
+{
+ "zombie_walk_strip6.png": {
+  "w": 72,
+  "h": 72,
+  "n": 6,
+  "facing": "up (rotate to heading)"
+ },
+ "blood_drop.png": {
+  "n": 1
+ },
+ "blood_splat_m.png": {
+  "n": 1
+ },
+ "blood_splat_l.png": {
+  "n": 1
+ },
+ "blood_streak.png": {
+  "n": 1
+ },
+ "officer_walk_strip.png": {
+  "w": 32,
+  "h": 45,
+  "n": 8
+ },
+ "officer_shoot_strip.png": {
+  "w": 38,
+  "h": 45,
+  "n": 6
+ },
+ "officer_die_strip.png": {
+  "w": 49,
+  "h": 54,
+  "n": 4
+ },
+ "officer_headless_strip.png": {
+  "w": 46,
+  "h": 52,
+  "n": 4
+ },
+ "player_walk_strip6.png": {
+  "w": 35,
+  "h": 57,
+  "n": 6
+ },
+ "player_run_strip6.png": {
+  "w": 80,
+  "h": 87,
+  "n": 6
+ },
+ "player_pumgun_reload_strip5.png": {
+  "w": 63,
+  "h": 57,
+  "n": 5
+ },
+ "player_chaingun_shoot_strip2.png": {
+  "w": 53,
+  "h": 30,
+  "n": 2
+ },
+ "player_flamethrower.png": {
+  "w": 58,
+  "h": 57,
+  "n": 1
+ },
+ "player_9mmhandgun.png": {
+  "w": 66,
+  "h": 60,
+  "n": 1
+ },
+ "player_pumpgun_stand.png": {
+  "w": 63,
+  "h": 57,
+  "n": 1
+ },
+ "player_chaingun.png": {
+  "w": 54,
+  "h": 32,
+  "n": 1
+ },
+ "player_hk_stand.png": {
+  "w": 56,
+  "h": 57,
+  "n": 1
+ },
+ "player_hk_recoil.png": {
+  "w": 58,
+  "h": 57,
+  "n": 1
+ }
+}

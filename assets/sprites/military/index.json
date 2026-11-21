@@ -1,0 +1,41 @@
+{
+ "Vehicles.png": {
+  "cell": [
+   32,
+   21
+  ],
+  "cols": [
+   "tank",
+   "rocket_launcher",
+   "apc",
+   "supply_truck",
+   "scout"
+  ],
+  "rows": [
+   "forest",
+   "desert",
+   "snow"
+  ],
+  "note": "side view, faces right; draw with imageSmoothingEnabled=false"
+ },
+ "Vehicles_Desert.png": {
+  "cell": [
+   32,
+   21
+  ],
+  "rows": [
+   "tank",
+   "rocket_launcher",
+   "apc",
+   "supply_truck",
+   "scout"
+  ]
+ },
+ "Vehicles_Forest.png": {
+  "same": "Vehicles_Desert"
+ },
+ "Vehicles_Snow.png": {
+  "same": "Vehicles_Desert"
+ },
+ "credit": "Pixel Military Vehicles 2.0 by de-alpe-game-art.itch.io"
+}

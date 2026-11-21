@@ -1,0 +1,79 @@
+{
+ "boom-small": {
+  "w": 32,
+  "h": 32,
+  "n": 8,
+  "desc": "small pixel pop, bullets/grenade hit",
+  "license": "CC0 (Explosion Pack 1)"
+ },
+ "boom-fire": {
+  "w": 64,
+  "h": 64,
+  "n": 8,
+  "desc": "fireball with smoke ring",
+  "license": "CC0 (Explosion Pack 1)"
+ },
+ "boom-burst": {
+  "w": 128,
+  "h": 80,
+  "n": 10,
+  "desc": "ground blast with debris (wide)",
+  "license": "CC0 (Explosion Pack 1)"
+ },
+ "boom-big": {
+  "w": 128,
+  "h": 128,
+  "n": 12,
+  "desc": "big mushroom explosion (vehicles, barrels)",
+  "license": "CC0 (Explosion Pack 1)"
+ },
+ "boom-huge": {
+  "w": 192,
+  "h": 192,
+  "n": 22,
+  "desc": "huge shockwave explosion (bosses, nukes)",
+  "license": "CC0 (Explosion Pack 1)"
+ },
+ "boom-pop": {
+  "w": 48,
+  "h": 48,
+  "n": 8,
+  "desc": "medium pop with debris",
+  "license": "CC0 (Explosion Pack 1)"
+ },
+ "boom-spark": {
+  "w": 48,
+  "h": 48,
+  "n": 7,
+  "desc": "impact spark / muzzle hit",
+  "license": "CC0 (Explosion Pack 1)"
+ },
+ "boom-cloud": {
+  "w": 80,
+  "h": 48,
+  "n": 12,
+  "desc": "ground dust explosion (wide)",
+  "license": "CC0 (Explosion Pack 1)"
+ },
+ "splash-water": {
+  "w": 64,
+  "h": 64,
+  "n": 7,
+  "desc": "water splash",
+  "license": "CC0 (Explosion Pack 1)"
+ },
+ "fireball": {
+  "w": 64,
+  "h": 64,
+  "n": 13,
+  "desc": "orange fireball burst with smoke wisps",
+  "license": "Fire Effect 2 (user supplied)"
+ },
+ "flash-burst": {
+  "w": 48,
+  "h": 48,
+  "n": 17,
+  "desc": "white flash then crackling fire burst",
+  "license": "Fire Effect 2 (user supplied)"
+ }
+}

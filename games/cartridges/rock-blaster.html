@@ -9,7 +9,8 @@ canvas{display:block;touch-action:none;box-shadow:0 0 50px #00ffff22;border-radi
 #snd.off{color:#8a8ab0;border-color:#6a6a90}
 
 </style>
-<script>addEventListener('keydown',function(e){if((e.keyCode||e.which)===461&&window.parent!==window){e.preventDefault();window.parent.postMessage({type:'retroworld-tv-back'},'*');}},true);</script></head>
+<script>addEventListener('keydown',function(e){if((e.keyCode||e.which)===461&&window.parent!==window){e.preventDefault();window.parent.postMessage({type:'retroworld-tv-back'},'*');}},true);</script><script src="../../assets/rw-fx.js?v=1"></script>
+</head>
 <body><div id="stage"><canvas id="g"></canvas></div><button id="snd" type="button">SFX: ON</button>
 
 <script>
@@ -54,7 +55,7 @@ function onTap(p){touching=true;tx=p.x;ty=p.y;if(p.x>LW-170&&p.y>LH-170){fire()}
 function onMove(p){if(touching){tx=p.x;ty=p.y}}
 function onUp(){touching=false;tx=null}
 function fire(){if(fireCd>0||sh.dead)return;fireCd=.22;bl.push({x:sh.x+Math.cos(sh.a)*18,y:sh.y+Math.sin(sh.a)*18,vx:Math.cos(sh.a)*640+sh.vx*.3,vy:Math.sin(sh.a)*640+sh.vy*.3,l:1.1});tone(700,.08,'square',.05,.4)}
-function boom(x,y,n,c){for(let i=0;i<n;i++){const a=rnd(0,TAU),s=rnd(40,240);fx.push({x,y,vx:Math.cos(a)*s,vy:Math.sin(a)*s,l:rnd(.4,.9),c:c||'#fff'})}}
+function boom(x,y,n,c){FX(n>=20?'boom-big':'boom-pop',x,y,n>=20?n*4.2:Math.max(40,n*4.5));for(let i=0;i<n;i++){const a=rnd(0,TAU),s=rnd(40,240);fx.push({x,y,vx:Math.cos(a)*s,vy:Math.sin(a)*s,l:rnd(.4,.9),c:c||'#fff'})}}
 function wrap(o,m){m=m||0;if(o.x<-m)o.x=LW+m;if(o.x>LW+m)o.x=-m;if(o.y<-m)o.y=LH+m;if(o.y>LH+m)o.y=-m}
 function onUpdate(dt){fireCd-=dt;inv-=dt;
  // controls
@@ -115,4 +116,8 @@ if(act&&playing&&now-last>1500){snap();last=now}
 if(act&&!fin&&(m==='win'||m==='over')){fin=true;act=false;send('finish',{metric:'score',value:val(),higherBetter:true,result:m==='win'?'win':'lose'})}
 if(!playing&&m==='menu'){act=false}},250);
 addEventListener('pagehide',()=>{if(act)snap()});})();
-</script></body></html>
+</script><script>/* RETRO WORLD sprite explosions (assets/fx) */
+function FX(n,X,Y,s,o){try{if(window.RWFX)RWFX.spawn(n,X,Y,Object.assign({size:s},o||{}))}catch(e){}}
+(function(){if(!window.RWFX||typeof onDraw!=='function')return;RWFX.preload(['boom-big','boom-pop']);var _d=onDraw;onDraw=function(){var r=_d.apply(this,arguments);try{RWFX.update();RWFX.draw(ctx)}catch(e){}return r}})();
+</script>
+</body></html>

@@ -298,7 +298,8 @@ kbd{border:1px solid #66669a;background:#16162a;padding:1px 5px}
 @media(orientation:landscape) and (max-height:760px){.rw-diffbox{gap:2px;margin-left:3px}.rw-diffbox span{display:none}.rw-diffbox select{height:23px;width:66px;font-size:8px;padding:0 2px}.rw-level-hud{gap:2px}.rw-level-hud .rw-next{display:none}.rw-level-hud span{font-size:7px;padding:2px 3px}.rw-level-banner{top:13%;font-size:11px}}
 
 </style>
-<script>addEventListener('keydown',function(e){if((e.keyCode||e.which)===461&&window.parent!==window){e.preventDefault();window.parent.postMessage({type:'retroworld-tv-back'},'*');}},true);</script></head>
+<script>addEventListener('keydown',function(e){if((e.keyCode||e.which)===461&&window.parent!==window){e.preventDefault();window.parent.postMessage({type:'retroworld-tv-back'},'*');}},true);</script><script src="../../assets/rw-fx.js?v=1"></script>
+</head>
 <body><div class="wrap"><div class="top"><span class="game-brand">DIGITAL EYE</span><div class="title">BUG BLASTER</div><div class="rw-diffbox"><span>DIFFICULTY</span><select id="difficultySelect" aria-label="Game difficulty"><option value="easy">EASY</option><option value="normal" selected>NORMAL</option><option value="hard">HARD</option></select></div><button id="sfxToggle" class="sfxbtn" type="button" onclick="SFX.toggle()">SFX: ON</button></div>
 <div class="frame"><canvas id="g" width="640" height="480"></canvas></div><div class="help"><kbd>ARROWS/WASD</kbd> move &nbsp; <kbd>SPACE</kbd> fire</div>
 <div class="touch-controls" id="touchControls" aria-label="Mobile game controls">
@@ -555,8 +556,8 @@ function up(dt){
  if(state!=='play')return;p.cd-=dt;p.inv-=dt;let dx=(K.arrowright||K.d?1:0)-(K.arrowleft||K.a?1:0),dy=(K.arrowdown||K.s?1:0)-(K.arrowup||K.w?1:0);p.x=C(p.x+dx*220*dt,25,W-25);p.y=C(p.y+dy*170*dt,H/2,H-25);
  if(K[' ']&&p.cd<=0){bul.push({x:p.x,y:p.y-20,vx:0,vy:-420});p.cd=.16;SFX.laser()}
  tm-=dt;if(tm<=0){en.push({x:R(25,W-25),y:-25,v:R(75,140),hp:Math.random()<.2?2:1,cd:R(.8,1.8)});tm=R(.35,.75)}en.forEach(o=>{o.y+=o.v*dt;o.cd-=dt;if(o.cd<0){eb.push({x:o.x,y:o.y+12,vx:0,vy:170});SFX.enemyLaser();o.cd=R(1,2)}});bul.forEach(b=>{b.x+=b.vx*dt;b.y+=b.vy*dt});eb.forEach(b=>{b.x+=b.vx*dt;b.y+=b.vy*dt});
- for(let i=en.length-1;i>=0;i--)for(let j=bul.length-1;j>=0;j--)if(Math.hypot(en[i].x-bul[j].x,en[i].y-bul[j].y)<20){bul.splice(j,1);if(--en[i].hp<=0){en.splice(i,1);score+=100;SFX.boom(false)}break}
- if(p.inv<=0)for(let i=eb.length-1;i>=0;i--)if(Math.hypot(eb[i].x-p.x,eb[i].y-p.y)<18){eb.splice(i,1);lives--;p.inv=1.2;SFX.boom(true);if(lives<=0){SFX.fail();state='over'}break}
+ for(let i=en.length-1;i>=0;i--)for(let j=bul.length-1;j>=0;j--)if(Math.hypot(en[i].x-bul[j].x,en[i].y-bul[j].y)<20){bul.splice(j,1);if(--en[i].hp<=0){FX('boom-spark',en[i].x,en[i].y,56);en.splice(i,1);score+=100;SFX.boom(false)}break}
+ if(p.inv<=0)for(let i=eb.length-1;i>=0;i--)if(Math.hypot(eb[i].x-p.x,eb[i].y-p.y)<18){eb.splice(i,1);lives--;p.inv=1.2;SFX.boom(true);FX('boom-pop',p.x,p.y,60);if(lives<=0){SFX.fail();state='over'}break}
  en=en.filter(o=>o.y<H+40);bul=bul.filter(o=>o.y>-20);eb=eb.filter(o=>o.y<H+20);
 }
 function draw(){
@@ -796,4 +797,8 @@ const RETRO_LOCAL_STATS=(()=>{
   return {snapshot};
 })();
 
-</script></body></html>
+</script><script>/* RETRO WORLD sprite explosions (assets/fx) */
+function FX(n,X,Y,s,o){try{if(window.RWFX)RWFX.spawn(n,X,Y,Object.assign({size:s},o||{}))}catch(e){}}
+(function(){if(!window.RWFX||typeof draw!=='function')return;RWFX.preload(['boom-spark','boom-pop']);var _d=draw;draw=function(){var r=_d.apply(this,arguments);try{RWFX.update();RWFX.draw(x)}catch(e){}return r}})();
+</script>
+</body></html>

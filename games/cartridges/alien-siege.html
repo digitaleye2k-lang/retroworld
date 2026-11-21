@@ -298,7 +298,8 @@ kbd{border:1px solid #66669a;background:#16162a;padding:1px 5px}
 @media(orientation:landscape) and (max-height:760px){.rw-diffbox{gap:2px;margin-left:3px}.rw-diffbox span{display:none}.rw-diffbox select{height:23px;width:66px;font-size:8px;padding:0 2px}.rw-level-hud{gap:2px}.rw-level-hud .rw-next{display:none}.rw-level-hud span{font-size:7px;padding:2px 3px}.rw-level-banner{top:13%;font-size:11px}}
 
 </style>
-<script>addEventListener('keydown',function(e){if((e.keyCode||e.which)===461&&window.parent!==window){e.preventDefault();window.parent.postMessage({type:'retroworld-tv-back'},'*');}},true);</script></head>
+<script>addEventListener('keydown',function(e){if((e.keyCode||e.which)===461&&window.parent!==window){e.preventDefault();window.parent.postMessage({type:'retroworld-tv-back'},'*');}},true);</script><script src="../../assets/rw-fx.js?v=1"></script>
+</head>
 <body><div class="wrap"><div class="top"><span class="game-brand">DIGITAL EYE</span><div class="title">ALIEN SIEGE</div><div class="rw-diffbox"><span>DIFFICULTY</span><select id="difficultySelect" aria-label="Game difficulty"><option value="easy">EASY</option><option value="normal" selected>NORMAL</option><option value="hard">HARD</option></select></div><button id="sfxToggle" class="sfxbtn" type="button" onclick="SFX.toggle()">SFX: ON</button></div>
 <div class="frame"><canvas id="g" width="640" height="480"></canvas></div><div class="help"><kbd>LEFT/RIGHT</kbd> move &nbsp; <kbd>SPACE</kbd> fire &nbsp; <kbd>ENTER</kbd> start/restart</div>
 <div class="touch-controls" id="touchControls" aria-label="Mobile game controls">
@@ -549,7 +550,7 @@ function R(a,b){return Math.random()*(b-a)+a} function C(v,a,b){return Math.max(
 
 let p,a=[],bul=[],ab=[],dir=1,score=0,state='title',stepT=0;
 function reset(){p={x:W/2,cd:0,l:3};a=[];for(let r=0;r<4;r++)for(let col=0;col<10;col++)a.push({x:105+col*48,y:70+r*38,w:22,h:16});bul=[];ab=[];dir=1;score=0;state='play';stepT=0}
-function up(dt){if(state!=='play')return;p.cd-=dt;p.x=C(p.x+((K.arrowright||K.d?1:0)-(K.arrowleft||K.a?1:0))*260*dt,20,W-20);if(K[' ']&&p.cd<=0){bul.push({x:p.x,y:H-50});SFX.laser();p.cd=.22}bul.forEach(b=>b.y-=390*dt);ab.forEach(b=>b.y+=170*dt);stepT+=dt;let edge=a.some(o=>o.x<28||o.x>W-28);if(edge){dir*=-1;a.forEach(o=>o.y+=13)}a.forEach(o=>o.x+=dir*(22+score/250)*dt);if(stepT>.65&&a.length){stepT=0;let s=a[Math.floor(R(0,a.length))];ab.push({x:s.x,y:s.y+10})}for(let i=a.length-1;i>=0;i--)for(let j=bul.length-1;j>=0;j--)if(Math.abs(a[i].x-bul[j].x)<14&&Math.abs(a[i].y-bul[j].y)<14){a.splice(i,1);bul.splice(j,1);SFX.boom(false);score+=25;break}for(let i=ab.length-1;i>=0;i--)if(Math.abs(ab[i].x-p.x)<16&&ab[i].y>H-65){ab.splice(i,1);SFX.boom(true);if(--p.l<=0){SFX.fail();state='over'}}if(a.some(o=>o.y>H-90))state='over';if(!a.length){SFX.success();state='win'};bul=bul.filter(b=>b.y>-20);ab=ab.filter(b=>b.y<H+20)}
+function up(dt){if(state!=='play')return;p.cd-=dt;p.x=C(p.x+((K.arrowright||K.d?1:0)-(K.arrowleft||K.a?1:0))*260*dt,20,W-20);if(K[' ']&&p.cd<=0){bul.push({x:p.x,y:H-50});SFX.laser();p.cd=.22}bul.forEach(b=>b.y-=390*dt);ab.forEach(b=>b.y+=170*dt);stepT+=dt;let edge=a.some(o=>o.x<28||o.x>W-28);if(edge){dir*=-1;a.forEach(o=>o.y+=13)}a.forEach(o=>o.x+=dir*(22+score/250)*dt);if(stepT>.65&&a.length){stepT=0;let s=a[Math.floor(R(0,a.length))];ab.push({x:s.x,y:s.y+10})}for(let i=a.length-1;i>=0;i--)for(let j=bul.length-1;j>=0;j--)if(Math.abs(a[i].x-bul[j].x)<14&&Math.abs(a[i].y-bul[j].y)<14){FX('boom-small',a[i].x,a[i].y,52);a.splice(i,1);bul.splice(j,1);SFX.boom(false);score+=25;break}for(let i=ab.length-1;i>=0;i--)if(Math.abs(ab[i].x-p.x)<16&&ab[i].y>H-65){ab.splice(i,1);SFX.boom(true);FX('boom-fire',p.x,p.y-6,84);if(--p.l<=0){SFX.fail();state='over'}}if(a.some(o=>o.y>H-90))state='over';if(!a.length){SFX.success();state='win'};bul=bul.filter(b=>b.y>-20);ab=ab.filter(b=>b.y<H+20)}
 addEventListener('keydown',e=>{if(e.key==='Enter'&&state!=='play')reset()});
 function draw(){x.fillStyle='#020216';x.fillRect(0,0,W,H);if(state==='title'){txt('ALIEN SIEGE',W/2,160,34,'#00ffff','center');txt('PRESS ENTER',W/2,230,18,'#66ff66','center');return}a.forEach((o,i)=>{x.fillStyle=i%2?'#ff2bd6':'#66ff66';x.fillRect(o.x-10,o.y-7,20,14);x.fillRect(o.x-14,o.y-2,28,5)});bul.forEach(o=>{x.fillStyle='#ffff55';x.fillRect(o.x-2,o.y,4,10)});ab.forEach(o=>{x.fillStyle='#ff4b64';x.fillRect(o.x-2,o.y,4,8)});x.fillStyle='#00ffff';x.fillRect(p.x-12,H-40,24,8);x.fillRect(p.x-3,H-48,6,16);txt('SCORE '+score,10,10,14,'#ffff55');txt('LIVES '+p.l,W-10,10,14,'#66ff66','right');if(state!=='play'){x.fillStyle='#000d';x.fillRect(100,175,440,110);txt(state==='win'?'CITY SAVED':'ALIENS WIN',W/2,195,28,state==='win'?'#66ff66':'#ff4b64','center');txt('PRESS ENTER',W/2,245,15,'#00ffff','center')}}
 function loop(t){let d=Math.min(.033,(t-last)/1000||0);last=t;up(d);draw();requestAnimationFrame(loop)}requestAnimationFrame(loop);
@@ -782,4 +783,8 @@ const RETRO_LOCAL_STATS=(()=>{
   return {snapshot};
 })();
 
-</script></body></html>
+</script><script>/* RETRO WORLD sprite explosions (assets/fx) */
+function FX(n,X,Y,s,o){try{if(window.RWFX)RWFX.spawn(n,X,Y,Object.assign({size:s},o||{}))}catch(e){}}
+(function(){if(!window.RWFX||typeof draw!=='function')return;RWFX.preload(['boom-small','boom-fire']);var _d=draw;draw=function(){var r=_d.apply(this,arguments);try{RWFX.update();RWFX.draw(x)}catch(e){}return r}})();
+</script>
+</body></html>

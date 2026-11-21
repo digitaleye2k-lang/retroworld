@@ -298,7 +298,8 @@ kbd{border:1px solid #66669a;background:#16162a;padding:1px 5px}
 @media(orientation:landscape) and (max-height:760px){.rw-diffbox{gap:2px;margin-left:3px}.rw-diffbox span{display:none}.rw-diffbox select{height:23px;width:66px;font-size:8px;padding:0 2px}.rw-level-hud{gap:2px}.rw-level-hud .rw-next{display:none}.rw-level-hud span{font-size:7px;padding:2px 3px}.rw-level-banner{top:13%;font-size:11px}}
 
 </style>
-<script>addEventListener('keydown',function(e){if((e.keyCode||e.which)===461&&window.parent!==window){e.preventDefault();window.parent.postMessage({type:'retroworld-tv-back'},'*');}},true);</script></head>
+<script>addEventListener('keydown',function(e){if((e.keyCode||e.which)===461&&window.parent!==window){e.preventDefault();window.parent.postMessage({type:'retroworld-tv-back'},'*');}},true);</script><script src="../../assets/rw-fx.js?v=1"></script>
+</head>
 <body><div class="wrap"><div class="top"><span class="game-brand">DIGITAL EYE</span><div class="title">GALAXY DEFENDER</div><div class="rw-diffbox"><span>DIFFICULTY</span><select id="difficultySelect" aria-label="Game difficulty"><option value="easy">EASY</option><option value="normal" selected>NORMAL</option><option value="hard">HARD</option></select></div><button id="sfxToggle" class="sfxbtn" type="button" onclick="SFX.toggle()">SFX: ON</button></div>
 <div class="frame"><canvas id="g" width="640" height="480"></canvas></div><div class="help"><kbd>ARROWS/WASD</kbd> fly &nbsp; <kbd>SPACE</kbd> fire &nbsp; <kbd>ENTER</kbd> start/restart</div>
 <div class="touch-controls" id="touchControls" aria-label="Mobile game controls">
@@ -551,7 +552,7 @@ let p,en=[],bul=[],eb=[],state='title',tm=0,score=0,lives=3,stars=Array.from({le
 function reset(){p={x:70,y:H/2,cd:0,inv:0};en=[];bul=[];eb=[];tm=0;score=0;lives=3;state='play'}
 addEventListener('keydown',e=>{if(e.key==='Enter'&&state!=='play')reset()});
 function hit(a,b,rx=16,ry=16){return Math.abs(a.x-b.x)<rx&&Math.abs(a.y-b.y)<ry}
-function up(dt){stars.forEach(s=>{s.x-=s.v*dt;if(s.x<0){s.x=W;s.y=R(0,H)}});if(state!=='play')return;p.cd-=dt;p.inv-=dt;let dx=(K.arrowright||K.d?1:0)-(K.arrowleft||K.a?1:0),dy=(K.arrowdown||K.s?1:0)-(K.arrowup||K.w?1:0);p.x=C(p.x+dx*220*dt,25,W-80);p.y=C(p.y+dy*220*dt,35,H-25);if(K[' ']&&p.cd<=0){bul.push({x:p.x+20,y:p.y});SFX.laser();p.cd=.15}bul.forEach(b=>b.x+=420*dt);eb.forEach(b=>b.x-=220*dt);tm-=dt;if(tm<=0){en.push({x:W+25,y:R(45,H-45),v:R(90,160),cd:R(.5,1.6)});tm=R(.35,.8)}en.forEach(o=>{o.x-=o.v*dt;o.cd-=dt;if(o.cd<0){eb.push({x:o.x-12,y:o.y});SFX.enemyLaser();o.cd=R(.9,1.8)}});for(let i=en.length-1;i>=0;i--)for(let j=bul.length-1;j>=0;j--)if(hit(en[i],bul[j],18,14)){en.splice(i,1);bul.splice(j,1);SFX.boom(false);score+=100;break}if(p.inv<=0){for(let i=eb.length-1;i>=0;i--)if(hit(p,eb[i],16,14)){eb.splice(i,1);lives--;SFX.boom(true);p.inv=1.2;if(lives<=0)state='over';break}}en=en.filter(o=>o.x>-40);bul=bul.filter(o=>o.x<W+20);eb=eb.filter(o=>o.x>-20)}
+function up(dt){stars.forEach(s=>{s.x-=s.v*dt;if(s.x<0){s.x=W;s.y=R(0,H)}});if(state!=='play')return;p.cd-=dt;p.inv-=dt;let dx=(K.arrowright||K.d?1:0)-(K.arrowleft||K.a?1:0),dy=(K.arrowdown||K.s?1:0)-(K.arrowup||K.w?1:0);p.x=C(p.x+dx*220*dt,25,W-80);p.y=C(p.y+dy*220*dt,35,H-25);if(K[' ']&&p.cd<=0){bul.push({x:p.x+20,y:p.y});SFX.laser();p.cd=.15}bul.forEach(b=>b.x+=420*dt);eb.forEach(b=>b.x-=220*dt);tm-=dt;if(tm<=0){en.push({x:W+25,y:R(45,H-45),v:R(90,160),cd:R(.5,1.6)});tm=R(.35,.8)}en.forEach(o=>{o.x-=o.v*dt;o.cd-=dt;if(o.cd<0){eb.push({x:o.x-12,y:o.y});SFX.enemyLaser();o.cd=R(.9,1.8)}});for(let i=en.length-1;i>=0;i--)for(let j=bul.length-1;j>=0;j--)if(hit(en[i],bul[j],18,14)){FX('boom-pop',en[i].x,en[i].y,60);en.splice(i,1);bul.splice(j,1);SFX.boom(false);score+=100;break}if(p.inv<=0){for(let i=eb.length-1;i>=0;i--)if(hit(p,eb[i],16,14)){eb.splice(i,1);lives--;SFX.boom(true);FX('fireball',p.x,p.y,90);p.inv=1.2;if(lives<=0)state='over';break}}en=en.filter(o=>o.x>-40);bul=bul.filter(o=>o.x<W+20);eb=eb.filter(o=>o.x>-20)}
 function draw(){x.fillStyle='#020216';x.fillRect(0,0,W,H);stars.forEach(s=>{x.fillStyle='#8888bb';x.fillRect(s.x,s.y,2,2)});if(state==='title'){txt('GALAXY DEFENDER',W/2,150,34,'#00ffff','center');txt('SIDE-SCROLL SPACE COMBAT',W/2,205,14,'#ff2bd6','center');txt('PRESS ENTER',W/2,250,18,'#66ff66','center');return}
 en.forEach(o=>{x.fillStyle='#ff4b64';x.fillRect(o.x-15,o.y-10,30,20);x.fillStyle='#ff9933';x.fillRect(o.x-20,o.y-4,40,8)});bul.forEach(o=>{x.fillStyle='#ffff55';x.fillRect(o.x,o.y-2,12,4)});eb.forEach(o=>{x.fillStyle='#ff2bd6';x.fillRect(o.x,o.y-3,10,6)});if(!(p.inv>0&&Math.floor(p.inv*10)%2===0)){x.fillStyle='#00ffff';x.fillRect(p.x-15,p.y-7,30,14);x.fillStyle='#0066ff';x.fillRect(p.x-8,p.y-14,16,28);x.fillStyle='#ffff55';x.fillRect(p.x-20,p.y-3,7,6)}txt('SCORE '+score,10,10,14,'#ffff55');txt('LIVES '+lives,W-10,10,14,'#66ff66','right');if(state==='over'){x.fillStyle='#000d';x.fillRect(100,175,440,110);txt('SECTOR LOST',W/2,195,30,'#ff4b64','center');txt('PRESS ENTER',W/2,245,15,'#00ffff','center')}}
 function loop(t){let d=Math.min(.033,(t-last)/1000||0);last=t;up(d);draw();requestAnimationFrame(loop)}requestAnimationFrame(loop);
@@ -784,4 +785,8 @@ const RETRO_LOCAL_STATS=(()=>{
   return {snapshot};
 })();
 
-</script></body></html>
+</script><script>/* RETRO WORLD sprite explosions (assets/fx) */
+function FX(n,X,Y,s,o){try{if(window.RWFX)RWFX.spawn(n,X,Y,Object.assign({size:s},o||{}))}catch(e){}}
+(function(){if(!window.RWFX||typeof draw!=='function')return;RWFX.preload(['boom-pop','fireball']);var _d=draw;draw=function(){var r=_d.apply(this,arguments);try{RWFX.update();RWFX.draw(x)}catch(e){}return r}})();
+</script>
+</body></html>
