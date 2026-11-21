@@ -48,17 +48,21 @@
   // ---------------- particles / effects ----------------
   const parts = [];
   const add = (x, y, vx, vy, life, col, size, g, kind) => { if (parts.length < 600) parts.push({ x, y, vx, vy, life, max: life, col, size, g: g === undefined ? 300 : g, kind }); };
+  /* sprite effects (assets/fx via rw-fx.js): slash flashes, blood hits, smoke, magic */
+  const SFXN = (n, x, y, o) => { if (window.RWFX && RWFX.count < 60) RWFX.spawn(n, x, y, o); };
+  if (window.RWFX) RWFX.preload(['px-weaponhit', 'blood-hit', 'hit-white', 'real-smoke-blast', 'smoke-wisp', 'flash-burst', 'star-burst', 'px-magicspell', 'px-shield']);
   const fx = GB.fx = {
+    sprite: SFXN,
     sm: null, flashA: 0, flashX: 0, flashY: 0,
     dust(x, y, n) { for (let i = 0; i < n; i++) add(x + U.rand(-6, 6), y - 1, U.rand(-40, 40), U.rand(-50, -5), U.rand(0.25, 0.55), '150,140,125', U.rand(1.5, 3.5), 60); },
-    blood(x, y, n) { for (let i = 0; i < n; i++) add(x, y, U.rand(-70, 70), U.rand(-110, -10), U.rand(0.3, 0.6), '120,14,18', U.rand(1.2, 2.4), 500); },
-    spark(x, y, n) { for (let i = 0; i < n; i++) add(x, y, U.rand(-170, 170), U.rand(-190, 40), U.rand(0.15, 0.4), '255,225,150', U.rand(1, 2), 500, 'glow'); },
+    blood(x, y, n) { if (n >= 8) { SFXN('blood-hit', x, y, { size: 58, fps: 40, rot: U.rand(-.4, .4) }); SFXN('px-weaponhit', x, y - 4, { size: 64, fps: 60, rot: U.rand(0, 6.28) }); } for (let i = 0; i < n; i++) add(x, y, U.rand(-70, 70), U.rand(-110, -10), U.rand(0.3, 0.6), '120,14,18', U.rand(1.2, 2.4), 500); },
+    spark(x, y, n) { if (n >= 5) SFXN('hit-white', x, y, { size: 30, fps: 44, rot: U.rand(0, 6.28) }); for (let i = 0; i < n; i++) add(x, y, U.rand(-170, 170), U.rand(-190, 40), U.rand(0.15, 0.4), '255,225,150', U.rand(1, 2), 500, 'glow'); },
     leaves(x, y, type) { const c = type === 'hay' || type === 'cart' ? '214,180,90' : type === 'bush' ? '70,120,60' : '140,120,100'; for (let i = 0; i < 12; i++) add(x + U.rand(-16, 16), y, U.rand(-70, 70), U.rand(-130, -20), U.rand(0.4, 0.9), c, U.rand(1.5, 3), 260); },
     splash(x, y) { for (let i = 0; i < 16; i++) add(x + U.rand(-8, 8), y, U.rand(-90, 90), U.rand(-240, -60), U.rand(0.4, 0.8), '190,220,240', U.rand(1.5, 3), 700); fx.ripple(x, y); },
     ripple(x, y) { add(x, y + 1, 0, 0, 0.8, '200,225,245', 4, 0, 'ripple'); },
-    ring(x, y) { add(x, y - 14, 0, 0, 0.5, '255,235,170', 6, 0, 'ring'); },
+    ring(x, y) { SFXN('px-magicspell', x, y - 14, { size: 110, fps: 40 }); add(x, y - 14, 0, 0, 0.5, '255,235,170', 6, 0, 'ring'); },
     shards(x, y, dir) { for (let i = 0; i < 18; i++) add(x, y + U.rand(-20, 20), (dir || 0) * U.rand(40, 240) + U.rand(-60, 60), U.rand(-160, 30), U.rand(0.5, 1), '200,230,245', U.rand(1.5, 3.5), 700); },
-    flashbang(x, y) { fx.flashA = 1; fx.flashX = x; fx.flashY = y; fx.spark(x, y, 20); },
+    flashbang(x, y) { SFXN('flash-burst', x, y, { size: 150, fps: 30 }); SFXN('star-burst', x, y, { size: 190, fps: 36 }); fx.flashA = 1; fx.flashX = x; fx.flashY = y; fx.spark(x, y, 20); },
     shake(a) { cam.shakeA = Math.max(cam.shakeA * (cam.shakeT > 0 ? 1 : 0), a); cam.shakeT = 0.3; },
     slowmo(scale, dur) { fx.sm = { scale, t: dur }; },
     punch(z) { cam.punchZ = Math.max(cam.punchZ, z); },
@@ -365,6 +369,7 @@
       if (GB.save.settings.cones) for (const g of GB.ai.guards) if (!g.dead && g.sleepT <= 0 && g.stunT <= 0 && onScreen(g.x, g.y, 420)) drawCone(g);
       GB.stick.player(ctx, P, 0, true);
       for (const g of GB.ai.guards) if (!g.dead && onScreen(g.x, g.y)) drawGuardMarks(g);
+      if (window.RWFX) { RWFX.update(); RWFX.draw(ctx); }
       for (const p of parts) if (p.kind) { const k = p.life / p.max; if (p.kind === 'glow') { ctx.fillStyle = 'rgba(' + p.col + ',' + k + ')'; ctx.fillRect(p.x - 1, p.y - 1, p.size, p.size); } else { ctx.strokeStyle = 'rgba(' + p.col + ',' + k * 0.8 + ')'; ctx.lineWidth = 1.5; ctx.beginPath(); if (p.kind === 'ripple') ctx.ellipse(p.x, p.y, (1 - k) * 26 + 4, (1 - k) * 5 + 1, 0, 0, 7); else ctx.arc(p.x, p.y, (1 - k) * 30 + 4, 0, 7); ctx.stroke(); } }
       for (const r of GB.stealth.rings) { if (r.kind === 'step' && r.r < 60) continue; const k = r.t / 0.7; ctx.strokeStyle = 'rgba(255,255,255,' + 0.22 * (1 - k) + ')'; ctx.lineWidth = 1.5; ctx.beginPath(); ctx.arc(r.x, r.y - 6, r.r * (0.25 + 0.75 * k), 0, 7); ctx.stroke(); }
       if (GB.hud && GB.hud.world) GB.hud.world(ctx);

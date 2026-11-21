@@ -337,6 +337,7 @@
       case 'coin': GB.sfx('coin'); St.noise(x, y, 290, 'coin'); C.items.push({ kind: 'coin', x, y, t: 0 }); break;
       case 'smoke': {
         GB.sfx('smoke'); St.smokes.push({ x, y: y - 20, r: 20, max: 120, life: 9, t: 0 });
+        if (fx.sprite) { fx.sprite('real-smoke-blast', x, y - 30, { size: 220, fps: 30, alpha: .9 }); fx.sprite('smoke-wisp', x - 30, y - 40, { size: 180, fps: 16, delay: .5, alpha: .7 }); fx.sprite('smoke-wisp', x + 30, y - 46, { size: 170, fps: 14, delay: 1.1, alpha: .6 }); }
         for (const o of A.guards) if (!o.dead && U.dist(o.x, o.y - 20, x, y) < 120) { o.stunT = Math.max(o.stunT, 1.6); A.say(o, '*cough*'); }
         break;
       }
