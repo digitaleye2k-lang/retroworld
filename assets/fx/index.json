@@ -75,5 +75,203 @@
   "n": 17,
   "desc": "white flash then crackling fire burst",
   "license": "Fire Effect 2 (user supplied)"
+ },
+ "pixel-blast": {
+  "w": 128,
+  "h": 128,
+  "n": 27,
+  "cols": 8,
+  "file": "pixel-blast.png",
+  "blend": null,
+  "license": "CC0 (Brackeys VFX bundle)"
+ },
+ "hit-big": {
+  "w": 112,
+  "h": 111,
+  "n": 12,
+  "cols": 8,
+  "file": "hit-big.png",
+  "blend": null,
+  "license": "CC0 (Brackeys VFX bundle)"
+ },
+ "hit-white": {
+  "w": 72,
+  "h": 93,
+  "n": 14,
+  "cols": 8,
+  "file": "hit-white.png",
+  "blend": null,
+  "license": "CC0 (Brackeys VFX bundle)"
+ },
+ "blood-hit": {
+  "w": 69,
+  "h": 60,
+  "n": 25,
+  "cols": 8,
+  "file": "blood-hit.png",
+  "blend": null,
+  "license": "CC0 (Brackeys VFX bundle)"
+ },
+ "star-burst": {
+  "w": 112,
+  "h": 104,
+  "n": 26,
+  "cols": 8,
+  "file": "star-burst.png",
+  "blend": null,
+  "license": "CC0 (Brackeys VFX bundle)"
+ },
+ "ring-fire": {
+  "w": 128,
+  "h": 129,
+  "n": 30,
+  "cols": 8,
+  "file": "ring-fire.png",
+  "blend": null,
+  "license": "CC0 (Brackeys VFX bundle)"
+ },
+ "ring-electric": {
+  "w": 112,
+  "h": 112,
+  "n": 30,
+  "cols": 8,
+  "file": "ring-electric.png",
+  "blend": null,
+  "license": "CC0 (Brackeys VFX bundle)"
+ },
+ "vortex": {
+  "w": 112,
+  "h": 113,
+  "n": 25,
+  "cols": 8,
+  "file": "vortex.png",
+  "blend": null,
+  "license": "CC0 (Brackeys VFX bundle)"
+ },
+ "real-explosion": {
+  "w": 128,
+  "h": 128,
+  "n": 64,
+  "cols": 8,
+  "file": "real-explosion.webp",
+  "blend": null,
+  "license": "CC0 (Brackeys VFX bundle flipbooks, Thomas Ich\u00e9)"
+ },
+ "real-smoke-blast": {
+  "w": 128,
+  "h": 128,
+  "n": 64,
+  "cols": 8,
+  "file": "real-smoke-blast.webp",
+  "blend": null,
+  "license": "CC0 (Brackeys VFX bundle flipbooks, Thomas Ich\u00e9)"
+ },
+ "smoke-wisp": {
+  "w": 96,
+  "h": 96,
+  "n": 64,
+  "cols": 8,
+  "file": "smoke-wisp.webp",
+  "blend": null,
+  "license": "CC0 (Brackeys VFX bundle flipbooks, Thomas Ich\u00e9)"
+ },
+ "real-fire": {
+  "w": 96,
+  "h": 96,
+  "n": 64,
+  "cols": 8,
+  "file": "real-fire.webp",
+  "blend": "lighter",
+  "license": "CC0 (Brackeys VFX bundle flipbooks, Thomas Ich\u00e9)"
+ },
+ "px-weaponhit": {
+  "w": 100,
+  "h": 100,
+  "n": 31,
+  "cols": 10,
+  "file": "px-weaponhit.png",
+  "blend": null,
+  "license": "CC0 (Free Pixel Effects Pack, Davit Masia / CodeManu)"
+ },
+ "px-magichit": {
+  "w": 100,
+  "h": 100,
+  "n": 41,
+  "cols": 10,
+  "file": "px-magichit.png",
+  "blend": null,
+  "license": "CC0 (Free Pixel Effects Pack, Davit Masia / CodeManu)"
+ },
+ "px-brightfire": {
+  "w": 100,
+  "h": 100,
+  "n": 61,
+  "cols": 10,
+  "file": "px-brightfire.png",
+  "blend": null,
+  "license": "CC0 (Free Pixel Effects Pack, Davit Masia / CodeManu)"
+ },
+ "px-firespin": {
+  "w": 100,
+  "h": 100,
+  "n": 61,
+  "cols": 10,
+  "file": "px-firespin.png",
+  "blend": null,
+  "license": "CC0 (Free Pixel Effects Pack, Davit Masia / CodeManu)"
+ },
+ "px-freeze": {
+  "w": 100,
+  "h": 100,
+  "n": 86,
+  "cols": 10,
+  "file": "px-freeze.png",
+  "blend": null,
+  "license": "CC0 (Free Pixel Effects Pack, Davit Masia / CodeManu)"
+ },
+ "px-shield": {
+  "w": 100,
+  "h": 100,
+  "n": 61,
+  "cols": 10,
+  "file": "px-shield.png",
+  "blend": null,
+  "license": "CC0 (Free Pixel Effects Pack, Davit Masia / CodeManu)"
+ },
+ "px-flamelash": {
+  "w": 100,
+  "h": 100,
+  "n": 46,
+  "cols": 10,
+  "file": "px-flamelash.png",
+  "blend": null,
+  "license": "CC0 (Free Pixel Effects Pack, Davit Masia / CodeManu)"
+ },
+ "px-sunburn": {
+  "w": 100,
+  "h": 100,
+  "n": 61,
+  "cols": 10,
+  "file": "px-sunburn.png",
+  "blend": null,
+  "license": "CC0 (Free Pixel Effects Pack, Davit Masia / CodeManu)"
+ },
+ "px-felspell": {
+  "w": 100,
+  "h": 100,
+  "n": 91,
+  "cols": 10,
+  "file": "px-felspell.png",
+  "blend": null,
+  "license": "CC0 (Free Pixel Effects Pack, Davit Masia / CodeManu)"
+ },
+ "px-magicspell": {
+  "w": 100,
+  "h": 100,
+  "n": 75,
+  "cols": 10,
+  "file": "px-magicspell.png",
+  "blend": null,
+  "license": "CC0 (Free Pixel Effects Pack, Davit Masia / CodeManu)"
  }
 }

@@ -1,6 +1,7 @@
 'use strict';
 /* ===== effects: particles, shells, explosions, debris, lights, camera shake, hit-stop ===== */
-if (window.RWFX) RWFX.preload(['boom-big', 'boom-fire', 'boom-pop', 'boom-cloud']);
+if (window.RWFX) RWFX.preload(['real-explosion', 'smoke-wisp', 'hit-big', 'hit-white', 'blood-hit']);
+const FXS = (n, x, y, o) => { if (window.RWFX && Save.d.settings.fx !== false && RWFX.count < 70) RWFX.spawn(n, x, y, o); };
 const Cam = {
   x: 0, y: 0, tx: 0, shake: 0, sx: 0, sy: 0, lockL: null, lockR: null, zoomK: 0,
   add(v) { if (Save.d.settings.shake) this.shake = Math.min(28, this.shake + v); },
@@ -24,16 +25,16 @@ const FX = {
   p(o) { if (this.P.length > 900) this.P.shift(); this.P.push(Object.assign({ vx: 0, vy: 0, g: 0, life: .5, t: 0, s: 3, s2: 0, c: '#fff', drag: 0, add: false, k: 'dot' }, o)); },
   light(x, y, r, c, life) { this.L.push({ x, y, r, c, life: life || .08, t: 0 }); },
   text(x, y, s, c, sz) { this.T.push({ x, y, s, c: c || '#fff', sz: sz || 16, t: 0, life: .9 }); },
-  spark(x, y, c, n, sp) { for (let i = 0; i < (n || 6); i++) { const a = rnd(0, TAU), v = rnd(80, sp || 380); this.p({ x, y, vx: Math.cos(a) * v, vy: Math.sin(a) * v, life: rnd(.12, .3), s: rnd(1.5, 3), c: c || '#ffe9a0', add: true, drag: 3, k: 'line' }); } },
+  spark(x, y, c, n, sp) { if ((n || 6) <= 4) FXS('hit-white', x, y, { size: 24, fps: 42, rot: rnd(0, TAU) }); for (let i = 0; i < (n || 6); i++) { const a = rnd(0, TAU), v = rnd(80, sp || 380); this.p({ x, y, vx: Math.cos(a) * v, vy: Math.sin(a) * v, life: rnd(.12, .3), s: rnd(1.5, 3), c: c || '#ffe9a0', add: true, drag: 3, k: 'line' }); } },
   smoke(x, y, n, c) { for (let i = 0; i < (n || 4); i++) this.p({ x: x + rnd(-8, 8), y: y + rnd(-8, 8), vx: rnd(-30, 30), vy: rnd(-70, -20), life: rnd(.6, 1.3), s: rnd(8, 14), s2: rnd(24, 40), c: c || 'rgba(70,70,80,.45)', drag: 1.2 }); },
   fire(x, y, n) { for (let i = 0; i < (n || 4); i++) this.p({ x: x + rnd(-6, 6), y: y + rnd(-6, 6), vx: rnd(-40, 40), vy: rnd(-140, -40), life: rnd(.25, .55), s: rnd(6, 12), s2: 2, c: pick(['#ffde5a', '#ff9a2a', '#ff5a1a']), add: true, drag: 1.5 }); },
   debris(x, y, c) { this.p({ x, y, vx: rnd(-260, 260), vy: rnd(-520, -160), g: 1400, life: rnd(.6, 1.2), s: rnd(3, 6), c: c || '#555', k: 'chunk', rot: rnd(0, TAU), vr: rnd(-12, 12), bounce: true }); },
-  ink(x, y, dir, n, c) { for (let i = 0; i < (n || 8); i++) this.p({ x, y, vx: dir * rnd(60, 340) + rnd(-60, 60), vy: rnd(-320, 40), g: 1300, life: rnd(.4, .9), s: rnd(2, 4.5), c: c || '#0a0a0e', bounce: true, splat: true }); },
+  ink(x, y, dir, n, c) { if (c === '#7a0a14') FXS('blood-hit', x, y, { size: 46 + (n || 8) * 1.5, fps: 40, flip: dir < 0 }); else if ((n || 8) >= 10) FXS('hit-big', x, y - 6, { size: 70, fps: 34 }); for (let i = 0; i < (n || 8); i++) this.p({ x, y, vx: dir * rnd(60, 340) + rnd(-60, 60), vy: rnd(-320, 40), g: 1300, life: rnd(.4, .9), s: rnd(2, 4.5), c: c || '#0a0a0e', bounce: true, splat: true }); },
   shell(x, y, dir, big) { this.S.push({ x, y, vx: -dir * rnd(60, 140), vy: rnd(-300, -180), rot: 0, vr: rnd(-20, 20), t: 0, big, rest: 0 }); if (this.S.length > 80) this.S.shift(); },
   muzzle(x, y, a, c, big) { const n = big ? 7 : 4; for (let i = 0; i < n; i++) { const aa = a + rnd(-.35, .35), v = rnd(200, 600); this.p({ x, y, vx: Math.cos(aa) * v, vy: Math.sin(aa) * v, life: rnd(.04, .09), s: rnd(3, 7), c: c || '#fff2a0', add: true, drag: 6 }); } this.light(x, y, big ? 150 : 90, c || '#ffd060', .06); this.P.push({ x, y, k: 'flash', a, t: 0, life: .045, s: big ? 26 : 16, c: c || '#fff6c0', add: true, vx: 0, vy: 0, g: 0, drag: 0 }); },
   explode(x, y, r, opt) {
     opt = opt || {}; const big = r > 90;
-    if (window.RWFX && Save.d.settings.fx !== false) { RWFX.spawn(big ? 'boom-big' : r > 55 ? 'boom-fire' : 'boom-pop', x, y - r * (big ? .35 : .15), { size: r * (big ? 2.4 : 2.1), fps: big ? 16 : 20 }); if (big) RWFX.spawn('boom-cloud', x, y + 8, { size: r * 2.2, fps: 14, delay: .08 }); }
+    if (window.RWFX && Save.d.settings.fx !== false) { if (r > 55) { RWFX.spawn('real-explosion', x, y - r * .3, { size: r * (big ? 3.3 : 2.9), fps: big ? 38 : 46 }); RWFX.spawn('smoke-wisp', x + rnd(-10, 10), y - r * .5, { size: r * (big ? 2.8 : 2.2), fps: 26, delay: big ? .35 : .25, alpha: .8, vy: -30 }); } else RWFX.spawn('hit-big', x, y, { size: r * 2.6, fps: 34 }); }
     Snd.play(big ? 'bigBoom' : 'boom', opt.vol || 1); Cam.add(big ? 18 : 10); if (!opt.noStop) this.hitstop(big ? .07 : .035); this.flash(big ? .35 : .18, '#fff3d0');
     this.P.push({ x, y, k: 'ring', t: 0, life: .35, s: 4, s2: r * 1.4, c: '#fff3c0', add: true, vx: 0, vy: 0, g: 0, drag: 0 });
     for (let i = 0; i < (big ? 26 : 14); i++) { const a = rnd(0, TAU), v = rnd(40, r * 3.2); this.p({ x, y, vx: Math.cos(a) * v, vy: Math.sin(a) * v - 60, life: rnd(.25, .6), s: rnd(10, r * .32), s2: 2, c: pick(['#fff4a0', '#ffc040', '#ff7a1a', '#ff4a1a']), add: true, drag: 3.4 }); }

@@ -133,10 +133,30 @@ const Music = {
     { bpm: 170, root: 38, bars: [0, 1, 3, -1], bass: [0, 0, 12, 0, 0, 12, 13, 12], lead: [12, 15, 0, 12, 16, 0, 15, 12, 19, 0, 18, 0, 16, 15, 13, 12], hat: 3 }, // fortress
     { bpm: 176, root: 40, bars: [0, 0, 1, 1], bass: [0, 12, 0, 12, 1, 13, 1, 13], lead: [12, 0, 13, 0, 12, 0, 18, 0, 12, 0, 13, 0, 19, 18, 13, 12], hat: 3 }  // boss
   ],
-  play(i) { if (this.track === i && this.on) return; this.track = i; this.step = 0; this.on = true; if (Snd.ac) this.nextT = Snd.ac.currentTime + .05; if (!this.tm) this.tm = setInterval(() => this.tick(), 25); },
-  stop() { this.on = false; this.track = -1; },
+  /* streamed soundtrack: "8-Bit Battle Run" on the title/menus, "Dark 8-Bit Chiptune Cover" in missions + boss fights.
+     The synthesized songs below remain as the fallback if the files can't load. */
+  ST: { intro: { src: 'audio/intro.mp3' }, game: { src: 'audio/game.mp3' } }, cur: null, failed: false, vol: -1,
+  el(k) { const S = this.ST[k]; if (!S.a) { const a = new Audio(); a.preload = 'auto'; a.loop = true; a.volume = 0; a.addEventListener('error', () => { this.failed = true; if (Snd.ac) this.nextT = Snd.ac.currentTime + .05; }); a.src = S.src; S.a = a; } return S.a; },
+  want() { return this.track < 0 ? null : this.track === 0 ? 'intro' : 'game'; },
+  sync() {
+    if (this.failed) return; const k = this.on ? this.want() : null;
+    for (const n in this.ST) { const a = this.ST[n].a; if (a && n !== k && !a.paused) a.pause(); }
+    if (!k || document.hidden) { if (k && this.ST[k].a && !this.ST[k].a.paused) this.ST[k].a.pause(); return; }
+    const a = this.el(k); if (this.cur !== k) { this.cur = k; try { a.currentTime = 0; } catch (e) {} }
+    const S = Save.d.settings, v = S.music ? Math.min(1, (S.vol == null ? .8 : S.vol) * .8) * (typeof G !== 'undefined' && G.state === 'pause' ? .45 : 1) : 0;
+    if (Math.abs(v - this.vol) > .005) { a.volume = v; this.vol = v; }
+    if (a.paused && v > 0 && performance.now() - (this.tryT || 0) > 1500) { this.tryT = performance.now(); const p = a.play(); if (p && p.catch) p.catch(() => {}); }
+  },
+  play(i) {
+    if (!this.tm) this.tm = setInterval(() => this.tick(), 25);
+    if (this.failed) { if (this.track === i && this.on) return; this.track = i; this.step = 0; this.on = true; if (Snd.ac) this.nextT = Snd.ac.currentTime + .05; return; }
+    const was = this.on ? this.want() : null; this.track = i; this.on = true; this.step = 0;
+    if (this.want() !== was) this.cur = null; this.sync();
+  },
+  stop() { this.on = false; this.track = -1; this.cur = null; this.sync(); },
   note(m) { return 440 * Math.pow(2, (m - 69) / 12); },
   tick() {
+    if (!this.failed) { this.sync(); return; }
     const a = Snd.ac; if (!a || !this.on || !Save.d.settings.music) { if (a) this.nextT = a.currentTime + .05; return; }
     const S = this.SONGS[this.track] || this.SONGS[0], sp = 60 / S.bpm / 4;
     if (this.nextT < a.currentTime - .2) this.nextT = a.currentTime + .02;
@@ -153,3 +173,7 @@ const Music = {
     }
   }
 };
+
+/* resume the soundtrack on the first tap/key (browsers block autoplay) and when the tab returns */
+['pointerdown', 'keydown', 'touchstart'].forEach(ev => addEventListener(ev, () => { try { Music.tryT = 0; Music.sync(); } catch (e) {} }, { passive: true }));
+document.addEventListener('visibilitychange', () => { try { Music.sync(); } catch (e) {} });

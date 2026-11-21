@@ -1,0 +1,21 @@
+{
+ "license": "Legacy Dungeon by Estudio Vaca Roxa (bakudas) \u2014 free to use, credit appreciated",
+ "tileset": "tileset.png 368x224, 16px grid",
+ "princess": {
+  "file": "princess.png",
+  "w": 96,
+  "h": 64,
+  "n": 24,
+  "note": "frames 0-1 idle, 2-5 attack, 6-7 idle-sword, 8-15 run, 16-19 hurt/death, 20-21 jump/fall, 22-23 lunge (approx.)"
+ },
+ "coin_strip": [
+  16,
+  16,
+  4
+ ],
+ "gem_strip": [
+  16,
+  16,
+  4
+ ]
+}

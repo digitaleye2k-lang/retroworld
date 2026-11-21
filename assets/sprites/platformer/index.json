@@ -1,0 +1,148 @@
+{
+ "license": "Generic Platformer Pack by bakudas (Estudio Vaca Roxa) \u2014 free to use, credit appreciated",
+ "frames": {
+  "hero_idle.png": [
+   22,
+   32,
+   4
+  ],
+  "hero_run.png": [
+   22,
+   32,
+   8
+  ],
+  "hero_jump.png": [
+   22,
+   32,
+   2
+  ],
+  "slime_blue.png": [
+   16,
+   16,
+   3
+  ],
+  "slime_green.png": [
+   16,
+   16,
+   3
+  ],
+  "slime_red.png": [
+   16,
+   16,
+   3
+  ],
+  "eye_demon.png": [
+   16,
+   16,
+   4
+  ],
+  "tree01.png": [
+   64,
+   64,
+   1
+  ],
+  "tree02.png": [
+   48,
+   53,
+   1
+  ],
+  "tree03.png": [
+   48,
+   32,
+   1
+  ]
+ },
+ "atlas": {
+  "ground": [
+   0,
+   160,
+   128,
+   224
+  ],
+  "platform": [
+   128,
+   96,
+   256,
+   124
+  ],
+  "cloud1": [
+   0,
+   96,
+   64,
+   112
+  ],
+  "cloud2": [
+   0,
+   116,
+   64,
+   128
+  ],
+  "cloud3": [
+   0,
+   129,
+   80,
+   144
+  ],
+  "bigcloud": [
+   0,
+   286,
+   320,
+   384
+  ],
+  "longcloud": [
+   0,
+   432,
+   256,
+   464
+  ],
+  "bigtree": [
+   201,
+   6,
+   309,
+   80
+  ],
+  "rock1": [
+   30,
+   24,
+   66,
+   48
+  ],
+  "rock2": [
+   84,
+   29,
+   110,
+   48
+  ],
+  "rock3": [
+   112,
+   32,
+   150,
+   48
+  ],
+  "mush": [
+   168,
+   40,
+   187,
+   48
+  ],
+  "sign": [
+   48,
+   54,
+   82,
+   80
+  ],
+  "chest": [
+   0,
+   30,
+   16,
+   48
+  ],
+  "key": [
+   81,
+   69,
+   95,
+   76
+  ]
+ },
+ "note": "pixel art: draw with imageSmoothingEnabled=false"
+}

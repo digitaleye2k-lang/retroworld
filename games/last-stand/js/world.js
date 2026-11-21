@@ -123,9 +123,13 @@ const Bg = {
       q.fillStyle = id === 'desert' ? '#fff3c8' : id === 'fortress' ? '#ff7a6a' : '#e8f0ff'; q.beginPath(); q.arc(sx, sy, id === 'desert' ? 44 : 30, 0, TAU); q.fill();
       if (id === 'factory' || id === 'fortress' || id === 'jungle') { q.fillStyle = 'rgba(255,255,255,.6)'; const rr = seeded(7); for (let k = 0; k < 60; k++) q.fillRect(rr() * W, rr() * 260, 1.5, 1.5); }
       B.sky = c; }
-    g.drawImage(B.sky, 0, 0);
-    const tile = (c, p, y) => { const w = c.width, off = ((cx * p) % w + w) % w; for (let x = -off; x < W; x += w) g.drawImage(c, Math.round(x), y || 0); };
-    tile(B.far, .12); g.fillStyle = P.fog; g.fillRect(0, 0, W, H); tile(B.mid, .35, 20);
-    g.fillStyle = P.fog; g.fillRect(0, 0, W, H);
+    /* all layers are composed once into a 960x540 buffer (redrawn only when the parallax offsets move)
+       and copied to the screen in a single draw: 1 full-resolution pass instead of 6 */
+    const k = Math.round(cx * .12) + ',' + Math.round(cx * .35);
+    if (!B.comp) { B.comp = document.createElement('canvas'); B.comp.width = W; B.comp.height = H; B.key = ''; }
+    if (B.key !== k) { B.key = k; const q = B.comp.getContext('2d');
+      const tile = (c, p, y) => { const w = c.width, off = ((cx * p) % w + w) % w; for (let x = -off; x < W; x += w) q.drawImage(c, Math.round(x), y || 0); };
+      q.drawImage(B.sky, 0, 0); tile(B.far, .12); q.fillStyle = P.fog; q.fillRect(0, 0, W, H); tile(B.mid, .35, 20); q.fillStyle = P.fog; q.fillRect(0, 0, W, H); }
+    g.drawImage(B.comp, 0, 0);
   }
 };

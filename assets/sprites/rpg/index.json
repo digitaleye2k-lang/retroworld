@@ -1,0 +1,30 @@
+{
+ "license": "Generic RPG Pack v0.4 by Estudio Vaca Roxa (bakudas) \u2014 free to use, credit appreciated",
+ "mobs": {
+  "kobold-idle.png": [
+   24,
+   24,
+   15
+  ],
+  "slime-*.png": [
+   16,
+   24,
+   4
+  ],
+  "fox-run.png": [
+   24,
+   24,
+   6
+  ],
+  "worm-run-idle.png": [
+   16,
+   24,
+   31
+  ],
+  "boss_bee.png": [
+   34,
+   34,
+   1
+  ]
+ }
+}

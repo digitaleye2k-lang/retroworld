@@ -17,8 +17,15 @@ function render() {
   else { UI.draw(); Input.clearHits(); }
   ctx.restore();
 }
+/* frame-rate watchdog: drop render resolution on slow devices, restore it when there's headroom */
+const Perf = { t: 0, n: 0, good: 0, check(dt) {
+  if (G.state !== 'play' || document.hidden || dt > .25) return; this.t += dt; this.n++;
+  if (this.t < 2) return; const fps = this.n / this.t; this.t = 0; this.n = 0;
+  if (fps < 48 && RQ > .55) { RQ = Math.max(.55, RQ - .15); this.good = 0; resize(); }
+  else if (fps > 58 && RQ < 1) { if (++this.good >= 4) { RQ = Math.min(1, RQ + .1); this.good = 0; resize(); } }
+  else this.good = 0; } };
 function loop(now) {
-  const dt = Math.min(.1, (now - lastT) / 1000); lastT = now; acc += dt; let n = 0;
+  const dt = Math.min(.1, (now - lastT) / 1000); lastT = now; acc += dt; let n = 0; Perf.check((now - (loop.p || now)) / 1000); loop.p = now;
   while (acc >= STEP && n < 4) { step(); acc -= STEP; n++; } if (n === 4) acc = 0;
   render(); frames++; requestAnimationFrame(loop);
 }

@@ -564,7 +564,25 @@ function up(dt){
  if(bats.some(b=>Math.abs(b.x-p.x)<22&&Math.abs(b.y-p.y)<18)||p.y>H+30){SFX.fail();state='over'}
  if(p.x>535&&p.y<75){SFX.success();state='win'}
 }
-function draw(){x.fillStyle='#090817';x.fillRect(0,0,W,H);for(let i=0;i<12;i++){x.fillStyle=i%2?'#302744':'#3b3150';x.fillRect(i*55,35+(i%3)*7,45,H)}plats.forEach(q=>{x.fillStyle='#77778c';x.fillRect(q.x,q.y,q.w,10);x.fillStyle='#aaaabc';x.fillRect(q.x,q.y,q.w,3)});
+
+/* sprite art: Legacy Dungeon (princess, tiles) + Generic RPG Pack (bee) by Estudio Vaca Roxa — assets/sprites/dungeon, assets/sprites/rpg */
+const DB='../../assets/sprites/',DI={};['dungeon/princess','dungeon/brick_red','dungeon/ledge','dungeon/coin_strip','dungeon/wood_wall','dungeon/banner','dungeon/stone_block','rpg/mobs/boss_bee'].forEach(n=>{const i=new Image();i.src=DB+n+'.png';DI[n.split('/').pop()]=i});
+const dok=()=>['princess','brick_red','ledge','coin_strip','boss_bee'].every(n=>DI[n].complete&&DI[n].naturalWidth>0);let pf=0,pface=1,pt=0;
+function draw2(){const now=performance.now()/1000;x.imageSmoothingEnabled=false;
+ const bw=96;for(let yy=0;yy<H;yy+=bw)for(let xx=0;xx<W;xx+=bw)x.drawImage(DI.brick_red,xx,yy,bw,bw);
+ const g=x.createLinearGradient(0,0,0,H);g.addColorStop(0,'rgba(10,6,20,.35)');g.addColorStop(1,'rgba(10,6,20,.72)');x.fillStyle=g;x.fillRect(0,0,W,H);
+ for(let i=0;i<4;i++){const bx=40+i*170;x.drawImage(DI.banner,bx,8,24,48)}
+ x.globalCompositeOperation='lighter';for(const tx of [120,520]){const fl=.5+.5*Math.sin(now*9+tx);const rg=x.createRadialGradient(tx,60,4,tx,60,120);rg.addColorStop(0,'rgba(255,160,60,'+(.35+fl*.1)+')');rg.addColorStop(1,'rgba(255,120,40,0)');x.fillStyle=rg;x.fillRect(tx-120,0,240,200)}x.globalCompositeOperation='source-over';
+ if(state==='title'){txt('CASTLE CLIMB',W/2,150,36,'#00ffff','center');txt('COLLECT COINS • REACH THE TOWER DOOR',W/2,205,13,'#ff2bd6','center');txt('PRESS ENTER',W/2,250,18,'#66ff66','center');return}
+ plats.forEach(q=>{x.save();x.beginPath();x.rect(q.x-2,q.y-2,q.w+4,22);x.clip();for(let tx=q.x-2;tx<q.x+q.w+2;tx+=64)x.drawImage(DI.ledge,tx,q.y-2,64,16);x.restore();x.fillStyle='rgba(0,0,0,.35)';x.fillRect(q.x,q.y+14,q.w,4)});
+ if(DI.wood_wall.naturalWidth){x.drawImage(DI.wood_wall,0,0,40,48,546,8,38,48);x.fillStyle='#ffd24a';x.fillRect(575,32,3,3)}
+ const cf=Math.floor(now*8)%4;gems.forEach(g=>{x.drawImage(DI.coin_strip,cf*16,0,16,16,g.x-18,g.y-18+Math.sin(now*4+g.x)*2,36,36)});
+ bats.forEach(b=>{x.save();x.translate(b.x,b.y+Math.sin(now*6+b.x*.05)*4);if(b.v<0)x.scale(-1,1);x.drawImage(DI.boss_bee,-17,-17,34,34);x.restore()});
+ pt+=1/60;if(p.vx)pface=p.vx>0?1:-1;const fr=!p.on?(p.vy<0?21:22):p.vx?8+Math.floor(now*14)%8:Math.floor(now*3)%2;
+ x.save();x.translate(Math.round(p.x),Math.round(p.y+24-47*1.4));if(pface<0)x.scale(-1,1);x.drawImage(DI.princess,fr*96,0,96,64,-48*1.4,0,96*1.4,64*1.4);x.restore();
+ txt('COINS '+score,10,10,14,'#ffd24a');
+ if(state!=='play'){x.fillStyle='#000d';x.fillRect(90,180,460,110);txt(state==='win'?'TOWER CONQUERED':'YOU FELL!',W/2,198,28,state==='win'?'#66ff66':'#ff4b64','center');txt('PRESS ENTER',W/2,246,14,'#00ffff','center')}}
+function draw(){if(dok()){draw2();return}x.fillStyle='#090817';x.fillRect(0,0,W,H);for(let i=0;i<12;i++){x.fillStyle=i%2?'#302744':'#3b3150';x.fillRect(i*55,35+(i%3)*7,45,H)}plats.forEach(q=>{x.fillStyle='#77778c';x.fillRect(q.x,q.y,q.w,10);x.fillStyle='#aaaabc';x.fillRect(q.x,q.y,q.w,3)});
  if(state==='title'){txt('CASTLE CLIMB',W/2,150,36,'#00ffff','center');txt('COLLECT GEMS • REACH THE TOWER DOOR',W/2,205,13,'#ff2bd6','center');txt('PRESS ENTER',W/2,250,18,'#66ff66','center');return}
  gems.forEach(g=>{x.fillStyle='#ffff55';x.fillRect(g.x-7,g.y-9,14,18)});bats.forEach(b=>{x.fillStyle='#ff4b64';x.fillRect(b.x-8,b.y-5,16,10);x.fillRect(b.x-18,b.y-2,10,5);x.fillRect(b.x+8,b.y-2,10,5)});
  x.fillStyle='#00ffff';x.fillRect(p.x-10,p.y-22,20,22);x.fillStyle='#0066ff';x.fillRect(p.x-12,p.y,24,4);x.fillStyle='#ff2bd6';x.fillRect(548,25,35,30);txt('GEMS '+score,10,10,14,'#ffff55');
@@ -800,4 +818,6 @@ const RETRO_LOCAL_STATS=(()=>{
   return {snapshot};
 })();
 
-</script></body></html>
+</script><script>/* background music (assets/music/rpg) — follows the SFX on/off button */
+(function(){var a=new Audio('../../assets/music/rpg/red-carpet-wooden-floor.mp3');a.loop=true;a.volume=.42;a.preload='auto';var want=false;function on(){try{return localStorage.getItem('retroWorldSFX')!=='off'}catch(e){return true}}function sync(){if(want&&on()&&!document.hidden){if(a.paused){var p=a.play();if(p&&p.catch)p.catch(function(){})}}else if(!a.paused)a.pause()}['keydown','pointerdown','touchstart'].forEach(function(e){addEventListener(e,function(){want=true;sync()},{passive:true})});document.addEventListener('visibilitychange',sync);setInterval(sync,600)})();</script>
+</body></html>

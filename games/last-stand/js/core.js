@@ -2,10 +2,14 @@
 /* ===== STICKMAN: LAST STAND — core: canvas, math, input, save ===== */
 const W = 960, H = 540, TS = 32;
 const cv = document.getElementById('c'), ctx = cv.getContext('2d');
-let SCALE = 1, OX = 0, OY = 0, DPR = 1;
+let SCALE = 1, OX = 0, OY = 0, DPR = 1, RQ = 1;
+/* Render resolution: the game is 960x540, so the backing canvas is capped at ~1920x1080 pixels
+   (a 4K / high-DPI screen used to render 8M pixels per frame). RQ is lowered automatically
+   by the frame-rate watchdog in main.js on slower devices. */
 function resize() {
-  DPR = Math.min(2, window.devicePixelRatio || 1);
   const sw = innerWidth, sh = innerHeight; SCALE = Math.min(sw / W, sh / H);
+  const cap = Math.sqrt((W * H * 4) / Math.max(1, sw * sh));
+  DPR = Math.max(.5, Math.min(2, window.devicePixelRatio || 1, cap) * RQ);
   cv.width = Math.round(sw * DPR); cv.height = Math.round(sh * DPR); cv.style.width = sw + 'px'; cv.style.height = sh + 'px';
   OX = (sw - W * SCALE) / 2; OY = (sh - H * SCALE) / 2;
 }
