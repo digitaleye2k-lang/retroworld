@@ -30,6 +30,7 @@ Then open http://localhost:8770. (A server is required because the game uses ES 
 | G | Frag grenade |
 | F | Melee / silent takedown |
 | E | Interact (hold for hacking, charges, mounted guns) |
+| Hold Enter / Space | Fast-forward cutscenes (x4) |
 | Esc / P | Pause |
 
 ## Story

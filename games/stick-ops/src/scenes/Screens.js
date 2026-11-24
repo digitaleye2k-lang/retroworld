@@ -110,11 +110,11 @@ export class ControlsScene extends Phaser.Scene {
     const rows = [
       ['A / D', 'Move'], ['W / SPACE', 'Jump'], ['S', 'Crouch (hold) · S + Jump drops through catwalks'], ['MOUSE', 'Aim'], ['LEFT CLICK', 'Fire'],
       ['RIGHT CLICK', 'Aim down sights (steadier, longer view)'], ['SHIFT', 'Hold breath while aiming'], ['R', 'Reload'], ['1 – 4 / WHEEL', 'Rifle · Pistol · Shotgun · Sniper'], ['5', 'Launcher (when picked up)'],
-      ['Q', 'Quick-swap last weapon'], ['G', 'Throw frag grenade'], ['F', 'Melee / silent takedown on unaware enemies'], ['E', 'Interact (hold for hacking & charges)'], ['ESC / P', 'Pause'],
+      ['Q', 'Quick-swap last weapon'], ['G', 'Throw frag grenade'], ['F', 'Melee / silent takedown on unaware enemies'], ['E', 'Interact (hold for hacking & charges)'], ['ESC / P', 'Pause'], ['HOLD ENTER', 'Fast-forward cutscenes'],
     ];
     panel(this, W / 2, 410, 860, 520, 0.85);
     rows.forEach(([k, v], i) => {
-      const y = 180 + i * 33;
+      const y = 180 + i * 31;
       label(this, W / 2 - 390, y, k, 19, COLORS.accentHex);
       label(this, W / 2 - 150, y, v, 19, COLORS.uiText);
     });

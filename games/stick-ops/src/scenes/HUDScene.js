@@ -10,6 +10,7 @@ export class HUDScene extends Phaser.Scene {
   init(data) { this.mission = data.mission; }
 
   create() {
+    this.ff = 1; this.cineHint = null; this.time.timeScale = 1; this.tweens.timeScale = 1;
     const txt = (x, y, s, size, color = COLORS.uiText, font = FONT.ui, weight = '700') => this.add.text(x, y, s, { fontFamily: font, fontSize: size + 'px', color, fontStyle: weight }).setShadow(0, 2, '#000', 4, true, true);
     this.g = this.add.graphics();
     this.vig = this.add.image(W / 2, H / 2, 'vignette').setDisplaySize(W, H).setAlpha(0.75);
@@ -119,8 +120,13 @@ export class HUDScene extends Phaser.Scene {
   setBoss(entity, name) { this.boss = entity; this.bossName.setText(name || ''); this.bossShown = 0; }
   showScope(on) { this.scopeImg.setVisible(on); }
 
+  setCineHint(on, ff) {
+    if (!this.cineHint) this.cineHint = this.add.text(W - 24, 22, '', { fontFamily: FONT.ui, fontSize: '15px', fontStyle: '700', color: '#c9d3da' }).setOrigin(1, 0).setDepth(600).setAlpha(0.8);
+    this.cineHint.setVisible(!!on).setText(ff ? '▶▶ FAST-FORWARD ×4' : 'HOLD ENTER / SPACE TO FAST-FORWARD');
+    this.cineHint.setColor(ff ? '#ffd36b' : '#c9d3da');
+  }
   update(time, delta) {
-    const dt = delta / 1000; const m = this.mission; if (!m || !m.sys || !m.sys.settings) return;
+    const dt = delta / 1000 * (this.ff || 1); const m = this.mission; if (!m || !m.sys || !m.sys.settings) return;
     const g = this.g; g.clear();
     const mode = m.hudMode || 'ground';
     const p = m.player;

@@ -37,6 +37,7 @@ export class BaseMission extends Phaser.Scene {
 
   create() {
     this.slow = 1; this.cinematic = false; this.ended = false; this.uiBlocking = false;
+    this.ffApplied = 1; this.ffKeys = null; this.time.timeScale = 1; this.tweens.timeScale = 1;
     this.actors = []; this.targets = []; this.enemies = []; this.allies = []; this.vehicles = []; this.helis = [];
     this.interactables = []; this.triggers = []; this.pickups = []; this.updaters = []; this.checkpoints = [];
     this.theme = this.themeName;
@@ -269,7 +270,7 @@ export class BaseMission extends Phaser.Scene {
   // ---------- slow motion & cinematics ----------
   setSlowmo(s, ms) {
     this.slow = s;
-    this.physics.world.timeScale = 1 / s;
+    this.physics.world.timeScale = 1 / (s * (this.ffApplied || 1));
     this.fx.setTimeScale(s);
     AudioEngine.setSlowmo(s < 1);
     if (s < 1) AudioEngine.play('slowmo');
@@ -403,9 +404,24 @@ export class BaseMission extends Phaser.Scene {
   }
 
   // ---------- main loop ----------
+  /* hold ENTER / SPACE during a cutscene to fast-forward it (x4): everything still plays in order */
+  updateFastForward() {
+    const kb = this.input.keyboard;
+    if (!this.ffKeys) this.ffKeys = kb ? kb.addKeys('ENTER,SPACE', false) : {};
+    const held = this.cinematic && !this.ended && ((this.ffKeys.ENTER && this.ffKeys.ENTER.isDown) || (this.ffKeys.SPACE && this.ffKeys.SPACE.isDown));
+    const ff = held ? 4 : 1;
+    if (this.hud && this.hud.setCineHint) this.hud.setCineHint(this.cinematic && !this.ended, ff > 1);
+    if (ff === (this.ffApplied || 1)) return ff;
+    this.ffApplied = ff;
+    this.time.timeScale = ff; this.tweens.timeScale = ff; this.physics.world.timeScale = 1 / (this.slow * ff);
+    if (this.hud && this.hud.sys && this.hud.sys.settings.active) { this.hud.time.timeScale = ff; this.hud.tweens.timeScale = ff; this.hud.ff = ff; }
+    return ff;
+  }
+
   update(time, delta) {
     if (!this.ready) return;
-    const rdt = Math.min(delta, 50) / 1000; const dt = rdt * this.slow;
+    const ff = this.updateFastForward();
+    const rdt = Math.min(delta, 50) / 1000 * ff; const dt = rdt * this.slow;
     if (!this.ended) this.stats.time += rdt;
     const pl = this.player;
     pl.update(dt);

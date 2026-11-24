@@ -9,7 +9,9 @@ export class Lighting {
     this.darkness = opts.darkness !== undefined ? opts.darkness : 0.72;
     const mz = opts.minZoom || 0.72;
     this.W = Math.ceil(GAME_W / mz) + 120; this.H = Math.ceil(GAME_H / mz) + 120;
-    this.rt = scene.add.renderTexture(0, 0, this.W, this.H).setOrigin(0, 0).setDepth(DEPTH.light);
+    /* darkness is soft, so it renders at half resolution and is scaled up: a quarter of the GPU fill per frame */
+    this.RS = 0.5;
+    this.rt = scene.add.renderTexture(0, 0, Math.ceil(this.W * this.RS), Math.ceil(this.H * this.RS)).setOrigin(0, 0).setDepth(DEPTH.light).setScale(1 / this.RS);
     this.lights = [];
     this.flashes = [];
     this.enabled = true;
@@ -50,7 +52,7 @@ export class Lighting {
     rt.setPosition(ox, oy);
     rt.clear();
     rt.fill(this.ambient, this.darkness);
-    const view = { x: ox, y: oy, r: ox + this.W, b: oy + this.H };
+    const view = { x: ox, y: oy, r: ox + this.W, b: oy + this.H }, k = this.RS;
     for (const l of this.lights) {
       if (l.follow) { l.x = l.follow.x + (l.ox || 0); l.y = l.follow.y + (l.oy || 0); }
       if (!l.on) continue;
@@ -59,17 +61,17 @@ export class Lighting {
       let i = l.i;
       if (l.flicker) i *= 1 - l.flicker * (0.5 + 0.5 * Math.sin(this.time * 23 + l.x) * Math.sin(this.time * 7.3 + l.y));
       if (l.cone) {
-        rt.stamp('cone', null, l.x - ox, l.y - oy, { originX: 0, originY: 0.5, rotation: l.cone.angle, scaleX: l.cone.len / 512, scaleY: (l.cone.width || 200) / 256, alpha: i, erase: true });
-        rt.stamp('light', null, l.x - ox, l.y - oy, { scale: 0.3, alpha: i * 0.8, erase: true });
+        rt.stamp('cone', null, (l.x - ox) * k, (l.y - oy) * k, { originX: 0, originY: 0.5, rotation: l.cone.angle, scaleX: l.cone.len / 512 * k, scaleY: (l.cone.width || 200) / 256 * k, alpha: i, erase: true });
+        rt.stamp('light', null, (l.x - ox) * k, (l.y - oy) * k, { scale: 0.3 * k, alpha: i * 0.8, erase: true });
       } else {
-        rt.stamp('light', null, l.x - ox, l.y - oy, { scale: l.r / 128, alpha: i, erase: true });
+        rt.stamp('light', null, (l.x - ox) * k, (l.y - oy) * k, { scale: l.r / 128 * k, alpha: i, erase: true });
       }
     }
     for (let k = this.flashes.length - 1; k >= 0; k--) {
       const f = this.flashes[k];
       f.life -= dt * 1000;
       if (f.life <= 0) { this.flashes.splice(k, 1); continue; }
-      rt.stamp('light', null, f.x - ox, f.y - oy, { scale: f.r / 128, alpha: f.i * (f.life / f.max), erase: true });
+      rt.stamp('light', null, (f.x - ox) * k, (f.y - oy) * k, { scale: f.r / 128 * k, alpha: f.i * (f.life / f.max), erase: true });
     }
     this._updateGlows();
   }
