@@ -7,7 +7,7 @@
   'use strict';
   if (window.RWKIDS) return;
   var KEY = 'rw_kids';
-  var VIOLENT = ['gun-fu.html', 'last-stand.html', 'ghostblade.html', 'shadow-protocol.html', 'beat-up-mafia.html',
+  var VIOLENT = ['stick-ops.html', 'gun-fu.html', 'last-stand.html', 'ghostblade.html', 'shadow-protocol.html', 'beat-up-mafia.html',
     'dust-iron.html', 'crimson-fang.html', 'jungle-gunship.html', 'hellbyte-93.html', 'silent-wire.html',
     'stick-fury.html', 'metro-brawler.html', 'shadow-duel.html'];
   var root = document.documentElement;
