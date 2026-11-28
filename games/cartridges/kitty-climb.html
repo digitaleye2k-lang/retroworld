@@ -848,9 +848,10 @@ function drawHUD() {
   drawFish(194, 32, 1, 0, 1); txt(String(G.fish), 216, 32, 22, '#fff', 'left');
   if (G.best) txt('best ' + G.best + ' m', 30, 64, 13, 'rgba(255,255,255,.9)', 'left', 3);
   // powerups
-  let px = 270;
-  if (cat.dj > 0) { pill(px, 12, 64, 40, 'rgba(120,200,255,.55)'); ctx.fillStyle = '#fff'; ctx.beginPath(); ctx.moveTo(px + 20, 44); ctx.quadraticCurveTo(px + 12, 32, px + 20, 18); ctx.quadraticCurveTo(px + 28, 32, px + 20, 44); ctx.fill(); txt(Math.ceil(cat.dj) + '', px + 44, 32, 18, '#fff'); px += 70; }
-  if (cat.magnet > 0) { pill(px, 12, 64, 40, 'rgba(255,120,140,.55)'); ctx.fillStyle = '#ff5f73'; ctx.beginPath(); ctx.arc(px + 20, 32, 10, 0, 6.29); ctx.fill(); txt(Math.ceil(cat.magnet) + '', px + 44, 32, 18, '#fff'); }
+  // active power-ups: a second row under the fish counter, clear of the pause/mute buttons
+  let px = 170; const py = 58;
+  if (cat.dj > 0) { pill(px, py, 60, 32, 'rgba(90,170,235,.7)'); ctx.fillStyle = '#fff'; ctx.beginPath(); ctx.moveTo(px + 18, py + 27); ctx.quadraticCurveTo(px + 11, py + 16, px + 18, py + 5); ctx.quadraticCurveTo(px + 25, py + 16, px + 18, py + 27); ctx.fill(); txt(Math.ceil(cat.dj) + 's', px + 40, py + 16, 15, '#fff'); px += 66; }
+  if (cat.magnet > 0) { pill(px, py, 60, 32, 'rgba(235,90,120,.7)'); ctx.fillStyle = '#fff'; ctx.beginPath(); ctx.arc(px + 18, py + 16, 8, 0, 6.29); ctx.fill(); ctx.strokeStyle = '#ff5f73'; ctx.lineWidth = 1.5; ctx.beginPath(); ctx.arc(px + 16, py + 16, 5, -1.2, 1.2); ctx.stroke(); txt(Math.ceil(cat.magnet) + 's', px + 40, py + 16, 15, '#fff'); }
   drawIconBtns(true);
   // touch controls
   if (touchUI && G.state === 'play') {
