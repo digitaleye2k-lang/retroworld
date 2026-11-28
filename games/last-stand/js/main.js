@@ -3,10 +3,10 @@
 Input.init(); Touch.init();
 const STEP = 1 / 60; let acc = 0, lastT = performance.now(), frames = 0;
 function step() {
-  Input.poll();
+  Input.poll(); try { Music.react(STEP); } catch (e) {}
   if (G.state === 'play') {
     if (Input.hit('pause') || (Input.hit('back') && !Input.k.Backspace && Input.padOn)) { G.state = 'pause'; UI.sel = 0; Input.clearHits(); return; }
-    G.update(STEP);
+    G.update(STEP); Cam.cine(STEP);
   }
 }
 function render() {

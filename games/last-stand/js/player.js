@@ -62,7 +62,7 @@ function playerUpdate(dt) {
   if (Input.hit('special')) { if (P.sp >= 100 && !G.special) startSpecial(); else if (P.sp < 100) Snd.play('empty'); }
 }
 function fireWeapon() {
-  const id = P.cur, Wd = WEAPONS[id], m = pMuzzle(), a = P.aim; P.fireT = 1 / Wd.rate; P.rec = Wd.recoil;
+  const id = P.cur, Wd = WEAPONS[id], m = pMuzzle(), a = P.aim; P.fireT = 1 / Wd.rate; P.rec = Wd.recoil; G.combatT = Math.min(3, (G.combatT || 0) + .3); if (Wd.recoil > 7) Cam.punch(Math.min(.02, Wd.recoil * .0015), 0);
   if (P.inv2[id] !== Infinity) { P.inv2[id]--; if (P.inv2[id] <= 0) { delete P.inv2[id]; P.cur = 'rifle'; FX.text(P.x + P.w / 2, P.y - 18, 'OUT OF AMMO', '#ff6a6a', 13); } }
   const B = (an, sp, o) => G.B.push(Object.assign({ x: m.x, y: m.y, vx: Math.cos(an) * sp, vy: Math.sin(an) * sp, own: 'p', dmg: Wd.dmg, life: 1.2, r: 3, type: id, hit: null, pierce: 0 }, o || {}));
   Snd.play(Wd.snd);
@@ -81,7 +81,7 @@ function firePlasma(k) {
 }
 function startSpecial() { P.sp = 0; G.special = { t: 0, n: 0 }; P.inv = 2.4; Snd.play('special'); FX.flash(.6, '#ffe0a0'); Cam.add(10); FX.text(P.x + P.w / 2, P.y - 30, 'LAST STAND!', '#ffd84a', 30); RWB.ach('special'); }
 function pHurt(d, dir, silent) {
-  if (!P.alive || P.inv > 0 || G.special) return; d *= DIFF().dmg * (.8 + G.li * .08); P.hp -= d; if (!silent) { P.inv = 1.0; P.hurtT = .18; Snd.play('hurt'); Cam.add(8); FX.flash(.25, '#ff2030'); FX.ink(P.x + P.w / 2, P.y + 20, dir || -P.face, 6, '#7a0a14'); FX.hitstop(.05); P.vx += (dir || -P.face) * 220; P.vy = Math.min(P.vy, -240); }
+  if (!P.alive || P.inv > 0 || G.special) return; d *= DIFF().dmg * (.8 + G.li * .08); P.hp -= d; G.combatT = Math.min(3, (G.combatT || 0) + 1.5); if (!silent) { Cam.punch(.022, (Math.random() < .5 ? -1 : 1) * .02); Cam.ca = Math.max(Cam.ca, .7); P.inv = 1.0; P.hurtT = .18; Snd.play('hurt'); Cam.add(8); FX.flash(.25, '#ff2030'); FX.ink(P.x + P.w / 2, P.y + 20, dir || -P.face, 6, '#7a0a14'); FX.hitstop(.05); P.vx += (dir || -P.face) * 220; P.vy = Math.min(P.vy, -240); }
   G.noHit = false; if (P.hp <= 0) pKill('hp');
 }
 function pKill(why) {

@@ -133,27 +133,78 @@ const Music = {
     { bpm: 170, root: 38, bars: [0, 1, 3, -1], bass: [0, 0, 12, 0, 0, 12, 13, 12], lead: [12, 15, 0, 12, 16, 0, 15, 12, 19, 0, 18, 0, 16, 15, 13, 12], hat: 3 }, // fortress
     { bpm: 176, root: 40, bars: [0, 0, 1, 1], bass: [0, 12, 0, 12, 1, 13, 1, 13], lead: [12, 0, 13, 0, 12, 0, 18, 0, 12, 0, 13, 0, 19, 18, 13, 12], hat: 3 }  // boss
   ],
-  /* streamed soundtrack: "8-Bit Battle Run" on the title/menus, "Dark 8-Bit Chiptune Cover" in missions + boss fights.
-     The synthesized songs below remain as the fallback if the files can't load. */
-  ST: { intro: { src: 'audio/intro.mp3' }, game: { src: 'audio/game.mp3' } }, cur: null, failed: false, vol: -1,
+  /* streamed soundtrack: "8-Bit Battle Run" on the title, in missions and in boss fights (restarts when a mission begins).
+     It runs through a live filter + volume stage that follows the action (react()), and a beat clock locked to the
+     song (150 BPM, first beat 0.238 s) drives camera pulses. The synthesized songs below remain as the fallback. */
+  ST: { intro: { src: 'audio/intro.mp3' } }, cur: null, failed: false, vol: -1,
   el(k) { const S = this.ST[k]; if (!S.a) { const a = new Audio(); a.preload = 'auto'; a.loop = true; a.volume = 0; a.addEventListener('error', () => { this.failed = true; if (Snd.ac) this.nextT = Snd.ac.currentTime + .05; }); a.src = S.src; S.a = a; } return S.a; },
-  want() { return this.track < 0 ? null : this.track === 0 ? 'intro' : 'game'; },
+  want() { return this.track < 0 ? null : 'intro'; },
   sync() {
     if (this.failed) return; const k = this.on ? this.want() : null;
     for (const n in this.ST) { const a = this.ST[n].a; if (a && n !== k && !a.paused) a.pause(); }
     if (!k || document.hidden) { if (k && this.ST[k].a && !this.ST[k].a.paused) this.ST[k].a.pause(); return; }
     const a = this.el(k); if (this.cur !== k) { this.cur = k; try { a.currentTime = 0; } catch (e) {} }
     const S = Save.d.settings, v = S.music ? Math.min(1, (S.vol == null ? .8 : S.vol) * .8) * (typeof G !== 'undefined' && G.state === 'pause' ? .45 : 1) : 0;
-    if (Math.abs(v - this.vol) > .005) { a.volume = v; this.vol = v; }
+    if (Math.abs(v - this.vol) > .005) { this.vol = v; if (!this.gn) a.volume = v; }
     if (a.paused && v > 0 && performance.now() - (this.tryT || 0) > 1500) { this.tryT = performance.now(); const p = a.play(); if (p && p.catch) p.catch(() => {}); }
   },
   play(i) {
     if (!this.tm) this.tm = setInterval(() => this.tick(), 25);
     if (this.failed) { if (this.track === i && this.on) return; this.track = i; this.step = 0; this.on = true; if (Snd.ac) this.nextT = Snd.ac.currentTime + .05; return; }
-    const was = this.on ? this.want() : null; this.track = i; this.on = true; this.step = 0;
-    if (this.want() !== was) this.cur = null; this.sync();
+    const wasEnded = this.ended > 0; if (wasEnded) { this.ended = 0; this.rateNow = 1; try { this.ST.intro.a.playbackRate = 1; } catch (e) {} }
+    const was = this.on && !wasEnded ? this.want() : null, prev = this.on ? this.track : -1; this.track = i; this.on = true; this.step = 0;
+    if (wasEnded || this.want() !== was || (i !== 0 && i !== 6 && (prev === 0 || prev < 0)) || (i === 0 && prev > 0)) { this.cur = null; this.beatN = -1; this.ended = 0; }
+    this.sync();
   },
-  stop() { this.on = false; this.track = -1; this.cur = null; this.sync(); },
+  stop() {
+    /* mission over (death / victory / boss down): instead of cutting dead, the track does a tape-stop + fade */
+    if (!this.failed && this.gn && this.ST.intro.a && !this.ST.intro.a.paused) { this.ended = .001; return; }
+    this.on = false; this.track = -1; this.cur = null; this.sync();
+  },
+  /* ---------- reactive soundtrack ---------- */
+  BPM: 150, OFF: .238, beatN: -1, heat: 0, ended: 0, lp: null, gn: null, rateNow: 1, beatHooks: [],
+  route() {
+    const a = this.ST.intro.a, ac = Snd.ac; if (this.gn || !a || !ac || ac.state !== 'running' || a.paused) return;
+    try {
+      const src = ac.createMediaElementSource(a);
+      this.lp = ac.createBiquadFilter(); this.lp.type = 'lowpass'; this.lp.frequency.value = 20000; this.lp.Q.value = .8;
+      this.gn = ac.createGain(); this.gn.gain.value = this.vol > 0 ? this.vol : 0;
+      src.connect(this.lp); this.lp.connect(this.gn); this.gn.connect(ac.destination); a.volume = 1;
+    } catch (e) { this.gn = null; }
+  },
+  /* 0..1 how hot the fight is: enemies close by, recent shooting/kills, boss, super move */
+  measure() {
+    if (typeof G === 'undefined' || G.state !== 'play') return 0;
+    let n = 0; for (const e of G.E) if (e.alive && Math.abs(e.x - P.x) < 760) n += e.k === 'tank' || e.k === 'turret' ? 2 : 1;
+    let h = Math.min(1, n / 5) * .75 + Math.min(.45, (G.combatT || 0) * .25);
+    if (G.boss) h = Math.max(h, .9); if (G.special) h = 1;
+    return clamp(h, 0, 1);
+  },
+  react(dt) {
+    const a = this.ST.intro.a; if (this.failed || !a) return;
+    if (!this.gn) this.route(); if (!this.gn) return;
+    const ac = Snd.ac, now = ac.currentTime, play = typeof G !== 'undefined' && G.state === 'play';
+    this.heat += (this.measure() - this.heat) * Math.min(1, dt * (play ? 1.6 : 3));
+    let cut = 20000, vol = this.vol > 0 ? this.vol : 0, rate = 1;
+    if (play) {
+      cut = 1500 + this.heat * this.heat * 18500;                       // calm = muffled, firefight = full band
+      vol *= .72 + this.heat * .28;
+      if (P.alive && P.hp < 30) cut = Math.min(cut, 2600);              // badly hurt: everything goes underwater
+      if (G.bossIntro > 0) cut = 400 + (1 - G.bossIntro / 2.6) * 19600;  // boss arrival: filter sweeps open
+      if (G.special) rate = .86;                                        // super move: the whole track drops in pitch
+      if (FX.hs > 0) cut = Math.min(cut, 900);                          // hit-stop: a muffled thud
+      if (!P.alive) { rate = .7; cut = 700; }
+    } else if (typeof G !== 'undefined' && G.state === 'pause') cut = 650;
+    if (this.ended) { this.ended += dt; rate = Math.max(.45, 1 - this.ended * .6); vol *= Math.max(0, 1 - this.ended / 1.4); cut = Math.min(cut, 2000);
+      if (this.ended > 1.45) { this.ended = 0; a.playbackRate = 1; this.rateNow = 1; this.on = false; this.track = -1; this.cur = null; this.sync(); return; } }
+    this.lp.frequency.setTargetAtTime(Math.max(200, cut), now, .06);
+    this.gn.gain.setTargetAtTime(vol, now, .08);
+    if (Math.abs(rate - this.rateNow) > .005) { this.rateNow += (rate - this.rateNow) * Math.min(1, dt * 6); if (Math.abs(rate - this.rateNow) < .006) this.rateNow = rate;
+      try { a.preservesPitch = false; a.mozPreservesPitch = false; a.webkitPreservesPitch = false; a.playbackRate = this.rateNow; } catch (e) {} }
+    // beat clock locked to the audio position
+    if (!a.paused) { const b = Math.floor((a.currentTime - this.OFF) * this.BPM / 60);
+      if (b !== this.beatN) { const first = this.beatN < 0 || b < this.beatN; this.beatN = b; if (!first && b >= 0) for (const f of this.beatHooks) try { f(b, this.heat); } catch (e) {} } }
+  },
   note(m) { return 440 * Math.pow(2, (m - 69) / 12); },
   tick() {
     if (!this.failed) { this.sync(); return; }
@@ -177,3 +228,10 @@ const Music = {
 /* resume the soundtrack on the first tap/key (browsers block autoplay) and when the tab returns */
 ['pointerdown', 'keydown', 'touchstart'].forEach(ev => addEventListener(ev, () => { try { Music.tryT = 0; Music.sync(); } catch (e) {} }, { passive: true }));
 document.addEventListener('visibilitychange', () => { try { Music.sync(); } catch (e) {} });
+
+/* the camera breathes with the music: on-beat pulses when the fight is hot, heartbeat when badly hurt */
+Music.beatHooks.push((b, heat) => {
+  if (typeof G === 'undefined' || G.state !== 'play') return;
+  if (heat > .55 && P.alive) Cam.punch(b % 4 === 0 ? .016 : .006, 0);
+  if (P.alive && P.hp < 30 && b % 2 === 0) Cam.hb = 1;
+});

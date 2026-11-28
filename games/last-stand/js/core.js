@@ -58,7 +58,7 @@ const Input = {
     for (const a in this.act) { const d = this.down(a); this.ph[a] = d && !this.prev[a]; this.prev[a] = d; }
     this.tap = {};
   },
-  wmx() { return Cam.x + this.mx; }, wmy() { return Cam.y + this.my; },
+  wmx() { return Cam.x + Cam.toWorld(this.mx, this.my)[0]; }, wmy() { return Cam.y + Cam.toWorld(this.mx, this.my)[1]; },
   clearHits() { for (const a in this.ph) this.ph[a] = false; },
   init() {
     addEventListener('keydown', e => { if (['Space', 'ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'Tab'].includes(e.code)) e.preventDefault(); this.k[e.code] = true; this.tap[e.code] = true; this.padOn = false; Snd.init(); });

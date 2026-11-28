@@ -5,6 +5,24 @@ const FXS = (n, x, y, o) => { if (window.RWFX && Save.d.settings.fx !== false &&
 const Cam = {
   x: 0, y: 0, tx: 0, shake: 0, sx: 0, sy: 0, lockL: null, lockR: null, zoomK: 0,
   add(v) { if (Save.d.settings.shake) this.shake = Math.min(28, this.shake + v); },
+  /* cinematic layer: combat zoom, impact punches + tilt, beat pulses, double-vision, letterbox, heartbeat */
+  z: 1, pz: 0, roll: 0, rv: 0, ca: 0, bars: 0, hb: 0,
+  punch(z, roll) { if (!Save.d.settings.shake) return; this.pz = Math.min(.09, this.pz + z); if (roll) this.rv += roll * 40; },
+  zoom() { return this.z + this.pz; },
+  cine(dt) {
+    const on = Save.d.settings.shake, heat = typeof Music !== 'undefined' ? Music.heat : 0, play = G.state === 'play';
+    let zt = 1;
+    if (on && play) { zt = 1 + heat * .035; if (G.special) zt += .07; if (G.bossIntro > 0) zt += .06; if (!P.alive) zt += Math.min(.12, P.deathT * .08); }
+    this.z += (zt - this.z) * damp(G.special || G.bossIntro > 0 ? 4 : 1.6, dt);
+    this.pz *= Math.exp(-dt * 7);
+    this.rv += -this.roll * 260 * dt; this.rv *= Math.exp(-dt * 9); this.roll += this.rv * dt; this.roll = clamp(this.roll, -.045, .045);
+    if (!on) { this.roll = 0; this.rv = 0; this.pz = 0; }
+    this.z = Math.max(this.z, 1 + Math.abs(this.roll) * 1.3);       // never reveal the world's edges while tilted
+    this.ca = Math.max(0, this.ca - dt * 3.2); this.hb = Math.max(0, this.hb - dt * 3.5);
+    const bt = play && (G.bossIntro > 0 || G.special) ? 1 : 0; this.bars += (bt - this.bars) * damp(5, dt);
+  },
+  apply(g) { const z = this.zoom(); g.translate(W / 2, H / 2); if (this.roll) g.rotate(this.roll); if (z !== 1) g.scale(z, z); g.translate(-W / 2, -H / 2); },
+  toWorld(mx, my) { const z = this.zoom(), c = Math.cos(-this.roll), s = Math.sin(-this.roll), x = mx - W / 2, y = my - H / 2; return [(x * c - y * s) / z + W / 2, (x * s + y * c) / z + H / 2]; },
   update(dt, P) {
     const look = P.face * 120 + P.vx * .18;
     let tx = P.x + P.w / 2 - W / 2 + look, ty = clamp(P.y - H * .58, -60, ROWS * TS - H);
@@ -35,7 +53,7 @@ const FX = {
   explode(x, y, r, opt) {
     opt = opt || {}; const big = r > 90;
     if (window.RWFX && Save.d.settings.fx !== false) { if (r > 55) { RWFX.spawn('real-explosion', x, y - r * .3, { size: r * (big ? 3.3 : 2.9), fps: big ? 38 : 46 }); RWFX.spawn('smoke-wisp', x + rnd(-10, 10), y - r * .5, { size: r * (big ? 2.8 : 2.2), fps: 26, delay: big ? .35 : .25, alpha: .8, vy: -30 }); } else RWFX.spawn('hit-big', x, y, { size: r * 2.6, fps: 34 }); }
-    Snd.play(big ? 'bigBoom' : 'boom', opt.vol || 1); Cam.add(big ? 18 : 10); if (!opt.noStop) this.hitstop(big ? .07 : .035); this.flash(big ? .35 : .18, '#fff3d0');
+    Snd.play(big ? 'bigBoom' : 'boom', opt.vol || 1); Cam.add(big ? 18 : 10); if (G.state === 'play') { Cam.punch(big ? .05 : .026, (Math.random() < .5 ? -1 : 1) * (big ? .03 : .014)); if (big) Cam.ca = Math.max(Cam.ca, .8); G.combatT = Math.min(3, (G.combatT || 0) + 1); } if (!opt.noStop) this.hitstop(big ? .07 : .035); this.flash(big ? .35 : .18, '#fff3d0');
     this.P.push({ x, y, k: 'ring', t: 0, life: .35, s: 4, s2: r * 1.4, c: '#fff3c0', add: true, vx: 0, vy: 0, g: 0, drag: 0 });
     for (let i = 0; i < (big ? 26 : 14); i++) { const a = rnd(0, TAU), v = rnd(40, r * 3.2); this.p({ x, y, vx: Math.cos(a) * v, vy: Math.sin(a) * v - 60, life: rnd(.25, .6), s: rnd(10, r * .32), s2: 2, c: pick(['#fff4a0', '#ffc040', '#ff7a1a', '#ff4a1a']), add: true, drag: 3.4 }); }
     for (let i = 0; i < (big ? 14 : 8); i++) { const a = rnd(0, TAU), v = rnd(30, r * 1.8); this.p({ x, y, vx: Math.cos(a) * v, vy: Math.sin(a) * v - 80, life: rnd(.8, 1.8), s: rnd(10, 18), s2: rnd(30, r * .7), c: 'rgba(40,36,40,.55)', drag: 2 }); }

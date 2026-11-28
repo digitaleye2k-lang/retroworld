@@ -104,6 +104,7 @@ function eHurt(e, dmg, dir, src) {
 }
 function eKill(e, dir, src) {
   if (!e.alive) return; e.alive = false; e.dead = 0; const d = e.d, c = eCenter(e);
+  G.combatT = Math.min(3, (G.combatT || 0) + 1.2); Cam.punch(e.k === 'tank' ? .04 : P.combo >= 5 ? .018 : .011, (dir || 1) * (e.k === 'tank' ? .02 : .005));
   P.combo++; P.comboT = 2.6; const mult = 1 + Math.min(4, Math.floor(P.combo / 3)) * .5; const pts = Math.round(d.score * mult); G.score += pts; G.kills++;
   FX.text(c.x, e.y - 8, (P.combo >= 3 ? 'x' + P.combo + ' ' : '') + '+' + pts, P.combo >= 3 ? '#ffd84a' : '#fff', P.combo >= 6 ? 20 : 15);
   P.sp = Math.min(100, P.sp + (e.k === 'commander' || e.k === 'tank' ? 18 : e.k === 'heavy' ? 8 : 3.5));

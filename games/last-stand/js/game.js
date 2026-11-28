@@ -51,6 +51,8 @@ const G = {
   bossDown() { this.clearT = .01; Music.stop(); Snd.play('clear'); RWB.ach('boss' + (this.li + 1)); for (const e of this.E) if (e.alive) eKill(e, 1, 'boom'); },
   EB() { this.B = this.B.filter(b => b.own === 'p'); this.EG = []; },
   update(dt) {
+    this.combatT = Math.max(0, (this.combatT || 0) - dt);
+    if (this.bossIntro > 0) this.bossIntro = Math.max(0, this.bossIntro - dt);
     this.t += dt; this.levelT += dt; this.banner = Math.max(0, this.banner - dt);
     if (FX.hs > 0) { FX.hs -= dt; FX.update(dt * .1); return; }
     playerUpdate(dt); World.update(dt);
@@ -193,7 +195,7 @@ const G = {
   /* ---------- rendering ---------- */
   draw() {
     const g = ctx; Bg.draw(Cam.x);
-    g.save(); g.translate(-Math.round(Cam.x - Cam.sx), -Math.round(Cam.y - Cam.sy));
+    g.save(); Cam.apply(g); g.translate(-Math.round(Cam.x - Cam.sx), -Math.round(Cam.y - Cam.sy));
     this.drawDeco(g, true); this.drawTiles(g); this.drawDeco(g, false); this.drawProps(g);
     if (this.boss) Boss.draw(g);
     for (const k of this.PK) this.drawPickup(g, k);
@@ -209,7 +211,14 @@ const G = {
     this.drawWeather(g);
     // vignette + flash
     if (!this.vig) { const c = document.createElement('canvas'); c.width = W; c.height = H; const q = c.getContext('2d'); const vg = q.createRadialGradient(W / 2, H / 2, H * .35, W / 2, H / 2, H * .85); vg.addColorStop(0, 'rgba(0,0,0,0)'); vg.addColorStop(1, 'rgba(0,0,0,.5)'); q.fillStyle = vg; q.fillRect(0, 0, W, H); this.vig = c; } g.drawImage(this.vig, 0, 0);
-    if (P.hp < 30 && P.alive) { g.fillStyle = 'rgba(255,0,20,' + (.12 + .08 * Math.sin(this.t * 8)) + ')'; g.fillRect(0, 0, W, H); }
+    // double vision on big impacts
+    if (Cam.ca > .05 && Save.d.settings.fx !== false) { g.save(); g.setTransform(1, 0, 0, 1, 0, 0); g.globalAlpha = Cam.ca * .22; const o = Cam.ca * 7 * DPR * SCALE; g.drawImage(cv, o, 0); g.drawImage(cv, -o, 0); g.restore(); }
+    // low health: red edges that throb on the music's heartbeat
+    if (P.hp < 30 && P.alive) {
+      if (!this.hurtVig) { const c = document.createElement('canvas'); c.width = W; c.height = H; const q = c.getContext('2d'); const vg = q.createRadialGradient(W / 2, H / 2, H * .2, W / 2, H / 2, W * .62); vg.addColorStop(0, 'rgba(255,0,20,0)'); vg.addColorStop(.55, 'rgba(200,0,20,0)'); vg.addColorStop(.8, 'rgba(190,0,20,.32)'); vg.addColorStop(1, 'rgba(120,0,10,.8)'); q.fillStyle = vg; q.fillRect(0, 0, W, H); this.hurtVig = c; }
+      g.globalAlpha = clamp(.4 + Cam.hb * .5 + (1 - P.hp / 30) * .15, 0, 1); g.drawImage(this.hurtVig, 0, 0); g.globalAlpha = 1; }
+    // letterbox for boss arrivals and super moves
+    if (Cam.bars > .01) { const bh = Math.round(Cam.bars * 46); g.fillStyle = '#000'; g.fillRect(0, 0, W, bh); g.fillRect(0, H - bh, W, bh); }
     if (this.fade > 0) { this.fade = Math.max(0, this.fade - 1 / 40); g.fillStyle = 'rgba(0,0,0,' + this.fade + ')'; g.fillRect(0, 0, W, H); }
     if (FX.flashA > 0) { g.globalAlpha = FX.flashA; g.fillStyle = FX.flashC; g.fillRect(0, 0, W, H); g.globalAlpha = 1; }
     HUD.draw(g);
